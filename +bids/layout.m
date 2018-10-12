@@ -1,14 +1,8 @@
-function varargout = spm_BIDS(varargin)
-% Parse and query a directory structure formated according to the BIDS standard
-% FORMAT BIDS = spm_BIDS(root)
+function BIDS = layout(root)
+% Parse a directory structure formated according to the BIDS standard
+% FORMAT BIDS = bids.layout(root)
 % root   - directory formated according to BIDS [Default: pwd]
 % BIDS   - structure containing the BIDS file layout
-%
-% FORMAT result = spm_BIDS(BIDS,query,...)
-% BIDS   - BIDS directory name or BIDS structure (from spm_BIDS)
-% query  - type of query: {'data', 'metadata', 'sessions', 'subjects',
-%          'runs', 'tasks', 'runs', 'types', 'modalities'}
-% result - outcome of query
 %__________________________________________________________________________
 %
 % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -26,16 +20,16 @@ function varargout = spm_BIDS(varargin)
 if ~nargin
     root = pwd;
 elseif nargin == 1
-    if ischar(varargin{1})
-        root = spm_select('CPath',varargin{1});
-    else
-        varargout = varargin(1);
+    if ischar(root)
+        root = spm_select('CPath',root);
+    elseif isstruct(root)
+        BIDS = root; % or BIDS = bids.layout(root.root);
         return;
+    else
+        error('Invalid syntax.');
     end
 else
-    BIDS = spm_BIDS(varargin{1});
-    varargout{1} = BIDS_query(BIDS,varargin{2:end});
-    return;
+    error('Too many input arguments.');
 end
 
 %-BIDS structure
@@ -52,9 +46,7 @@ BIDS = struct(...
 
 %-Validation of BIDS root directory
 %==========================================================================
-if isempty(BIDS.dir)
-    error('A BIDS directory has to be specified.');
-elseif ~exist(BIDS.dir,'dir')
+if ~exist(BIDS.dir,'dir')
     error('BIDS directory does not exist.');
 elseif ~exist(fullfile(BIDS.dir,'dataset_description.json'),'file')
     error('BIDS directory not valid: missing dataset_description.json.');
@@ -125,8 +117,6 @@ for su=1:numel(sub)
         end
     end
 end
-
-varargout = { BIDS };
 
 
 %==========================================================================
@@ -235,8 +225,8 @@ if exist(pth,'dir')
     if any(~cellfun(@isempty,labels))
         idx = find(~cellfun(@isempty,labels));
         for i=1:numel(idx)
-            fb = spm_file(spm_file(f{idx(i)},'basename'),'basename');
-            metafile = fullfile(pth,spm_file(fb,'ext','json'));
+            fb = file_utils(file_utils(f{idx(i)},'basename'),'basename');
+            metafile = fullfile(pth,file_utils(fb,'ext','json'));
             subject.fmap(j).type = 'phasediff';
             subject.fmap(j).filename = f{idx(i)};
             subject.fmap(j).magnitude = {...
@@ -245,7 +235,7 @@ if exist(pth,'dir')
             subject.fmap(j).ses = regexprep(labels{idx(i)}.ses,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).acq = regexprep(labels{idx(i)}.acq,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
-            if spm_existfile(metafile)
+            if exist(metafile,'file')
                 subject.fmap(j).meta = spm_jsonread(metafile);
             else
                 % (!) TODO: file can also be stored at higher levels (inheritance principle)
@@ -266,8 +256,8 @@ if exist(pth,'dir')
     if any(~cellfun(@isempty,labels))
         idx = find(~cellfun(@isempty,labels));
         for i=1:numel(idx)
-            fb = spm_file(spm_file(f{idx(i)},'basename'),'basename');
-            metafile = fullfile(pth,spm_file(fb,'ext','json'));
+            fb = file_utils(file_utils(f{idx(i)},'basename'),'basename');
+            metafile = fullfile(pth,file_utils(fb,'ext','json'));
             subject.fmap(j).type = 'phase12';
             subject.fmap(j).filename = {...
                 f{idx(i)},...
@@ -278,7 +268,7 @@ if exist(pth,'dir')
             subject.fmap(j).ses = regexprep(labels{idx(i)}.ses,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).acq = regexprep(labels{idx(i)}.acq,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
-            if spm_existfile(metafile)
+            if exist(metafile,'file')
                 subject.fmap(j).meta = {...
                     spm_jsonread(metafile),...
                     spm_jsonread(strrep(metafile,'_phase1.json','_phase2.json'))};
@@ -301,15 +291,15 @@ if exist(pth,'dir')
     if any(~cellfun(@isempty,labels))
         idx = find(~cellfun(@isempty,labels));
         for i=1:numel(idx)
-            fb = spm_file(spm_file(f{idx(i)},'basename'),'basename');
-            metafile = fullfile(pth,spm_file(fb,'ext','json'));
+            fb = file_utils(file_utils(f{idx(i)},'basename'),'basename');
+            metafile = fullfile(pth,file_utils(fb,'ext','json'));
             subject.fmap(j).type = 'fieldmap';
             subject.fmap(j).filename = f{idx(i)};
             subject.fmap(j).magnitude = strrep(f{idx(i)},'_fieldmap.nii','_magnitude.nii');
             subject.fmap(j).ses = regexprep(labels{idx(i)}.ses,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).acq = regexprep(labels{idx(i)}.acq,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
-            if spm_existfile(metafile)
+            if exist(metafile,'file')
                 subject.fmap(j).meta = spm_jsonread(metafile);
             else
                 % (!) TODO: file can also be stored at higher levels (inheritance principle)
@@ -331,15 +321,15 @@ if exist(pth,'dir')
     if any(~cellfun(@isempty,labels))
         idx = find(~cellfun(@isempty,labels));
         for i=1:numel(idx)
-            fb = spm_file(spm_file(f{idx(i)},'basename'),'basename');
-            metafile = fullfile(pth,spm_file(fb,'ext','json'));
+            fb = file_utils(file_utils(f{idx(i)},'basename'),'basename');
+            metafile = fullfile(pth,file_utils(fb,'ext','json'));
             subject.fmap(j).type = 'epi';
             subject.fmap(j).filename = f{idx(i)};
             subject.fmap(j).ses = regexprep(labels{idx(i)}.ses,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).acq = regexprep(labels{idx(i)}.acq,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).dir = labels{idx(i)}.dir;
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
-            if spm_existfile(metafile)
+            if exist(metafile,'file')
                 subject.fmap(j).meta = spm_jsonread(metafile);
             else
                 % (!) TODO: file can also be stored at higher levels (inheritance principle)
@@ -542,229 +532,5 @@ if exist(pth,'dir')
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','run'});
         subject.pet = [subject.pet p];
         
-    end
-end
-
-
-%==========================================================================
-%-Perform a BIDS query
-%==========================================================================
-function result = BIDS_query(BIDS,query,varargin)
-opts = parse_query(varargin);
-switch query
-%   case 'subjects'
-%       result = regexprep(unique({BIDS.subjects.name}),'^[a-zA-Z0-9]+-','');
-    case 'sessions'
-        result = unique({BIDS.subjects.session});
-        result = regexprep(result,'^[a-zA-Z0-9]+-','');
-        result = unique(result);
-        result(cellfun('isempty',result)) = [];
-    case 'modalities'
-        hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x),y),...
-            BIDS.subjects,'UniformOutput',false);
-        hasmod = any([hasmod{:}],2);
-        mods   = fieldnames(BIDS.subjects)';
-        result = mods(hasmod);
-    case {'subjects', 'tasks', 'runs', 'types', 'data', 'metadata'}
-        %-Initialise output variable
-        result = {};
-        %-Filter according to subjects
-        if any(ismember(opts(:,1),'sub'))
-            subs = opts{ismember(opts(:,1),'sub'),2};
-            opts(ismember(opts(:,1),'sub'),:) = [];
-        else
-            subs = unique({BIDS.subjects.name});
-            subs = regexprep(subs,'^[a-zA-Z0-9]+-','');
-        end
-        %-Filter according to modality
-        if any(ismember(opts(:,1),'modality'))
-            mods = opts{ismember(opts(:,1),'modality'),2};
-            opts(ismember(opts(:,1),'modality'),:) = [];
-        else
-            mods = BIDS_query(BIDS,'modalities');
-        end
-        %-Get optional target option for metadata query
-        if strcmp(query,'metadata') && any(ismember(opts(:,1),'target'))
-            target = opts{ismember(opts(:,1),'target'),2};
-            opts(ismember(opts(:,1),'target'),:) = [];
-            if iscellstr(target)
-                target = substruct('.',target{1});
-            end
-        else
-            target = [];
-        end
-        %-Perform query
-        for i=1:numel(BIDS.subjects)                    
-            if ~ismember(BIDS.subjects(i).name(5:end),subs), continue; end
-            for j=1:numel(mods)
-                d = BIDS.subjects(i).(mods{j});
-                for k=1:numel(d)
-                    sts = true;
-                    for l=1:size(opts,1)
-                        if ~isfield(d(k),opts{l,1}) || ~ismember(d(k).(opts{l,1}),opts{l,2})
-                            sts = false;
-                        end
-                    end
-                    switch query
-                        case 'subjects'
-                            if sts
-                                result{end+1} = BIDS.subjects(i).name;
-                            end
-                        case 'data'
-                            if sts && isfield(d(k),'filename')
-                                result{end+1} = fullfile(BIDS.subjects(i).path,mods{j},d(k).filename);
-                            end
-                        case 'metadata'
-                            if sts && isfield(d(k),'filename')
-                                f = fullfile(BIDS.subjects(i).path,mods{j},d(k).filename);
-                                result{end+1} = get_metadata(f);
-                                if ~isempty(target)
-                                    try
-                                        result{end} = subsref(result{end},target);
-                                    catch
-                                        warning('Non-existent field for metadata.');
-                                        result{end} = [];
-                                    end
-                                end
-                            end
-%                             if sts && isfield(d(k),'meta')
-%                                 result{end+1} = d(k).meta;
-%                             end
-                        case 'runs'
-                            if sts && isfield(d(k),'run')
-                                result{end+1} = d(k).run;
-                            end
-                        case 'tasks'
-                            if sts && isfield(d(k),'task')
-                                result{end+1} = d(k).task;
-                            end
-                        case 'types'
-                            if sts && isfield(d(k),'type')
-                                result{end+1} = d(k).type;
-                            end
-                    end
-                end
-            end
-        end
-        %-Postprocessing output variable
-        switch query
-            case 'subjects'
-                result = unique(result);
-                result = regexprep(result,'^[a-zA-Z0-9]+-','');
-            case 'data'
-                result = result';
-            case 'metadata'
-                if numel(result) == 1
-                    result = result{1};
-                end
-            case {'tasks','runs','types'}
-                result = unique(result);
-                result(cellfun('isempty',result)) = [];
-        end
-    otherwise
-        error('Unable to perform BIDS query.');
-end
-
-
-%==========================================================================
-%-Parse BIDS query
-%==========================================================================
-function query = parse_query(query)
-if numel(query) == 1 && isstruct(query{1})
-    query = [fieldnames(query{1}), struct2cell(query{1})];
-else
-    if mod(numel(query),2)
-        error('Invalid input syntax.');
-    end
-    query = reshape(query,2,[])';
-end
-for i=1:size(query,1)
-    if ischar(query{i,2})
-        query{i,2} = cellstr(query{i,2});
-    end
-    for j=1:numel(query{i,2})
-        if iscellstr(query{i,2})
-            query{i,2}{j} = regexprep(query{i,2}{j},sprintf('^%s-',query{i,1}),'');
-        end
-    end
-end
-
-
-%==========================================================================
-%-Parse filename
-%==========================================================================
-function p = parse_filename(filename,fields)
-filename = spm_file(filename,'filename');
-[parts, dummy] = regexp(filename,'(?:_)+','split','match');
-p.filename = filename;
-[p.type, p.ext] = strtok(parts{end},'.');
-for i=1:numel(parts)-1
-    [d, dummy] = regexp(parts{i},'(?:\-)+','split','match');
-    p.(d{1}) = d{2};
-end
-if nargin == 2
-    for i=1:numel(fields)
-        if ~isfield(p,fields{i})
-            p.(fields{i}) = '';
-        end
-    end
-    try
-        p = orderfields(p,['filename','ext','type',fields]);
-    catch
-        warning('Ignoring file "%s" not matching template.',filename);
-        p = struct([]);
-    end
-end
-
-
-%==========================================================================
-%-Get metadata
-%==========================================================================
-function meta = get_metadata(filename, pattern)
-if nargin == 1, pattern = '^.*_%s\\.json$'; end
-pth = fileparts(filename);
-p = parse_filename(filename);
-
-meta = struct();
-
-if isfield(p,'ses') && ~isempty(p.ses)
-    N = 4; % there is a session level in the hierarchy
-else
-    N = 3;
-end
-    
-for n=1:N
-    metafile = spm_select('FPList',pth, sprintf(pattern,p.type));
-    if isempty(metafile), metafile = {}; else metafile = cellstr(metafile); end
-    for i=1:numel(metafile)
-        p2 = parse_filename(metafile{i});
-        fn = setdiff(fieldnames(p2),{'filename','ext','type'});
-        ismeta = true;
-        for j=1:numel(fn)
-            if ~isfield(p,fn{j}) || ~strcmp(p.(fn{j}),p2.(fn{j}))
-                ismeta = false;
-                break;
-            end
-        end
-        if ismeta
-            if strcmp(p2.ext,'.json')
-                meta = update_metadata(meta,spm_jsonread(metafile{i}));
-            else
-                meta.filename = metafile{i};
-            end
-        end
-    end
-    pth = fullfile(pth,'..');
-end
-
-
-%==========================================================================
-%-Inheritance principle
-%==========================================================================
-function s1 = update_metadata(s1,s2)
-fn = fieldnames(s2);
-for i=1:numel(fn)
-    if ~isfield(s1,fn{i})
-        s1.(fn{i}) = s2.(fn{i});
     end
 end
