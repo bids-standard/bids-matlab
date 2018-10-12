@@ -1,4 +1,28 @@
 function p = parse_filename(filename,fields)
+% Split a filename into its building constituents
+% FORMAT p = parse_filename(filename,fields)
+%
+% Example:
+%
+% >> filename = '../sub-16/anat/sub-16_ses-mri_run-1_echo-2_FLASH.nii.gz';
+% >> parse_filename(filename)
+%
+% ans = 
+%
+%   struct with fields:
+%
+%     filename: 'sub-16_ses-mri_run-1_echo-2_FLASH.nii.gz'
+%         type: 'FLASH'
+%          ext: '.nii.gz'
+%          sub: '16'
+%          ses: 'mri'
+%          run: '1'
+%         echo: '2'
+%__________________________________________________________________________
+
+% Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+% Copyright (C) 2018--, BIDS-MATLAB developers
+
 filename = file_utils(filename,'filename');
 [parts, dummy] = regexp(filename,'(?:_)+','split','match');
 p.filename = filename;

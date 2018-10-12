@@ -1,14 +1,24 @@
 function meta = get_metadata(filename, pattern)
+% Read a BIDS's file metadata according to the inheritance principle
+% FORMAT meta = get_metadata(filename, pattern)
+% filename    - name of file following BIDS standard
+% pattern     - regular expression matching metadata file
+% meta        - metadata structure
+%__________________________________________________________________________
+
+% Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+% Copyright (C) 2018--, BIDS-MATLAB developers
+
+
 if nargin == 1, pattern = '^.*_%s\\.json$'; end
 pth = fileparts(filename);
 p = parse_filename(filename);
 
 meta = struct();
 
+N = 3;
 if isfield(p,'ses') && ~isempty(p.ses)
-    N = 4; % there is a session level in the hierarchy
-else
-    N = 3;
+    N = N + 1; % there is a session level in the hierarchy
 end
     
 for n=1:N
