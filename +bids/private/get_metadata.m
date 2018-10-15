@@ -22,7 +22,7 @@ if isfield(p,'ses') && ~isempty(p.ses)
 end
     
 for n=1:N
-    metafile = spm_select('FPList',pth, sprintf(pattern,p.type));
+    metafile = file_utils('FPList',pth, sprintf(pattern,p.type));
     if isempty(metafile), metafile = {}; else metafile = cellstr(metafile); end
     for i=1:numel(metafile)
         p2 = parse_filename(metafile{i});
@@ -36,7 +36,7 @@ for n=1:N
         end
         if ismeta
             if strcmp(p2.ext,'.json')
-                meta = update_metadata(meta,spm_jsonread(metafile{i}));
+                meta = update_metadata(meta,bids.util.jsondecode(metafile{i}));
             else
                 meta.filename = metafile{i};
             end

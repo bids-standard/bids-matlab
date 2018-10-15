@@ -21,7 +21,7 @@ if ~nargin
     root = pwd;
 elseif nargin == 1
     if ischar(root)
-        root = spm_select('CPath',root);
+        root = file_utils(root, 'CPath');
     elseif isstruct(root)
         BIDS = root; % or BIDS = bids.layout(root.root);
         return;
@@ -55,7 +55,7 @@ end
 %-Dataset description
 %==========================================================================
 try
-    BIDS.description = spm_jsonread(fullfile(BIDS.dir,'dataset_description.json'));
+    BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir,'dataset_description.json'));
 catch
     error('BIDS dataset description could not be read.');
 end
@@ -80,13 +80,13 @@ end
 
 %-Participant key file
 %==========================================================================
-p = spm_select('FPList',BIDS.dir,'^participants\.tsv$');
+p = file_utils('FPList',BIDS.dir,'^participants\.tsv$');
 if ~isempty(p)
-    BIDS.participants = spm_load(p);
+    BIDS.participants = bids.util.tsvread(p);
 end
-p = spm_select('FPList',BIDS.dir,'^participants\.json$');
+p = file_utils('FPList',BIDS.dir,'^participants\.json$');
 if ~isempty(p)
-    BIDS.participants.meta = spm_jsonread(p);
+    BIDS.participants.meta = bids.util.jsondecode(p);
 end
 
 %-Sessions file
@@ -97,18 +97,18 @@ end
 
 %-Tasks: JSON files are accessed through metadata
 %==========================================================================
-%t = spm_select('FPList',BIDS.dir,...
+%t = file_utils('FPList',BIDS.dir,...
 %    '^task-.*_(beh|bold|events|channels|physio|stim|meg)\.(json|tsv)$');
 
 %-Subjects
 %==========================================================================
-sub = cellstr(spm_select('List',BIDS.dir,'dir','^sub-.*$'));
+sub = cellstr(file_utils('List',BIDS.dir,'dir','^sub-.*$'));
 if isequal(sub,{''})
     error('No subjects found in BIDS directory.');
 end
 
 for su=1:numel(sub)
-    sess = cellstr(spm_select('List',fullfile(BIDS.dir,sub{su}),'dir','^ses-.*$'));    
+    sess = cellstr(file_utils('List',fullfile(BIDS.dir,sub{su}),'dir','^ses-.*$'));    
     for se=1:numel(sess)
         if isempty(BIDS.subjects)
             BIDS.subjects = parse_subject(BIDS.dir, sub{su}, sess{se});
@@ -142,7 +142,7 @@ subject.pet     = struct([]); % PET imaging data
 %--------------------------------------------------------------------------
 pth = fullfile(subject.path,'anat');
 if exist(pth,'dir')
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
@@ -163,7 +163,7 @@ if exist(pth,'dir')
     
     %-Task imaging data file
     %----------------------------------------------------------------------
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_bold\\.nii(\\.gz)?$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
@@ -177,21 +177,21 @@ if exist(pth,'dir')
     %-Task events file
     %----------------------------------------------------------------------
     % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
         subject.func = [subject.func p];
-        subject.func(end).meta = spm_load(fullfile(pth,f{i})); % ?
+        subject.func(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
 
     end
         
     %-Physiological and other continuous recordings file
     %----------------------------------------------------------------------
     % (!) TODO: stim file can also be stored at higher levels (inheritance principle)
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_(physio|stim)\\.tsv\\.gz$',subject.name));
     % see also [_recording-<label>]
     if isempty(f), f = {}; else f = cellstr(f); end
@@ -209,7 +209,7 @@ end
 %--------------------------------------------------------------------------
 pth = fullfile(subject.path,'fmap');
 if exist(pth,'dir')
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*\\.nii(\\.gz)?$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     j = 1;
@@ -236,7 +236,7 @@ if exist(pth,'dir')
             subject.fmap(j).acq = regexprep(labels{idx(i)}.acq,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
             if exist(metafile,'file')
-                subject.fmap(j).meta = spm_jsonread(metafile);
+                subject.fmap(j).meta = bids.util.jsondecode(metafile);
             else
                 % (!) TODO: file can also be stored at higher levels (inheritance principle)
                 subject.fmap(j).meta = struct([]); % ?
@@ -270,8 +270,8 @@ if exist(pth,'dir')
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
             if exist(metafile,'file')
                 subject.fmap(j).meta = {...
-                    spm_jsonread(metafile),...
-                    spm_jsonread(strrep(metafile,'_phase1.json','_phase2.json'))};
+                    bids.util.jsondecode(metafile),...
+                    bids.util.jsondecode(strrep(metafile,'_phase1.json','_phase2.json'))};
             else
                 % (!) TODO: file can also be stored at higher levels (inheritance principle)
                 subject.fmap(j).meta = struct([]); % ?
@@ -300,7 +300,7 @@ if exist(pth,'dir')
             subject.fmap(j).acq = regexprep(labels{idx(i)}.acq,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
             if exist(metafile,'file')
-                subject.fmap(j).meta = spm_jsonread(metafile);
+                subject.fmap(j).meta = bids.util.jsondecode(metafile);
             else
                 % (!) TODO: file can also be stored at higher levels (inheritance principle)
                 subject.fmap(j).meta = struct([]); % ?
@@ -330,7 +330,7 @@ if exist(pth,'dir')
             subject.fmap(j).dir = labels{idx(i)}.dir;
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
             if exist(metafile,'file')
-                subject.fmap(j).meta = spm_jsonread(metafile);
+                subject.fmap(j).meta = bids.util.jsondecode(metafile);
             else
                 % (!) TODO: file can also be stored at higher levels (inheritance principle)
                 subject.fmap(j).meta = struct([]); % ?
@@ -348,7 +348,7 @@ if exist(pth,'dir')
     
     %-EEG data file
     %----------------------------------------------------------------------
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_eeg\\..*[^json]$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
@@ -361,33 +361,33 @@ if exist(pth,'dir')
     
     %-EEG events file
     %----------------------------------------------------------------------
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         subject.eeg = [subject.eeg p];
-        subject.eeg(end).meta = spm_load(fullfile(pth,f{i})); % ?
+        subject.eeg(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
        
     end
     
     %-Channel description table
     %----------------------------------------------------------------------
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_channels\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         subject.eeg = [subject.eeg p];
-        subject.eeg(end).meta = spm_load(fullfile(pth,f{i})); % ?
+        subject.eeg(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
     
     %-Session-specific file
     %----------------------------------------------------------------------
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s(_ses-[a-zA-Z0-9]+)?.*_(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
@@ -408,7 +408,7 @@ if exist(pth,'dir')
     
     %-MEG data file
     %----------------------------------------------------------------------
-    [f,d] = spm_select('List',pth,...
+    [f,d] = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_meg\\..*[^json]$',subject.name));
     if isempty(f), f = d; end
     if isempty(f), f = {}; else f = cellstr(f); end
@@ -423,34 +423,34 @@ if exist(pth,'dir')
     %-MEG events file
     %----------------------------------------------------------------------
     % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         subject.meg = [subject.meg p];
-        subject.meg(end).meta = spm_load(fullfile(pth,f{i})); % ?
+        subject.meg(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
         
     %-Channels description table
     %----------------------------------------------------------------------
     % (!) TODO: channels file can also be stored at higher levels (inheritance principle)
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_channels\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         subject.meg = [subject.meg p];
-        subject.meg(end).meta = spm_load(fullfile(pth,f{i})); % ?
+        subject.meg(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
 
     %-Session-specific file
     %----------------------------------------------------------------------
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s(_ses-[a-zA-Z0-9]+)?.*_(photo\\.jpg|coordsystem\\.json|headshape\\..*)$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
@@ -468,7 +468,7 @@ end
 %--------------------------------------------------------------------------
 pth = fullfile(subject.path,'beh');
 if exist(pth,'dir')
-    f = spm_select('FPList',pth,...
+    f = file_utils('FPList',pth,...
         sprintf('^%s.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
@@ -487,7 +487,7 @@ end
 %--------------------------------------------------------------------------
 pth = fullfile(subject.path,'dwi');
 if exist(pth,'dir')
-    f = spm_select('FPList',pth,...
+    f = file_utils('FPList',pth,...
         sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
@@ -502,7 +502,7 @@ if exist(pth,'dir')
         % bval file can also be stored at higher levels (inheritance principle)
         bvalfile = get_metadata(f{i},'^.*%s\\.bval$');
         if isfield(bvalfile,'filename')
-            subject.dwi(end).bval = spm_load(bvalfile.filename); % ?
+            subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
         end
 
         %-bvec file
@@ -510,7 +510,7 @@ if exist(pth,'dir')
         % bvec file can also be stored at higher levels (inheritance principle)
         bvecfile = get_metadata(f{i},'^.*%s\\.bvec$');
         if isfield(bvalfile,'filename')
-            subject.dwi(end).bvec = spm_load(bvecfile.filename); % ?
+            subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename); % ?
         end
         
     end
@@ -522,7 +522,7 @@ end
 %--------------------------------------------------------------------------
 pth = fullfile(subject.path,'pet');
 if exist(pth,'dir')
-    f = spm_select('List',pth,...
+    f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_pet\\.nii(\\.gz)?$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
