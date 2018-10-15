@@ -8,7 +8,7 @@ See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the [B
 
 ## Implementation
 
-Starting point was `spm_BIDS.m` from [SPM12](https://github.com/spm/spm12) ([documentation](https://en.wikibooks.org/wiki/SPM/BIDS#BIDS_parser_and_queries)) reformatted in a `+bids` package. It currently relies on a number of SPM functions: `spm_select.m`, `spm_jsonread.m`, `spm_load.m`, but it should be feasible to make this function standalone if preferable.
+Starting point was `spm_BIDS.m` from [SPM12](https://github.com/spm/spm12) ([documentation](https://en.wikibooks.org/wiki/SPM/BIDS#BIDS_parser_and_queries)) reformatted in a `+bids` package with dependencies to other SPM functions removed.
 
 ## Example
 
