@@ -16,14 +16,13 @@ function report(path2BIDS, Subj, Ses, Run, ReadGZ)
 % if different subjects/sessions contain very different data.
 %
 % - ReadGZ. If set to 1 (default) the function will try to read the *.nii.gz file to get more
-% information.
+% information. This relies on the spm_vol.m function.
 %
-% At this stage this function relies on some SPM functions (>= SPM12 - v7219).
 %
 % tested on:
 % - windows 10 / matlab 2017a
 % - on all the empty raw data files from BIDS-examples
-% - on ds006 and ds114 with data from BIDS-examples
+% - on ds001 and ds003 with data from BIDS-examples
 %
 %
 % Example:
