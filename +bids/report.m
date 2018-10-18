@@ -63,19 +63,6 @@ if nargin<5
 end
 
 
-% Check if we have SPM and the spm_BIDS in the path.
-msg_1 = which('spm.m');
-if isempty(msg_1)
-    warning('SPM is not in the matlab path: this might not work.')
-end
-
-msg_2 = which('spm_BIDS.m');
-if isempty(msg_2) || strcmp("'spm_BIDS.m' not found.'",msg_2)
-    warning('spm_BIDS.m is not in the matlab path: this might not work.')
-end
-clear msg_1 msg_2
-
-
 % read the content of the folder
 fprintf('\n-------------------------\n')
 fprintf('  Reading BIDS: %s', path2BIDS)
