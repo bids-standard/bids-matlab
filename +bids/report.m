@@ -1,4 +1,4 @@
-function bids_report(path2BIDS, Subj, Ses, Run, ReadGZ)
+function report(path2BIDS, Subj, Ses, Run, ReadGZ)
 %bids_report Creates a short summary of the acquisition parameters of a
 % BIDS data set. This is an adaptation of the pybids report module.
 %
@@ -80,12 +80,15 @@ clear msg_1 msg_2
 fprintf('\n-------------------------\n')
 fprintf('  Reading BIDS: %s', path2BIDS)
 fprintf('\n-------------------------\n')
-BIDS = spm_BIDS(path2BIDS);
+BIDS = bids.layout(path2BIDS);
 fprintf('Done.\n\n')
 
 
-subjs_ls = spm_BIDS(BIDS,'subjects');
-sess_ls = spm_BIDS(BIDS,'sessions', 'sub', subjs_ls(Subj));
+subjs_ls = bids.query(BIDS,'subjects');
+sess_ls = bids.query(BIDS,'sessions', 'sub', subjs_ls(Subj));
+if isempty(sess_ls)
+    sess_ls={''};
+end
 if Ses==0
     Ses = 1:numel(sess_ls);
 end
@@ -104,10 +107,9 @@ for iSess = Ses
         fprintf('\n-------------------------\n')
     end
     
-    types_ls = spm_BIDS(BIDS,'types', 'sub', subjs_ls(Subj), 'ses', sess_ls(iSess));
-    tasks_ls = spm_BIDS(BIDS,'tasks', 'sub', subjs_ls(Subj), 'ses', sess_ls(iSess));
-    
-    % mods_ls = spm_BIDS(BIDS,'modalities');
+    types_ls = bids.query(BIDS,'types', 'sub', subjs_ls(Subj), 'ses', sess_ls(iSess));
+    tasks_ls = bids.query(BIDS,'tasks', 'sub', subjs_ls(Subj), 'ses', sess_ls(iSess));
+    % mods_ls = bids.query(BIDS,'modalities');
     
     for iType = 1:numel(types_ls)
         
@@ -127,6 +129,7 @@ for iSess = Ses
                 % get the parameters
                 acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
                     types_ls{iType}, '', '', ReadGZ);
+                
                 
                 % print output
                 fprintf('\n ANAT REPORT \n')
@@ -152,16 +155,18 @@ for iSess = Ses
                 % loop through the tasks
                 for iTask = 1:numel(tasks_ls)
                     
-                    runs_ls = spm_BIDS(BIDS,'runs','sub', subjs_ls{Subj}, 'ses', sess_ls{iSess}, ...
+                    runs_ls = bids.query(BIDS,'runs','sub', subjs_ls{Subj}, 'ses', sess_ls{iSess}, ...
                         'type', 'bold', 'task', tasks_ls{iTask});
                     
                     if isempty(runs_ls)
                         % get the parameters for that task
                         acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
                             'bold', tasks_ls{iTask}, '', ReadGZ);
+                        
                         % compute the number of BOLD run for that task
                         acq_param.run_str = '1';
-                    else
+                        
+                    else % if there is more than 1 run
                         % get the parameters for that task
                         acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
                             'bold', tasks_ls{iTask}, runs_ls{Run}, ReadGZ);
@@ -201,7 +206,7 @@ for iSess = Ses
                 % loop through the tasks
                 for iTask = 1:numel(tasks_ls)
                     
-                    runs_ls = spm_BIDS(BIDS,'runs','sub', subjs_ls{Subj}, 'ses', sess_ls{iSess}, ...
+                    runs_ls = bids.query(BIDS,'runs','sub', subjs_ls{Subj}, 'ses', sess_ls{iSess}, ...
                         'type', 'phasediff');
                     
                     if isempty(runs_ls)
@@ -248,7 +253,7 @@ for iSess = Ses
                 acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
                     'dwi', '', '', ReadGZ);
                 
-                % dirty hack to try to look into the BIDS structure as spm_BIDS does not
+                % dirty hack to try to look into the BIDS structure as bids.query does not
                 % support querying directly for bval anb bvec
                 try
                     acq_param.n_vecs = num2str(size(BIDS.subjects(Subj).dwi.bval,2));
@@ -319,20 +324,20 @@ acq_param.n_vols  = '[XXXX]';
 %% look into the metadata sub-structure for BOLD data
 if ismember(type, {'T1w' 'inplaneT2' 'T1map' 'FLASH' 'dwi'})
     
-    filename = spm_BIDS(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type);
-    metadata = spm_BIDS(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type);
+    filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type);
+    metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type);
     
 elseif strcmp(type, 'bold')
     
-    filename = spm_BIDS(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type, ...
+    filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type, ...
         'task', task, 'run', run);
-    metadata = spm_BIDS(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type, ...
+    metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type, ...
         'task', task, 'run', run);
     
 elseif strcmp(type, 'phasediff')
     
-    filename = spm_BIDS(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type, 'run', run);
-    metadata = spm_BIDS(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type, 'run', run);
+    filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type, 'run', run);
+    metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type, 'run', run);
     
 end
 
