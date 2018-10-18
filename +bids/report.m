@@ -21,14 +21,14 @@ function report(path2BIDS, Subj, Ses, Run, ReadGZ)
 % At this stage this function relies on some SPM functions (>= SPM12 - v7219).
 %
 % tested on:
-% - windows 10 / matlab 2017a / SPM12 - v7219
+% - windows 10 / matlab 2017a
 % - on all the empty raw data files from BIDS-examples
 % - on ds006 and ds114 with data from BIDS-examples
 %
 %
-% Example
+% Example:
 % path2BIDS = 'D:\BIDS\ds114'
-% bids_report(path2BIDS)
+% bids.report(path2BIDS)
 %
 %
 % RG 2018-09
@@ -360,6 +360,7 @@ end
 if ReadGZ
     fprintf('  Opening file %s.\n',filename{1})
     
+    if exist('spm_vol','file') == 2
     try
         % read the header of the nifti file
         hdr = spm_vol(filename{1});
@@ -376,7 +377,11 @@ if ReadGZ
         acq_param.fov = sprintf('%.2f X %.2f', vs(1)*dim(1), vs(2)*dim(2)); % field of view
         
     catch
-        warning('Could not read the file %s.', filename{1})
+        warning('Could not read the file %s.\n', filename{1})
+    end
+    else
+        warning('Reading the file \n%s\nrelies on the spm_vol.m function which does not seem to be in the matlab path?', filename{1})
+        
     end
 end
 
