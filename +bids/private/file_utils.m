@@ -208,12 +208,12 @@ else
         expr = varargin{1};
     end
 end
-do = dir(d);
-if isempty(do)
+dd = dir(d);
+if isempty(dd)
     return;
 end
-fi = sort({do(~[do.isdir]).name})';
-di = sort({do([do.isdir]).name})';
+fi = sort({dd(~[dd.isdir]).name})';
+di = sort({dd([dd.isdir]).name})';
 di = setdiff(di,{'.','..'});
 if dirmode
     t = regexp(di,expr);
