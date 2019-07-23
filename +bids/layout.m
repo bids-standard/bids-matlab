@@ -1,8 +1,9 @@
-function BIDS = layout(root)
+function BIDS = layout(root,tolerant)
 % Parse a directory structure formated according to the BIDS standard
 % FORMAT BIDS = bids.layout(root)
-% root   - directory formated according to BIDS [Default: pwd]
-% BIDS   - structure containing the BIDS file layout
+% root     - directory formated according to BIDS [Default: pwd]
+% tolerant - if set to 0 (default) only files g
+% BIDS     - structure containing the BIDS file layout
 %__________________________________________________________________________
 %
 % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -28,9 +29,11 @@ elseif nargin == 1
     else
         error('Invalid syntax.');
     end
-else
+elseif nargin > 2
     error('Too many input arguments.');
 end
+
+if ~exist('tolerant','var'), tolerant = false; end
 
 %-BIDS structure
 %==========================================================================
@@ -49,7 +52,12 @@ BIDS = struct(...
 if ~exist(BIDS.dir,'dir')
     error('BIDS directory does not exist.');
 elseif ~exist(fullfile(BIDS.dir,'dataset_description.json'),'file')
-    error('BIDS directory not valid: missing dataset_description.json.');
+    msg = 'BIDS directory not valid: missing dataset_description.json.';
+    if tolerant
+        warning(msg);
+    else
+        error(msg);
+    end
 end
 
 %-Dataset description
@@ -57,10 +65,20 @@ end
 try
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir,'dataset_description.json'));
 catch
-    error('BIDS dataset description could not be read.');
+    msg = 'BIDS dataset description could not be read.';
+    if tolerant
+        warning(msg);
+    else
+        error(msg);
+    end
 end
 if ~isfield(BIDS.description,'BIDSVersion') || ~isfield(BIDS.description,'Name')
-    error('BIDS dataset description not valid.');
+    msg = 'BIDS dataset description not valid.';
+    if tolerant
+        warning(msg);
+    else
+        error(msg);
+    end
 end
 % See also optional README and CHANGES files
 
@@ -82,7 +100,16 @@ end
 %==========================================================================
 p = file_utils('FPList',BIDS.dir,'^participants\.tsv$');
 if ~isempty(p)
-    BIDS.participants = bids.util.tsvread(p);
+    try
+        BIDS.participants = bids.util.tsvread(p);
+    catch ME
+        msg = ['unable to read ' p];
+        if tolerant
+            warning(msg);
+        else
+            error(msg);
+        end
+    end
 end
 p = file_utils('FPList',BIDS.dir,'^participants\.json$');
 if ~isempty(p)
