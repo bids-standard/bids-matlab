@@ -2,7 +2,9 @@ function BIDS = layout(root,tolerant)
 % Parse a directory structure formated according to the BIDS standard
 % FORMAT BIDS = bids.layout(root)
 % root     - directory formated according to BIDS [Default: pwd]
-% tolerant - if set to 0 (default) only files g
+% tolerant - if set to 0 (default): 100% BIDS compliant https://github.com/bids-standard/bids-validator
+%            if set to 1 : dataset_description.json, participants.tsv, _sessions.tsv files are optional
+%            if set to 2 : parse other imaging files that are not listed in BIDS yet (e.g. extension proposal)
 % BIDS     - structure containing the BIDS file layout
 %__________________________________________________________________________
 %
@@ -138,9 +140,9 @@ for su=1:numel(sub)
     sess = cellstr(file_utils('List',fullfile(BIDS.dir,sub{su}),'dir','^ses-.*$'));    
     for se=1:numel(sess)
         if isempty(BIDS.subjects)
-            BIDS.subjects = parse_subject(BIDS.dir, sub{su}, sess{se});
+            BIDS.subjects = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
         else
-            BIDS.subjects(end+1) = parse_subject(BIDS.dir, sub{su}, sess{se});
+            BIDS.subjects(end+1) = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
         end
     end
 end
@@ -559,5 +561,39 @@ if exist(pth,'dir')
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','run'});
         subject.pet = [subject.pet p];
         
+    end
+end
+
+%--------------------------------------------------------------------------
+%-Other imaging data (extension proposal)
+%--------------------------------------------------------------------------
+if tolerant > 1
+    pth = fullfile(subject.path);
+    d = dir(pth);
+    d = d([d.isdir]);
+    d = d(~cellfun(@(f) strcmp(f(1),'.'), {d.name}));
+    d = d(~cellfun(@(f) ismember(f,fieldnames(subject)), {d.name})); % rm already parsed folders
+    d(end+1).name = ''; % add session root folder
+    for id = 1:length(d)
+        pth = fullfile(subject.path, d(id).name);
+        if exist(pth,'dir')
+            f = file_utils('List',pth,...
+                sprintf('.*(_)?([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$'));
+            if isempty(f), f = {}; else f = cellstr(f); end
+            if isempty(d(id).name), d(id).name = 'other'; end
+            subject.(d(id).name)     = struct([]); % new imaging data
+            for i=1:numel(f)
+                
+                %-Anatomy imaging data file
+                %------------------------------------------------------------------
+                p = parse_filename(f{i}, {'sub','ses','acq','ce','rec','fa','echo','inv','run'});
+                if isfield(p,'ses') && isempty(p.ses)
+                    ses = regexprep(sesname,'^[a-zA-Z0-9]+-','');
+                    p.ses = ses;
+                end
+                subject.(d(id).name) = [subject.(d(id).name) p];
+                
+            end
+        end
     end
 end
