@@ -3,8 +3,9 @@ function BIDS = layout(root,tolerant)
 % FORMAT BIDS = bids.layout(root)
 % root     - directory formated according to BIDS [Default: pwd]
 % tolerant - if set to 0 (default): 100% BIDS compliant https://github.com/bids-standard/bids-validator
-%            if set to 1 : dataset_description.json, participants.tsv, _sessions.tsv files are optional
-%            if set to 2 : parse other imaging files that are not listed in BIDS yet (e.g. extension proposal)
+%            if set to 1 or more: dataset_description.json, participants.tsv, _sessions.tsv files are optional
+%            if set to 2 or more: parse other imaging files that are not listed in BIDS yet (e.g. extension proposal)
+%            if set to 3 or more: inconsistent data between subjects
 % BIDS     - structure containing the BIDS file layout
 %__________________________________________________________________________
 %
@@ -142,7 +143,18 @@ for su=1:numel(sub)
         if isempty(BIDS.subjects)
             BIDS.subjects = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
         else
-            BIDS.subjects(end+1) = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
+            if tolerant < 3 % consistent dataset between subjects
+                BIDS.subjects(end+1) = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
+            else
+                subject_tmp = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
+                BIDS.subjects(end+1).name = subject_tmp.name;
+                fields = fieldnames(BIDS.subjects(end));
+                for ff = 1:length(fields)
+                    if isfield(subject_tmp,fields{ff})
+                        BIDS.subjects(end).(fields{ff}) = subject_tmp.(fields{ff});
+                    end
+                end
+            end
         end
     end
 end
