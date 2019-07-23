@@ -28,18 +28,13 @@ opts = parse_query(varargin);
 switch query
 %   case 'subjects'
 %       result = regexprep(unique({BIDS.subjects.name}),'^[a-zA-Z0-9]+-','');
-    case 'sessions'
-        result = unique({BIDS.subjects.session});
-        result = regexprep(result,'^[a-zA-Z0-9]+-','');
-        result = unique(result);
-        result(cellfun('isempty',result)) = [];
     case 'modalities'
         hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x),y),...
             BIDS.subjects,'UniformOutput',false);
         hasmod = any([hasmod{:}],2);
         mods   = fieldnames(BIDS.subjects)';
         result = mods(hasmod);
-    case {'subjects', 'tasks', 'runs', 'types', 'data', 'metadata'}
+    case {'sessions','subjects', 'tasks', 'runs', 'types', 'data', 'metadata'}
         %-Initialise output variable
         result = {};
         %-Filter according to subjects
@@ -84,6 +79,10 @@ switch query
                             if sts
                                 result{end+1} = BIDS.subjects(i).name;
                             end
+                        case 'sessions'
+                            if sts
+                                result{end+1} = BIDS.subjects(i).session;
+                            end
                         case 'data'
                             if sts && isfield(d(k),'filename')
                                 result{end+1} = fullfile(BIDS.subjects(i).path,mods{j},d(k).filename);
@@ -125,6 +124,10 @@ switch query
             case 'subjects'
                 result = unique(result);
                 result = regexprep(result,'^[a-zA-Z0-9]+-','');
+            case 'sessions'
+                result = unique(result);
+                result = regexprep(result,'^[a-zA-Z0-9]+-','');
+                result(cellfun('isempty',result)) = [];
             case 'data'
                 result = result';
             case 'metadata'
