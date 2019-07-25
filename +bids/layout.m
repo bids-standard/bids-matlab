@@ -5,7 +5,6 @@ function BIDS = layout(root,tolerant)
 % tolerant - if set to 0 (default): 100% BIDS compliant https://github.com/bids-standard/bids-validator
 %            if set to 1 or more: dataset_description.json, participants.tsv, _sessions.tsv files are optional
 %            if set to 2 or more: parse other imaging files that are not listed in BIDS yet (e.g. extension proposal)
-%            if set to 3 or more: inconsistent data between subjects
 % BIDS     - structure containing the BIDS file layout
 %__________________________________________________________________________
 %
@@ -143,16 +142,17 @@ for su=1:numel(sub)
         if isempty(BIDS.subjects)
             BIDS.subjects = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
         else
-            if tolerant < 3 % consistent dataset between subjects
+            if tolerant < 2 % Other modalities that are not listed in default BIDS structure
                 BIDS.subjects(end+1) = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
             else
                 subject_tmp = parse_subject(BIDS.dir, sub{su}, sess{se}, tolerant);
                 BIDS.subjects(end+1).name = subject_tmp.name;
-                fields = fieldnames(BIDS.subjects(end));
+                fields = fieldnames(subject_tmp);
                 for ff = 1:length(fields)
-                    if isfield(subject_tmp,fields{ff})
-                        BIDS.subjects(end).(fields{ff}) = subject_tmp.(fields{ff});
+                    if ~isfield(BIDS.subjects,fields{ff})
+                        [BIDS.subjects.(fields{ff})] = deal(struct([]));
                     end
+                    BIDS.subjects(end).(fields{ff}) = subject_tmp.(fields{ff});
                 end
             end
         end
@@ -163,7 +163,7 @@ end
 %==========================================================================
 %-Parse a subject's directory
 %==========================================================================
-function subject = parse_subject(p, subjname, sesname)
+function subject = parse_subject(p, subjname, sesname, tolerant)
 
 subject.name    = subjname;   % subject name ('sub-<participant_label>')
 subject.path    = fullfile(p,subjname,sesname); % full path to subject directory
