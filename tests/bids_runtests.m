@@ -12,7 +12,7 @@ function bids_runtests(pth)
 % Copyright (C) 2019--, BIDS-MATLAB developers
 
 
-if ~nargin, pth = pwd; end
+if ~nargin, pth = fileparts(mfilename('fullpath')); end
 
 d = dir(pth);
 d(arrayfun(@(x) x.isdir || ~strncmp(x.name,'test_',5),d)) = [];
