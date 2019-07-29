@@ -13,8 +13,8 @@ before_install:
 install:
   # Install JSONio
   - travis_retry git clone git://github.com/gllmflndn/JSONio.git --depth 1
-    cd JSONio; mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS; cd ..
-    octave --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
+  - cd JSONio; mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS; cd ..
+  - octave --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
   # Install bids/matlab
   - octave --eval "addpath (pwd); savepath ();"
   # Temporary fix for packages containing private directories in Octave
