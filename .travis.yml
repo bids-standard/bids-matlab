@@ -1,18 +1,30 @@
+# Travis CI (https://travis-ci.org/)
+
 language: c
 dist: bionic
+cache:
+  apt: true
+  
 before_install:
   - travis_retry sudo apt-get -y -qq update
   - travis_retry sudo apt-get -y install octave
   - travis_retry sudo apt-get -y install liboctave-dev
+  
 install:
   # Install JSONio
   - travis_retry git clone git://github.com/gllmflndn/JSONio.git --depth 1
-  - cd JSONio; mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS; cd ..
-  - octave --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
+    cd JSONio; mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS; cd ..
+    octave --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
   # Install bids/matlab
   - octave --eval "addpath (pwd); savepath ();"
   # Temporary fix for packages containing private directories in Octave
   - octave --eval "addpath (fullfile (pwd, '+bids')); savepath ();"
+
+before_script:
+  # Download BIDS datasets
+  - 
+  # Change current directory
+  - cd tests
+
 script:
-  - octave --version
-  - octave --eval "BIDS = bids.report (fullfile (pwd, 'tests', 'data', 'MoAEpilot'));"
+  - octave --eval "bids.report (fullfile (pwd, 'data', 'MoAEpilot'));"
