@@ -20,9 +20,12 @@ d(arrayfun(@(x) x.isdir || ~strncmp(x.name,'test_',5),d)) = [];
 sts = true(1,numel(d));
 for i=1:numel(d)
     try
+        fprintf('%s\n',d(i).name);
         feval(d(i).name);
     catch
         sts(i) = false;
+        err = lasterror;
+        disp(err.message);
     end
 end
 if ~all(sts)
