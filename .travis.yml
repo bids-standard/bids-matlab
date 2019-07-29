@@ -1,0 +1,10 @@
+language: c
+before_install:
+  - travis_retry sudo apt-get -y -qq update
+  - travis_retry sudo apt-get -y install octave
+  - travis_retry sudo apt-get -y install liboctave-dev
+install:
+  - travis_retry octave --eval "addpath (pwd); savepath ();"
+script:
+  - octave --version
+  - octave --eval "path ()"
