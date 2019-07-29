@@ -15,4 +15,6 @@ install:
   - octave --eval "addpath (fullfile (pwd, '+bids')); savepath ();"
 script:
   - octave --version
+  - octave --eval "path ()"
+  - octave --eval "bids.util.jsondecode (fullfile (pwd, 'tests', 'data', 'MoAEpilot', 'dataset_description.json'))"
   - octave --eval "bids.layout (fullfile (pwd, 'tests', 'data', 'MoAEpilot'))"
