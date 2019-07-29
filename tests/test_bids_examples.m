@@ -17,5 +17,6 @@ d = dir(pth);
 d(arrayfun(@(x) ~x.isdir || ismember(x.name,{'.','..','.git'}),d)) = [];
 
 for i=1:numel(d)
-    BIDS = bids.layout(fullfile(d(i).folder,d(i).name));
+    fprintf('.');
+    BIDS = bids.layout(fullfile(pth,d(i).name));
 end
