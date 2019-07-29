@@ -31,4 +31,4 @@ before_script:
   - travis_retry git clone git://github.com/bids-standard/bids-examples.git --depth 1
 
 script:
-  - octave $OCTFLAGS --eval "bids.report (fullfile (pwd, 'data', 'MoAEpilot'));"
+  - octave $OCTFLAGS --eval "bids_runtests;"
