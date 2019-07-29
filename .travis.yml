@@ -7,7 +7,7 @@ before_install:
 install:
   # Install JSONio
   - travis_retry git clone git://github.com/gllmflndn/JSONio.git --depth 1
-  - cd JSONio; mkoctfile jsonread.c jsmn.c -DJSMN_PARENT_LINKS; cd ..
+  - cd JSONio; rm -f jsonread.m*; mkoctfile jsonread.c jsmn.c -DJSMN_PARENT_LINKS; cd ..
   - octave --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
   # Install bids/matlab
   - octave --eval "addpath (pwd); savepath ();"
@@ -16,5 +16,6 @@ install:
 script:
   - octave --version
   - octave --eval "path ()"
+  - octave --eval "ls ('JSONio')"
   - octave --eval "bids.util.jsondecode (fullfile (pwd, 'tests', 'data', 'MoAEpilot', 'dataset_description.json'))"
   - octave --eval "bids.layout (fullfile (pwd, 'tests', 'data', 'MoAEpilot'))"
