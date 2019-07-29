@@ -1,4 +1,5 @@
 language: c
+dist: bionic
 before_install:
   - travis_retry sudo apt-get -y -qq update
   - travis_retry sudo apt-get -y install octave
