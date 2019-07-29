@@ -1,4 +1,4 @@
-function bids_runtests(pth)
+function results = bids_runtests(pth)
 % Run BIDS tests
 %__________________________________________________________________________
 %
@@ -17,17 +17,15 @@ if ~nargin, pth = fileparts(mfilename('fullpath')); end
 d = dir(pth);
 d(arrayfun(@(x) x.isdir || ~strncmp(x.name,'test_',5),d)) = [];
 
-sts = true(1,numel(d));
+results = struct('Passed',{},'Failed',{},'Incomplete',{},'Duration',{});
 for i=1:numel(d)
+    results(i).Failed = false;
     try
         fprintf('%s\n',d(i).name);
         feval(d(i).name(1:end-2));
     catch
-        sts(i) = false;
+        results(i).Failed = true;
         err = lasterror;
         disp(err.message);
     end
-end
-if ~all(sts)
-    error('One or more tests failed.');
 end
