@@ -11,11 +11,8 @@ install:
   - octave --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
   # Install bids/matlab
   - octave --eval "addpath (pwd); savepath ();"
-  # Fix for namespaces containing private directories in Octave
+  # Temporary fix for packages containing private directories in Octave
   - octave --eval "addpath (fullfile (pwd, '+bids')); savepath ();"
 script:
   - octave --version
-  - octave --eval "path ()"
-  - octave --eval "ls ('JSONio')"
-  - octave --eval "bids.util.jsondecode (fullfile (pwd, 'tests', 'data', 'MoAEpilot', 'dataset_description.json'))"
-  - octave --eval "bids.layout (fullfile (pwd, 'tests', 'data', 'MoAEpilot'))"
+  - octave --eval "BIDS = bids.report (fullfile (pwd, 'tests', 'data', 'MoAEpilot'));"
