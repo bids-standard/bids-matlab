@@ -21,7 +21,7 @@ sts = true(1,numel(d));
 for i=1:numel(d)
     try
         fprintf('%s\n',d(i).name);
-        feval(d(i).name);
+        feval(d(i).name(1:end-2));
     catch
         sts(i) = false;
         err = lasterror;
