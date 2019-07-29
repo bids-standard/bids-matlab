@@ -4,7 +4,11 @@ language: c
 dist: bionic
 cache:
   apt: true
-  
+
+env:
+  global:
+    - OCTFLAGS=--no-gui --no-window-system --silent
+
 before_install:
   - travis_retry sudo apt-get -y -qq update
   - travis_retry sudo apt-get -y install octave
@@ -14,17 +18,17 @@ install:
   # Install JSONio
   - travis_retry git clone git://github.com/gllmflndn/JSONio.git --depth 1
   - cd JSONio; mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS; cd ..
-  - octave --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
+  - octave $OCTFLAGS --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
   # Install bids/matlab
-  - octave --eval "addpath (pwd); savepath ();"
-  # Temporary fix for packages containing private directories in Octave
-  - octave --eval "addpath (fullfile (pwd, '+bids')); savepath ();"
+  - octave $OCTFLAGS --eval "addpath (pwd); savepath ();"
+  # Temporary fix for private directories in packages in Octave
+  - octave $OCTFLAGS --eval "addpath (fullfile (pwd, '+bids')); savepath ();"
 
 before_script:
-  # Download BIDS datasets
-  - 
   # Change current directory
   - cd tests
+  # Download BIDS datasets
+  - travis_retry git clone git://github.com/bids-standard/bids-examples.git --depth 1
 
 script:
-  - octave --eval "bids.report (fullfile (pwd, 'data', 'MoAEpilot'));"
+  - octave $OCTFLAGS --eval "bids.report (fullfile (pwd, 'data', 'MoAEpilot'));"
