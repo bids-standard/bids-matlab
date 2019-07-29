@@ -5,7 +5,13 @@ before_install:
   - travis_retry sudo apt-get -y install octave
   - travis_retry sudo apt-get -y install liboctave-dev
 install:
-  - travis_retry octave --eval "addpath (pwd); savepath ();"
+  # Install JSONio
+  - travis_retry git clone git://github.com/gllmflndn/JSONio.git --depth 1
+  - octave --eval "addpath (fullfile (pwd, JSONio')); savepath ();"
+  # Install bids/matlab
+  - octave --eval "addpath (pwd); savepath ();"
+  # Fix for namespaces containing private directories in Octave
+  - octave --eval "addpath (fullfile (pwd, '+bids')); savepath ();"
 script:
   - octave --version
-  - octave --eval "path ()"
+  - octave --eval "bids.layout (fullfile (pwd, 'tests', 'data', 'MoAEpilot'))"
