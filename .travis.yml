@@ -7,7 +7,7 @@ cache:
 
 env:
   global:
-    - OCTFLAGS=--no-gui --no-window-system --silent
+    - OCTFLAGS="--no-gui --no-window-system --silent"
 
 before_install:
   - travis_retry sudo apt-get -y -qq update
@@ -27,7 +27,7 @@ install:
 before_script:
   # Change current directory
   - cd tests
-  # Download BIDS datasets
+  # Download BIDS-compatible datasets
   - travis_retry git clone git://github.com/bids-standard/bids-examples.git --depth 1
 
 script:
