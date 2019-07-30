@@ -1,0 +1,8 @@
+cd ${HOME}
+octave --no-gui --no-window-system --silent --eval "addpath (getenv (\"HOME\")); savepath ();"
+octave --no-gui --no-window-system --silent --eval "addpath (fullfile (getenv (\"HOME\"), \"+bids\")); savepath ();"
+git clone git://github.com/gllmflndn/JSONio.git --depth 1
+cd JSONio; mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS; cd ..
+octave --no-gui --no-window-system --silent --eval "addpath (fullfile (getenv (\"HOME\"), \"JSONio\")); savepath ();"
+cd ${HOME}/examples
+git clone git://github.com/bids-standard/bids-examples.git --depth 1

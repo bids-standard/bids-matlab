@@ -1,0 +1,9 @@
+{
+  "BIDSVersion": "1.2.0",
+  "Name": "Mother of All Experiments",
+  "Authors": [
+    "Geraint Rees",
+    "Karl Friston"
+  ],
+  "ReferencesAndLinks": ["https://www.fil.ion.ucl.ac.uk/spm/data/auditory/"]
+}
