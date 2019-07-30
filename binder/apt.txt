@@ -1,0 +1,4 @@
+octave
+liboctave-dev
+gnuplot
+ghostscript
