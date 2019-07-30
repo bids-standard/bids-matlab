@@ -25,15 +25,16 @@ for i=1:numel(d)
     results(i).Incomplete = false;
     tstart = tic;
     try
-        fprintf('%s\n',d(i).name(1:end-2));
+        fprintf('%s',d(i).name(1:end-2));
         feval(d(i).name(1:end-2));
         results(i).Passed = true;
     catch
         results(i).Failed = true;
         err = lasterror;
-        disp(err.message);
+        fprintf('\n%s',err.message);
     end
     results(i).Duration = toc(tstart);
+    fprintf('\n');
 end
 
 if ~nargout
