@@ -134,6 +134,7 @@ subject.beh     = struct([]); % behavioral experiment data
 subject.dwi     = struct([]); % diffusion imaging data
 subject.eeg     = struct([]); % EEG data
 subject.meg     = struct([]); % MEG data
+subject.ieeg    = struct([]); % iEEG data
 subject.pet     = struct([]); % PET imaging data
 
 
@@ -533,4 +534,27 @@ if exist(pth,'dir')
         subject.pet = [subject.pet p];
         
     end
+end
+
+
+%--------------------------------------------------------------------------
+%-Human intracranial electrophysiology
+%--------------------------------------------------------------------------
+pth = fullfile(subject.path,'ieeg');
+if exist(pth,'dir')
+    
+    %-iEEG data file
+    %----------------------------------------------------------------------
+    f = file_utils('List',pth,...
+        sprintf('^%s.*_task-.*_ieeg\\..*[^json]$',subject.name));
+    if isempty(f), f = {}; else f = cellstr(f); end
+    for i=1:numel(f)
+        
+        p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
+        subject.ieeg = [subject.eeg p];
+        subject.ieeg(end).meta = struct([]); % ?
+        
+    end
+    
+    %....
 end

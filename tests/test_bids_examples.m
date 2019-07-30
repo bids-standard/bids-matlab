@@ -21,6 +21,7 @@ sts = true;
 for i=1:numel(d)
     try
         BIDS = bids.layout(fullfile(pth,d(i).name));
+        evalc('bids.report(BIDS)');
         fprintf('.');
     catch
         sts = false;
