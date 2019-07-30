@@ -14,6 +14,7 @@ before_install:
   - travis_retry sudo apt-get -y install octave
   - travis_retry sudo apt-get -y install liboctave-dev
   - travis_retry sudo apt-get -y install nodejs
+  - travis_retry sudo apt-get -y install npm
   
 install:
   # Install JSONio
