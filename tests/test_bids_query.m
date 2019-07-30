@@ -50,3 +50,12 @@ assert(strcmp(md.TaskName,'stop signal with manual response'));
 t1 = bids.query(BIDS,'data','type','T1w');
 assert(iscellstr(t1));
 assert(numel(t1) == numel(bids.query(BIDS,'subjects')));
+
+% Check sessions
+%   parse a folder with sessions
+pth = fullfile(fileparts(pth),'synthetic');
+BIDS = bids.layout(pth);
+%   test
+sessions = {'01','02'};
+assert(isequal(bids.query(BIDS,'sessions'),sessions))
+assert(isequal(bids.query(BIDS,'sessions','sub','02'),sessions))
