@@ -85,11 +85,7 @@ switch query
                             end
                         case 'data'
                             if sts && isfield(d(k),'filename')
-                                if strcmp(mods{j},'other')
-                                    result{end+1} = fullfile(BIDS.subjects(i).path,d(k).filename);
-                                else
-                                    result{end+1} = fullfile(BIDS.subjects(i).path,mods{j},d(k).filename);
-                                end
+                                result{end+1} = fullfile(BIDS.subjects(i).path,mods{j},d(k).filename);
                             end
                         case 'metadata'
                             if sts && isfield(d(k),'filename')
