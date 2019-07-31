@@ -26,6 +26,7 @@ for i=1:numel(d)
     catch
         sts = false;
         fprintf('X');
+        rethrow(lasterror);
     end
 end
 
