@@ -19,15 +19,15 @@ d(arrayfun(@(x) ~x.isdir || ismember(x.name,{'.','..','.git'}),d)) = [];
 
 sts = true;
 for i=1:numel(d)
-    try
+    %try
         BIDS = bids.layout(fullfile(pth,d(i).name));
-        evalc('bids.report(BIDS)');
+        bids.report(BIDS)
         fprintf('.');
-    catch
-        sts = false;
-        fprintf('X');
-        rethrow(lasterror);
-    end
+    %catch
+    %    sts = false;
+    %    fprintf('X');
+    %    rethrow(lasterror);
+    %end
 end
 
 if ~sts, error('Parsing of BIDS-compatible datasets failed.'); end
