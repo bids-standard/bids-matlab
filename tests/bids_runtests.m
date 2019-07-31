@@ -32,6 +32,7 @@ for i=1:numel(d)
         results(i).Failed = true;
         err = lasterror;
         fprintf('\n%s',err.message);
+        rethrow(err)
     end
     results(i).Duration = toc(tstart);
     fprintf('\n');
