@@ -551,7 +551,7 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
-        subject.ieeg = [subject.eeg p];
+        subject.ieeg = [subject.ieeg p];
         subject.ieeg(end).meta = struct([]); % ?
         
     end

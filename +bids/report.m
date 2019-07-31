@@ -213,8 +213,9 @@ for iSess = Ses
                     % run
                     acq_param.for = [];
                     nb_run = [];
-                    nb_run(iTask) = sum( ~cellfun('isempty', ...
-                        strfind(acq_param.for_str,tasks_ls{iTask},'ForceCellOutput',1) ) ); %#ok<AGROW>
+                    tmp = strfind(acq_param.for_str,tasks_ls{iTask});
+                    if ~iscell(tmp), tmp = {tmp}; end
+                    nb_run(iTask) = sum(~cellfun('isempty', tmp)); %#ok<AGROW>
                     acq_param.for = sprintf('for %i runs of %s, ', nb_run, tasks_ls{iTask});
                     
                     % print output
