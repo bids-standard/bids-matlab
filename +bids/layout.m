@@ -108,7 +108,7 @@ if isequal(sub,{''})
 end
 
 for su=1:numel(sub)
-    sess = cellstr(file_utils('List',fullfile(BIDS.dir,sub{su}),'dir','^ses-.*$'));    
+    sess = cellstr(file_utils('List',fullfile(BIDS.dir,sub{su}),'dir','^ses-.*$'));
     for se=1:numel(sess)
         if isempty(BIDS.subjects)
             BIDS.subjects = parse_subject(BIDS.dir, sub{su}, sess{se});
@@ -170,7 +170,7 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
-        subject.func = [subject.func p];
+        subject.func = appendstruct(subject.func, p);
         subject.func(end).meta = struct([]); % ?
         
     end
@@ -184,11 +184,12 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
-        subject.func = [subject.func p];
-        subject.func(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
-
-    end
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = startsWith({subject.func.filename}, base);
+        subject.func(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
+    end
+    
     %-Physiological and other continuous recordings file
     %----------------------------------------------------------------------
     % (!) TODO: stim file can also be stored at higher levels (inheritance principle)
@@ -201,7 +202,7 @@ if exist(pth,'dir')
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
         subject.func = [subject.func p];
         subject.func(end).meta = struct([]); % ?
-         
+        
     end
 end
 
@@ -214,7 +215,7 @@ if exist(pth,'dir')
         sprintf('^%s.*\\.nii(\\.gz)?$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     j = 1;
-
+    
     %-Phase difference image and at least one magnitude image
     %----------------------------------------------------------------------
     labels = regexp(f,[...
@@ -245,7 +246,7 @@ if exist(pth,'dir')
             j = j + 1;
         end
     end
-
+    
     %-Two phase images and two magnitude images
     %----------------------------------------------------------------------
     labels = regexp(f,[...
@@ -280,7 +281,7 @@ if exist(pth,'dir')
             j = j + 1;
         end
     end
-
+    
     %-A single, real fieldmap image
     %----------------------------------------------------------------------
     labels = regexp(f,[...
@@ -309,7 +310,7 @@ if exist(pth,'dir')
             j = j + 1;
         end
     end
-
+    
     %-Multiple phase encoded directions (topup)
     %----------------------------------------------------------------------
     labels = regexp(f,[...
@@ -358,17 +359,17 @@ if exist(pth,'dir')
         % BrainVision Core Data Format (.vhdr, .vmrk, .eeg) by Brain Products GmbH
         % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
         % Biosemi data format (.bdf)
-
+        
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         switch p.ext
-          case {'.edf', '.vhdr', '.set', '.bdf'}
-            % each recording is described with a single file, even though the data can consist of multiple
-            subject.eeg = [subject.eeg p];
-            subject.eeg(end).meta = struct([]); % ?
-          case {'.vmrk', '.eeg', '.fdt'}
-            % skip the additional files that come with certain data formats
-          otherwise
-            % skip unknown files
+            case {'.edf', '.vhdr', '.set', '.bdf'}
+                % each recording is described with a single file, even though the data can consist of multiple
+                subject.eeg = [subject.eeg p];
+                subject.eeg(end).meta = struct([]); % ?
+            case {'.vmrk', '.eeg', '.fdt'}
+                % skip the additional files that come with certain data formats
+            otherwise
+                % skip unknown files
         end
         
     end
@@ -382,9 +383,10 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
-        subject.eeg = [subject.eeg p];
-        subject.eeg(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
-       
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = startsWith({subject.eeg.filename}, base);
+        subject.eeg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
+        
     end
     
     %-Channel description table
@@ -396,8 +398,9 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
-        subject.eeg = [subject.eeg p];
-        subject.eeg(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = startsWith({subject.eeg.filename}, base);
+        subject.eeg(index).channels = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
     
@@ -409,9 +412,11 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','acq','meta'});
-        subject.eeg = [subject.eeg p];
-        subject.eeg(end).meta = struct([]); % ?
-        
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = find(startsWith({subject.meg.filename}, base));
+        for j=index
+            subject.eeg(j).(p.type) = fullfile(pth,f{i}); % we could also read the file content
+        end
     end
     
 end
@@ -445,11 +450,12 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
-        subject.meg = [subject.meg p];
-        subject.meg(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = startsWith({subject.meg.filename}, base);
+        subject.meg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
-        
+    
     %-Channels description table
     %----------------------------------------------------------------------
     % (!) TODO: channels file can also be stored at higher levels (inheritance principle)
@@ -459,11 +465,12 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
-        subject.meg = [subject.meg p];
-        subject.meg(end).meta = bids.util.tsvread(fullfile(pth,f{i})); % ?
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = startsWith({subject.meg.filename}, base);
+        subject.meg(index).channels = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
-
+    
     %-Session-specific file
     %----------------------------------------------------------------------
     f = file_utils('List',pth,...
@@ -472,11 +479,17 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
-        subject.meg = [subject.meg p];
-        subject.meg(end).meta = struct([]); % ?
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = find(startsWith({subject.meg.filename}, base));
+        for j=index
+            subject.meg(j).(p.type) = fullfile(pth,f{i}); % we could also read the file content
+        end
         
     end
-
+    
+    % TODO:
+    % - electrodes.tsv
+    
 end
 
 %--------------------------------------------------------------------------
@@ -507,12 +520,12 @@ if exist(pth,'dir')
         sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
-
+        
         %-Diffusion imaging file
         %------------------------------------------------------------------
         p = parse_filename(f{i}, {'sub','ses','acq','run', 'bval','bvec'});
         subject.dwi = [subject.dwi p];
-
+        
         %-bval file
         %------------------------------------------------------------------
         % bval file can also be stored at higher levels (inheritance principle)
@@ -520,7 +533,7 @@ if exist(pth,'dir')
         if isfield(bvalfile,'filename')
             subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
         end
-
+        
         %-bvec file
         %------------------------------------------------------------------
         % bvec file can also be stored at higher levels (inheritance principle)
@@ -564,7 +577,7 @@ if exist(pth,'dir')
         sprintf('^%s.*_task-.*_ieeg\\..*[^json]$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
-      
+        
         % European Data Format (.edf)
         % BrainVision Core Data Format (.vhdr, .eeg, .vmrk) by Brain Products GmbH
         % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
@@ -573,17 +586,50 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         switch p.ext
-          case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
-            % each recording is described with a single file, even though the data can consist of multiple
-            subject.ieeg = [subject.ieeg p];
-            subject.ieeg(end).meta = struct([]); % ?
-          case {'.vmrk', '.eeg', '.fdt'}
-            % skip the additional files that come with certain data formats
-          otherwise
-            % skip unknown files
-        end        
+            case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
+                % each recording is described with a single file, even though the data can consist of multiple
+                subject.ieeg = [subject.ieeg p];
+                subject.ieeg(end).meta = struct([]); % ?
+            case {'.vmrk', '.eeg', '.fdt'}
+                % skip the additional files that come with certain data formats
+            otherwise
+                % skip unknown files
+        end
         
     end
     
-    %....
+    %-iEEG events file
+    %----------------------------------------------------------------------
+    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
+    f = file_utils('List',pth,...
+        sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
+    if isempty(f), f = {}; else f = cellstr(f); end
+    for i=1:numel(f)
+        
+        p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = startsWith({subject.ieeg.filename}, base);
+        subject.ieeg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
+        
+    end
+    
+    %-Channels description table
+    %----------------------------------------------------------------------
+    % (!) TODO: channels file can also be stored at higher levels (inheritance principle)
+    f = file_utils('List',pth,...
+        sprintf('^%s.*_task-.*_channels\\.tsv$',subject.name));
+    if isempty(f), f = {}; else f = cellstr(f); end
+    for i=1:numel(f)
+        
+        p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
+        base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
+        index = startsWith({subject.ieeg.filename}, base);
+        subject.ieeg(index).channels = bids.util.tsvread(fullfile(pth,f{i})); % ?
+        
+    end
+    
+    % TODO:
+    % - session specific files
+    % - electrodes.tsv
+    
 end

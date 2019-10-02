@@ -26,15 +26,15 @@ BIDS = bids.layout(BIDS);
 opts = parse_query(varargin);
 
 switch query
-%   case 'subjects'
-%       result = regexprep(unique({BIDS.subjects.name}),'^[a-zA-Z0-9]+-','');
+    %   case 'subjects'
+    %       result = regexprep(unique({BIDS.subjects.name}),'^[a-zA-Z0-9]+-','');
     case 'modalities'
         hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x),y),...
             BIDS.subjects,'UniformOutput',false);
         hasmod = any([hasmod{:}],2);
         mods   = fieldnames(BIDS.subjects)';
         result = mods(hasmod);
-    case {'sessions','subjects', 'tasks', 'runs', 'types', 'data', 'metadata'}
+    case {'sessions','subjects', 'tasks', 'runs', 'types', 'data', 'metadata', 'bvec', 'bval', 'events', 'channels', 'photo', 'coordsys', 'headshape'}
         %-Initialise output variable
         result = {};
         %-Filter according to subjects
@@ -63,7 +63,7 @@ switch query
             target = [];
         end
         %-Perform query
-        for i=1:numel(BIDS.subjects)                    
+        for i=1:numel(BIDS.subjects)
             if ~ismember(BIDS.subjects(i).name(5:end),subs), continue; end
             for j=1:numel(mods)
                 d = BIDS.subjects(i).(mods{j});
@@ -100,9 +100,9 @@ switch query
                                     end
                                 end
                             end
-%                             if sts && isfield(d(k),'meta')
-%                                 result{end+1} = d(k).meta;
-%                             end
+                            %                             if sts && isfield(d(k),'meta')
+                            %                                 result{end+1} = d(k).meta;
+                            %                             end
                         case 'runs'
                             if sts && isfield(d(k),'run')
                                 result{end+1} = d(k).run;
@@ -114,6 +114,10 @@ switch query
                         case 'types'
                             if sts && isfield(d(k),'type')
                                 result{end+1} = d(k).type;
+                            end
+                        case {'bvec', 'bval', 'events', 'channels', 'photo', 'coordsys', 'headshape'}
+                            if sts && isfield(d(k),query)
+                                result{end+1} = d(k).(query);
                             end
                     end
                 end
@@ -137,6 +141,8 @@ switch query
             case {'tasks','runs','types'}
                 result = unique(result);
                 result(cellfun('isempty',result)) = [];
+            case {'bvec', 'bval', 'events', 'channels', 'photo', 'coordsys', 'headshape'}
+                result = result';
         end
     otherwise
         error('Unable to perform BIDS query.');
