@@ -151,7 +151,7 @@ if exist(pth,'dir')
         %-Anatomy imaging data file
         %------------------------------------------------------------------
         p = parse_filename(f{i}, {'sub','ses','acq','ce','rec','fa','echo','inv','run'});
-        subject.anat = [subject.anat p];
+        subject.anat = appendstruct(subject.anat, p);
         
     end
 end
@@ -186,6 +186,7 @@ if exist(pth,'dir')
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
         index = startsWith({subject.func.filename}, base);
+        assert(any(index), 'no corresponding data could be found for %s', fullfile(pth,f{i}));
         subject.func(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
@@ -200,7 +201,7 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
-        subject.func = [subject.func p];
+        subject.func = appendstruct(subject.func, p);
         subject.func(end).meta = struct([]); % ?
         
     end
@@ -364,7 +365,7 @@ if exist(pth,'dir')
         switch p.ext
             case {'.edf', '.vhdr', '.set', '.bdf'}
                 % each recording is described with a single file, even though the data can consist of multiple
-                subject.eeg = [subject.eeg p];
+                subject.eeg = appendstruct(subject.eeg, p);
                 subject.eeg(end).meta = struct([]); % ?
             case {'.vmrk', '.eeg', '.fdt'}
                 % skip the additional files that come with certain data formats
@@ -385,6 +386,7 @@ if exist(pth,'dir')
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
         index = startsWith({subject.eeg.filename}, base);
+        assert(any(index), 'no corresponding data could be found for %s', fullfile(pth,f{i}));
         subject.eeg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
@@ -413,7 +415,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','acq','meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = find(startsWith({subject.meg.filename}, base));
+        index = find(startsWith({subject.eeg.filename}, base));
         for j=index
             subject.eeg(j).(p.type) = fullfile(pth,f{i}); % we could also read the file content
         end
@@ -436,7 +438,7 @@ if exist(pth,'dir')
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
-        subject.meg = [subject.meg p];
+        subject.meg = appendstruct(subject.meg, p);
         subject.meg(end).meta = struct([]); % ?
         
     end
@@ -452,6 +454,7 @@ if exist(pth,'dir')
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
         index = startsWith({subject.meg.filename}, base);
+        assert(any(index), 'no corresponding data could be found for %s', fullfile(pth,f{i}));
         subject.meg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
@@ -506,7 +509,7 @@ if exist(pth,'dir')
         % recordings
         %------------------------------------------------------------------
         p = parse_filename(f{i}, {'sub','ses','task'});
-        subject.beh = [subject.beh p];
+        subject.beh = appendstruct(subject.beh, p);
         
     end
 end
@@ -524,7 +527,7 @@ if exist(pth,'dir')
         %-Diffusion imaging file
         %------------------------------------------------------------------
         p = parse_filename(f{i}, {'sub','ses','acq','run', 'bval','bvec'});
-        subject.dwi = [subject.dwi p];
+        subject.dwi = appendstruct(subject.dwi, p);
         
         %-bval file
         %------------------------------------------------------------------
@@ -559,7 +562,7 @@ if exist(pth,'dir')
         %-PET imaging file
         %------------------------------------------------------------------
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','run'});
-        subject.pet = [subject.pet p];
+        subject.pet = appendstruct(subject.pet, p);
         
     end
 end
@@ -588,7 +591,7 @@ if exist(pth,'dir')
         switch p.ext
             case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
                 % each recording is described with a single file, even though the data can consist of multiple
-                subject.ieeg = [subject.ieeg p];
+                subject.ieeg = appendstruct(subject.ieeg, p);
                 subject.ieeg(end).meta = struct([]); % ?
             case {'.vmrk', '.eeg', '.fdt'}
                 % skip the additional files that come with certain data formats
@@ -609,6 +612,7 @@ if exist(pth,'dir')
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
         index = startsWith({subject.ieeg.filename}, base);
+        assert(any(index), 'no corresponding data could be found for %s', fullfile(pth,f{i}));
         subject.ieeg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
