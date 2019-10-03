@@ -185,7 +185,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = startsWith({subject.func.filename}, base);
+        index = starts_with({subject.func.filename}, base);
         assert(any(index), 'no corresponding data could be found for %s', fullfile(pth,f{i}));
         subject.func(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
@@ -385,7 +385,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = startsWith({subject.eeg.filename}, base);
+        index = starts_with({subject.eeg.filename}, base);
         assert(any(index), 'no corresponding data could be found for %s', fullfile(pth,f{i}));
         subject.eeg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
@@ -401,7 +401,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = startsWith({subject.eeg.filename}, base);
+        index = starts_with({subject.eeg.filename}, base);
         subject.eeg(index).channels = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
@@ -415,7 +415,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','acq','meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = find(startsWith({subject.eeg.filename}, base));
+        index = find(starts_with({subject.eeg.filename}, base));
         for j=index
             subject.eeg(j).(p.type) = fullfile(pth,f{i}); % we could also read the file content
         end
@@ -453,7 +453,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = startsWith({subject.meg.filename}, base);
+        index = starts_with({subject.meg.filename}, base);
         assert(any(index), 'no corresponding data could be found for %s', fullfile(pth,f{i}));
         subject.meg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
@@ -469,7 +469,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = startsWith({subject.meg.filename}, base);
+        index = starts_with({subject.meg.filename}, base);
         subject.meg(index).channels = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
@@ -483,7 +483,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = find(startsWith({subject.meg.filename}, base));
+        index = find(starts_with({subject.meg.filename}, base));
         for j=index
             subject.meg(j).(p.type) = fullfile(pth,f{i}); % we could also read the file content
         end
@@ -611,7 +611,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = startsWith({subject.ieeg.filename}, base);
+        index = starts_with({subject.ieeg.filename}, base);
         assert(any(index), 'no corresponding data could be found for %s', fullfile(pth,f{i}));
         subject.ieeg(index).events = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
@@ -627,7 +627,7 @@ if exist(pth,'dir')
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
         base = p.filename(1:(strfind(p.filename, ['_' p.type])-1));
-        index = startsWith({subject.ieeg.filename}, base);
+        index = starts_with({subject.ieeg.filename}, base);
         subject.ieeg(index).channels = bids.util.tsvread(fullfile(pth,f{i})); % ?
         
     end
