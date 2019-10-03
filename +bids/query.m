@@ -3,7 +3,8 @@ function result = query(BIDS,query,varargin)
 % FORMAT result = bids.query(BIDS,query,...)
 % BIDS   - BIDS directory name or BIDS structure (from bids.layout)
 % query  - type of query: {'data', 'metadata', 'sessions', 'subjects',
-%          'runs', 'tasks', 'runs', 'types', 'modalities'}
+%          'runs', 'tasks', 'runs', 'types', 'modalities', 'bvec', 'bval', 
+%          'events', 'channels', 'photo', 'coordsys', 'headshape'}
 % result - outcome of query
 %__________________________________________________________________________
 %
@@ -26,15 +27,13 @@ BIDS = bids.layout(BIDS);
 opts = parse_query(varargin);
 
 switch query
-    %   case 'subjects'
-    %       result = regexprep(unique({BIDS.subjects.name}),'^[a-zA-Z0-9]+-','');
     case 'modalities'
         hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x),y),...
             BIDS.subjects,'UniformOutput',false);
         hasmod = any([hasmod{:}],2);
         mods   = fieldnames(BIDS.subjects)';
         result = mods(hasmod);
-    case {'sessions','subjects', 'tasks', 'runs', 'types', 'data', 'metadata', 'bvec', 'bval', 'events', 'channels', 'photo', 'coordsys', 'headshape'}
+    case {'subjects', 'sessions', 'tasks', 'runs', 'types', 'data', 'metadata', 'bvec', 'bval', 'events', 'channels', 'photo', 'coordsys', 'headshape'}
         %-Initialise output variable
         result = {};
         %-Filter according to subjects
@@ -81,6 +80,7 @@ switch query
                             end
                         case 'sessions'
                             if sts
+                                % FIXME this might clash with the to-be-implemented handling of the sessions.tsv file
                                 result{end+1} = BIDS.subjects(i).session;
                             end
                         case 'data'

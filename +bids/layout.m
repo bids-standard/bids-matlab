@@ -72,12 +72,6 @@ end
 % [sourcedata/]
 % [phenotype/]
 
-%-Scans key file
-%==========================================================================
-
-% sub-<participant_label>/[ses-<session_label>/]
-%     sub-<participant_label>_scans.tsv
-
 %-Participant key file
 %==========================================================================
 p = file_utils('FPList',BIDS.dir,'^participants\.tsv$');
@@ -89,17 +83,6 @@ if ~isempty(p)
     BIDS.participants.meta = bids.util.jsondecode(p);
 end
 
-%-Sessions file
-%==========================================================================
-
-% sub-<participant_label>/[ses-<session_label>/]
-%      sub-<participant_label>[_ses-<session_label>]_sessions.tsv
-
-%-Tasks: JSON files are accessed through metadata
-%==========================================================================
-%t = file_utils('FPList',BIDS.dir,...
-%    '^task-.*_(beh|bold|events|channels|physio|stim|meg)\.(json|tsv)$');
-
 %-Subjects
 %==========================================================================
 sub = cellstr(file_utils('List',BIDS.dir,'dir','^sub-.*$'));
@@ -109,11 +92,21 @@ end
 
 for su=1:numel(sub)
     sess = cellstr(file_utils('List',fullfile(BIDS.dir,sub{su}),'dir','^ses-.*$'));
+    
+    %-Sessions file
+    %==========================================================================
+    % sub-<participant_label>/
+    %      sub-<participant_label>[_ses-<session_label>]_sessions.tsv
+    
     for se=1:numel(sess)
         if isempty(BIDS.subjects)
-            BIDS.subjects = parse_subject(BIDS.dir, sub{su}, sess{se});
+            % add the first one
+            [BIDS.subjects, BIDS.scans] = parse_subject(BIDS.dir, sub{su}, sess{se});
         else
-            BIDS.subjects(end+1) = parse_subject(BIDS.dir, sub{su}, sess{se});
+            % add the subsequent ones
+            [thisdata, thisscans] = parse_subject(BIDS.dir, sub{su}, sess{se});
+            BIDS.subjects = appendstruct(BIDS.subjects, thisdata);
+            BIDS.scans = appendstruct(BIDS.scans, thisscans);
         end
     end
 end
@@ -122,7 +115,7 @@ end
 %==========================================================================
 %-Parse a subject's directory
 %==========================================================================
-function subject = parse_subject(p, subjname, sesname)
+function [subject, scans] = parse_subject(p, subjname, sesname)
 
 subject.name    = subjname;   % subject name ('sub-<participant_label>')
 subject.path    = fullfile(p,subjname,sesname); % full path to subject directory
@@ -137,6 +130,22 @@ subject.meg     = struct([]); % MEG data
 subject.ieeg    = struct([]); % iEEG data
 subject.pet     = struct([]); % PET imaging data
 
+%-Scans key file
+%==========================================================================
+% sub-<participant_label>/[ses-<session_label>/]
+%     sub-<participant_label>_scans.tsv
+
+pth = fullfile(subject.path); % this includes the session
+if isempty(sesname)
+    f = file_utils('List',pth,sprintf('^%s_scans.tsv$',subject.name));
+else
+    f = file_utils('List',pth,sprintf('^%s_%s_scans.tsv$',subject.name, sesname));
+end
+if ~isempty(f)
+    scans = bids.util.tsvread(fullfile(pth,f));
+else
+    scans = struct([]);
+end
 
 %--------------------------------------------------------------------------
 %-Anatomy imaging data
