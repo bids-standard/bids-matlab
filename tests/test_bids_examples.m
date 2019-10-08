@@ -17,15 +17,24 @@ if ~nargin, pth = fullfile(pwd,'bids-examples'); end
 d = dir(pth);
 d(arrayfun(@(x) ~x.isdir || ismember(x.name,{'.','..','.git'}),d)) = [];
 
-sts = true;
+sts = false(1,numel(d));
+msg = cell(1,numel(d));
 for i=1:numel(d)
     try
         BIDS = bids.layout(fullfile(pth,d(i).name));
+        sts(i) = true;
         fprintf('.');
     catch
-        sts = false;
         fprintf('X');
+        le = lasterror;
+        msg{i} = le.message;
     end
 end
+fprintf('\n');
 
-if ~sts, error('Parsing of BIDS-compatible datasets failed.'); end
+if ~all(sts)
+    for i=find(~sts)
+        fprintf('* %s: %s\n',d(i).name,msg{i});
+    end
+    error('Parsing of BIDS-compatible datasets failed.');
+end
