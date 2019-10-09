@@ -580,6 +580,12 @@ if exist(pth,'dir')
         sprintf('^%s.*_task-.*_ieeg\\..*[^json]$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
+      
+        % European Data Format (.edf)
+        % BrainVision Core Data Format (.vhdr, .eeg, .vmrk) by Brain Products GmbH
+        % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
+        % Neurodata Without Borders (.nwb)
+        % MEF3 (.mef)
         
         % European Data Format (.edf)
         % BrainVision Core Data Format (.vhdr, .eeg, .vmrk) by Brain Products GmbH
