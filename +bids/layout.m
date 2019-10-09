@@ -70,7 +70,7 @@ end
 % [derivatives/]
 % [stimuli/]
 % [sourcedata/]
-% [phenotype]
+% [phenotype/]
 
 %-Scans key file
 %==========================================================================
@@ -354,14 +354,28 @@ if exist(pth,'dir')
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
+        % European data format (.edf)
+        % BrainVision Core Data Format (.vhdr, .vmrk, .eeg) by Brain Products GmbH
+        % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
+        % Biosemi data format (.bdf)
+
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
-        subject.eeg = [subject.eeg p];
-        subject.eeg(end).meta = struct([]); % ?
+        switch p.ext
+          case {'.edf', '.vhdr', '.set', '.bdf'}
+            % each recording is described with a single file, even though the data can consist of multiple
+            subject.eeg = [subject.eeg p];
+            subject.eeg(end).meta = struct([]); % ?
+          case {'.vmrk', '.eeg', '.fdt'}
+            % skip the additional files that come with certain data formats
+          otherwise
+            % skip unknown files
+        end
         
     end
     
     %-EEG events file
     %----------------------------------------------------------------------
+    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
@@ -375,6 +389,7 @@ if exist(pth,'dir')
     
     %-Channel description table
     %----------------------------------------------------------------------
+    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_channels\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
@@ -549,10 +564,24 @@ if exist(pth,'dir')
         sprintf('^%s.*_task-.*_ieeg\\..*[^json]$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
+      
+        % European Data Format (.edf)
+        % BrainVision Core Data Format (.vhdr, .eeg, .vmrk) by Brain Products GmbH
+        % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
+        % Neurodata Without Borders (.nwb)
+        % MEF3 (.mef)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
-        subject.ieeg = [subject.ieeg p];
-        subject.ieeg(end).meta = struct([]); % ?
+        switch p.ext
+          case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
+            % each recording is described with a single file, even though the data can consist of multiple
+            subject.ieeg = [subject.ieeg p];
+            subject.ieeg(end).meta = struct([]); % ?
+          case {'.vmrk', '.eeg', '.fdt'}
+            % skip the additional files that come with certain data formats
+          otherwise
+            % skip unknown files
+        end        
         
     end
     
