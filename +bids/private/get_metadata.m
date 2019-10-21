@@ -29,7 +29,7 @@ end
 for n=1:N
     
     %-List the potential metadata files associated with this file suffix type
-    % Default is to assumes it is a JSON file
+    % Default is to assume it is a JSON file
     metafile = file_utils('FPList', pth, sprintf(pattern, p.type));
     
     if isempty(metafile), metafile = {}; else metafile = cellstr(metafile); end

@@ -17,7 +17,7 @@ function results = bids_runtests(pth)
 %-Get the path of where this file is located
 if ~nargin, pth = fileparts(mfilename('fullpath')); end
 
-%-List all all the 'test_*.m' files located in the same directory as this
+%-List all the 'test_*.m' files located in the same directory as this
 % function
 d = dir(pth);
 d([d.isdir]) = [];

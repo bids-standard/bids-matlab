@@ -69,7 +69,7 @@ switch query
         %-Perform query
         % Loop through all the subjects and modalities filtered previously
         for i=1:numel(BIDS.subjects)   
-            %-Only continues if this subject is one of those filtered
+            %-Only continue if this subject is one of those filtered
             if ~ismember(BIDS.subjects(i).name(5:end),subs), continue; end
             for j=1:numel(mods)
                 d = BIDS.subjects(i).(mods{j});
