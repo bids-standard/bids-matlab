@@ -40,7 +40,7 @@ BIDS = struct(...
     'description',struct([]), ... % content of dataset_description.json
     'sessions',{{}},...           % cellstr of sessions
     'scans',struct([]),...        % content of sub-<participant_label>_scans.tsv (should go within subjects)
-    'sess',struct([]),...         % content of sub-participants_label>_sessions.tsv (should go within subjects)
+    'sess',struct([]),...         % content of sub-<participants_label>_sessions.tsv (should go within subjects)
     'participants',struct([]),... % content of participants.tsv
     'subjects',struct([]));       % structure array of subjects
 
@@ -123,6 +123,9 @@ end
 %-Parse a subject's directory
 %==========================================================================
 function subject = parse_subject(p, subjname, sesname)
+% For each modality (anat, func, eeg...) all the files are listed in the 
+% corresponding folder are listed and their filename parsed with extra 
+% BIDS valid entities listed (e.g. 'acq','ce','rec','fa'...)
 
 subject.name    = subjname;   % subject name ('sub-<participant_label>')
 subject.path    = fullfile(p,subjname,sesname); % full path to subject directory
@@ -148,7 +151,7 @@ if exist(pth,'dir')
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
-        %-Anatomy imaging data file
+        %- Parse anatomy imaging data file
         %------------------------------------------------------------------
         p = parse_filename(f{i}, {'sub','ses','acq','ce','rec','fa','echo','inv','run'});
         subject.anat = [subject.anat p];
