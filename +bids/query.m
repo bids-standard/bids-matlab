@@ -36,7 +36,7 @@ switch query
         %-Initialise output variable
         result = {};
         
-        % For subjects and modality we pass only the subjects/modalties asked for
+        %-For subjects and modality we pass only the subjects/modalities asked for
         % otherwise we pass all of them
         
         %-Filter according to subjects
@@ -67,14 +67,14 @@ switch query
         end
         
         %-Perform query
-        % loop through all the subjects and modalities filtered previously
+        % Loop through all the subjects and modalities filtered previously
         for i=1:numel(BIDS.subjects)   
-            % only continues if this subject is one of those filtered
+            %-Only continues if this subject is one of those filtered
             if ~ismember(BIDS.subjects(i).name(5:end),subs), continue; end
             for j=1:numel(mods)
                 d = BIDS.subjects(i).(mods{j});
                 for k=1:numel(d)
-                    % sts is kept true only if this modality is one of those filtered
+                    %-sts is kept true only if this modality is one of those filtered
                     sts = true;
                     for l=1:size(opts,1)
                         if ~isfield(d(k),opts{l,1}) || ~ismember(d(k).(opts{l,1}),opts{l,2})

@@ -19,29 +19,29 @@ meta = struct();
 
 N = 3;
 
-% there is a session level in the hierarchy
+%-There is a session level in the hierarchy
 if isfield(p,'ses') && ~isempty(p.ses)
     N = N + 1; 
 end
     
-% loop from the directory of where the file of interest is back to the 
+%-Loop from the directory where the file of interest is back to the
 % top level of the BIDS hierarchy
 for n=1:N
     
-    % list the potential metadata files associated with this file suffix type
-    % default assumes it is a json file
+    %-List the potential metadata files associated with this file suffix type
+    % Default is to assumes it is a JSON file
     metafile = file_utils('FPList', pth, sprintf(pattern, p.type));
     
     if isempty(metafile), metafile = {}; else metafile = cellstr(metafile); end
     
-    % for all those files we find which one is potentially associated with
+    %-For all those files we find which one is potentially associated with
     % the file of interest
     for i=1:numel(metafile)
         
         p2 = parse_filename(metafile{i});
         fn = setdiff(fieldnames(p2),{'filename','ext','type'});
         
-        % checks if this metadata file contains the same entity-label pairs as its
+        %-Check if this metadata file contains the same entity-label pairs as its
         % data file counterpart
         ismeta = true;
         for j=1:numel(fn)
@@ -51,8 +51,8 @@ for n=1:N
             end
         end
         
-        % read the content of the metadata file if it is a json and update the 
-        % metadata concerning the file of interest otherwise stores the filename
+        %-Read the content of the metadata file if it is a JSON file and update
+        % the metadata concerning the file of interest otherwise store the filename
         if ismeta
             if strcmp(p2.ext,'.json')
                 meta = update_metadata(meta,bids.util.jsondecode(metafile{i}));
@@ -63,7 +63,7 @@ for n=1:N
         
     end
     
-    % go up to the parent folder
+    %-Go up to the parent folder
     pth = fullfile(pth,'..');
     
 end

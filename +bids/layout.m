@@ -123,9 +123,9 @@ end
 %-Parse a subject's directory
 %==========================================================================
 function subject = parse_subject(p, subjname, sesname)
-% For each modality (anat, func, eeg...) all the files are listed in the 
-% corresponding folder are listed and their filename parsed with extra 
-% BIDS valid entities listed (e.g. 'acq','ce','rec','fa'...)
+% For each modality (anat, func, eeg...) all the files from the
+% corresponding directory are listed and their filename parsed with extra
+% BIDS valid entities listed (e.g. 'acq','ce','rec','fa'...).
 
 subject.name    = subjname;   % subject name ('sub-<participant_label>')
 subject.path    = fullfile(p,subjname,sesname); % full path to subject directory
@@ -151,7 +151,7 @@ if exist(pth,'dir')
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
-        %- Parse anatomy imaging data file
+        %-Anatomy imaging data file
         %------------------------------------------------------------------
         p = parse_filename(f{i}, {'sub','ses','acq','ce','rec','fa','echo','inv','run'});
         subject.anat = [subject.anat p];
@@ -411,7 +411,7 @@ if exist(pth,'dir')
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
-        p = parse_filename(f{i}, {'sub','ses','acq','meta'});
+        p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         subject.eeg = [subject.eeg p];
         subject.eeg(end).meta = struct([]); % ?
         

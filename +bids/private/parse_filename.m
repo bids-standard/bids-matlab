@@ -25,22 +25,22 @@ function p = parse_filename(filename,fields)
 
 filename = file_utils(filename,'filename');
 
-% identifies all the BIDS entitiy-label pairs present in the filename (delimited by "_")
+%-Identify all the BIDS entitiy-label pairs present in the filename (delimited by "_")
 % https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html
 [parts, dummy] = regexp(filename,'(?:_)+','split','match');
 p.filename = filename;
 
-% identifies the suffix and extension of this file
+%-Identify the suffix and extension of this file
 % https://bids-specification.readthedocs.io/en/stable/02-common-principles.html#file-name-structure
 [p.type, p.ext] = strtok(parts{end},'.');
 
-% separates the entity from the label for each pair identified above
+%-Separate the entity from the label for each pair identified above
 for i=1:numel(parts)-1
     [d, dummy] = regexp(parts{i},'(?:\-)+','split','match');
     p.(d{1}) = d{2};
 end
 
-% extra fields can be added to the structure and sorted in a given way.
+%-Extra fields can be added to the structure and ordered specifically.
 if nargin == 2
     for i=1:numel(fields)
         if ~isfield(p,fields{i})

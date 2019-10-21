@@ -1,8 +1,8 @@
 function results = bids_runtests(pth)
 % Run BIDS tests
-% Lists all the 'test_*.m' files located in the same folder as this
-% function and runs them and keeps track of how many passed, failed or are
-% incomplete
+% List all the 'test_*.m' files located in the same directory as this
+% function, run them and keep track of how many passed, failed or are
+% incomplete.
 %__________________________________________________________________________
 %
 % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -14,10 +14,10 @@ function results = bids_runtests(pth)
 % Copyright (C) 2019, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 % Copyright (C) 2019--, BIDS-MATLAB developers
 
-% gets the path of where this file is located
+%-Get the path of where this file is located
 if ~nargin, pth = fileparts(mfilename('fullpath')); end
 
-% list all all the 'test_*.m' files located in the same folder as this
+%-List all all the 'test_*.m' files located in the same directory as this
 % function
 d = dir(pth);
 d([d.isdir]) = [];
@@ -32,7 +32,7 @@ for i=1:numel(d)
     
     tstart = tic;
     
-    % run each test file and use a catch in case they fail
+    %-Run each test file and catch error message in case of failure
     try
         
         fprintf('%s',d(i).name(1:end-2));
