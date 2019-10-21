@@ -24,13 +24,23 @@ function p = parse_filename(filename,fields)
 % Copyright (C) 2018--, BIDS-MATLAB developers
 
 filename = file_utils(filename,'filename');
+
+%-Identify all the BIDS entitiy-label pairs present in the filename (delimited by "_")
+% https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html
 [parts, dummy] = regexp(filename,'(?:_)+','split','match');
 p.filename = filename;
+
+%-Identify the suffix and extension of this file
+% https://bids-specification.readthedocs.io/en/stable/02-common-principles.html#file-name-structure
 [p.type, p.ext] = strtok(parts{end},'.');
+
+%-Separate the entity from the label for each pair identified above
 for i=1:numel(parts)-1
     [d, dummy] = regexp(parts{i},'(?:\-)+','split','match');
     p.(d{1}) = d{2};
 end
+
+%-Extra fields can be added to the structure and ordered specifically.
 if nargin == 2
     for i=1:numel(fields)
         if ~isfield(p,fields{i})

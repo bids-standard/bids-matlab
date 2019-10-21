@@ -26,17 +26,19 @@ BIDS = bids.layout(BIDS);
 opts = parse_query(varargin);
 
 switch query
-%   case 'subjects'
-%       result = regexprep(unique({BIDS.subjects.name}),'^[a-zA-Z0-9]+-','');
     case 'modalities'
         hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x),y),...
             BIDS.subjects,'UniformOutput',false);
         hasmod = any([hasmod{:}],2);
         mods   = fieldnames(BIDS.subjects)';
         result = mods(hasmod);
-    case {'sessions','subjects', 'tasks', 'runs', 'types', 'data', 'metadata'}
+    case {'sessions', 'subjects', 'tasks', 'runs', 'types', 'data', 'metadata'}
         %-Initialise output variable
         result = {};
+        
+        %-For subjects and modality we pass only the subjects/modalities asked for
+        % otherwise we pass all of them
+        
         %-Filter according to subjects
         if any(ismember(opts(:,1),'sub'))
             subs = opts{ismember(opts(:,1),'sub'),2};
@@ -52,6 +54,7 @@ switch query
         else
             mods = bids.query(BIDS,'modalities');
         end
+        
         %-Get optional target option for metadata query
         if strcmp(query,'metadata') && any(ismember(opts(:,1),'target'))
             target = opts{ismember(opts(:,1),'target'),2};
@@ -62,12 +65,16 @@ switch query
         else
             target = [];
         end
+        
         %-Perform query
-        for i=1:numel(BIDS.subjects)                    
+        % Loop through all the subjects and modalities filtered previously
+        for i=1:numel(BIDS.subjects)   
+            %-Only continue if this subject is one of those filtered
             if ~ismember(BIDS.subjects(i).name(5:end),subs), continue; end
             for j=1:numel(mods)
                 d = BIDS.subjects(i).(mods{j});
                 for k=1:numel(d)
+                    %-sts is kept true only if this modality is one of those filtered
                     sts = true;
                     for l=1:size(opts,1)
                         if ~isfield(d(k),opts{l,1}) || ~ismember(d(k).(opts{l,1}),opts{l,2})
@@ -119,6 +126,7 @@ switch query
                 end
             end
         end
+        
         %-Postprocessing output variable
         switch query
             case 'subjects'
@@ -151,7 +159,7 @@ if numel(query) == 1 && isstruct(query{1})
     query = [fieldnames(query{1}), struct2cell(query{1})];
 else
     if mod(numel(query),2)
-        error('Invalid input syntax.');
+        error('Invalid input syntax: each BIDS entity requires an associated label');
     end
     query = reshape(query,2,[])';
 end
