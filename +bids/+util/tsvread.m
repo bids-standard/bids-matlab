@@ -130,7 +130,7 @@ n2  = cellfun(@(x) strcmpi(x,'NaN'),var);
 if header && any(n1 & ~n2)
     hdr     = true;
     try
-        var = genvarname(var);
+        var = genvarname(var); %#ok<DEPGENAM>
     catch
         var = matlab.lang.makeValidName(var,'ReplacementStyle','hex');
         var = matlab.lang.makeUniqueStrings(var);

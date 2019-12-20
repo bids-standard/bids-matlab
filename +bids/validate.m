@@ -17,7 +17,7 @@ function [sts, msg] = validate(root)
 % Copyright (C) 2018--, BIDS-MATLAB developers
 
 
-[sts, msg] = system('bids-validator --version');
+[sts, ~] = system('bids-validator --version');
 if sts
     msg = 'Require bids-validator from https://github.com/bids-standard/bids-validator';
 else

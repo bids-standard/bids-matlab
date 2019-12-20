@@ -16,6 +16,7 @@ function result = query(BIDS,query,varargin)
 % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 % Copyright (C) 2018--, BIDS-MATLAB developers
 
+%#ok<*AGROW>
 
 if nargin < 2
     error('Not enough input arguments.');

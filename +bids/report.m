@@ -398,7 +398,7 @@ function ST_def = define_slice_timing(SliceTiming)
 if iscell(SliceTiming)
     SliceTiming = cell2mat(SliceTiming);
 end
-[dummy,I] = sort(SliceTiming);
+[~,I] = sort(SliceTiming);
 if all(I==(1:numel(I))')
     ST_def = 'ascending';
 elseif all(I==(numel(I):-1:1)')
