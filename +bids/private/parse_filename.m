@@ -27,7 +27,7 @@ filename = file_utils(filename,'filename');
 
 %-Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
 % https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html
-[parts, dummy] = regexp(filename,'(?:_)+','split','match');
+[parts, dummy] = regexp(filename,'(?:_)+','split','match'); %#ok<ASGLU>
 p.filename = filename;
 
 %-Identify the suffix and extension of this file
@@ -36,7 +36,7 @@ p.filename = filename;
 
 %-Separate the entity from the label for each pair identified above
 for i=1:numel(parts)-1
-    [d, dummy] = regexp(parts{i},'(?:\-)+','split','match');
+    [d, dummy] = regexp(parts{i},'(?:\-)+','split','match'); %#ok<ASGLU>
     p.(d{1}) = d{2};
 end
 

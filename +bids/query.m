@@ -20,6 +20,7 @@ function result = query(BIDS,query,varargin)
 % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 % Copyright (C) 2018--, BIDS-MATLAB developers
 
+%#ok<*AGROW>
 narginchk(2,Inf);
 
 BIDS = bids.layout(BIDS);
