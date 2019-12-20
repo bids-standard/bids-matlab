@@ -148,7 +148,7 @@ pth = fullfile(subject.path,'anat');
 if exist(pth,'dir')
     f = file_utils('List',pth,...
         sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         %-Anatomy imaging data file
@@ -169,7 +169,7 @@ if exist(pth,'dir')
     %----------------------------------------------------------------------
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_bold\\.nii(\\.gz)?$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
@@ -183,7 +183,7 @@ if exist(pth,'dir')
     % (!) TODO: events file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
@@ -198,7 +198,7 @@ if exist(pth,'dir')
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_(physio|stim)\\.tsv\\.gz$',subject.name));
     % see also [_recording-<label>]
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','rec','fa','echo','inv','run','recording', 'meta'});
@@ -215,7 +215,7 @@ pth = fullfile(subject.path,'fmap');
 if exist(pth,'dir')
     f = file_utils('List',pth,...
         sprintf('^%s.*\\.nii(\\.gz)?$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     j = 1;
 
     %-Phase difference image and at least one magnitude image
@@ -354,7 +354,7 @@ if exist(pth,'dir')
     %----------------------------------------------------------------------
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_eeg\\..*[^json]$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         % European data format (.edf)
@@ -381,7 +381,7 @@ if exist(pth,'dir')
     % (!) TODO: events file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
@@ -395,7 +395,7 @@ if exist(pth,'dir')
     % (!) TODO: events file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_channels\\.tsv$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
@@ -408,7 +408,7 @@ if exist(pth,'dir')
     %----------------------------------------------------------------------
     f = file_utils('List',pth,...
         sprintf('^%s(_ses-[a-zA-Z0-9]+)?.*_(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
@@ -430,7 +430,7 @@ if exist(pth,'dir')
     [f,d] = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_meg\\..*[^json]$',subject.name));
     if isempty(f), f = d; end
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
@@ -444,7 +444,7 @@ if exist(pth,'dir')
     % (!) TODO: events file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
@@ -458,7 +458,7 @@ if exist(pth,'dir')
     % (!) TODO: channels file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_channels\\.tsv$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
@@ -471,7 +471,7 @@ if exist(pth,'dir')
     %----------------------------------------------------------------------
     f = file_utils('List',pth,...
         sprintf('^%s(_ses-[a-zA-Z0-9]+)?.*_(photo\\.jpg|coordsystem\\.json|headshape\\..*)$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','proc', 'meta'});
@@ -489,7 +489,7 @@ pth = fullfile(subject.path,'beh');
 if exist(pth,'dir')
     f = file_utils('FPList',pth,...
         sprintf('^%s.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         %-Event timing, metadata, physiological and other continuous
@@ -508,7 +508,7 @@ pth = fullfile(subject.path,'dwi');
 if exist(pth,'dir')
     f = file_utils('FPList',pth,...
         sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
 
         %-Diffusion imaging file
@@ -543,7 +543,7 @@ pth = fullfile(subject.path,'pet');
 if exist(pth,'dir')
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_pet\\.nii(\\.gz)?$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
         
         %-PET imaging file
@@ -565,7 +565,7 @@ if exist(pth,'dir')
     %----------------------------------------------------------------------
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_ieeg\\..*[^json]$',subject.name));
-    if isempty(f), f = {}; else f = cellstr(f); end
+    if isempty(f), f = {}; else; f = cellstr(f); end
     for i=1:numel(f)
       
         % European Data Format (.edf)
