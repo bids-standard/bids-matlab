@@ -99,7 +99,7 @@ switch query
                         case 'metadata'
                             if sts && isfield(d(k),'filename')
                                 f = fullfile(BIDS.subjects(i).path,mods{j},d(k).filename);
-                                result{end+1} = get_metadata(f);
+                                result{end+1} = bids.internal.get_metadata(f);
                                 if ~isempty(target)
                                     try
                                         result{end} = subsref(result{end},target);
