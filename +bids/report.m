@@ -16,6 +16,10 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
 % Unless specified the function will only read the data from the first
 % subject, session, and run (for each task of BOLD). This can be an issue
 % if different subjects/sessions contain very different data.
+%
+% See also:
+% bids
+
 %__________________________________________________________________________
 %
 % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/

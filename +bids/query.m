@@ -5,6 +5,10 @@ function result = query(BIDS,query,varargin)
 % query  - type of query: {'data', 'metadata', 'sessions', 'subjects',
 %          'runs', 'tasks', 'runs', 'types', 'modalities'}
 % result - outcome of query
+%
+% See also:
+% bids
+
 %__________________________________________________________________________
 %
 % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
