@@ -50,7 +50,7 @@ if nargin == 2
     try
         p = orderfields(p,['filename','ext','type',fields]);
     catch
-        warning('Ignoring file "%s" not matching template.',filename);
+        warning('Ignoring file ''%s'' not matching template.',filename);
         p = struct([]);
     end
 end

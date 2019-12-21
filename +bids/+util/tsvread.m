@@ -19,7 +19,7 @@ function x = tsvread(f,v,hdr)
 %-Check input arguments
 %--------------------------------------------------------------------------
 if ~exist(f,'file')
-    error('Unable to read file ''%s''',f);
+    error('Unable to read file ''%s'': file not found',f);
 end
 
 if nargin < 2, v = ''; end
@@ -46,17 +46,20 @@ switch ext(2:end)
         sts = true;
         try
             x   = tsvread(fz{1});
-        catch
+        catch err
             sts = false;
+            err_msg = err.message;
         end
         delete(fz{1});
         rmdir(fileparts(fz{1}));
-        if ~sts, error('Cannot load ''%s''.',f); end
+        if ~sts
+            error('Cannot load file ''%s'': %s.',f,err_msg);
+        end
     otherwise
         try
             x = load(f);
         catch
-            error('Unknown file format.');
+            error('Cannot read file ''%s'': Unknown file format.',f);
         end
 end
 
@@ -80,7 +83,8 @@ if isstruct(x)
             try
                 x = x.(fn{v});
             catch
-                error('Invalid data index.');
+                error('Data index out of range: %d (data contains %d fields)',...
+                    v,numel(fn));
             end
         end
     end
@@ -89,10 +93,12 @@ elseif isnumeric(x)
         try
             x = x(:,v);
         catch
-            error('Invalid data index.');
+            error('Data index out of range: %d (data contains $d columns).',...
+                v,size(x,2));
         end
     elseif ~isempty(v)
-        error('Invalid data index.');
+        error('Invalid data index. When data is numeric, index must be numeric or empty; got a %s',...
+            class(v));
     end
 end
 
@@ -153,7 +159,10 @@ if ~isempty(S)
 else
     d = {[]};
 end
-if rem(numel(d{1}),N), error('Varying number of delimiters per line.'); end
+if rem(numel(d{1}),N)
+    error('Invalid DSV file ''%s'': Varying number of delimiters per line.',...
+        f);
+end
 d = reshape(d{1},N,[])';
 allnum = true;
 for i=1:numel(var)

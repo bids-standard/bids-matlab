@@ -30,10 +30,9 @@ for i=1:numel(d)
         BIDS = bids.layout(fullfile(pth,d(i).name));
         sts(i) = true;
         fprintf('.');
-    catch
+    catch err
         fprintf('X');
-        le = lasterror;
-        msg{i} = le.message;
+        msg{i} = err.message;
     end
 end
 fprintf('\n');

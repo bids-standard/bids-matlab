@@ -16,10 +16,7 @@ function result = query(BIDS,query,varargin)
 % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 % Copyright (C) 2018--, BIDS-MATLAB developers
 
-
-if nargin < 2
-    error('Not enough input arguments.');
-end
+narginchk(2,Inf);
 
 BIDS = bids.layout(BIDS);
 
@@ -147,7 +144,7 @@ switch query
                 result(cellfun('isempty',result)) = [];
         end
     otherwise
-        error('Unable to perform BIDS query.');
+        error('Invalid query input: ''%s''', query);
 end
 
 

@@ -38,9 +38,8 @@ for i=1:numel(d)
         fprintf('%s',d(i).name(1:end-2));
         feval(d(i).name(1:end-2));
         results(i).Passed = true;
-    catch
+    catch err
         results(i).Failed = true;
-        err = lasterror;
         fprintf('\n%s',err.message);
     end
     
