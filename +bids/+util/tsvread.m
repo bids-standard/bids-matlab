@@ -18,6 +18,9 @@ function x = tsvread(f,v,hdr)
 
 %-Check input arguments
 %--------------------------------------------------------------------------
+if nargin < 1
+    error('no input file specified'); 
+end
 if ~exist(f,'file')
     error('Unable to read file ''%s'': file not found',f);
 end
