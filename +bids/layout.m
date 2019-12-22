@@ -26,10 +26,9 @@ elseif nargin == 1
         BIDS = root; % or BIDS = bids.layout(root.root);
         return;
     else
-        error('Invalid syntax.');
+        error('Invalid input: root must be a char filename or a BIDS struct; got a %s',...
+            class(root));
     end
-else
-    error('Too many input arguments.');
 end
 
 %-BIDS structure
@@ -47,21 +46,26 @@ BIDS = struct(...
 %-Validation of BIDS root directory
 %==========================================================================
 if ~exist(BIDS.dir,'dir')
-    error('BIDS directory does not exist.');
+    error('BIDS directory does not exist: ''%s''',BIDS.dir);
 elseif ~exist(fullfile(BIDS.dir,'dataset_description.json'),'file')
-    error('BIDS directory not valid: missing dataset_description.json.');
+    error('BIDS directory not valid: missing dataset_description.json: ''%s''',...
+        BIDS.dir);
 end
 
 %-Dataset description
 %==========================================================================
 try
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir,'dataset_description.json'));
-catch
-    error('BIDS dataset description could not be read.');
+catch err
+    error('BIDS dataset description could not be read: %s',err.message);
 end
-if ~isfield(BIDS.description,'BIDSVersion') || ~isfield(BIDS.description,'Name')
-    error('BIDS dataset description not valid.');
+if ~isfield(BIDS.description,'BIDSVersion')
+    error('BIDS dataset description not valid: missing BIDSVersion field');
 end
+if ~isfield(BIDS.description,'Name')
+    error('BIDS dataset description not valid: missing Name field');
+end
+
 % See also optional README and CHANGES files
 
 %-Optional directories

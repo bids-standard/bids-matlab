@@ -47,7 +47,7 @@ if numel(options) == 1
             case 'fpath'
                 str{n} = fileparts(char(cpath(str(n))));
             otherwise
-                error('Unknown option.');
+                error('Unknown option: ''%s''',options{1});
         end
     end
     options = {};
@@ -186,7 +186,7 @@ switch lower(action)
     case 'fplist'
         fp = true;
     otherwise
-        error('Invalid syntax.');
+        error('Invalid action: ''%s''.',action);
 end
 if nargin < 2
     d = pwd;
