@@ -12,9 +12,15 @@ function value = jsondecode(file, varargin)
 % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 % Copyright (C) 2018--, BIDS-MATLAB developers
 
+persistent has_jsondecode
+if isempty(has_jsondecode)
+    has_jsondecode = ...
+        exist('jsondecode','builtin') == 5 || ...       % MATLAB >= R2016b
+        ismember(exist('jsondecode','file'), [2 3]);    % jsonstuff or other Matlab-compatible implementation
+end
 
-if exist('jsondecode','builtin') == 5               % MATLAB >= R2016b
-    value = builtin('jsondecode', fileread(file));
+if has_jsondecode
+    value = jsondecode(fileread(file));
 elseif exist('spm_jsonread','file') == 3            % SPM12
     value = spm_jsonread(file, varargin{:});
 elseif exist('jsonread','file') == 3                % JSONio

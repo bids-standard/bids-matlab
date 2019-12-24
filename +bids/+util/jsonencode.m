@@ -19,16 +19,22 @@ function varargout = jsonencode(varargin)
 % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 % Copyright (C) 2018--, BIDS-MATLAB developers
 
-
 if ~nargin
     error('Not enough input arguments.');
+end
+
+persistent has_jsonencode
+if isempty(has_jsonencode)
+    has_jsonencode = ...
+        exist('jsonencode','builtin') == 5 || ...       % MATLAB >= R2016b
+        ismember(exist('jsonencode','file'), [2 3]);    % jsonstuff or other Matlab-compatible implementation
 end
 
 if exist('spm_jsonwrite','file') == 2                    % SPM12
     [varargout{1:nargout}] = spm_jsonwrite(varargin{:});
 elseif exist('jsonwrite','file') == 2                    % JSONio
     [varargout{1:nargout}] = jsonwrite(varargin{:});
-elseif exist('jsonencode','builtin') == 5                % MATLAB >= R2016b
+elseif has_jsonencode
     file = '';
     if ischar(varargin{1})
         file = varargin{1};
@@ -44,7 +50,7 @@ elseif exist('jsonencode','builtin') == 5                % MATLAB >= R2016b
             end
         end
     end
-    txt = builtin('jsonencode', varargin{:});
+    txt = jsonencode(varargin{:});
     if ~isempty(file)
         fid = fopen(file,'wt');
         if fid == -1
