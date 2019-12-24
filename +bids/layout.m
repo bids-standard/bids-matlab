@@ -3,6 +3,10 @@ function BIDS = layout(root)
 % FORMAT BIDS = bids.layout(root)
 % root   - directory formated according to BIDS [Default: pwd]
 % BIDS   - structure containing the BIDS file layout
+%
+% See also:
+% bids
+
 %__________________________________________________________________________
 %
 % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/

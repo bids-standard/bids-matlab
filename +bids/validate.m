@@ -12,6 +12,9 @@ function [sts, msg] = validate(root)
 % Web version: 
 %   https://bids-standard.github.io/bids-validator/
 %__________________________________________________________________________
+%
+% See also:
+% bids
 
 % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 % Copyright (C) 2018--, BIDS-MATLAB developers

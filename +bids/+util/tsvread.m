@@ -1,5 +1,5 @@
 function x = tsvread(f,v,hdr)
-% Load text and numeric data from file
+% Load text and numeric data from tab-separated-value or other file
 % FORMAT x = tsvread(f,v,hdr)
 % f   - filename (can be gzipped) {txt,mat,csv,tsv,json}
 % v   - name of field to return if data stored in a structure [default: '']
@@ -7,6 +7,7 @@ function x = tsvread(f,v,hdr)
 % hdr - detect the presence of a header row for csv/tsv [default: true]
 %
 % x   - corresponding data array or structure
+
 %__________________________________________________________________________
 %
 % Based on spm_load.m from SPM12.
