@@ -35,7 +35,7 @@ If you are using MATLAB R2016b or newer, nothing else needs to be installed.
 
 If you are using MATLAB R2016a or older, or using Octave, you need to install a supported JSON library for your MATLAB or Octave. This can be any of:
 
-  * [JSONio](https://github.com/gllmflndn/JSONio) for Matlab or Octave
+  * [JSONio](https://github.com/gllmflndn/JSONio) for MATLAB or Octave
   * [SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/)
 
 ## Implementation
