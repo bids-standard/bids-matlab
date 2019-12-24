@@ -55,7 +55,7 @@ for n=1:N
         % the metadata concerning the file of interest otherwise store the filename
         if ismeta
             if strcmp(p2.ext,'.json')
-                meta = update_metadata(meta,bids.util.jsondecode(metafile{i}));
+                meta = update_metadata(meta,bids.util.jsondecode(metafile{i}),metafile{i});
             else
                 meta.filename = metafile{i};
             end
@@ -72,7 +72,12 @@ end
 %==========================================================================
 %-Inheritance principle
 %==========================================================================
-function s1 = update_metadata(s1,s2)
+function s1 = update_metadata(s1,s2,file)
+if isempty(s2)
+    return;
+elseif ~isstruct(s2)
+    error('Metadata file contents were neither struct nor empty. File: %s',file);
+end
 fn = fieldnames(s2);
 for i=1:numel(fn)
     if ~isfield(s1,fn{i})
