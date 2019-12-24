@@ -47,16 +47,16 @@ In the layout, `sessions` has (conceptually) the same size as `participants` (al
 
 In the layout, `scans` has the same size as `subjects`.
 
-I propose to rename `subjects` to `subses`, since it corresponds to subjects _and_ sessions. Every `subses` has the modalities (anat, func, eeg, etc) as structure arrays, where each array corresponds to one data file. For example
+I propose to rename `subjects` to `subses`, since it corresponds to subjects _and_ sessions. Every `subses` has the modalities (anat, func, eeg, etc.) as structure arrays, where each array corresponds to one data file. For example
 
 ```
->> BIDS.subjects(1)
+>> BIDS.subses(1)
 ans =
   struct with fields:
 
        name: 'sub-01'
-       path: '/Users/roboos/tmp/bids-examples/synthetic/sub-01/ses-01'
     session: 'ses-01'
+       path: '/Users/roboos/tmp/bids-examples/synthetic/sub-01/ses-01'
        anat: [1×1 struct]
        func: [8×1 struct]
        fmap: [0×0 struct]
