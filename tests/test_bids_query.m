@@ -1,5 +1,8 @@
 function test_bids_query(pth)
 % Test BIDS queries on ds007
+% This dataset comes from https://github.com/bids-standard/bids-examples
+% and is downloaded automatically by the continuous integration framework
+% and is required for the tests to be run.
 % Based on https://en.wikibooks.org/wiki/SPM/BIDS#BIDS_parser_and_queries
 %__________________________________________________________________________
 %

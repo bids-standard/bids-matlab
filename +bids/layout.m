@@ -26,10 +26,9 @@ elseif nargin == 1
         BIDS = root; % or BIDS = bids.layout(root.root);
         return;
     else
-        error('Invalid syntax.');
+        error('Invalid input: root must be a char filename or a BIDS struct; got a %s',...
+            class(root));
     end
-else
-    error('Too many input arguments.');
 end
 
 %-BIDS structure
@@ -40,28 +39,33 @@ BIDS = struct(...
     'description',struct([]), ... % content of dataset_description.json
     'sessions',{{}},...           % cellstr of sessions
     'scans',struct([]),...        % content of sub-<participant_label>_scans.tsv (should go within subjects)
-    'sess',struct([]),...         % content of sub-participants_label>_sessions.tsv (should go within subjects)
+    'sess',struct([]),...         % content of sub-<participants_label>_sessions.tsv (should go within subjects)
     'participants',struct([]),... % content of participants.tsv
     'subjects',struct([]));       % structure array of subjects
 
 %-Validation of BIDS root directory
 %==========================================================================
 if ~exist(BIDS.dir,'dir')
-    error('BIDS directory does not exist.');
+    error('BIDS directory does not exist: ''%s''',BIDS.dir);
 elseif ~exist(fullfile(BIDS.dir,'dataset_description.json'),'file')
-    error('BIDS directory not valid: missing dataset_description.json.');
+    error('BIDS directory not valid: missing dataset_description.json: ''%s''',...
+        BIDS.dir);
 end
 
 %-Dataset description
 %==========================================================================
 try
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir,'dataset_description.json'));
-catch
-    error('BIDS dataset description could not be read.');
+catch err
+    error('BIDS dataset description could not be read: %s',err.message);
 end
-if ~isfield(BIDS.description,'BIDSVersion') || ~isfield(BIDS.description,'Name')
-    error('BIDS dataset description not valid.');
+if ~isfield(BIDS.description,'BIDSVersion')
+    error('BIDS dataset description not valid: missing BIDSVersion field');
 end
+if ~isfield(BIDS.description,'Name')
+    error('BIDS dataset description not valid: missing Name field');
+end
+
 % See also optional README and CHANGES files
 
 %-Optional directories
@@ -70,7 +74,7 @@ end
 % [derivatives/]
 % [stimuli/]
 % [sourcedata/]
-% [phenotype]
+% [phenotype/]
 
 %-Scans key file
 %==========================================================================
@@ -123,6 +127,9 @@ end
 %-Parse a subject's directory
 %==========================================================================
 function subject = parse_subject(p, subjname, sesname)
+% For each modality (anat, func, eeg...) all the files from the
+% corresponding directory are listed and their filename parsed with extra
+% BIDS valid entities listed (e.g. 'acq','ce','rec','fa'...).
 
 subject.name    = subjname;   % subject name ('sub-<participant_label>')
 subject.path    = fullfile(p,subjname,sesname); % full path to subject directory
@@ -354,14 +361,28 @@ if exist(pth,'dir')
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
+        % European data format (.edf)
+        % BrainVision Core Data Format (.vhdr, .vmrk, .eeg) by Brain Products GmbH
+        % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
+        % Biosemi data format (.bdf)
+
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
-        subject.eeg = [subject.eeg p];
-        subject.eeg(end).meta = struct([]); % ?
+        switch p.ext
+          case {'.edf', '.vhdr', '.set', '.bdf'}
+            % each recording is described with a single file, even though the data can consist of multiple
+            subject.eeg = [subject.eeg p];
+            subject.eeg(end).meta = struct([]); % ?
+          case {'.vmrk', '.eeg', '.fdt'}
+            % skip the additional files that come with certain data formats
+          otherwise
+            % skip unknown files
+        end
         
     end
     
     %-EEG events file
     %----------------------------------------------------------------------
+    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_events\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
@@ -375,6 +396,7 @@ if exist(pth,'dir')
     
     %-Channel description table
     %----------------------------------------------------------------------
+    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
     f = file_utils('List',pth,...
         sprintf('^%s.*_task-.*_channels\\.tsv$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
@@ -393,7 +415,7 @@ if exist(pth,'dir')
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
         
-        p = parse_filename(f{i}, {'sub','ses','acq','meta'});
+        p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
         subject.eeg = [subject.eeg p];
         subject.eeg(end).meta = struct([]); % ?
         
@@ -549,10 +571,24 @@ if exist(pth,'dir')
         sprintf('^%s.*_task-.*_ieeg\\..*[^json]$',subject.name));
     if isempty(f), f = {}; else f = cellstr(f); end
     for i=1:numel(f)
+      
+        % European Data Format (.edf)
+        % BrainVision Core Data Format (.vhdr, .eeg, .vmrk) by Brain Products GmbH
+        % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
+        % Neurodata Without Borders (.nwb)
+        % MEF3 (.mef)
         
         p = parse_filename(f{i}, {'sub','ses','task','acq','run','meta'});
-        subject.ieeg = [subject.ieeg p];
-        subject.ieeg(end).meta = struct([]); % ?
+        switch p.ext
+          case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
+            % each recording is described with a single file, even though the data can consist of multiple
+            subject.ieeg = [subject.ieeg p];
+            subject.ieeg(end).meta = struct([]); % ?
+          case {'.vmrk', '.eeg', '.fdt'}
+            % skip the additional files that come with certain data formats
+          otherwise
+            % skip unknown files
+        end        
         
     end
     
