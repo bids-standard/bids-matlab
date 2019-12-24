@@ -247,7 +247,7 @@ for iSess = Ses
                 % dirty hack to try to look into the BIDS structure as bids.query does not
                 % support querying directly for bval anb bvec
                 try
-                    acq_param.n_vecs = num2str(size(BIDS.subjects(Subj).dwi.bval,2));
+                    acq_param.n_vecs = num2str(size(BIDS.subses(Subj).dwi.bval,2));
                     %             acq_param.bval_str = ???
                 catch
                     warning('Could not read the bval & bvec values.')

@@ -33,21 +33,21 @@ Starting point was `spm_BIDS.m` from [SPM12](https://github.com/spm/spm12) ([doc
 
 ### Technical representation of the BIDS layout
 
-The way I now see it is as follows
+The BIDS layout is represented as an object/structure with the following fields:
 
 ```
 BIDS.description  % from dataset_description.json
 BIDS.participants % from participants.tsv
 BIDS.sessions     % from sessions.tsv, array of Nsubjects x 1
-BIDS.subjects     % data for each modailty in each subject*sesssion
 BIDS.scans        % from scans.tsv, array of (Nsubjects*Nsessions) x 1
+BIDS.subses       % data for each modality in each subject and (optionally) sesssion
 ```
 
-In the layout, `sessions` has (conceptually) the same size as `participants` (although differently represented).
+The field `participants` represents the participants.tsv details.
 
-In the layout, `scans` has the same size as `subjects`.
+The field `sessions` has (conceptually) the same size as `participants`, although differently represented. It represents the session.tsv details for each subject.
 
-I propose to rename `subjects` to `subses`, since it corresponds to subjects _and_ sessions. Every `subses` has the modalities (anat, func, eeg, etc.) as structure arrays, where each array corresponds to one data file. For example
+The field `subses` corresponds to subjects _and_ sessions. Every `subses` has the modalities (anat, func, eeg, etc.) as structure arrays, where each array corresponds to one data file. For example
 
 ```
 >> BIDS.subses(1)
@@ -70,7 +70,7 @@ ans =
 
 ### User interface
 
-Users are not meant to directly interface with the BIDS layout, but rather use the `query` function. In general that works like
+Users are not meant to directly interface with the BIDS layout object/structure, but rather use the `query` function. In general that works like
 
 ```
 BIDS.query(layout, 'item') returns a complete list of the specific items
@@ -88,23 +88,23 @@ BIDS.query(layout, 'tasks') returns an array of strings
 BIDS.query(layout, 'runs') returns an array of strings
 ```
 
-For subjects, sessions and modalities it can come from the directory structure. For tasks and runs it has to come from the `key-value` entities in the file names. The same could also be used for subjects ('sub-xxx') and sessions ('ses-xxx'), which are in the file name, but the modalities are not as key-value pairs in the file name.
+For subjects, sessions and modalities the information can come from the directory structure. For tasks and runs the information has to come from the `key-value` entities in the file names. The same could also be used for subjects ('sub-xxx') and sessions ('ses-xxx'), which are in the file name, but the modalities are not as key-value pairs in the file name.
 
 I propose that when you specify
 
 ```
-BIDS.query(layout, 'subjects') returns an array of strings like {'01', '02', ...}
+BIDS.query(layout, 'subjects') returns an array of strings, like {'01', '02', ...}
 ```
 
 it comes from the directory names, and if you specify
 
 ```
-BIDS.query(layout, 'subs') returns an array of strings like {'01', '02', ...}
+BIDS.query(layout, 'subs') returns an array of strings, like {'01', '02', ...}
 ```
 
 it comes from the 'key-value' entities in the file names. This can be generalised such that `acqs`, `procs`, `dirs` and any [entity](https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html) appended with an `s` can be processed. A general implementation also supports future or custom entities (e.g. from non-merged BEPs).
 
-That design choice result in the general
+That design choice result in the general use as
 
 ```
 BIDS.query(layout, entity) returns an array of strings
@@ -130,7 +130,7 @@ The following returns the content of the JSON files that correspond to the data 
 BIDS.query(layout, 'metadata') returns an array of structures
 ```
 
-The following returns electrode positions for each data file (see above). In principle it could also return a list of strings with the file names of the TSV files.
+The following returns for example electrode information for each data file (see above). In principle it could also return a list of strings with the file names of the TSV files.
 
 ```
 BIDS.query(layout, 'electrodes') returns an array of structures

@@ -38,10 +38,15 @@ BIDS = struct(...
     'dir',root, ...               % BIDS directory
     'description',struct([]), ... % content of dataset_description.json
     'sessions',{{}},...           % cellstr of sessions
+<<<<<<< HEAD
     'scans',struct([]),...        % content of sub-<participant_label>_scans.tsv (should go within subjects)
     'sess',struct([]),...         % content of sub-<participants_label>_sessions.tsv (should go within subjects)
+=======
+    'scans',struct([]),...        % content of sub-XX_scans.tsv (should go within subjects)
+    'sess',struct([]),...         % content of sub-XX_sessions.tsv (should go within subjects)
+>>>>>>> 2ed081af2ba995ffd8b6534340ef92366fc7cf4f
     'participants',struct([]),... % content of participants.tsv
-    'subjects',struct([]));       % structure array of subjects
+    'subses',struct([]));         % structure array of subjects/sessions
 
 %-Validation of BIDS root directory
 %==========================================================================
@@ -114,10 +119,10 @@ end
 for su=1:numel(sub)
     sess = cellstr(file_utils('List',fullfile(BIDS.dir,sub{su}),'dir','^ses-.*$'));    
     for se=1:numel(sess)
-        if isempty(BIDS.subjects)
-            BIDS.subjects = parse_subject(BIDS.dir, sub{su}, sess{se});
+        if isempty(BIDS.subses)
+            BIDS.subses = parse_subject(BIDS.dir, sub{su}, sess{se});
         else
-            BIDS.subjects(end+1) = parse_subject(BIDS.dir, sub{su}, sess{se});
+            BIDS.subses(end+1) = parse_subject(BIDS.dir, sub{su}, sess{se});
         end
     end
 end

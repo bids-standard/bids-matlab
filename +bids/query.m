@@ -23,11 +23,16 @@ BIDS = bids.layout(BIDS);
 opts = parse_query(varargin);
 
 switch query
+<<<<<<< HEAD
+=======
+%   case 'subjects'
+%       result = regexprep(unique({BIDS.subses.name}),'^[a-zA-Z0-9]+-','');
+>>>>>>> 2ed081af2ba995ffd8b6534340ef92366fc7cf4f
     case 'modalities'
         hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x),y),...
-            BIDS.subjects,'UniformOutput',false);
+            BIDS.subses,'UniformOutput',false);
         hasmod = any([hasmod{:}],2);
-        mods   = fieldnames(BIDS.subjects)';
+        mods   = fieldnames(BIDS.subses)';
         result = mods(hasmod);
     case {'sessions', 'subjects', 'tasks', 'runs', 'types', 'data', 'metadata'}
         %-Initialise output variable
@@ -41,7 +46,7 @@ switch query
             subs = opts{ismember(opts(:,1),'sub'),2};
             opts(ismember(opts(:,1),'sub'),:) = [];
         else
-            subs = unique({BIDS.subjects.name});
+            subs = unique({BIDS.subses.name});
             subs = regexprep(subs,'^[a-zA-Z0-9]+-','');
         end
         %-Filter according to modality
@@ -64,12 +69,17 @@ switch query
         end
         
         %-Perform query
+<<<<<<< HEAD
         % Loop through all the subjects and modalities filtered previously
         for i=1:numel(BIDS.subjects)   
             %-Only continue if this subject is one of those filtered
             if ~ismember(BIDS.subjects(i).name(5:end),subs), continue; end
+=======
+        for i=1:numel(BIDS.subses)                    
+            if ~ismember(BIDS.subses(i).name(5:end),subs), continue; end
+>>>>>>> 2ed081af2ba995ffd8b6534340ef92366fc7cf4f
             for j=1:numel(mods)
-                d = BIDS.subjects(i).(mods{j});
+                d = BIDS.subses(i).(mods{j});
                 for k=1:numel(d)
                     %-sts is kept true only if this modality is one of those filtered
                     sts = true;
@@ -81,19 +91,19 @@ switch query
                     switch query
                         case 'subjects'
                             if sts
-                                result{end+1} = BIDS.subjects(i).name;
+                                result{end+1} = BIDS.subses(i).name;
                             end
                         case 'sessions'
                             if sts
-                                result{end+1} = BIDS.subjects(i).session;
+                                result{end+1} = BIDS.subses(i).session;
                             end
                         case 'data'
                             if sts && isfield(d(k),'filename')
-                                result{end+1} = fullfile(BIDS.subjects(i).path,mods{j},d(k).filename);
+                                result{end+1} = fullfile(BIDS.subses(i).path,mods{j},d(k).filename);
                             end
                         case 'metadata'
                             if sts && isfield(d(k),'filename')
-                                f = fullfile(BIDS.subjects(i).path,mods{j},d(k).filename);
+                                f = fullfile(BIDS.subses(i).path,mods{j},d(k).filename);
                                 result{end+1} = get_metadata(f);
                                 if ~isempty(target)
                                     try
