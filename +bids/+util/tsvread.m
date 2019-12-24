@@ -18,6 +18,9 @@ function x = tsvread(f,v,hdr)
 
 %-Check input arguments
 %--------------------------------------------------------------------------
+if nargin < 1
+    error('no input file specified'); 
+end
 if ~exist(f,'file')
     error('Unable to read file ''%s'': file not found',f);
 end
@@ -45,7 +48,7 @@ switch ext(2:end)
         fz  = gunzip(f,tempname);
         sts = true;
         try
-            x   = tsvread(fz{1});
+            x   = bids.util.tsvread(fz{1});
         catch err
             sts = false;
             err_msg = err.message;
