@@ -25,7 +25,7 @@ function p = parse_filename(filename,fields)
 
 filename = file_utils(filename,'filename');
 
-%-Identify all the BIDS entitiy-label pairs present in the filename (delimited by "_")
+%-Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
 % https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html
 [parts, dummy] = regexp(filename,'(?:_)+','split','match');
 p.filename = filename;

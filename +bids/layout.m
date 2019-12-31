@@ -1,7 +1,7 @@
 function BIDS = layout(root)
-% Parse a directory structure formated according to the BIDS standard
+% Parse a directory structure formatted according to the BIDS standard
 % FORMAT BIDS = bids.layout(root)
-% root   - directory formated according to BIDS [Default: pwd]
+% root   - directory formatted according to BIDS [Default: pwd]
 % BIDS   - structure containing the BIDS file layout
 %
 % See also:
@@ -132,7 +132,7 @@ end
 %==========================================================================
 function subject = parse_subject(p, subjname, sesname)
 % For each modality (anat, func, eeg...) all the files from the
-% corresponding directory are listed and their filename parsed with extra
+% corresponding directory are listed and their filenames parsed with extra
 % BIDS valid entities listed (e.g. 'acq','ce','rec','fa'...).
 
 subject.name    = subjname;   % subject name ('sub-<participant_label>')
