@@ -3,7 +3,7 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
 % FORMAT bids.report(BIDS, Subj, Ses, Run, ReadNII)
 %
 % INPUTS:
-% - BIDS: directory formated according to BIDS [Default: pwd]
+% - BIDS: directory formatted according to BIDS [Default: pwd]
 %
 % - Subj: Specifies which subject(s) to take as template.
 % - Ses:  Specifies which session(s) to take as template. Can be a vector.
@@ -36,7 +36,7 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
 % - deal with DWI bval/bvec values not read by bids.query
 % - write output to a txt file?
 % - deal with "EEG" / "MEG"
-% - deal wiht "events": compute some summary statistics as suggested in
+% - deal with "events": compute some summary statistics as suggested in
 % COBIDAS report
 % - report summary statistics on participants as suggested in COBIDAS report
 % - check if all subjects have the same content?
@@ -249,7 +249,7 @@ for iSess = Ses
                     'dwi', '', '', ReadNII);
                 
                 % dirty hack to try to look into the BIDS structure as bids.query does not
-                % support querying directly for bval anb bvec
+                % support querying directly for bval and bvec
                 try
                     acq_param.n_vecs = num2str(size(BIDS.subjects(Subj).dwi.bval,2));
                     %             acq_param.bval_str = ???
