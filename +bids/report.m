@@ -65,7 +65,7 @@ ReadNII = ReadNII & exist('spm_vol','file') == 2;
 
 %-Parse the BIDS dataset directory
 %--------------------------------------------------------------------------
-if ~isa(BIDS, 'bids.BIDSLayout')
+if ~isa(BIDS, 'bids.layout.BIDSLayout')
     fprintf('\n-------------------------\n')
     fprintf('  Reading BIDS: %s', BIDS)
     fprintf('\n-------------------------\n')

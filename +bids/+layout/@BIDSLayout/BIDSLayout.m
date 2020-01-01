@@ -39,7 +39,7 @@ classdef BIDSLayout
             %BIDSLAYOUT Construct an instance of this class
             %
             % You should not call this constructor directly. Instead, use
-            % the bids.BIDSLayout.fromPath() method or bids.layout()
+            % the bids.layout.BIDSLayout.fromPath() method or bids.layout()
             % function.
             if nargin == 0
                 return

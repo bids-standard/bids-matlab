@@ -26,13 +26,13 @@ if nargin < 1
 else
     if ischar(root)
         root = bids.internal.file_utils(root, 'CPath');
-    elseif isa(root, 'bids.BIDSLayout')
+    elseif isa(root, 'bids.layout.BIDSLayout')
         out = root;
         return;
     else
-        error('Invalid input: root must be a char filename or a bids.BIDSLayout object; got a %s',...
+        error('Invalid input: root must be a char filename or a bids.layout.BIDSLayout object; got a %s',...
             class(root));
     end
 end
 
-out = bids.BIDSLayout.fromPath(root);
+out = bids.layout.BIDSLayout.fromPath(root);

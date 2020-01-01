@@ -1,7 +1,7 @@
 function out = fromPath(root)
 % FROMPATH Create a new BIDSLayout by reading a BIDS directory on disk
 %
-% obj = bids.BIDSLayout.fromPath(root)
+% obj = bids.layout.BIDSLayout.fromPath(root)
 %
 % Parses a directory structure formatted according to the BIDS standard
 %
@@ -40,7 +40,7 @@ end
 %-BIDS structure
 %==========================================================================
 
-out = bids.BIDSLayout;
+out = bids.layout.BIDSLayout;
 out.dir = root;
 
 %-Validation of BIDS root directory

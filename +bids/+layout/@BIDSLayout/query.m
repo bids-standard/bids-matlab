@@ -29,7 +29,7 @@ function result = query(this,query,varargin)
 % Copyright (C) 2018--, BIDS-MATLAB developers
 
 narginchk(2,Inf);
-bids.internal.mustBeA(this,'bids.BIDSLayout');
+bids.internal.mustBeA(this,'bids.layout.BIDSLayout');
 
 opts = bids.internal.parse_query(varargin);
 

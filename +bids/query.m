@@ -16,7 +16,7 @@ function result = query(layout,query,varargin)
 %
 % See also:
 % bids
-% bids.BIDSLayout.query
+% bids.layout.BIDSLayout.query
 
 %__________________________________________________________________________
 %
