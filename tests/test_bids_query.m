@@ -18,47 +18,47 @@ function test_bids_query(pth)
 
 if ~nargin, pth = fullfile(pwd,'bids-examples','ds007'); end
 
-BIDS = bids.layout(pth);
+layout = bids.layout(pth);
 
 subjs = arrayfun(@(x) sprintf('%02d',x), 1:20, 'UniformOutput',false);
-assert(isequal(bids.query(BIDS,'subjects'),subjs));
+assert(isequal(bids.query(layout,'subjects'),subjs));
 
-assert(isempty(bids.query(BIDS,'sessions')));
+assert(isempty(bids.query(layout,'sessions')));
 
-assert(isequal(bids.query(BIDS,'runs'),{'01','02'}));
+assert(isequal(bids.query(layout,'runs'),{'01','02'}));
 
 tasks = {'stopsignalwithletternaming','stopsignalwithmanualresponse','stopsignalwithpseudowordnaming'};
-assert(isequal(bids.query(BIDS,'tasks'),tasks));
+assert(isequal(bids.query(layout,'tasks'),tasks));
 
 types = {'T1w','bold','events','inplaneT2'};
-assert(isequal(bids.query(BIDS,'types'),types));
+assert(isequal(bids.query(layout,'types'),types));
 
 mods = {'anat','func'};
-assert(isequal(bids.query(BIDS,'modalities'),mods));
+assert(isequal(bids.query(layout,'modalities'),mods));
 
-assert(isempty(bids.query(BIDS,'runs','type','T1w')));
+assert(isempty(bids.query(layout,'runs','type','T1w')));
 
 runs = {'01','02'};
-assert(isequal(bids.query(BIDS,'runs','type','bold'),runs));
+assert(isequal(bids.query(layout,'runs','type','bold'),runs));
 
-bold = bids.query(BIDS,'data','sub','05','run','02','task','stopsignalwithmanualresponse','type','bold');
+bold = bids.query(layout,'data','sub','05','run','02','task','stopsignalwithmanualresponse','type','bold');
 assert(iscellstr(bold));
 assert(numel(bold) == 1);
 
-md = bids.query(BIDS,'metadata','sub','05','run','02','task','stopsignalwithmanualresponse','type','bold');
+md = bids.query(layout,'metadata','sub','05','run','02','task','stopsignalwithmanualresponse','type','bold');
 assert(isstruct(md) & isfield(md,'RepetitionTime') & isfield(md,'TaskName'));
 assert(md.RepetitionTime == 2);
 assert(strcmp(md.TaskName,'stop signal with manual response'));
 
-t1 = bids.query(BIDS,'data','type','T1w');
+t1 = bids.query(layout,'data','type','T1w');
 assert(iscellstr(t1));
-assert(numel(t1) == numel(bids.query(BIDS,'subjects')));
+assert(numel(t1) == numel(bids.query(layout,'subjects')));
 
 % Check sessions
 %   parse a folder with sessions
 pth = fullfile(fileparts(pth),'synthetic');
-BIDS = bids.layout(pth);
+layout = bids.layout(pth);
 %   test
 sessions = {'01','02'};
-assert(isequal(bids.query(BIDS,'sessions'),sessions))
-assert(isequal(bids.query(BIDS,'sessions','sub','02'),sessions))
+assert(isequal(bids.query(layout,'sessions'),sessions))
+assert(isequal(bids.query(layout,'sessions','sub','02'),sessions))

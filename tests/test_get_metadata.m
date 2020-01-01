@@ -31,25 +31,25 @@ anat_sub_01.FlipAngle = 10;
 anat_sub_01.Manufacturer = 'Siemens';
 
 % try to get metadata
-BIDS = bids.layout(pth);
+layout = bids.layout(pth);
 
 
 %% test func metadata base directory
-metadata = bids.query(BIDS, 'metadata', 'type', 'bold');
+metadata = bids.query(layout, 'metadata', 'type', 'bold');
 %assert(metadata.RepetitionTime == func.RepetitionTime);
 
 
 %% test func metadata subject 01
-metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'type', 'bold');
+metadata = bids.query(layout, 'metadata', 'sub', '01', 'type', 'bold');
 %assert(metadata.RepetitionTime == func_sub_01.RepetitionTime);
 
 
 %% test anat metadata base directory
-metadata = bids.query(BIDS, 'metadata', 'type', 'T1w');
+metadata = bids.query(layout, 'metadata', 'type', 'T1w');
 %assert(metadata.FlipAngle == anat.FlipAngle);
 
 
 %% test anat metadata subject 01
-metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'type', 'T1w');
+metadata = bids.query(layout, 'metadata', 'sub', '01', 'type', 'T1w');
 assert(metadata.FlipAngle == anat_sub_01.FlipAngle);
 assert(strcmp(metadata.Manufacturer, anat_sub_01.Manufacturer));

@@ -1,6 +1,6 @@
 function meta = get_metadata(filename, pattern)
 % Read a BIDS's file metadata according to the inheritance principle
-% FORMAT meta = get_metadata(filename, pattern)
+% FORMAT meta = bids.internal.get_metadata(filename, pattern)
 % filename    - name of file following BIDS standard
 % pattern     - regular expression matching metadata file
 % meta        - metadata structure
@@ -13,7 +13,7 @@ function meta = get_metadata(filename, pattern)
 if nargin == 1, pattern = '^.*%s\\.json$'; end
 
 pth = fileparts(filename);
-p = parse_filename(filename);
+p = bids.internal.parse_filename(filename);
 
 meta = struct();
 
@@ -30,7 +30,7 @@ for n=1:N
     
     %-List the potential metadata files associated with this file suffix type
     % Default is to assume it is a JSON file
-    metafile = file_utils('FPList', pth, sprintf(pattern, p.type));
+    metafile = bids.internal.file_utils('FPList', pth, sprintf(pattern, p.type));
     
     if isempty(metafile), metafile = {}; else metafile = cellstr(metafile); end
     
@@ -38,7 +38,7 @@ for n=1:N
     % the file of interest
     for i=1:numel(metafile)
         
-        p2 = parse_filename(metafile{i});
+        p2 = bids.internal.parse_filename(metafile{i});
         fn = setdiff(fieldnames(p2),{'filename','ext','type'});
         
         %-Check if this metadata file contains the same entity-label pairs as its

@@ -22,7 +22,7 @@ function [sts, msg] = validate(root)
 
 [sts, msg] = system('bids-validator --version');
 if sts
-    msg = 'Require bids-validator from https://github.com/bids-standard/bids-validator';
+    msg = 'Requires bids-validator from https://github.com/bids-standard/bids-validator';
 else
     [sts, msg] = system(['bids-validator "' strrep(root,'"','\"') '"']);
 end

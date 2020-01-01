@@ -1,11 +1,11 @@
 function varargout = file_utils(str,varargin)
 % Character array (or cell array of strings) handling facility
-% FORMAT str = file_utils(str,option)
+% FORMAT str = bids.internal.file_utils(str,option)
 % str        - character array, or cell array of strings
 % option     - string of requested item - one among:
 %              {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}
 %
-% FORMAT str = file_utils(str,opt_key,opt_val,...)
+% FORMAT str = bids.internal.file_utils(str,opt_key,opt_val,...)
 % str        - character array, or cell array of strings
 % opt_key    - string of targeted item - one among:
 %              {'path', 'basename', 'ext', 'filename', 'prefix', 'suffix'}
@@ -191,7 +191,7 @@ end
 if nargin < 2
     d = pwd;
 else
-    d = file_utils(d,'cpath');
+    d = bids.internal.file_utils(d,'cpath');
 end
 dirmode = false;
 if nargin < 3
