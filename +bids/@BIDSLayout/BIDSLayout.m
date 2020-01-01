@@ -1,5 +1,8 @@
 classdef BIDSLayout
     %BIDSLAYOUT Layout class representing an entire BIDS dataset
+    %
+    % BIDSLayout is the main class representing a BIDS dataset on disk and
+    % its contents.
     
     properties (SetAccess = private)
         % The root directory of the BIDS layout
@@ -8,9 +11,6 @@ classdef BIDSLayout
         name
         % The BIDS Version of the dataset
         bidsVersion
-    end
-    
-    properties (Access = private)
         % Data content of dataset_description.json, as struct
         description = struct([])
         % List of sessions, as cellstr
@@ -43,6 +43,19 @@ classdef BIDSLayout
             % function.
             if nargin == 0
                 return
+            end
+        end
+        
+        function disp(this)
+            if isscalar(this)
+                fprintf('  %s with peroperties:\n',class(this));
+                fprintf('\n');
+                fprintf('         name: %s\n',this.name);
+                fprintf('          dir: %s\n',this.dir);
+                fprintf('  bidsVersion: %s\n',this.bidsVersion);
+            else
+                fprintf('%s %s array\n',bids.internal.size2str(size(this)), ...
+                    class(this));
             end
         end
         
