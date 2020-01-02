@@ -18,7 +18,7 @@ function test_bids_query(pth)
 
 if ~nargin, pth = fullfile(pwd,'bids-examples','ds007'); end
 
-layout = bids.layout(pth);
+layout = bids.readlayout(pth);
 
 subjs = arrayfun(@(x) sprintf('%02d',x), 1:20, 'UniformOutput',false);
 assert(isequal(bids.query(layout,'subjects'),subjs));
@@ -57,7 +57,7 @@ assert(numel(t1) == numel(bids.query(layout,'subjects')));
 % Check sessions
 %   parse a folder with sessions
 pth = fullfile(fileparts(pth),'synthetic');
-layout = bids.layout(pth);
+layout = bids.readlayout(pth);
 %   test
 sessions = {'01','02'};
 assert(isequal(bids.query(layout,'sessions'),sessions))

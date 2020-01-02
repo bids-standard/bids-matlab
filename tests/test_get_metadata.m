@@ -31,7 +31,7 @@ anat_sub_01.FlipAngle = 10;
 anat_sub_01.Manufacturer = 'Siemens';
 
 % try to get metadata
-layout = bids.layout(pth);
+layout = bids.readlayout(pth);
 
 
 %% test func metadata base directory

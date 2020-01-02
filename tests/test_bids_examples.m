@@ -27,7 +27,7 @@ sts = false(1,numel(d));
 msg = cell(1,numel(d));
 for i=1:numel(d)
     try
-        BIDS = bids.layout(fullfile(pth,d(i).name));
+        BIDS = bids.readlayout(fullfile(pth,d(i).name));
         sts(i) = true;
         fprintf('.');
     catch err

@@ -69,7 +69,7 @@ if ~isa(BIDS, 'bids.layout.BIDSLayout')
     fprintf('\n-------------------------\n')
     fprintf('  Reading BIDS: %s', BIDS)
     fprintf('\n-------------------------\n')
-    BIDS = bids.layout(BIDS);
+    BIDS = bids.readlayout(BIDS);
     fprintf('Done.\n\n')
 end
 

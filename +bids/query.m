@@ -31,6 +31,6 @@ function result = query(layout,query,varargin)
 
 narginchk(2,Inf);
 
-layout = bids.layout(layout);
+layout = bids.readlayout(layout);
 
 result = layout.query(query,varargin{:});

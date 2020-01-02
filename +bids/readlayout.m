@@ -1,6 +1,6 @@
-function out = layout(root)
+function out = readlayout(root)
 % Parse a directory structure formatted according to the BIDS standard
-% FORMAT BIDS = bids.layout(root)
+% FORMAT BIDS = bids.readlayout(root)
 % root   - directory formatted according to BIDS [Default: pwd]
 % BIDS   - structure containing the BIDS file layout
 %
