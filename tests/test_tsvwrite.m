@@ -27,7 +27,7 @@ tsv_file = fullfile(pth, 'sub-01_task-TASK_events.tsv');
 logFile(1,1).onset = 2;
 logFile(1,1).trial_type = 'motion_up';
 logFile(1,1).duration = 1;
-logFile(1,1).speed = 2;
+logFile(1,1).speed = [];
 logFile(1,1).is_fixation = true;
 
 logFile(2,1).onset = 3;
@@ -43,15 +43,15 @@ bids.util.tsvwrite(tsv_file, logFile);
 % read the file
 % check the extra columns of the header and some of the content
 
-FID = fopen(fileName, 'r');
+FID = fopen(tsv_file, 'r');
 C = textscan(FID,'%s%s%s%s%s','Delimiter', '\t', 'EndOfLine', '\n');
 
 assert(isequal(C{4}{1}, 'speed')); % check header
 
-assert(isequal(C{4}{2}, 'NaN')); % check that empty values are entered as NaN
-assert(isequal(C{4}{4}, 'NaN')); % check that missing fields are entered as NaN
+assert(isequal(C{4}{2}, 'n/a')); % check that empty values are entered as NaN
+assert(isequal(C{4}{3}, 'n/a')); % check that missing fields are entered as NaN
 
-assert(isequal(str2double(C{5}{4}), 3)); % check values entered properly
+assert(isequal(str2double(C{5}{3}), 3)); % check values entered properly
 
 
 
