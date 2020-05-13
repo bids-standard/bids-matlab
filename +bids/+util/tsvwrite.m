@@ -65,16 +65,24 @@ if isstruct(var) || iscell(var) || isnumeric(var) || islogical(var)
         
         for j=1:size(var,2)
             
-            if isempty(var{i,j})
-                var{i,j} = 'n/a';
-            elseif any(var{i,j} == delim)
-                var{i,j} = ['"' var{i,j} '"'];
+            to_print = var{i,j};
+            
+            if iscell(to_print)
+                to_print = to_print{1};
             end
             
-            fprintf(fid,'%s',var{i,j});
+            if isempty(to_print)
+                to_print = 'n/a';
+                
+            elseif any(to_print == delim)
+                to_print = ['"' to_print '"'];
+                
+            end
             
-            if j < size(var,2)
-                fprintf(fid,delim);
+            fprintf(fid,'%s', to_print);
+            
+            if j < size(var, 2)
+                fprintf(fid, delim);
             end
             
         end
