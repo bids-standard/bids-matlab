@@ -38,7 +38,7 @@ if isstruct(var) || iscell(var) || isnumeric(var) || islogical(var)
             
         end
         
-        var = [fn'; var{:}];
+        var = [fn'; var];
         
     elseif iscell(var)
         var = cellfun(@(x) num2str(x,16), var, 'UniformOutput',false);
@@ -62,15 +62,23 @@ if isstruct(var) || iscell(var) || isnumeric(var) || islogical(var)
     end
     
     for i=1:size(var,1)
+        
         for j=1:size(var,2)
+            
             if isempty(var{i,j})
                 var{i,j} = 'n/a';
             elseif any(var{i,j} == delim)
                 var{i,j} = ['"' var{i,j} '"'];
             end
+            
             fprintf(fid,'%s',var{i,j});
-            if j < size(var,2), fprintf(fid,delim); end
+            
+            if j < size(var,2)
+                fprintf(fid,delim);
+            end
+            
         end
+        
         fprintf(fid,'\n');
     end
     
