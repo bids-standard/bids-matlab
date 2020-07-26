@@ -1,4 +1,4 @@
-function x = tsvread(f,v,hdr)
+function fileContent = tsvread(filename,fieldToReturn,hdr)
 % Load text and numeric data from tab-separated-value or other file
 % FORMAT x = tsvread(f,v,hdr)
 % f   - filename (can be gzipped) {txt,mat,csv,tsv,json}
@@ -22,34 +22,34 @@ function x = tsvread(f,v,hdr)
 if nargin < 1
     error('no input file specified'); 
 end
-if ~exist(f,'file')
-    error('Unable to read file ''%s'': file not found',f);
+if ~exist(filename,'file')
+    error('Unable to read file ''%s'': file not found',filename);
 end
 
-if nargin < 2, v = ''; end
+if nargin < 2, fieldToReturn = ''; end
 if nargin < 3, hdr = true; end % Detect
 
 %-Load the data file
 %--------------------------------------------------------------------------
-[~,~,ext] = fileparts(f);
+[~,~,ext] = fileparts(filename);
 switch ext(2:end)
     case 'txt'
-        x = load(f,'-ascii');
+        fileContent = load(filename,'-ascii');
     case 'mat'
-        x  = load(f,'-mat');
+        fileContent  = load(filename,'-mat');
     case 'csv'
         % x = csvread(f); % numeric data only
-        x = dsvread(f,',',hdr);
+        fileContent = dsv_read(filename,',',hdr);
     case 'tsv'
         % x = dlmread(f,'\t'); % numeric data only
-        x = dsvread(f,'\t',hdr);
+        fileContent = dsv_read(filename,'\t',hdr);
     case 'json'
-        x = bids.util.jsondecode(f);
+        fileContent = bids.util.jsondecode(filename);
     case 'gz'
-        fz  = gunzip(f,tempname);
+        fz  = gunzip(filename,tempname);
         sts = true;
         try
-            x   = bids.util.tsvread(fz{1});
+            fileContent   = bids.util.tsvread(fz{1});
         catch err
             sts = false;
             err_msg = err.message;
@@ -57,60 +57,60 @@ switch ext(2:end)
         delete(fz{1});
         rmdir(fileparts(fz{1}));
         if ~sts
-            error('Cannot load file ''%s'': %s.',f,err_msg);
+            error('Cannot load file ''%s'': %s.',filename,err_msg);
         end
     otherwise
         try
-            x = load(f);
+            fileContent = load(filename);
         catch
-            error('Cannot read file ''%s'': Unknown file format.',f);
+            error('Cannot read file ''%s'': Unknown file format.',filename);
         end
 end
 
 %-Return relevant subset of the data if required
 %--------------------------------------------------------------------------
-if isstruct(x)
-    if isempty(v)
-        fn = fieldnames(x);
-        if numel(fn) == 1 && isnumeric(x.(fn{1}))
-            x = x.(fn{1});
+if isstruct(fileContent)
+    if isempty(fieldToReturn)
+        fieldsList = fieldnames(fileContent);
+        if numel(fieldsList) == 1 && isnumeric(fileContent.(fieldsList{1}))
+            fileContent = fileContent.(fieldsList{1});
         end
     else
-        if ischar(v)
+        if ischar(fieldToReturn)
             try
-                x = x.(v);
+                fileContent = fileContent.(fieldToReturn);
             catch
-                error('Data do not contain array ''%s''.',v);
+                error('Data do not contain array ''%s''.',fieldToReturn);
             end
         else
-            fn = fieldnames(x);
+            fieldsList = fieldnames(fileContent);
             try
-                x = x.(fn{v});
+                fileContent = fileContent.(fieldsList{fieldToReturn});
             catch
                 error('Data index out of range: %d (data contains %d fields)',...
-                    v,numel(fn));
+                    fieldToReturn,numel(fieldsList));
             end
         end
     end
-elseif isnumeric(x)
-    if isnumeric(v)
+elseif isnumeric(fileContent)
+    if isnumeric(fieldToReturn)
         try
-            x = x(:,v);
+            fileContent = fileContent(:,fieldToReturn);
         catch
             error('Data index out of range: %d (data contains $d columns).',...
-                v,size(x,2));
+                fieldToReturn,size(fileContent,2));
         end
-    elseif ~isempty(v)
+    elseif ~isempty(fieldToReturn)
         error('Invalid data index. When data is numeric, index must be numeric or empty; got a %s',...
-            class(v));
+            class(fieldToReturn));
     end
 end
 
 
 %==========================================================================
-% function x = dsvread(f,delim)
+% function x = dsv_read(f,delim)
 %==========================================================================
-function x = dsvread(f,delim,header)
+function x = dsv_read(filename,delim,header)
 % Read delimiter-separated values file into a structure array
 %  * header line of column names will be used if detected
 %  * 'n/a' fields are replaced with NaN
@@ -124,7 +124,7 @@ eol   = sprintf('\n');
 
 %-Read file
 %--------------------------------------------------------------------------
-S   = fileread(f);
+S   = fileread(filename);
 if isempty(S), x = []; return; end
 if S(end) ~= eol, S = [S eol]; end
 S   = regexprep(S,{'\r\n','\r','(\n)\1+'},{'\n','\n','$1'});
@@ -165,7 +165,7 @@ else
 end
 if rem(numel(d{1}),N)
     error('Invalid DSV file ''%s'': Varying number of delimiters per line.',...
-        f);
+        filename);
 end
 d = reshape(d{1},N,[])';
 allnum = true;
