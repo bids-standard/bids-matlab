@@ -5,11 +5,14 @@ function report(BIDS, subj, sess, run, read_nii)
     % INPUTS:
     % - BIDS: directory formatted according to BIDS [Default: pwd]
     %
-    % - Subj: Specifies which subject(s) to take as template.
-    % - Ses:  Specifies which session(s) to take as template. Can be a vector.
+    % - subj: Specifies which subject(s) to take as template.
+    %
+    % - sess:  Specifies which session(s) to take as template. Can be a vector.
     %         Set to 0 to do all sessions.
-    % - Run:  Specifies which BOLD run(s) to take as template.
-    % - ReadNII: If set to 1 (default) the function will try to read the
+    %
+    % - run:  Specifies which BOLD run(s) to take as template.
+    %
+    % - read_nii: If set to 1 (default) the function will try to read the
     %             NIfTI file to get more information. This relies on the
     %             spm_vol.m function from SPM.
     %
@@ -42,6 +45,8 @@ function report(BIDS, subj, sess, run, read_nii)
     % - check if all subjects have the same content?
     % - adapt for several subjects or runs
     % - take care of other recommended metafield in BIDS specs or COBIDAS?
+    % - add a dataset description (ethics, grant, institution, scanner
+    % details...)
 
     % -Check inputs
     % --------------------------------------------------------------------------
@@ -97,103 +102,128 @@ function report(BIDS, subj, sess, run, read_nii)
             fprintf('\n-------------------------\n');
         end
 
-        types_ls = bids.query(BIDS, 'types', 'sub', subjs_ls(subj), 'ses', sess_ls(iSess));
-        tasks_ls = bids.query(BIDS, 'tasks', 'sub', subjs_ls(subj), 'ses', sess_ls(iSess));
+        types_ls = bids.query(BIDS, 'types', ...
+                              'sub', subjs_ls(subj), ...
+                              'ses', sess_ls(iSess));
+        tasks_ls = bids.query(BIDS, 'tasks', ...
+                              'sub', subjs_ls(subj), ...
+                              'ses', sess_ls(iSess));
         % mods_ls = bids.query(BIDS,'modalities');
 
         for iType = 1:numel(types_ls)
 
-            boilerplate_text = get_boilerplate(type);
+            boilerplate_text = get_boilerplate(types_ls{iType});
 
             switch types_ls{iType}
 
                 case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
 
-                    % -Anatomical
-                    % ----------------------------------------------------------
-                    fprintf('Working on anat...\n');
+                    fprintf('\n ANATOMICAL REPORT \n');
 
                     % get the parameters
-                    acq_param = get_acq_param(BIDS, subjs_ls{subj}, sess_ls{iSess}, ...
+                    acq_param = get_acq_param(BIDS, ...
+                                              subjs_ls{subj}, ...
+                                              sess_ls{iSess}, ...
                                               types_ls{iType}, '', '', read_nii);
 
-                    % print output
-                    fprintf('\n ANAT REPORT \n');
                     fprintf(boilerplate_text, ...
-                            acq_param.type, acq_param.variants, acq_param.seqs, ...
-                            acq_param.n_slices, acq_param.tr, ...
-                            acq_param.te, acq_param.fa, ...
-                            acq_param.fov, acq_param.ms, acq_param.vs);
-                    fprintf('\n');
+                            acq_param.type, ...
+                            acq_param.variants, ...
+                            acq_param.seqs, ...
+                            acq_param.n_slices, ...
+                            acq_param.tr, ...
+                            acq_param.te, ...
+                            acq_param.fa, ...
+                            acq_param.fov, ...
+                            acq_param.ms, ...
+                            acq_param.vs);
 
                 case 'bold'
-                    % -Functional
-                    % ----------------------------------------------------------
-                    fprintf('Working on func...\n');
+
+                    fprintf('\n FUNCTIONAL REPORT \n');
 
                     % loop through the tasks
                     for iTask = 1:numel(tasks_ls)
 
-                        runs_ls = bids.query(BIDS, 'runs', 'sub', subjs_ls{subj}, 'ses', sess_ls{iSess}, ...
-                                             'type', 'bold', 'task', tasks_ls{iTask});
+                        runs_ls = bids.query(BIDS, 'runs', ...
+                                             'sub', subjs_ls{subj}, ...
+                                             'ses', sess_ls{iSess}, ...
+                                             'type', 'bold', ...
+                                             'task', tasks_ls{iTask});
 
-                        if isempty(runs_ls)
-                            % get the parameters for that task
-                            acq_param = get_acq_param(BIDS, subjs_ls{subj}, sess_ls{iSess}, ...
-                                                      'bold', tasks_ls{iTask}, '', read_nii);
+                        run_str = '1';
+                        this_run = '';
+
+                        if ~isempty(runs_ls)
+
+                            this_run = runs_ls{run};
 
                             % compute the number of BOLD run for that task
-                            acq_param.run_str = '1';
+                            run_str = num2str(numel(runs_ls));
 
-                        else % if there is more than 1 run
-                            % get the parameters for that task
-                            acq_param = get_acq_param(BIDS, subjs_ls{subj}, sess_ls{iSess}, ...
-                                                      'bold', tasks_ls{iTask}, runs_ls{run}, read_nii);
-                            % compute the number of BOLD run for that task
-                            acq_param.run_str = num2str(numel(runs_ls));
                         end
+
+                        % get the parameters for that task
+                        acq_param = get_acq_param(BIDS, ...
+                                                  subjs_ls{subj}, ...
+                                                  sess_ls{iSess}, ...
+                                                  'bold', tasks_ls{iTask}, ...
+                                                  this_run, read_nii);
+
+                        acq_param.run_str = run_str;
 
                         % set run duration
-                        if ~strcmp(acq_param.tr, '[XXXX]') && ~strcmp(acq_param.n_vols, '[XXXX]')
-                            acq_param.length = num2str(str2double(acq_param.tr) / 1000 * str2double(acq_param.n_vols) / 60);
+                        if ~strcmp(acq_param.tr, '[XXtrXX]') && ...
+                                ~strcmp(acq_param.n_vols, '[XXn_volsXX]')
+                            acq_param.length = ...
+                                num2str(str2double(acq_param.tr) / 1000 * ...
+                                        str2double(acq_param.n_vols) / 60);
                         end
 
-                        % print output
-                        fprintf('\n FUNC REPORT \n');
                         fprintf(boilerplate_text, ...
-                                acq_param.run_str, acq_param.task, acq_param.variants, acq_param.seqs, ...
-                                acq_param.n_slices, acq_param.so_str, acq_param.tr, ...
-                                acq_param.te, acq_param.fa, ...
-                                acq_param.fov, acq_param.ms, ...
-                                acq_param.vs, acq_param.mb_str, acq_param.pr_str, ...
+                                acq_param.run_str, ...
+                                acq_param.task, ...
+                                acq_param.variants, ...
+                                acq_param.seqs, ...
+                                acq_param.n_slices, ...
+                                acq_param.so_str, ...
+                                acq_param.tr, ...
+                                acq_param.te, ...
+                                acq_param.fa, ...
+                                acq_param.fov, ...
+                                acq_param.ms, ...
+                                acq_param.vs, ...
+                                acq_param.mb_str, ...
+                                acq_param.pr_str, ...
                                 acq_param.length, ...
                                 acq_param.n_vols);
-                        fprintf('\n\n');
+
                     end
 
                 case 'phasediff'
-                    % -Fieldmap
-                    % ----------------------------------------------------------
-                    fprintf('Working on fmap...\n');
 
-                    % loop through the tasks
+                    fprintf('\n FIELD MAP REPORT \n');
+
                     for iTask = 1:numel(tasks_ls)
 
-                        runs_ls = bids.query(BIDS, 'runs', 'sub', subjs_ls{subj}, 'ses', sess_ls{iSess}, ...
+                        runs_ls = bids.query(BIDS, 'runs', ...
+                                             'sub', subjs_ls{subj}, ...
+                                             'ses', sess_ls{iSess}, ...
                                              'type', 'phasediff');
 
-                        if isempty(runs_ls)
-                            % get the parameters for that task
-                            acq_param = get_acq_param(BIDS, subjs_ls{subj}, sess_ls{iSess}, ...
-                                                      'phasediff', '', '', read_nii);
-                        else
-                            % get the parameters for that task
-                            acq_param = get_acq_param(BIDS, subjs_ls{subj}, sess_ls{iSess}, ...
-                                                      'phasediff', '', runs_ls{run}, read_nii);
+                        this_run = '';
+                        if ~isempty(runs_ls)
+
+                            this_run = runs_ls{run};
+
                         end
 
-                        % goes through task list to check which fieldmap is for which
-                        % run
+                        acq_param = get_acq_param(BIDS, ...
+                                                  subjs_ls{subj}, ...
+                                                  sess_ls{iSess}, ...
+                                                  'phasediff', '', this_run, read_nii);
+
+                        % goes through task list to check which fieldmap is for which run
                         acq_param.for = [];
                         nb_run = [];
                         tmp = strfind(acq_param.for_str, tasks_ls{iTask});
@@ -203,24 +233,29 @@ function report(BIDS, subj, sess, run, read_nii)
                         nb_run(iTask) = sum(~cellfun('isempty', tmp)); %#ok<AGROW>
                         acq_param.for = sprintf('for %i runs of %s, ', nb_run, tasks_ls{iTask});
 
-                        % print output
-                        fprintf('\n FMAP REPORT \n');
                         fprintf(boilerplate_text, ...
-                                acq_param.variants, acq_param.seqs, acq_param.phs_enc_dir, ...
-                                acq_param.n_slices, acq_param.tr, ...
-                                acq_param.te, acq_param.fa, acq_param.fov, acq_param.ms, ...
-                                acq_param.vs, acq_param.for);
-                        fprintf('\n\n');
+                                acq_param.variants, ...
+                                acq_param.seqs, ...
+                                acq_param.phs_enc_dir, ...
+                                acq_param.n_slices, ...
+                                acq_param.tr, ...
+                                acq_param.te, ...
+                                acq_param.fa, ...
+                                acq_param.fov, ...
+                                acq_param.ms, ...
+                                acq_param.vs, ...
+                                acq_param.for);
 
                     end
 
                 case 'dwi'
-                    % -DWI
-                    % ----------------------------------------------------------
-                    fprintf('Working on dwi...\n');
+
+                    fprintf('\n DWI REPORT \n');
 
                     % get the parameters
-                    acq_param = get_acq_param(BIDS, subjs_ls{subj}, sess_ls{iSess}, ...
+                    acq_param = get_acq_param(BIDS, ...
+                                              subjs_ls{subj}, ...
+                                              sess_ls{iSess}, ...
                                               'dwi', '', '', read_nii);
 
                     % dirty hack to try to look into the BIDS structure as bids.query does not
@@ -233,28 +268,37 @@ function report(BIDS, subj, sess, run, read_nii)
                     end
 
                     % print output
-                    fprintf('\n DWI REPORT \n');
+
                     fprintf(boilerplate_text, ...
-                            acq_param.variants, acq_param.seqs, acq_param.n_slices, acq_param.so_str, ...
-                            acq_param.tr, acq_param.te, acq_param.fa, acq_param.fov, acq_param.ms, ...
-                            acq_param.vs, acq_param.bval_str, acq_param.n_vecs, acq_param.mb_str);
-                    fprintf('\n\n');
+                            acq_param.variants, ...
+                            acq_param.seqs, ...
+                            acq_param.n_slices, ...
+                            acq_param.so_str, ...
+                            acq_param.tr, ...
+                            acq_param.te, ...
+                            acq_param.fa, ...
+                            acq_param.fov, ...
+                            acq_param.ms, ...
+                            acq_param.vs, ...
+                            acq_param.bval_str, ...
+                            acq_param.n_vecs, ...
+                            acq_param.mb_str);
 
                 case 'physio'
-                    % -Physio
-                    % ----------------------------------------------------------
+
                     warning('physio not supported yet');
 
                 case {'headshape' 'meg' 'eeg' 'channels'}
-                    % -M/EEG
-                    % ----------------------------------------------------------
+
                     warning('MEEG not supported yet');
 
                 case 'events'
-                    % -Events
-                    % ----------------------------------------------------------
+
                     warning('events not supported yet');
+
             end
+
+            fprintf('\n\n');
 
         end
 
@@ -263,6 +307,8 @@ function report(BIDS, subj, sess, run, read_nii)
 end
 
 function boilerplate_text = get_boilerplate(type)
+
+    boilerplate_text = '';
 
     switch type
 
@@ -306,62 +352,18 @@ function acq_param = get_acq_param(BIDS, subj, sess, type, task, run, read_gz)
     % Will get info from acquisition parameters from the BIDS structure or from
     % the NIfTI files
 
-    % to return dummy values in case nothing was specified
-    acq_param.type = type;
-    acq_param.variants = '[XXXX]';
-    acq_param.seqs = '[XXXX]';
+    acq_param = set_default_acq_param(type, task);
 
-    acq_param.tr = '[XXXX]';
-    acq_param.te = '[XXXX]';
-    acq_param.fa = '[XXXX]';
-
-    acq_param.task  = task;
-
-    acq_param.run_str  = '[XXXX]'; % number of runs (dealt with outside this function but initialized here)
-    acq_param.so_str  = '[XXXX]'; % slice order string
-    acq_param.mb_str  = '[XXXX]'; % multiband
-    acq_param.pr_str  = '[XXXX]'; % parallel imaging
-    acq_param.length  = '[XXXX]';
-
-    acq_param.for_str = '[XXXX]'; % for fmap: for which run this fmap is for.
-    acq_param.phs_enc_dir = '[XXXX]'; % phase encoding direction.
-
-    acq_param.bval_str = '[XXXX]';
-    acq_param.n_vecs = '[XXXX]';
-
-    acq_param.fov = '[XXXX]';
-    acq_param.n_slices = '[XXXX]';
-    acq_param.ms = '[XXXX]'; % matrix size
-    acq_param.vs = '[XXXX]'; % voxel size
-    acq_param.n_vols  = '[XXXX]';
-
-    % -Look into the metadata sub-structure for BOLD data
-    % --------------------------------------------------------------------------
-    if ismember(type, {'T1w' 'inplaneT2' 'T1map' 'FLASH' 'dwi'})
-
-        filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type);
-        metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type);
-
-    elseif strcmp(type, 'bold')
-
-        filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type, ...
-                              'task', task, 'run', run);
-        metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type, ...
-                              'task', task, 'run', run);
-
-    elseif strcmp(type, 'phasediff')
-
-        filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type, 'run', run);
-        metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type, 'run', run);
-
-    end
+    [filename, metadata] = get_filemane_and_metadata(BIDS, subj, sess, type, task, run);
 
     fprintf(' - %s\n', filename{1});
 
     if isfield(metadata, 'EchoTime')
         acq_param.te = num2str(metadata.EchoTime * 1000);
     elseif isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
-        acq_param.te = [num2str(metadata.EchoTime1 * 1000) ' / '  num2str(metadata.EchoTime2 * 1000)];
+        acq_param.te = [ ...
+                        num2str(metadata.EchoTime1 * 1000) ' / ' ...
+                        num2str(metadata.EchoTime2 * 1000)];
     end
 
     if isfield(metadata, 'RepetitionTime')
@@ -391,22 +393,111 @@ function acq_param = get_acq_param(BIDS, subj, sess, type, task, run, read_gz)
         try
             % read the header of the NIfTI file
             hdr = spm_vol(filename{1});
-            acq_param.n_vols  = num2str(numel(hdr)); % nb volumes
+
+            % nb volumes
+            acq_param.n_vols  = num2str(numel(hdr));
 
             hdr = hdr(1);
             dim = abs(hdr.dim);
-            acq_param.n_slices = sprintf('%i', dim(3)); % nb slices
-            acq_param.ms = sprintf('%i X %i', dim(1), dim(2)); % matrix size
 
+            % nb slices
+            acq_param.n_slices = sprintf('%i', dim(3));
+
+            % matrix size
+            acq_param.ms = sprintf('%i X %i', dim(1), dim(2));
+
+            % voxel size
             vs = abs(diag(hdr.mat));
-            acq_param.vs = sprintf('%.2f X %.2f X %.2f', vs(1), vs(2), vs(3)); % voxel size
+            acq_param.vs = sprintf('%.2f X %.2f X %.2f', vs(1), vs(2), vs(3));
 
-            acq_param.fov = sprintf('%.2f X %.2f', vs(1) * dim(1), vs(2) * dim(2)); % field of view
+            % field of view
+            acq_param.fov = sprintf('%.2f X %.2f', vs(1) * dim(1), vs(2) * dim(2));
 
         catch
             warning('Could not read the header from file %s.\n', filename{1});
         end
     end
+end
+
+function acq_param = set_default_acq_param(type, task)
+
+    % to return dummy values in case nothing was specified
+    acq_param.type = type;
+    acq_param.variants = '[XXvariantsXX]';
+    acq_param.seqs = '[XXseqsXX]';
+
+    acq_param.tr = '[XXtrXX]';
+    acq_param.te = '[XXteXX]';
+    acq_param.fa = '[XXfaXX]';
+
+    acq_param.task  = task;
+
+    % number of runs (dealt with outside this function but initialized here)
+    acq_param.run_str  = '[XXrun_strXX]';
+    acq_param.so_str  = '[XXso_strXX]'; % slice order string
+    acq_param.mb_str  = '[XXmb_strXX]'; % multiband
+    acq_param.pr_str  = '[XXpr_strXX]'; % parallel imaging
+    acq_param.length  = '[XXlengthXX]';
+
+    acq_param.for_str = '[XXfor_strXX]'; % for fmap: for which run this fmap is for.
+    acq_param.phs_enc_dir = '[XXphs_enc_dirXX]'; % phase encoding direction.
+
+    acq_param.bval_str = '[XXbval_strXX]';
+    acq_param.n_vecs = '[XXn_vecsXX]';
+
+    acq_param.fov = '[XXfovXX]';
+    acq_param.n_slices = '[XXn_slicesXX]';
+    acq_param.ms = '[XXmsXX]'; % matrix size
+    acq_param.vs = '[XXvsXX]'; % voxel size
+    acq_param.n_vols  = '[XXn_volsXX]';
+
+end
+
+function [filename, metadata] = get_filemane_and_metadata(BIDS, subj, sess, type, task, run)
+
+    switch type
+
+        case {'T1w' 'inplaneT2' 'T1map' 'FLASH' 'dwi'}
+
+            filename = bids.query(BIDS, 'data', ...
+                                  'sub', subj, ...
+                                  'ses', sess, ...
+                                  'type', type);
+            metadata = bids.query(BIDS, 'metadata', ...
+                                  'sub', subj, ...
+                                  'ses', sess, ...
+                                  'type', type);
+
+        case 'bold'
+
+            filename = bids.query(BIDS, 'data', ...
+                                  'sub', subj, ...
+                                  'ses', sess, ...
+                                  'type', type, ...
+                                  'task', task, ...
+                                  'run', run);
+            metadata = bids.query(BIDS, 'metadata', ...
+                                  'sub', subj, ...
+                                  'ses', sess, ...
+                                  'type', type, ...
+                                  'task', task, ...
+                                  'run', run);
+
+        case   'phasediff'
+
+            filename = bids.query(BIDS, 'data', ...
+                                  'sub', subj, ...
+                                  'ses', sess, ...
+                                  'type', type, ...
+                                  'run', run);
+            metadata = bids.query(BIDS, 'metadata', ...
+                                  'sub', subj, ...
+                                  'ses', sess, ...
+                                  'type', type, ...
+                                  'run', run);
+
+    end
+
 end
 
 function ST_def = define_slice_timing(slice_timing)
