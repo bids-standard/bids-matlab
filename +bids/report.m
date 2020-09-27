@@ -1,4 +1,4 @@
-function report(BIDS, subj, sess, run, read_nii)
+function report(BIDS, subj, sess, run, read_nii, output_path)
     % Create a short summary of the acquisition parameters of a BIDS dataset
     % FORMAT bids.report(BIDS, Subj, Ses, Run, ReadNII)
     %
@@ -15,6 +15,9 @@ function report(BIDS, subj, sess, run, read_nii)
     % - read_nii: If set to 1 (default) the function will try to read the
     %             NIfTI file to get more information. This relies on the
     %             spm_vol.m function from SPM.
+    %
+    % - output_file: filename where the output should be printed. If empty
+    % (default) then the output is send to the prompt.
     %
     % Unless specified the function will only read the data from the first
     % subject, session, and run (for each task of BOLD). This can be an issue
@@ -47,25 +50,36 @@ function report(BIDS, subj, sess, run, read_nii)
     % - take care of other recommended metafield in BIDS specs or COBIDAS?
     % - add a dataset description (ethics, grant, institution, scanner
     % details...)
+    % - make it work with "modality" and not "type"
 
     % -Check inputs
     % --------------------------------------------------------------------------
     if ~nargin
         BIDS = pwd;
     end
+
     if nargin < 2 || isempty(subj)
         subj = 1;
     end
+
     if nargin < 3 || isempty(sess)
         sess = 1;
     end
+
     if nargin < 4 || isempty(run)
         run = 1;
     end
-    if nargin < 5
+
+    if nargin < 5 || isempty(read_nii)
         read_nii = true;
     end
     read_nii = read_nii & exist('spm_vol', 'file') == 2;
+
+    if nargin < 6
+        output_path = '';
+    end
+
+    file_id = open_output_file(BIDS, output_path);
 
     % -Parse the BIDS dataset directory
     % --------------------------------------------------------------------------
@@ -112,13 +126,13 @@ function report(BIDS, subj, sess, run, read_nii)
 
         for iType = 1:numel(types_ls)
 
-            boilerplate_text = get_boilerplate(types_ls{iType});
+            boilerplate_text = get_boilerplate(types_ls{iType}, file_id);
 
             switch types_ls{iType}
 
                 case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
 
-                    fprintf('\n ANATOMICAL REPORT \n');
+                    fprintf(file_id, '\n\n\nANATOMICAL REPORT\n\n');
 
                     % get the parameters
                     acq_param = get_acq_param(BIDS, ...
@@ -126,7 +140,7 @@ function report(BIDS, subj, sess, run, read_nii)
                                               sess_ls{iSess}, ...
                                               types_ls{iType}, '', '', read_nii);
 
-                    fprintf(boilerplate_text, ...
+                    fprintf(file_id, boilerplate_text, ...
                             acq_param.type, ...
                             acq_param.variants, ...
                             acq_param.seqs, ...
@@ -140,7 +154,7 @@ function report(BIDS, subj, sess, run, read_nii)
 
                 case 'bold'
 
-                    fprintf('\n FUNCTIONAL REPORT \n');
+                    fprintf(file_id, '\n\n\nFUNCTIONAL REPORT\n\n');
 
                     % loop through the tasks
                     for iTask = 1:numel(tasks_ls)
@@ -175,12 +189,14 @@ function report(BIDS, subj, sess, run, read_nii)
                         % set run duration
                         if ~strcmp(acq_param.tr, '[XXtrXX]') && ...
                                 ~strcmp(acq_param.n_vols, '[XXn_volsXX]')
+
                             acq_param.length = ...
                                 num2str(str2double(acq_param.tr) / 1000 * ...
                                         str2double(acq_param.n_vols) / 60);
+
                         end
 
-                        fprintf(boilerplate_text, ...
+                        fprintf(file_id, boilerplate_text, ...
                                 acq_param.run_str, ...
                                 acq_param.task, ...
                                 acq_param.variants, ...
@@ -198,11 +214,13 @@ function report(BIDS, subj, sess, run, read_nii)
                                 acq_param.length, ...
                                 acq_param.n_vols);
 
+                        fprintf(file_id, '\n');
+
                     end
 
                 case 'phasediff'
 
-                    fprintf('\n FIELD MAP REPORT \n');
+                    fprintf(file_id, '\n\n\nFIELD MAP REPORT\n\n');
 
                     for iTask = 1:numel(tasks_ls)
 
@@ -233,7 +251,7 @@ function report(BIDS, subj, sess, run, read_nii)
                         nb_run(iTask) = sum(~cellfun('isempty', tmp)); %#ok<AGROW>
                         acq_param.for = sprintf('for %i runs of %s, ', nb_run, tasks_ls{iTask});
 
-                        fprintf(boilerplate_text, ...
+                        fprintf(file_id, boilerplate_text, ...
                                 acq_param.variants, ...
                                 acq_param.seqs, ...
                                 acq_param.phs_enc_dir, ...
@@ -250,7 +268,7 @@ function report(BIDS, subj, sess, run, read_nii)
 
                 case 'dwi'
 
-                    fprintf('\n DWI REPORT \n');
+                    fprintf(file_id, '\n\n\nDWI REPORT\n\n');
 
                     % get the parameters
                     acq_param = get_acq_param(BIDS, ...
@@ -269,7 +287,7 @@ function report(BIDS, subj, sess, run, read_nii)
 
                     % print output
 
-                    fprintf(boilerplate_text, ...
+                    fprintf(file_id, boilerplate_text, ...
                             acq_param.variants, ...
                             acq_param.seqs, ...
                             acq_param.n_slices, ...
@@ -298,7 +316,7 @@ function report(BIDS, subj, sess, run, read_nii)
 
             end
 
-            fprintf('\n\n');
+            fprintf(file_id, '\n\n');
 
         end
 
@@ -306,7 +324,36 @@ function report(BIDS, subj, sess, run, read_nii)
 
 end
 
-function boilerplate_text = get_boilerplate(type)
+function file_id = open_output_file(BIDS, output_path)
+
+    file_id = 1;
+
+    if ~isempty(output_path)
+
+        [~, folder] = fileparts(BIDS);
+
+        filename = fullfile( ...
+                            output_path, ...
+                            ['dataset-' folder '_bids-matlab_report.md']);
+
+        file_id = fopen(filename, 'w+');
+
+        if file_id == -1
+
+            warning('Unable to write file %s. Will print to screen.', filename);
+
+            file_id = 1;
+
+        else
+            fprintf('Dataset description saved in:  %s', filename);
+
+        end
+
+    end
+
+end
+
+function boilerplate_text = get_boilerplate(type, file_id)
 
     boilerplate_text = '';
 
@@ -346,17 +393,24 @@ function boilerplate_text = get_boilerplate(type)
 
     end
 
+    % if we save to file we don't need new lines.
+    if file_id > 1
+        boilerplate_text = strrep(boilerplate_text, '\n', '');
+    end
+
 end
 
-function acq_param = get_acq_param(BIDS, subj, sess, type, task, run, read_gz)
+function acq_param = get_acq_param(varargin)
     % Will get info from acquisition parameters from the BIDS structure or from
     % the NIfTI files
+
+    [BIDS, subj, sess, type, task, run, read_gz] = deal(varargin{:});
 
     acq_param = set_default_acq_param(type, task);
 
     [filename, metadata] = get_filemane_and_metadata(BIDS, subj, sess, type, task, run);
 
-    fprintf(' - %s\n', filename{1});
+    fprintf('  Getting parameters - %s\n', filename{1});
 
     if isfield(metadata, 'EchoTime')
         acq_param.te = num2str(metadata.EchoTime * 1000);
@@ -389,7 +443,7 @@ function acq_param = get_acq_param(BIDS, subj, sess, type, task, run, read_gz)
     % -Try to read the relevant NIfTI file to get more info from it
     % --------------------------------------------------------------------------
     if read_gz
-        fprintf('  Opening file %s.\n', filename{1});
+        fprintf(' Opening file - %s.\n', filename{1});
         try
             % read the header of the NIfTI file
             hdr = spm_vol(filename{1});
@@ -453,7 +507,9 @@ function acq_param = set_default_acq_param(type, task)
 
 end
 
-function [filename, metadata] = get_filemane_and_metadata(BIDS, subj, sess, type, task, run)
+function [filename, metadata] = get_filemane_and_metadata(varargin)
+
+    [BIDS, subj, sess, type, task, run] = deal(varargin{:});
 
     switch type
 
@@ -501,21 +557,30 @@ function [filename, metadata] = get_filemane_and_metadata(BIDS, subj, sess, type
 end
 
 function ST_def = define_slice_timing(slice_timing)
+
     % Try to figure out the order the slices were acquired from their timing
+
     if iscell(slice_timing)
         slice_timing = cell2mat(slice_timing);
     end
+
     [~, I] = sort(slice_timing);
+
     if all(I == (1:numel(I))')
         ST_def = 'ascending';
+
     elseif all(I == (numel(I):-1:1)')
         ST_def = 'descending';
+
     elseif I(1) < I(2)
         ST_def = 'interleaved ascending';
+
     elseif I(1) > I(2)
         ST_def = 'interleaved descending';
+
     else
         ST_def = '????';
+
     end
 
 end
