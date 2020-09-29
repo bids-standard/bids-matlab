@@ -1,90 +1,95 @@
-function report(path2BIDS, Subj, Ses, Run, ReadGZ)
-%bids_report Creates a short summary of the acquisition parameters of a
-% BIDS data set. This is an adaptation of the pybids report module.
+function report(BIDS, Subj, Ses, Run, ReadNII)
+% Create a short summary of the acquisition parameters of a BIDS dataset
+% FORMAT bids.report(BIDS, Subj, Ses, Run, ReadNII)
 %
 % INPUTS:
-% - BIDS: path to a valid BIDS data set. Make sure you have validated it @
-% http://incf.github.io/bids-validator/
+% - BIDS: directory formatted according to BIDS [Default: pwd]
 %
 % - Subj: Specifies which subject(s) to take as template.
-% - Ses: Specifies which session(s) to take as template. Can be a vector.
-% Set to 0 to do all sessions.
-% - Run: Specifies which BOLD run(s) to take as template.
+% - Ses:  Specifies which session(s) to take as template. Can be a vector.
+%         Set to 0 to do all sessions.
+% - Run:  Specifies which BOLD run(s) to take as template.
+% - ReadNII: If set to 1 (default) the function will try to read the
+%             NIfTI file to get more information. This relies on the
+%             spm_vol.m function from SPM.
 %
 % Unless specified the function will only read the data from the first
 % subject, session, and run (for each task of BOLD). This can be an issue
 % if different subjects/sessions contain very different data.
 %
-% - ReadGZ. If set to 1 (default) the function will try to read the *.nii.gz file to get more
-% information. This relies on the spm_vol.m function.
-%
-%
-% tested on:
-% - windows 10 / matlab 2017a
-% - on all the empty raw data files from BIDS-examples
-% - on ds001 and ds003 with data from BIDS-examples
-%
-%
-% Example:
-% path2BIDS = 'D:\BIDS\ds114'
-% bids.report(path2BIDS)
-%
-%
-% RG 2018-09
+% See also:
+% bids
 
-%TO DO
-% - deal with DWI bval/bvec values not read by spm_BIDS('query')
+%__________________________________________________________________________
+%
+% BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
+%   The brain imaging data structure, a format for organizing and
+%   describing outputs of neuroimaging experiments.
+%   K. J. Gorgolewski et al, Scientific Data, 2016.
+%__________________________________________________________________________
+
+% Copyright (C) 2018, Remi Gau
+% Copyright (C) 2018--, BIDS-MATLAB developers
+
+% TODO
+%--------------------------------------------------------------------------
+% - deal with DWI bval/bvec values not read by bids.query
 % - write output to a txt file?
 % - deal with "EEG" / "MEG"
-% - deal wiht "events": compute some summary statistics as suggested in
+% - deal with "events": compute some summary statistics as suggested in
 % COBIDAS report
-% - report summary statistics on participants as suggested in
-% COBIDAS report
+% - report summary statistics on participants as suggested in COBIDAS report
 % - check if all subjects have the same content?
-% - adapts for several Subjects? Runs?
+% - adapt for several subjects or runs
 % - take care of other recommended metafield in BIDS specs or COBIDAS?
 
-% check inputs
-if nargin<1
-    error('Point me to a folder containing valid BIDS dataset.')
+
+%-Check inputs
+%--------------------------------------------------------------------------
+if ~nargin
+    BIDS = pwd;
 end
-if nargin<2 || isempty(Subj)
-    Subj=1;
+if nargin < 2 || isempty(Subj)
+    Subj = 1;
 end
-if nargin<3 || isempty(Ses)
-    Ses=1;
+if nargin < 3 || isempty(Ses)
+    Ses = 1;
 end
-if nargin<4
-    Run=1;
+if nargin < 4 || isempty(Run)
+    Run = 1;
 end
-if nargin<5
-    ReadGZ=1;
+if nargin < 5
+    ReadNII = true;
+end
+ReadNII = ReadNII & exist('spm_vol','file') == 2;
+
+%-Parse the BIDS dataset directory
+%--------------------------------------------------------------------------
+if ~isstruct(BIDS)
+    fprintf('\n-------------------------\n')
+    fprintf('  Reading BIDS: %s', BIDS)
+    fprintf('\n-------------------------\n')
+    BIDS = bids.layout(BIDS);
+    fprintf('Done.\n\n')
 end
 
-
-% read the content of the folder
-fprintf('\n-------------------------\n')
-fprintf('  Reading BIDS: %s', path2BIDS)
-fprintf('\n-------------------------\n')
-BIDS = bids.layout(path2BIDS);
-fprintf('Done.\n\n')
-
-
+%-Get sessions
+%--------------------------------------------------------------------------
 subjs_ls = bids.query(BIDS,'subjects');
 sess_ls = bids.query(BIDS,'sessions', 'sub', subjs_ls(Subj));
 if isempty(sess_ls)
-    sess_ls={''};
+    sess_ls = {''};
 end
-if Ses==0
+if Ses == 0
     Ses = 1:numel(sess_ls);
 end
 
-%% Scanner details
+%-Scanner details
+%--------------------------------------------------------------------------
+% str = 'MR data were acquired using a {tesla}-Tesla {manu} {model} MRI scanner.';
 
-%     out_str = ('MR data were acquired using a {tesla}-Tesla {manu} {model} MRI '
-%                'scanner.')
-
-% Loop through all the required sessions
+%-Loop through all the required sessions
+%--------------------------------------------------------------------------
 for iSess = Ses
     
     if numel(Ses)~=1 && ~strcmp(sess_ls{iSess}, '')
@@ -103,7 +108,8 @@ for iSess = Ses
             
             case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
                 
-                %% Anatomical
+                %-Anatomical
+                %----------------------------------------------------------
                 fprintf('Working on anat...\n')
                 
                 % anat text template
@@ -114,7 +120,7 @@ for iSess = Ses
                 
                 % get the parameters
                 acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                    types_ls{iType}, '', '', ReadGZ);
+                    types_ls{iType}, '', '', ReadNII);
                 
                 
                 % print output
@@ -128,7 +134,8 @@ for iSess = Ses
                 
                 
             case 'bold'
-                %% Functional
+                %-Functional
+                %----------------------------------------------------------
                 fprintf('Working on func...\n')
                 
                 % func text template
@@ -147,7 +154,7 @@ for iSess = Ses
                     if isempty(runs_ls)
                         % get the parameters for that task
                         acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                            'bold', tasks_ls{iTask}, '', ReadGZ);
+                            'bold', tasks_ls{iTask}, '', ReadNII);
                         
                         % compute the number of BOLD run for that task
                         acq_param.run_str = '1';
@@ -155,7 +162,7 @@ for iSess = Ses
                     else % if there is more than 1 run
                         % get the parameters for that task
                         acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                            'bold', tasks_ls{iTask}, runs_ls{Run}, ReadGZ);
+                            'bold', tasks_ls{iTask}, runs_ls{Run}, ReadNII);
                         % compute the number of BOLD run for that task
                         acq_param.run_str = num2str(numel(runs_ls));
                     end
@@ -180,10 +187,11 @@ for iSess = Ses
                 
                 
             case 'phasediff'
-                %% Fieldmap
+                %-Fieldmap
+                %----------------------------------------------------------
                 fprintf('Working on fmap...\n')
                 
-                % func text template
+                % fmap text template
                 fmap_text = cat(2, ...
                     'A %s %s field map (phase encoding: %s; %s slices; repetition time, TR= %s ms; \n',...
                     'echo time 1 / 2, TE 1/2= %s ms; flip angle, FA= %s deg; field of view, FOV= %s mm; matrix size= %s; \n',...
@@ -198,19 +206,20 @@ for iSess = Ses
                     if isempty(runs_ls)
                         % get the parameters for that task
                         acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                            'phasediff', '', '', ReadGZ);
+                            'phasediff', '', '', ReadNII);
                     else
                         % get the parameters for that task
                         acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                            'phasediff', '', runs_ls{Run}, ReadGZ);
+                            'phasediff', '', runs_ls{Run}, ReadNII);
                     end
                     
                     % goes through task list to check which fieldmap is for which
                     % run
                     acq_param.for = [];
                     nb_run = [];
-                    nb_run(iTask) = sum( ~cellfun('isempty', ...
-                        strfind(acq_param.for_str,tasks_ls{iTask},'ForceCellOutput',1) ) ); %#ok<AGROW>
+                    tmp = strfind(acq_param.for_str,tasks_ls{iTask});
+                    if ~iscell(tmp), tmp = {tmp}; end
+                    nb_run(iTask) = sum(~cellfun('isempty', tmp)); %#ok<AGROW>
                     acq_param.for = sprintf('for %i runs of %s, ', nb_run, tasks_ls{iTask});
                     
                     % print output
@@ -224,12 +233,12 @@ for iSess = Ses
                 end
                 
                 
-                
             case 'dwi'
-                %% DWI
+                %-DWI
+                %----------------------------------------------------------
                 fprintf('Working on dwi...\n')
                 
-                % func text template
+                % dwi text template
                 fmap_text = cat(2, ...
                     'One run of %s %s diffusion-weighted (dMRI) data were collected (%s  slices %s ; repetition time, TR= %s ms \n', ...
                     'echo time, TE= %s ms; flip angle, FA= %s deg; field of view, FOV= %s mm; matrix size= %s ; voxel size= %s mm \n', ...
@@ -237,10 +246,10 @@ for iSess = Ses
                 
                 % get the parameters
                 acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                    'dwi', '', '', ReadGZ);
+                    'dwi', '', '', ReadNII);
                 
                 % dirty hack to try to look into the BIDS structure as bids.query does not
-                % support querying directly for bval anb bvec
+                % support querying directly for bval and bvec
                 try
                     acq_param.n_vecs = num2str(size(BIDS.subjects(Subj).dwi.bval,2));
                     %             acq_param.bval_str = ???
@@ -258,10 +267,18 @@ for iSess = Ses
                 
                 
             case 'physio'
+                %-Physio
+                %----------------------------------------------------------
                 warning('physio not supported yet')
+                
             case {'headshape' 'meg' 'eeg' 'channels'}
+                %-M/EEG
+                %----------------------------------------------------------
                 warning('MEEG not supported yet')
+                
             case 'events'
+                %-Events
+                %----------------------------------------------------------
                 warning('events not supported yet')
         end
         
@@ -269,15 +286,13 @@ for iSess = Ses
     
 end
 
-end
 
-
+%==========================================================================
 function acq_param = get_acq_param(BIDS, subj, sess, type, task, run, ReadGZ)
 % Will get info from acquisition parameters from the BIDS structure or from
-% the *.nii.gz file
+% the NIfTI files
 
-
-%% to return dummy values in case nothing was specified
+% to return dummy values in case nothing was specified
 acq_param.type = type;
 acq_param.variants = '[XXXX]';
 acq_param.seqs = '[XXXX]';
@@ -288,7 +303,7 @@ acq_param.fa = '[XXXX]';
 
 acq_param.task  = task;
 
-acq_param.run_str  = '[XXXX]'; % number of runs (dealt with outside this function but initialized here
+acq_param.run_str  = '[XXXX]'; % number of runs (dealt with outside this function but initialized here)
 acq_param.so_str  = '[XXXX]'; % slice order string
 acq_param.mb_str  = '[XXXX]'; % multiband
 acq_param.pr_str  = '[XXXX]'; % parallel imaging
@@ -307,7 +322,8 @@ acq_param.vs = '[XXXX]'; % voxel size
 acq_param.n_vols  = '[XXXX]';
 
 
-%% look into the metadata sub-structure for BOLD data
+%-Look into the metadata sub-structure for BOLD data
+%--------------------------------------------------------------------------
 if ismember(type, {'T1w' 'inplaneT2' 'T1map' 'FLASH' 'dwi'})
     
     filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type);
@@ -355,13 +371,12 @@ if isfield(metadata, 'IntendedFor')
     acq_param.for_str = metadata.IntendedFor;
 end
 
-%% try to read the relevant .nii.gz file to get more info from it
+%-Try to read the relevant NIfTI file to get more info from it
+%--------------------------------------------------------------------------
 if ReadGZ
     fprintf('  Opening file %s.\n',filename{1})
-    
-    if exist('spm_vol','file') == 2
     try
-        % read the header of the nifti file
+        % read the header of the NIfTI file
         hdr = spm_vol(filename{1});
         acq_param.n_vols  = num2str(numel(hdr)); % nb volumes
         
@@ -376,24 +391,18 @@ if ReadGZ
         acq_param.fov = sprintf('%.2f X %.2f', vs(1)*dim(1), vs(2)*dim(2)); % field of view
         
     catch
-        warning('Could not read the file %s.\n', filename{1})
-    end
-    else
-        warning('Reading the file \n%s\nrelies on the spm_vol.m function which does not seem to be in the matlab path?', filename{1})
-        
+        warning('Could not read the header from file %s.\n', filename{1});
     end
 end
 
 
-end
-
-
+%==========================================================================
 function ST_def = define_slice_timing(SliceTiming)
-% tries to figure out the ways the slices were acquired from their timing
+% Try to figure out the order the slices were acquired from their timing
 if iscell(SliceTiming)
     SliceTiming = cell2mat(SliceTiming);
 end
-[~,I] = sort(SliceTiming);
+[dummy,I] = sort(SliceTiming);
 if all(I==(1:numel(I))')
     ST_def = 'ascending';
 elseif all(I==(numel(I):-1:1)')
@@ -404,5 +413,4 @@ elseif I(1)>I(2)
     ST_def = 'interleaved descending';
 else
     ST_def = '????';
-end
 end

@@ -1,7 +1,7 @@
 function [sts, msg] = validate(root)
 % BIDS Validator
 % FORMAT [sts, msg] = bids.validate(root)
-% root    - directory formated according to BIDS [Default: pwd]
+% root    - directory formatted according to BIDS [Default: pwd]
 % sts     - 0 if successful
 % msg     - warning and error messages
 %__________________________________________________________________________
@@ -12,6 +12,9 @@ function [sts, msg] = validate(root)
 % Web version: 
 %   https://bids-standard.github.io/bids-validator/
 %__________________________________________________________________________
+%
+% See also:
+% bids
 
 % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 % Copyright (C) 2018--, BIDS-MATLAB developers
