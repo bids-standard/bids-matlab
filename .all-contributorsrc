@@ -39,6 +39,18 @@
         "review",
         "test"
       ]
+    },
+    {
+      "login": "apjanke",
+      "name": "Andrew Janke",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/2618447?v=4",
+      "profile": "http://apjanke.net",
+      "contributions": [
+        "code",
+        "design",
+        "doc",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
