@@ -126,7 +126,7 @@ function x = dsv_read(filename, delim, header)
         header = true;
     end % true: detect, false: no
     delim = sprintf(delim);
-    eol = sprintf('\n');
+    eol = sprintf('\n'); %#ok<SPRINTFN>
 
     % -Read file
     % --------------------------------------------------------------------------
@@ -151,7 +151,7 @@ function x = dsv_read(filename, delim, header)
     if header && any(n1 & ~n2)
         hdr = true;
         try
-            var = genvarname(var);
+            var = genvarname(var); %#ok<DEPGENAM>
         catch
             var = matlab.lang.makeValidName(var, 'ReplacementStyle', 'hex');
             var = matlab.lang.makeUniqueStrings(var);
