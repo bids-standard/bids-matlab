@@ -598,7 +598,7 @@ function subject = parse_dwi(subject)
             % -bval file
             % ------------------------------------------------------------------
             % bval file can also be stored at higher levels (inheritance principle)
-            bvalfile = get_metadata(fileList{i}, '^.*%s\\.bval$');
+            bvalfile = bids.internal.get_metadata(fileList{i}, '^.*%s\\.bval$');
             if isfield(bvalfile, 'filename')
                 subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
             end
@@ -606,7 +606,7 @@ function subject = parse_dwi(subject)
             % -bvec file
             % ------------------------------------------------------------------
             % bvec file can also be stored at higher levels (inheritance principle)
-            bvecfile = get_metadata(fileList{i}, '^.*%s\\.bvec$');
+            bvecfile = bids.internal.get_metadata(fileList{i}, '^.*%s\\.bvec$');
             if isfield(bvalfile, 'filename')
                 subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename); % ?
             end
