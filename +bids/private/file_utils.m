@@ -17,6 +17,7 @@ function varargout = file_utils(str,varargin)
 
 % Copyright (C) 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 
+%#ok<*AGROW>
 
 if ismember(lower(str), {'list','fplist'})
     [varargout{1:nargout}] = listfiles(str, varargin{:});
