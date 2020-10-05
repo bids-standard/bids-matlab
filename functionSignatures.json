@@ -20,5 +20,16 @@
 	[
 	    {"name":"root", "kind":"required", "type":"folder"}
 	]
+    },
+    "bids.report":
+    {
+	"inputs":
+	[
+	    {"name":"BIDS", "kind":"ordered", "type":[["folder"],["struct"]]},
+	    {"name":"Subj", "kind":"ordered", "type":"numeric"},
+	    {"name":"Ses", "kind":"ordered", "type":"numeric"},
+	    {"name":"Run", "kind":"ordered", "type":"numeric"},
+	    {"name":"ReadNII", "kind":"ordered", "type":"boolean"}
+	]
     }
 }
