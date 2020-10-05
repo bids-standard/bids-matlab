@@ -11,7 +11,7 @@
 	"inputs":
 	[
 	    {"name":"BIDS", "kind":"required", "type":"struct"},
-	    {"name":"query", "kind":"required", "type":["char", "string", "choices={'data','metadata','sessions','subjects','runs','tasks','types','modalities'}"]}
+	    {"name":"query", "kind":"required", "type":["char", "choices={'data','metadata','sessions','subjects','runs','tasks','types','modalities'}"]}
 	]
     },
     "bids.validate":
