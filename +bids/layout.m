@@ -23,7 +23,7 @@ function BIDS = layout(root,tolerant)
         root = pwd;
     elseif nargin == 1
         if ischar(root)
-            root = file_utils(root, 'CPath');
+            root = bids.internal.file_utils(root, 'CPath');
         elseif isstruct(root)
             BIDS = root; % or BIDS = bids.layout(root.root);
             return;
@@ -104,7 +104,7 @@ function BIDS = layout(root,tolerant)
     
     %-Participant key file
     %==========================================================================
-    p = file_utils('FPList',BIDS.dir,'^participants\.tsv$');
+    p = bids.internal.file_utils('FPList',BIDS.dir,'^participants\.tsv$');
     if ~isempty(p)
         try
             BIDS.participants = bids.util.tsvread(p);
@@ -113,7 +113,7 @@ function BIDS = layout(root,tolerant)
             tolerant_message(tolerant, msg);
         end
     end
-    p = file_utils('FPList',BIDS.dir,'^participants\.json$');
+    p = bids.internal.file_utils('FPList',BIDS.dir,'^participants\.json$');
     if ~isempty(p)
         BIDS.participants.meta = bids.util.jsondecode(p);
     end
@@ -126,18 +126,18 @@ function BIDS = layout(root,tolerant)
     
     % -Tasks: JSON files are accessed through metadata
     % ==========================================================================
-    % t = file_utils('FPList',BIDS.dir,...
+    % t = bids.internal.file_utils('FPList',BIDS.dir,...
     %    '^task-.*_(beh|bold|events|channels|physio|stim|meg)\.(json|tsv)$');
     
     % -Subjects
     % ==========================================================================
-    sub = cellstr(file_utils('List', BIDS.dir, 'dir', '^sub-.*$'));
+    sub = cellstr(bids.internal.file_utils('List', BIDS.dir, 'dir', '^sub-.*$'));
     if isequal(sub, {''})
         error('No subjects found in BIDS directory.');
     end
     
     for iSub = 1:numel(sub)
-        sess = cellstr(file_utils('List', fullfile(BIDS.dir, sub{iSub}), 'dir', '^ses-.*$'));
+        sess = cellstr(bids.internal.file_utils('List', fullfile(BIDS.dir, sub{iSub}), 'dir', '^ses-.*$'));
         for iSess = 1:numel(sess)
             if isempty(BIDS.subjects)
                 BIDS.subjects = parse_subject(BIDS.dir, sub{iSub}, sess{iSess});
@@ -205,14 +205,14 @@ function subject = parse_anat(subject)
     % --------------------------------------------------------------------------
     pth = fullfile(subject.path, 'anat');
     if exist(pth, 'dir')
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
             % -Anatomy imaging data file
             % ------------------------------------------------------------------
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'});
             subject.anat = [subject.anat p];
             
         end
@@ -230,12 +230,12 @@ function subject = parse_func(subject)
         
         % -Task imaging data file
         % ----------------------------------------------------------------------
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_bold\\.nii(\\.gz)?$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'rec', 'fa', 'echo', 'inv', 'run', 'recording', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'rec', 'fa', 'echo', 'inv', 'run', 'recording', 'meta'});
             subject.func = [subject.func p];
             subject.func(end).meta = struct([]); % ?
             
@@ -244,12 +244,12 @@ function subject = parse_func(subject)
         % -Task events file
         % ----------------------------------------------------------------------
         % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_events\\.tsv$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'rec', 'fa', 'echo', 'inv', 'run', 'recording', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'rec', 'fa', 'echo', 'inv', 'run', 'recording', 'meta'});
             subject.func = [subject.func p];
             subject.func(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
             
@@ -258,13 +258,13 @@ function subject = parse_func(subject)
         % -Physiological and other continuous recordings file
         % ----------------------------------------------------------------------
         % (!) TODO: stim file can also be stored at higher levels (inheritance principle)
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_(physio|stim)\\.tsv\\.gz$', subject.name));
         % see also [_recording-<label>]
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'rec', 'fa', 'echo', 'inv', 'run', 'recording', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'rec', 'fa', 'echo', 'inv', 'run', 'recording', 'meta'});
             subject.func = [subject.func p];
             subject.func(end).meta = struct([]); % ?
             
@@ -279,7 +279,7 @@ function subject = parse_fmap(subject)
     % --------------------------------------------------------------------------
     pth = fullfile(subject.path, 'fmap');
     if exist(pth, 'dir')
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*\\.nii(\\.gz)?$', subject.name));
         fileList = convert_to_cell(fileList);
         j = 1;
@@ -295,8 +295,8 @@ function subject = parse_fmap(subject)
         if any(~cellfun(@isempty, labels))
             idx = find(~cellfun(@isempty, labels));
             for i = 1:numel(idx)
-                fb = file_utils(file_utils(fileList{idx(i)}, 'basename'), 'basename');
-                metafile = fullfile(pth, file_utils(fb, 'ext', 'json'));
+                fb = bids.internal.file_utils(bids.internal.file_utils(fileList{idx(i)}, 'basename'), 'basename');
+                metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
                 subject.fmap(j).type = 'phasediff';
                 subject.fmap(j).filename = fileList{idx(i)};
                 subject.fmap(j).magnitude = { ...
@@ -326,8 +326,8 @@ function subject = parse_fmap(subject)
         if any(~cellfun(@isempty, labels))
             idx = find(~cellfun(@isempty, labels));
             for i = 1:numel(idx)
-                fb = file_utils(file_utils(fileList{idx(i)}, 'basename'), 'basename');
-                metafile = fullfile(pth, file_utils(fb, 'ext', 'json'));
+                fb = bids.internal.file_utils(bids.internal.file_utils(fileList{idx(i)}, 'basename'), 'basename');
+                metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
                 subject.fmap(j).type = 'phase12';
                 subject.fmap(j).filename = { ...
                     fileList{idx(i)}, ...
@@ -361,8 +361,8 @@ function subject = parse_fmap(subject)
         if any(~cellfun(@isempty, labels))
             idx = find(~cellfun(@isempty, labels));
             for i = 1:numel(idx)
-                fb = file_utils(file_utils(fileList{idx(i)}, 'basename'), 'basename');
-                metafile = fullfile(pth, file_utils(fb, 'ext', 'json'));
+                fb = bids.internal.file_utils(bids.internal.file_utils(fileList{idx(i)}, 'basename'), 'basename');
+                metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
                 subject.fmap(j).type = 'fieldmap';
                 subject.fmap(j).filename = fileList{idx(i)};
                 subject.fmap(j).magnitude = strrep(fileList{idx(i)}, '_fieldmap.nii', '_magnitude.nii');
@@ -391,8 +391,8 @@ function subject = parse_fmap(subject)
         if any(~cellfun(@isempty, labels))
             idx = find(~cellfun(@isempty, labels));
             for i = 1:numel(idx)
-                fb = file_utils(file_utils(fileList{idx(i)}, 'basename'), 'basename');
-                metafile = fullfile(pth, file_utils(fb, 'ext', 'json'));
+                fb = bids.internal.file_utils(bids.internal.file_utils(fileList{idx(i)}, 'basename'), 'basename');
+                metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
                 subject.fmap(j).type = 'epi';
                 subject.fmap(j).filename = fileList{idx(i)};
                 subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
@@ -421,7 +421,7 @@ function subject = parse_eeg(subject)
         
         % -EEG data file
         % ----------------------------------------------------------------------
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_eeg\\..*[^json]$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
@@ -431,7 +431,7 @@ function subject = parse_eeg(subject)
             % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
             % Biosemi data format (.bdf)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
             switch p.ext
                 case {'.edf', '.vhdr', '.set', '.bdf'}
                     % each recording is described with a single file, even though the data can consist of multiple
@@ -448,12 +448,12 @@ function subject = parse_eeg(subject)
         % -EEG events file
         % ----------------------------------------------------------------------
         % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_events\\.tsv$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
             subject.eeg = [subject.eeg p];
             subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
             
@@ -462,12 +462,12 @@ function subject = parse_eeg(subject)
         % -Channel description table
         % ----------------------------------------------------------------------
         % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_channels\\.tsv$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
             subject.eeg = [subject.eeg p];
             subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
             
@@ -475,12 +475,12 @@ function subject = parse_eeg(subject)
         
         % -Session-specific file
         % ----------------------------------------------------------------------
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s(_ses-[a-zA-Z0-9]+)?.*_(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
             subject.eeg = [subject.eeg p];
             subject.eeg(end).meta = struct([]); % ?
             
@@ -499,7 +499,7 @@ function subject = parse_meg(subject)
         
         % -MEG data file
         % ----------------------------------------------------------------------
-        [fileList, d] = file_utils('List', pth, ...
+        [fileList, d] = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_meg\\..*[^json]$', subject.name));
         if isempty(fileList)
             fileList = d;
@@ -507,7 +507,7 @@ function subject = parse_meg(subject)
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'});
             subject.meg = [subject.meg p];
             subject.meg(end).meta = struct([]); % ?
             
@@ -516,12 +516,12 @@ function subject = parse_meg(subject)
         % -MEG events file
         % ----------------------------------------------------------------------
         % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_events\\.tsv$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'});
             subject.meg = [subject.meg p];
             subject.meg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
             
@@ -530,12 +530,12 @@ function subject = parse_meg(subject)
         % -Channels description table
         % ----------------------------------------------------------------------
         % (!) TODO: channels file can also be stored at higher levels (inheritance principle)
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_channels\\.tsv$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'});
             subject.meg = [subject.meg p];
             subject.meg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
             
@@ -543,12 +543,12 @@ function subject = parse_meg(subject)
         
         % -Session-specific file
         % ----------------------------------------------------------------------
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s(_ses-[a-zA-Z0-9]+)?.*_(photo\\.jpg|coordsystem\\.json|headshape\\..*)$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'});
             subject.meg = [subject.meg p];
             subject.meg(end).meta = struct([]); % ?
             
@@ -564,7 +564,7 @@ function subject = parse_beh(subject)
     % --------------------------------------------------------------------------
     pth = fullfile(subject.path, 'beh');
     if exist(pth, 'dir')
-        fileList = file_utils('FPList', pth, ...
+        fileList = bids.internal.file_utils('FPList', pth, ...
             sprintf('^%s.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
@@ -572,7 +572,7 @@ function subject = parse_beh(subject)
             % -Event timing, metadata, physiological and other continuous
             % recordings
             % ------------------------------------------------------------------
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task'});
             subject.beh = [subject.beh p];
             
         end
@@ -585,20 +585,20 @@ function subject = parse_dwi(subject)
     % --------------------------------------------------------------------------
     pth = fullfile(subject.path, 'dwi');
     if exist(pth, 'dir')
-        fileList = file_utils('FPList', pth, ...
+        fileList = bids.internal.file_utils('FPList', pth, ...
             sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
             % -Diffusion imaging file
             % ------------------------------------------------------------------
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'});
             subject.dwi = [subject.dwi p];
             
             % -bval file
             % ------------------------------------------------------------------
             % bval file can also be stored at higher levels (inheritance principle)
-            bvalfile = get_metadata(fileList{i}, '^.*%s\\.bval$');
+            bvalfile = bids.internal.get_metadata(fileList{i}, '^.*%s\\.bval$');
             if isfield(bvalfile, 'filename')
                 subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
             end
@@ -606,7 +606,7 @@ function subject = parse_dwi(subject)
             % -bvec file
             % ------------------------------------------------------------------
             % bvec file can also be stored at higher levels (inheritance principle)
-            bvecfile = get_metadata(fileList{i}, '^.*%s\\.bvec$');
+            bvecfile = bids.internal.get_metadata(fileList{i}, '^.*%s\\.bvec$');
             if isfield(bvalfile, 'filename')
                 subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename); % ?
             end
@@ -621,14 +621,14 @@ function subject = parse_pet(subject)
     % --------------------------------------------------------------------------
     pth = fullfile(subject.path, 'pet');
     if exist(pth, 'dir')
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_pet\\.nii(\\.gz)?$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
             
             % -PET imaging file
             % ------------------------------------------------------------------
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'rec', 'run'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'rec', 'run'});
             subject.pet = [subject.pet p];
             
         end
@@ -644,7 +644,7 @@ function subject = parse_ieeg(subject)
         
         % -iEEG data file
         % ----------------------------------------------------------------------
-        fileList = file_utils('List', pth, ...
+        fileList = bids.internal.file_utils('List', pth, ...
             sprintf('^%s.*_task-.*_ieeg\\..*[^json]$', subject.name));
         fileList = convert_to_cell(fileList);
         for i = 1:numel(fileList)
@@ -655,7 +655,7 @@ function subject = parse_ieeg(subject)
             % Neurodata Without Borders (.nwb)
             % MEF3 (.mef)
             
-            p = parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
+            p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'task', 'acq', 'run', 'meta'});
             switch p.ext
                 case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
                     % each recording is described with a single file, even though the data can consist of multiple
