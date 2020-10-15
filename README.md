@@ -9,7 +9,11 @@ This repository aims at centralising MATLAB/Octave tools to interact with datase
 
 For more information about BIDS, visit https://bids.neuroimaging.io/.
 
+Join our chat on the [bids-matlab channel](https://mattermost.brainhack.org/brainhack/channels/bids-matlab) on the brainhack mattermost.
+
 See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the [BIDS Starter Kit](https://github.com/bids-standard/bids-starter-kit).
+
+
 
 ## Installation
 
