@@ -1,7 +1,7 @@
 # Travis CI (https://travis-ci.org/)
 
 language: c
-dist: bionic
+dist: focal
 cache:
   apt: true # only works with Pro version
 
