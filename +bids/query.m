@@ -143,7 +143,7 @@ switch query
                 result = unique(result);
                 result = regexprep(result,'^[a-zA-Z0-9]+-','');
                 result(cellfun('isempty',result)) = [];
-            case 'data'
+            case {'modalities','data'}
                 result = result';
             case 'metadata'
                 if numel(result) == 1
