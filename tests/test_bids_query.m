@@ -35,6 +35,7 @@ assert(isequal(bids.query(BIDS,'types'),types));
 
 mods = {'anat','func'};
 assert(isequal(bids.query(BIDS,'modalities'),mods));
+assert(isequal(bids.query(BIDS,'modalities','sub','01'),mods));
 
 assert(isempty(bids.query(BIDS,'runs','type','T1w')));
 
@@ -62,3 +63,14 @@ BIDS = bids.layout(pth);
 sessions = {'01','02'};
 assert(isequal(bids.query(BIDS,'sessions'),sessions))
 assert(isequal(bids.query(BIDS,'sessions','sub','02'),sessions))
+
+% Check modalities
+%   parse a folder with different modalities per session
+pth = fullfile(fileparts(pth),'7t_trt');
+BIDS = bids.layout(pth);
+%   test
+mods = {'anat','fmap','func'};
+assert(isequal(bids.query(BIDS,'modalities'),mods))
+assert(isequal(bids.query(BIDS,'modalities','sub','01'),mods))
+assert(isequal(bids.query(BIDS,'modalities','sub','01','ses','1'),mods))
+assert(isequal(bids.query(BIDS,'modalities','sub','01','ses','2'),mods(2:3)))
