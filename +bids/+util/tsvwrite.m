@@ -33,6 +33,7 @@ if isstruct(var) || iscell(var) || isnumeric(var) || islogical(var)
             
             if ~iscell(var{i})
                 var{i} = cellstr(num2str(var{i},16));
+                var{i} = strtrim(var{i});
                 var{i}(cellfun(@(x) strcmp(x,'NaN'),var{i})) = {'n/a'};
             end
             
@@ -40,18 +41,18 @@ if isstruct(var) || iscell(var) || isnumeric(var) || islogical(var)
         
         var = [fn'; var];
         
-    elseif iscell(var)
+    elseif iscell(var) || isnumeric(var) || islogical(var)
+        
+        if isnumeric(var) || islogical(var)
+            var = num2cell(var);
+        end
+        
         var = cellfun(@(x) num2str(x,16), var, 'UniformOutput',false);
         
-    elseif isnumeric(var) || islogical(var)
-        var = num2cell(var);
-        var = cellfun(@(x) num2str(x,16), var, 'UniformOutput',false);
-        
-    end
-    
-    try 
         var = strtrim(var);
-    catch
+        
+        var(cellfun(@(x) strcmp(x,'NaN'),var)) = {'n/a'};
+        
     end
     
     %% Actually write to file
