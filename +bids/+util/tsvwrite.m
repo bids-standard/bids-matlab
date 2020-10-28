@@ -1,9 +1,8 @@
 function tsvwrite(f, var)
 % Save text and numeric data to .tsv file
-% FORMAT tsvwrite(f,var,opts,...)
+% FORMAT tsvwrite(f, var)
 % f     - filename
 % var   - data array or structure
-% opts  - optional inputs to be passed on to lower level function
 %
 % Adapted from spm_save.m
 %__________________________________________________________________________
@@ -13,12 +12,12 @@ function tsvwrite(f, var)
 
 delim = sprintf('\t');
 
-% if the input is a matlab table format we will use built-in function
-% otherwise there is a bit of reformating to do
+% If the input is a MATLAB table, the built-in functionality is used
+% otherwise export is performed manually
 if isstruct(var) || iscell(var) || isnumeric(var) || islogical(var)
     
-    %% convert input to a common format we will use for writing
-    % var will be a 'table' where the first row is the header and all
+    % Convert input to a common format we will use for writing
+    % var will be a cell array where the first row is the header and all
     % following rows contains the values to write
     if isstruct(var)
         
@@ -33,6 +32,7 @@ if isstruct(var) || iscell(var) || isnumeric(var) || islogical(var)
             
             if ~iscell(var{i})
                 var{i} = cellstr(num2str(var{i},16));
+                var{i} = strtrim(var{i});
                 var{i}(cellfun(@(x) strcmp(x,'NaN'),var{i})) = {'n/a'};
             end
             
@@ -40,21 +40,19 @@ if isstruct(var) || iscell(var) || isnumeric(var) || islogical(var)
         
         var = [fn'; var];
         
-    elseif iscell(var)
-        var = cellfun(@(x) num2str(x,16), var, 'UniformOutput',false);
+    elseif iscell(var) || isnumeric(var) || islogical(var)
         
-    elseif isnumeric(var) || islogical(var)
-        var = num2cell(var);
-        var = cellfun(@(x) num2str(x,16), var, 'UniformOutput',false);
+        if isnumeric(var) || islogical(var)
+            var = num2cell(var);
+        end
         
-    end
-    
-    try 
+        var = cellfun(@(x) num2str(x,16), var, 'UniformOutput',false);
         var = strtrim(var);
-    catch
+        var(cellfun(@(x) strcmp(x,'NaN'),var)) = {'n/a'};
+        
     end
     
-    %% Actually write to file
+    % Actually write to file
     fid = fopen(f,'Wt');
     
     if fid == -1
