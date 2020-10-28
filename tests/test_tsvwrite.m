@@ -62,14 +62,22 @@ assert(isequal(C{1}{3}, 'n/a')); %
 assert(isequal(str2double(C{5}{3}), 3)); 
 
 
-
 %% test tsvread on tsv file using cell input
 % TO DO?
 
 
 %% test tsvread on tsv file using array input
-% TO DO?
+tsv_file = fullfile(pth, 'sub-01_task-ARRAY_events.tsv');
 
+a = [...
+    0.123456, -10; 
+    NaN, 1];
+
+bids.util.tsvwrite(tsv_file, a);
+
+FID = fopen(tsv_file, 'r');
+C = textscan(FID,'%s%s','Delimiter', '\t', 'EndOfLine', '\n');
+assert(isequal(C{1}{2}, 'n/a')); %
 
 end
 
