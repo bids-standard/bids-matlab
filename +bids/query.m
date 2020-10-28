@@ -28,13 +28,7 @@ BIDS = bids.layout(BIDS);
 opts = parse_query(varargin);
 
 switch query
-    case 'modalities'
-        hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x),y),...
-            BIDS.subjects,'UniformOutput',false);
-        hasmod = any([hasmod{:}],2);
-        mods   = fieldnames(BIDS.subjects)';
-        result = mods(hasmod);
-    case {'sessions', 'subjects', 'tasks', 'runs', 'types', 'data', 'metadata'}
+    case {'sessions', 'subjects', 'modalities', 'tasks', 'runs', 'types', 'data', 'metadata'}
         %-Initialise output variable
         result = {};
         
@@ -54,7 +48,11 @@ switch query
             mods = opts{ismember(opts(:,1),'modality'),2};
             opts(ismember(opts(:,1),'modality'),:) = [];
         else
-            mods = bids.query(BIDS,'modalities');
+            hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x),y),...
+                        BIDS.subjects,'UniformOutput',false);
+            hasmod = any([hasmod{:}],2);
+            mods   = fieldnames(BIDS.subjects)';
+            mods   = mods(hasmod);
         end
         
         %-Get optional target option for metadata query
@@ -91,6 +89,13 @@ switch query
                         case 'sessions'
                             if sts
                                 result{end+1} = BIDS.subjects(i).session;
+                            end
+                        case 'modalities'
+                            if sts
+                                hasmod = structfun(@(x) isstruct(x) & ~isempty(x),...
+                                    BIDS.subjects(i));
+                                allmods = fieldnames(BIDS.subjects(i))';
+                                result = union(result, allmods(hasmod));
                             end
                         case 'data'
                             if sts && isfield(d(k),'filename')
@@ -138,7 +143,7 @@ switch query
                 result = unique(result);
                 result = regexprep(result,'^[a-zA-Z0-9]+-','');
                 result(cellfun('isempty',result)) = [];
-            case 'data'
+            case {'modalities','data'}
                 result = result';
             case 'metadata'
                 if numel(result) == 1
