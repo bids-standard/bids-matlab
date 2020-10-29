@@ -52,7 +52,7 @@ Starting point was `spm_BIDS.m` from [SPM12](https://github.com/spm/spm12) ([doc
 ## Other tools (MATLAB only)
 - [dicm2nii](https://github.com/xiangruili/dicm2nii): A DICOM to BIDS converter
 - [imtool3D_BIDS](https://github.com/tanguyduval/imtool3D_td): A 3D viewer for BIDS directory
-- [Brainstorm](https://github.com/brainstorm-tools/brainstorm3): Comprehensive brain analysis toolbox (includes BIDS import functionality)
+- [Brainstorm](https://github.com/brainstorm-tools/brainstorm3): Comprehensive brain analysis toolbox (includes BIDS [import and export] (https://neuroimage.usc.edu/brainstorm/ExportBids) and different examples dealing with BIDS datasets (e.g. [group analysis from a MEG visual dataset](https://neuroimage.usc.edu/brainstorm/Tutorials/VisualGroup, [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specifications) )
 
 ## Contributors ✨
 
