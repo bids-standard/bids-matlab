@@ -471,6 +471,8 @@ function subject = parse_perf(subject)
                             filename_found = max(arrayfun(@(x) strcmp(x.filename, [path2check ext2check]), subject.perf));
                             if ~filename_found
                                 warning(['Did not find NIfTI for which is intended: ' subject.perf(j).filename]);
+                            else
+                                subject.perf(j).intended_for = path_intended_for{iPath};
                             end
                         end
                     end
