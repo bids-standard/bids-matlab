@@ -1,0 +1,32 @@
+name: MOxUnit_Coverage
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 1
+    - name: MOxUnit Action
+      uses: joergbrech/moxunit-action@v1.1
+      with:
+        tests: tests
+        src: +bids
+        with_coverage: true
+        cover_xml_file: coverage.xml
+    - name: Code coverage
+      uses: codecov/codecov-action@v1
+      with:
+       token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+       file:  coverage.xml # optional
+       flags: unittests # optional
+       name: codecov-umbrella # optional
+       fail_ci_if_error: true # optional (default = false)
