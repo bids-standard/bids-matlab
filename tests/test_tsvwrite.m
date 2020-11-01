@@ -1,4 +1,12 @@
-function test_tsvwrite(pth)
+function test_suite = test_tsvwrite %#ok<*STOUT>
+    try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+        test_functions = localfunctions(); %#ok<*NASGU>
+    catch % no problem; early Matlab versions can use initTestSuite fine
+    end
+    initTestSuite;
+end
+
+function test_tsvwrite_()
 % Test the tsvread function
 %__________________________________________________________________________
 %
@@ -14,15 +22,15 @@ function test_tsvwrite(pth)
 %
 % Small test to ensure that the functionality of the tsvwrite function
 
-if ~nargin
-    pth = fileparts(mfilename('fullpath'));
-end
+
+data_path = fileparts(mfilename('fullpath'));
+
 
 %% test tsvread on tsv file using structure input
 
 % ---- set up
 
-tsv_file = fullfile(pth, 'sub-01_task-STRUCTURE_events.tsv');
+tsv_file = fullfile(data_path, 'sub-01_task-STRUCTURE_events.tsv');
 
 logFile(1,1).onset = 2;
 logFile(1,1).trial_type = 'motion_up';
@@ -67,7 +75,7 @@ assert(isequal(str2double(C{5}{3}), 3));
 
 
 %% test tsvread on tsv file using array input
-tsv_file = fullfile(pth, 'sub-01_task-ARRAY_events.tsv');
+tsv_file = fullfile(data_path, 'sub-01_task-ARRAY_events.tsv');
 
 a = [...
     0.123456, -10; 

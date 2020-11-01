@@ -1,4 +1,12 @@
-function test_bids_query(pth)
+function test_suite = test_bids_query %#ok<*STOUT>
+    try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+        test_functions = localfunctions(); %#ok<*NASGU>
+    catch % no problem; early Matlab versions can use initTestSuite fine
+    end
+    initTestSuite;
+end
+
+function test_bids_query_()
 % Test BIDS queries on ds007
 % This dataset comes from https://github.com/bids-standard/bids-examples
 % and is downloaded automatically by the continuous integration framework
@@ -74,3 +82,5 @@ assert(isequal(bids.query(BIDS,'modalities'),mods))
 assert(isequal(bids.query(BIDS,'modalities','sub','01'),mods))
 assert(isequal(bids.query(BIDS,'modalities','sub','01','ses','1'),mods))
 assert(isequal(bids.query(BIDS,'modalities','sub','01','ses','2'),mods(2:3)))
+
+end

@@ -1,4 +1,12 @@
-function test_tsvread(pth)
+function test_suite = test_tsvread %#ok<*STOUT>
+    try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+        test_functions = localfunctions(); %#ok<*NASGU>
+    catch % no problem; early Matlab versions can use initTestSuite fine
+    end
+    initTestSuite;
+end
+
+function test_tsvread_()
 % Test the tsvread function
 %__________________________________________________________________________
 %
@@ -32,4 +40,4 @@ assert(isequal(output.onset', events.onset));
 output = bids.util.tsvread(fullfile(fileparts(mfilename('fullpath')), 'data', 'sub-01_task-auditory_events.tsv.gz'));
 assert(isequal(output.onset', events.onset));
 
-
+end

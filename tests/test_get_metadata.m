@@ -1,4 +1,12 @@
-function test_get_metadata(pth)
+function test_suite = test_get_metadata %#ok<*STOUT>
+    try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+        test_functions = localfunctions(); %#ok<*NASGU>
+    catch % no problem; early Matlab versions can use initTestSuite fine
+    end
+    initTestSuite;
+end
+
+function test_get_metadata_()
 % Test metadata and the inheritance principle
 %__________________________________________________________________________
 %
@@ -53,3 +61,5 @@ metadata = bids.query(BIDS, 'metadata', 'type', 'T1w');
 metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'type', 'T1w');
 assert(metadata.FlipAngle == anat_sub_01.FlipAngle);
 assert(strcmp(metadata.Manufacturer, anat_sub_01.Manufacturer));
+
+end
