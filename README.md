@@ -45,3 +45,6 @@ Starting point was `spm_BIDS.m` from [SPM12](https://github.com/spm/spm12) ([doc
 ## Other tools (MATLAB only)
 - [dicm2nii](https://github.com/xiangruili/dicm2nii): A DICOM to BIDS converter
 - [imtool3D_BIDS](https://github.com/tanguyduval/imtool3D_td): A 3D viewer for BIDS directory
+
+
+## TEST CHANGE; PLEASE DO NOT MERGE
