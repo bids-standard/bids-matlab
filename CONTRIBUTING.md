@@ -13,17 +13,24 @@ Been here before?
 Already know what you're looking for in this guide? 
 Jump to the following sections:
 
--   [Joining the BIDS community](#joining-the-community)
+-   [Joining the community](#joining-the-community)
 -   [Contributing through GitHub](#contributing-through-github)
 -   [Understanding issues](#understanding-issues)
--   [Writing in markdown](#writing-in-markdown)
--   [Fixing Remark errors from Travis](#fixing-travis-remark-errors)
 -   [Making a change with a pull request](#making-a-change-with-a-pull-request)
 -   [Example pull request](#example-pull-request)
 -   [Commenting on a pull request](#commenting-on-a-pull-request)
 -   [Accepting suggestion from a review](#accepting-suggestion-from-a-review)
--   [Updating the specification schema](#updating-the-schema)
 -   [Recognizing contributions](#recognizing-contributions)
+
+<!-- 
+TODO: sections to add
+- testing
+- examples
+  - setting up an octave jupyter notebook
+- binder
+- continuous integration 
+-->
+
 
 ## Joining the community
 
