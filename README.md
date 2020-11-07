@@ -1,4 +1,5 @@
 # BIDS for MATLAB / Octave
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -53,6 +54,49 @@ Starting point was `spm_BIDS.m` from [SPM12](https://github.com/spm/spm12) ([doc
 - [dicm2nii](https://github.com/xiangruili/dicm2nii): A DICOM to BIDS converter
 - [imtool3D_BIDS](https://github.com/tanguyduval/imtool3D_td): A 3D viewer for BIDS directory
 - [Brainstorm](https://github.com/brainstorm-tools/brainstorm3): Comprehensive brain analysis toolbox (includes BIDS [import and export](https://neuroimage.usc.edu/brainstorm/ExportBids) and different examples dealing with BIDS datasets (e.g. [group analysis from a MEG visual dataset](https://neuroimage.usc.edu/brainstorm/Tutorials/VisualGroup), [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specifications) )
+
+## Code style guide and quality
+
+We use the
+[MISS_HIT linter](https://github.com/florianschanda/miss_hit/)
+to automatically enforce / fix some code style issues and check for code quality.
+
+The linter is a python package that can be installed with:
+
+```
+pip3 install --user miss_hit
+```
+
+The rules followed by the miss_hit are in the [miss_hit configuration file](./miss_hit.cfg).
+
+To check the code style of the whole repository, you can can simply type:
+
+```
+mh_style .
+```
+
+Some styling issues can be automatically fixed by using the `--fix` flag. You might reuquire to rerun this command several times if there are a lot of issues.
+
+```
+mh_style . --fix
+```
+
+Code quality can be checked with:
+
+```
+mh_metric .
+```
+
+To see only the issues that "break" the code quality rules set in the configuration file, type:
+
+```
+mh_metric . --ci
+```
+
+The code style and quality is also checked during the
+[continuous integration](.github/workflows/miss_hit.yml).
+
+For more information about the miss_hit see its [documentation](https://florianschanda.github.io/miss_hit/).
 
 ## Contributors ✨
 
