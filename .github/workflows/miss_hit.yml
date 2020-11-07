@@ -1,0 +1,39 @@
+name: miss_hit
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches: '*'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 1
+
+    - name: Set up Python 3.6
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools
+        pip3 install install miss_hit
+
+    - name: Miss_hit code quality
+      run: |
+        mh_metric . --ci
+
+    - name: Miss_hit code style
+      run: |
+        mh_style .
