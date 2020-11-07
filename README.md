@@ -93,7 +93,7 @@ mh_metric . --ci
 ```
 
 The code style and quality is also checked during the
-[continuous integration](./.travis.yml).
+[continuous integration](.github/workflows/miss_hit.yml).
 
 For more information about the miss_hit see its [documentation](https://florianschanda.github.io/miss_hit/).
 
