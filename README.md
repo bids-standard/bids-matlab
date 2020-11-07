@@ -37,7 +37,12 @@ A [tutorial](https://github.com/bids-standard/bids-matlab/blob/master/examples/t
 
 ## Requirements
 
-BIDS-MATLAB works with MATLAB R2014a or newer, or Octave 4.2.2 or newer. (It may also work with older versions, but those are not actively supported.)
+BIDS-MATLAB works with: 
+
+- Octave 4.2.2 or newer
+- MATLAB R2014a or newer  
+
+It may also work with older versions, but those are not actively supported.
 
 If you are using MATLAB R2016b or newer, nothing else needs to be installed.
 
@@ -45,6 +50,8 @@ If you are using MATLAB R2016a or older, or using Octave, you need to install a 
 
   * [JSONio](https://github.com/gllmflndn/JSONio) for MATLAB or Octave
   * [SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/)
+
+In general we will try to use the latest version of Octave as a baseline for compatibility.
 
 ## Implementation
 
