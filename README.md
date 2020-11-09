@@ -66,12 +66,11 @@ A [tutorial](https://github.com/bids-standard/bids-matlab/blob/master/examples/t
 
 BIDS-MATLAB works with: 
 
-- Octave 4.2.2 or newer
+- Octave 5.2.0 or newer
 - MATLAB R2014a or newer  
 
-In general we will try to use the latest version of Octave as a baseline for compatibility.
+We aim for compatibility with the latest stable release of Octave at any time. Compatibility can sometimes also be achieved with older versions of Octave but this is not guaranteed.
 
-It may also work with older versions, but those are not actively supported.
 
 ### Reading and writing JSON files
 
