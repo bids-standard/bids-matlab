@@ -19,7 +19,7 @@ function test_bids_examples(pth)
 if ~nargin, pth = fullfile(pwd,'bids-examples'); end
 
 d = dir(pth);
-d(arrayfun(@(x) ~x.isdir || ismember(x.name,{'.','..','.git'}),d)) = [];
+d(arrayfun(@(x) ~x.isdir || ismember(x.name,{'.','..','.git','.github'}),d)) = [];
 
 %-Try to run bids.layout on each dataset directory and keep track of any
 % failure with a try/catch
