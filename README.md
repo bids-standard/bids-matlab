@@ -24,9 +24,6 @@ See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the [B
 - generate a human readable report of the content of BIDS data set containing anatomical MRI, functional MRI, diffusion weighted imaging, field map data (see `bids.report`)
 - read and write JSON files (see `bids.util.jsondecode` and `bids.util.jsonencode`) provided that the right [dependencies](#reading-and-writing-json-files) are installed,
 - read and write TSV files (see `bids.util.tsvread` and `bids.util.tsvwrite`),
-- parse typical BIDS filenames organized in key/value pairs (like this `key1-value_key2-value`) (see `bids.util.parse_filename`).
-
-It also comes with some basic file name handling capabilities "inherited" from `spm_file` and `spm_select` (see `bids.util.file_utils`).
 
 The behavior of this toolbox assumes that it is interacting with a valid BIDS dataset that should have been validated using [BIDS-validator](https://bids-standard.github.io/bids-validator/). Any unvalidated components may produce undefined behavior. Although, if you're BIDS-y enough, the behavior may be predictable.
 
