@@ -21,9 +21,9 @@ See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the [B
 
 - read the layout of a BIDS dataset (see `bids.layout`),
 - perform queries on that layout to get information about the subjects, sessions, runs, modalities, metadata... contained within that dataset (see `bids.query`),
-- generate a human readable report of the content of BIDS data set contaning anatomical MRI, functional MRI, diffusion weighted imaging, field map data (see `bids.report`)
+- generate a human readable report of the content of BIDS data set containing anatomical MRI, functional MRI, diffusion weighted imaging, field map data (see `bids.report`)
 - read and write JSON files (see `bids.util.jsondecode` and `bids.util.jsonencode`) provided that the right [dependencies](#reading-and-writing-json-files) are installed,
-- read and write TSV files (see `bids.util.tsvread` and `bids.util.tsvwrite`,
+- read and write TSV files (see `bids.util.tsvread` and `bids.util.tsvwrite`),
 - parse typical BIDS filenames organized in key/value pairs (like this `key1-value_key2-value`) (see `bids.util.parse_filename`).
 
 It also comes with some basic file name handling capabilities "inherited" from `spm_file` and `spm_select` (see `bids.util.file_utils`).
@@ -37,7 +37,7 @@ The behavior of this toolbox assumes that it is interacting with a valid BIDS da
 - create BIDS compatible filenames or folder structures for raw or derivatives datasets,
 - basic copying of files to help with derivative dataset generation,
 - generate human readable reports of the content of BIDS data with EEG, MEG, iEEG, physio and events data,
-- deal with some of the most recent updates or incoming BIDS extensions (basic derivatices, ASL, PET, BIDS model...)
+- deal with some of the most recent updates or incoming BIDS extensions (basic derivatives, ASL, PET, BIDS model...)
 - ...
 
 We are trying to centralize the requests for new features in this [issue](https://github.com/bids-standard/bids-matlab/issues/60): have a browse to see what could be coming soon or if we have missed something obvious.
