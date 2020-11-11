@@ -1,4 +1,4 @@
-# Contributing to the BIDS-matlab
+# Contributing to BIDS-matlab
 
 **Welcome to the BIDS-matlab repository!**
 
@@ -50,10 +50,10 @@ As a reminder, we expect that all contributions adhere to our
 ## Contributing through GitHub
 
 [Git](https://git-scm.com/) is a really useful tool for version control.
-[GitHub](https://github.com/) sits on top of git and supports collaborative and
+[GitHub](https://github.com/) sits on top of Git and supports collaborative and
 distributed working.
 
-We know that it can be daunting to start using git and GitHub if you haven't
+We know that it can be daunting to start using Git and GitHub if you haven't
 worked with them in the past, but the BIDS-matlab maintainers are here to
 help you figure out any of the jargon or confusing instructions you encounter!
 
@@ -180,7 +180,7 @@ git commit -m 'STY: Fixed Markdown style'
 
 ## Making a change with a pull request
 
-We appreciate all contributions to the BIDS Specification. **THANK YOU** for
+We appreciate all contributions to BIDS-matlab. **THANK YOU** for
 helping us build this useful resource.
 
 #### 1. Comment on an existing issue or open a new issue referencing your addition
@@ -191,7 +191,7 @@ the same page with the goal of the work you're going to carry out.
 
 #### 2. [Fork](https://help.github.com/articles/fork-a-repo/) [this repository](https://github.com/bids-standard/bids-matlab) to your profile
 
-This is now your own unique copy of the BIDS matlab. 
+This is now your own unique copy of BIDS-matlab. 
 Changes here won't affect anyone else's work, so it's a safe space to explore edits to the
 code!
 
@@ -215,16 +215,16 @@ Please keep the title of your pull request short but informative.
 
 Use one of the following prefixes in the title of your pull request:
 
--   `[ENH]` - enhancement of the specification that adds a new feature or
+-   `[ENH]` - enhancement of the software that adds a new feature or
     support for a new data type
--   `[FIX]` - fix of a typo or language clarification
--   `[INFRA]` - changes to the infrastructure automating the specification
+-   `[FIX]` - fix of a bug or documentation error
+-   `[INFRA]` - changes to the infrastructure automating the project
     release (for example, building HTML docs)
 -   `[MISC]` - everything else including changes to the file listing
     contributors
 
 If you are opening a pull request to obtain early feedback, but the changes are
-not ready to be merged (also known as a "work in progress" pull request, sometimes abbreviated by `WIP`)
+not ready to be merged (also known as a "work in progress" pull request, sometimes abbreviated by `WIP`),
 please use a
 [draft pull request](https://github.blog/2019-02-14-introducing-draft-pull-requests/).
 
@@ -236,8 +236,8 @@ usually consist of a few questions to help clarify the work you've done.
 Keep an eye on your GitHub notifications and be prepared to join in that
 conversation.
 
-You can update your [fork](https://help.github.com/articles/about-forks/) of the
-BIDS Specification and the pull request will automatically update with those
+You can update your [fork](https://help.github.com/articles/about-forks/) of
+BIDS-matlab and the pull request will automatically update with those
 commits. 
 You don't need to submit a new pull request when you make a change in
 response to a review.
@@ -252,7 +252,7 @@ have any questions.
 
 ## Commenting on a pull request
 
-Our primary method of adding to or enhancing BIDS occurs in the form of
+Our primary method of adding to or enhancing BIDS-matlab occurs in the form of
 [pull requests](https://help.github.com/articles/about-pull-requests/). 
 
 This section outlines how to comment on a pull request.
@@ -290,7 +290,7 @@ comments and questions.
 
 ### Specific comments on a pull request
 
-The proposed changes to the text of the specification can be seen in the "Files
+The proposed changes to the software can be seen in the "Files
 changed" tab. 
 Proposed additions are displayed on a green background with a `+`
 before each added line. 
@@ -329,7 +329,7 @@ as a batch by clicking the "Finish your review" button.
 
 When others are making [suggestions to your pull request](#suggesting-text), you
 have the possibility to accept directly the changes suggested during the review
-through the github interface. This can often be faster and more convenient than
+through the GitHub interface. This can often be faster and more convenient than
 make the changes locally and then pushing those changes to update your pull
 request. Moreover it gives the opportunity to give credit to the reviewers for
 their contribution.
@@ -372,7 +372,7 @@ to testing to code development.
 You can see a list of current contributors in the
 [README](./README.md).
 
-If you have made any type of contributions to the BIDS specifications, our team will add you as a contributor (or ask to be added if we forgot).
+If you have made any type of contributions to BIDS-matlab, our team will add you as a contributor (or ask to be added if we forgot).
 
 ## Thank you!
 

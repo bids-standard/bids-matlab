@@ -23,7 +23,7 @@ Contributors are listed in the README using the all-contributors bot.
 
 ## GitHub Workflow
 
-For the day-to-day work on the BIDS specification, we currently abide by the
+For the day-to-day work on the BIDS-matlab, we currently abide by the
 following rules with the intention to:
 
 - Strive for consensus.
@@ -36,7 +36,7 @@ following rules with the intention to:
 
 The rules outlined below are inspired by the
 [lazy consensus system used in the Apache Foundation](https://www.apache.org/foundation/voting.html)
-and heavily depends on
+and heavily depend on the
 [GitHub Pull Request Review system](https://help.github.com/articles/about-pull-requests/).
 
 ## Rules
