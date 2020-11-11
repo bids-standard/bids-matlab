@@ -67,7 +67,7 @@ The linter is a python package that can be installed with:
 pip3 install --user miss_hit
 ```
 
-The rules followed by the miss_hit are in the [miss_hit configuration file](./miss_hit.cfg).
+The rules followed by MISS_HIT are in the [MISS_HIT configuration file](./miss_hit.cfg).
 
 To check the code style of the whole repository, you can can simply type:
 
@@ -75,7 +75,7 @@ To check the code style of the whole repository, you can can simply type:
 mh_style .
 ```
 
-Some styling issues can be automatically fixed by using the `--fix` flag. You might reuquire to rerun this command several times if there are a lot of issues.
+Some styling issues can be automatically fixed by using the `--fix` flag. You might need to rerun this command several times if there are a lot of issues.
 
 ```
 mh_style . --fix
@@ -96,7 +96,7 @@ mh_metric . --ci
 The code style and quality is also checked during the
 [continuous integration](.github/workflows/miss_hit.yml).
 
-For more information about the miss_hit see its [documentation](https://florianschanda.github.io/miss_hit/).
+For more information about miss_hit see its [documentation](https://florianschanda.github.io/miss_hit/).
 
 ## Contributors ✨
 
