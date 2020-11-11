@@ -76,6 +76,15 @@
         "ideas",
         "review"
       ]
+    },
+    {
+      "login": "cMadan",
+      "name": "Christopher Madan",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/6385051?v=4",
+      "profile": "http://www.cmadan.com",
+      "contributions": [
+        "content"
+      ]
     }
   ],
   "contributorsPerLine": 7,
