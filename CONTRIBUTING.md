@@ -13,24 +13,26 @@ Been here before?
 Already know what you're looking for in this guide? 
 Jump to the following sections:
 
--   [Joining the community](#joining-the-community)
--   [Contributing through GitHub](#contributing-through-github)
--   [Understanding issues](#understanding-issues)
--   [Making a change with a pull request](#making-a-change-with-a-pull-request)
--   [Example pull request](#example-pull-request)
--   [Commenting on a pull request](#commenting-on-a-pull-request)
--   [Accepting suggestion from a review](#accepting-suggestion-from-a-review)
--   [Recognizing contributions](#recognizing-contributions)
+- [Joining the community](#joining-the-community)
+- [Contributing through GitHub](#contributing-through-github)
+- [Understanding issues](#understanding-issues)
+- [Style guide](#style-guide)
+  - [Writing in markdown](#writing-in-markdown)
+  - [Matlab code style guide and quality](#matlab-code-style-guide-and-quality)
+- [Making a change with a pull request](#making-a-change-with-a-pull-request)
+- [Example pull request](#example-pull-request)
+- [Commenting on a pull request](#commenting-on-a-pull-request)
+- [Accepting suggestion from a review](#accepting-suggestion-from-a-review)
+- [Recognizing contributions](#recognizing-contributions)
 
-<!-- 
+<!--
 TODO: sections to add
 - testing
 - examples
   - setting up an octave jupyter notebook
 - binder
-- continuous integration 
+- continuous integration
 -->
-
 
 ## Joining the community
 
@@ -97,86 +99,62 @@ The current list of labels are
 <!-- TODO:
 - add more issue labels description -->
 
+## Style guide
 
-<!-- ## Writing in markdown
+### Writing in markdown
 
-The specification documents follow the
-[Markdown Style Guide](http://www.cirosantilli.com/markdown-style-guide/).
+For anything that is in markdown we have a soft rule that aims to enforce
+"hardline wrapping" to make sure that lines wrap around at a certain line
+length. The main reason is that it makes it easier for reviewers to detect the
+changes so in a whole paragraph.
 
-You can validate your changes against the guide using
-[remark](https://github.com/remarkjs/remark-lint) which works as a
-[standalone command line tool](https://github.com/remarkjs/remark/tree/master/packages/remark-cli)
-as well as
-[a plugin for various text editors](https://github.com/remarkjs/remark-lint#editor-integrations).
-Remark preserves consistent markdown styling across the contributions. 
-Please ensure before submitting a contribution that you do not have any linter errors
-in your text editor. 
-You can also use [prettier](https://github.com/prettier/prettier) to 
-automatically correct some of the style issues that might be found 
-in the proposed changes.
+Some editors can automatically enforce hard-line wrapping with some linter like
+`Prettier` so that you are always only a shortcut away from a tidy document. See
+an example with visual-studio code
+[here](https://glebbahmutov.com/blog/configure-prettier-in-vscode/#saving-without-formatting).
 
-We have deployed a continuous integrator ([circle CI](https://circleci.com/)) to
-further allow for integrating changes continuously. 
-The CI is testing that the changes are inline with our standard styling.
+### Matlab code style guide and quality
 
-GitHub has a helpful page on
-[getting started with writing and formatting on GitHub](https://help.github.com/articles/getting-started-with-writing-and-formatting-on-github). -->
+We use the
+[MISS_HIT linter](https://github.com/florianschanda/miss_hit/)
+to automatically enforce / fix some code style issues and check for code quality.
 
-<!-- ## Fixing Travis Remark errors
-
-We use a linter called [Remarkjs](https://github.com/remarkjs/remark-lint) to
-ensure all of our Markdown documents are consistent and well-styled. 
-This commonly produces errors, which are flagged by [Travis CI](https://travis-ci.org/), 
-a continuous integration service. 
-When Travis returns an error, use the following process to resolve the issue:
-
-#### 1. Install NodeJS / npm
-
-We use a markdown linter written in Javascript. To run command Javascript tools
-on the command line, please [download and install](https://nodejs.org/en/download/) 
-NodeJS.
-
-#### 2. Install Remark-CLI and our style guide
-
-Remark-CLI can be installed via [npm](https://www.npmjs.com/), which is part of
-the NodeJS distribution.
-
-To install the packages we use for our style guide, the following command will
-work on most command lines:
+The linter is a python package that can be installed with:
 
 ```
-npm install `cat npm-requirements.txt`
+pip3 install --user miss_hit
 ```
 
-The equivalent command on PowerShell is:
+The rules followed by MISS_HIT are in the [MISS_HIT configuration file](./miss_hit.cfg).
+
+To check the code style of the whole repository, you can can simply type:
 
 ```
-npm install @(cat npm-requirements.txt)
+mh_style .
 ```
 
-#### 3. Fix the flagged document
-
-Please go to the directory where the flagged file is and run remark like this:
+Some styling issues can be automatically fixed by using the `--fix` flag. You might need to rerun this command several times if there are a lot of issues.
 
 ```
-remark flagged_file.md -o flagged_file_fixed.md
+mh_style . --fix
 ```
 
-Please confirm this has fixed the file. To do this, please run this:
+Code quality can be checked with:
 
 ```
-remark flagged_file_fixed.md --frail
+mh_metric .
 ```
 
-This command will indicate whether this file now conforms to the style guide. 
-If it passes, replace `flagged_file.md` with the contents of
-`flagged_file_fixed.md`, add and commit the change:
+To see only the issues that "break" the code quality rules set in the configuration file, type:
 
 ```
-mv flagged_file_fixed.md flagged_file.md
-git add flagged_file.md
-git commit -m 'STY: Fixed Markdown style' 
-```-->
+mh_metric . --ci
+```
+
+The code style and quality is also checked during the
+[continuous integration](.github/workflows/miss_hit.yml).
+
+For more information about MISS_HIT see its [documentation](https://florianschanda.github.io/miss_hit/).
 
 ## Making a change with a pull request
 
