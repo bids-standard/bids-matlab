@@ -85,6 +85,15 @@
       "contributions": [
         "content"
       ]
+    },
+    {
+      "login": "guiomar",
+      "name": "Julia Guiomar Niso Galán",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4451818?v=4",
+      "profile": "http://guiomarniso.com",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
