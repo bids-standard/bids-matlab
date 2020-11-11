@@ -48,7 +48,7 @@ To keep on top of new posts, please see this guide for setting your
 [topic notifications](https://meta.discourse.org/t/discourse-new-user-guide/96331#heading--topic-notifications).
 
 As a reminder, we expect that all contributions adhere to our
-[Code of Conduct](CODE_OF_CONDUCT.md).
+[Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Contributing through GitHub
 
@@ -176,7 +176,7 @@ anyone else's work, so it's a safe space to explore edits to the code!
 
 Make sure to
 [keep your fork up to date](https://help.github.com/articles/syncing-a-fork/)
-with the master repository, otherwise you can end up with lots of dreaded
+with the parent repository, otherwise you can end up with lots of dreaded
 [merge conflicts](https://help.github.com/articles/about-merge-conflicts/).
 
 #### 3. Make the changes you've discussed
