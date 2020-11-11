@@ -1,7 +1,7 @@
 # BIDS for MATLAB / Octave
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![Build Status](https://travis-ci.com/bids-standard/bids-matlab.svg?branch=master)](https://travis-ci.com/bids-standard/bids-matlab)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb)
@@ -112,6 +112,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://apjanke.net"><img src="https://avatars2.githubusercontent.com/u/2618447?v=4" width="100px;" alt=""/><br /><sub><b>Andrew Janke</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/commits?author=apjanke" title="Code">💻</a> <a href="#design-apjanke" title="Design">🎨</a> <a href="https://github.com/bids-standard/bids-matlab/commits?author=apjanke" title="Documentation">📖</a> <a href="#ideas-apjanke" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/bids-standard/bids-matlab/pulls?q=is%3Apr+reviewed-by%3Aapjanke" title="Reviewed Pull Requests">👀</a> <a href="#infra-apjanke" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     <td align="center"><a href="https://github.com/tanguyduval"><img src="https://avatars1.githubusercontent.com/u/7785316?v=4" width="100px;" alt=""/><br /><sub><b>tanguyduval</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/commits?author=tanguyduval" title="Code">💻</a> <a href="https://github.com/bids-standard/bids-matlab/commits?author=tanguyduval" title="Documentation">📖</a> <a href="#ideas-tanguyduval" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/robertoostenveld"><img src="https://avatars1.githubusercontent.com/u/899043?v=4" width="100px;" alt=""/><br /><sub><b>Robert Oostenveld</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/commits?author=robertoostenveld" title="Code">💻</a> <a href="https://github.com/bids-standard/bids-matlab/commits?author=robertoostenveld" title="Documentation">📖</a> <a href="#ideas-robertoostenveld" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/bids-standard/bids-matlab/pulls?q=is%3Apr+reviewed-by%3Arobertoostenveld" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="http://www.cmadan.com"><img src="https://avatars0.githubusercontent.com/u/6385051?v=4" width="100px;" alt=""/><br /><sub><b>Christopher Madan</b></sub></a><br /><a href="#content-cMadan" title="Content">🖋</a></td>
   </tr>
 </table>
 
