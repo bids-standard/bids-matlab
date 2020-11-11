@@ -2,6 +2,9 @@
 
 ## Introduction
 
+These rules have been taken and adapted from those of the
+[BIDS specification](https://github.com/bids-standard/bids-specification/blob/master/DECISION-MAKING.md).
+
 ### Maintainers Group
 
 | Name                                                | Time commitment | Role / Scope |
@@ -19,12 +22,13 @@ welcome, as well.
 
 ### Contributors Group
 
-Contributors are listed in the README using the all-contributors bot.
+Contributors are listed in the [README](./README.md#contributors) using the
+all-contributors bot.
 
 ## GitHub Workflow
 
-For the day-to-day work on the BIDS-matlab, we currently abide by the
-following rules with the intention to:
+For the day-to-day work on the BIDS-matlab, we currently abide by the following
+rules with the intention to:
 
 - Strive for consensus.
 - Promote open discussions.
@@ -90,8 +94,9 @@ and heavily depend on the
 ## Comments
 
 1. Researchers preparing academic manuscripts describing work that has been
-merged into this repository are strongly encouraged to invite all Maintainers as
-co-authors as a form of appreciation for their work.
+   merged into this repository are strongly encouraged to invite all Maintainers
+   as co-authors as a form of appreciation for their work.
+
 <!-- 1. PRs MUST be merged using the "Create a merge commit" option in GitHub (by using
    the "merge pull request" option). This is necessary for our automatic
    changelog generator to do its work reliably. See the [GitHub help page](https://help.github.com/en/articles/about-merge-methods-on-github)
