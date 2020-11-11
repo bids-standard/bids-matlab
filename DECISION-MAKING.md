@@ -43,6 +43,7 @@ The rules outlined below are inspired by the
 and heavily depend on the
 [GitHub Pull Request Review system](https://help.github.com/articles/about-pull-requests/).
 
+
 ## Rules
 
 1. Every modification of the specification (including a correction of a typo,
@@ -62,7 +63,7 @@ and heavily depend on the
    1. Does not feature any
       [Reviews that Request changes](https://help.github.com/articles/about-required-reviews-for-pull-requests/).
    1. Does not feature "WIP" in the title (Work in Progress).
-   1. Passes all automated tests.
+   1. Passes all automated tests and checks if the PR is aimed at the `main` branch. This means for example that some checks regarding styling or code quality are allowed will not prevent a merge if the PR is aimed at the `dev` branch see below for more details).
    1. Is not proposing a new release or has been approved by at least one
       Maintainer (that is, PRs proposing new releases need to be approved by at
       least one Maintainer).
@@ -90,6 +91,42 @@ and heavily depend on the
       during that period it should be reverted.
    1. The quorum for a Vote is 30% of all Contributors.
    1. The outcome of the Vote is decided based on a simple majority.
+
+### Stable VS latest versions, releases and fixes
+
+Version number follow semantic versioning. 
+
+<!-- add link -->
+
+The `main` branch holds the stable version of the toolbox.
+
+The `dev` branch is where the latest version can be fetched.
+
+Version bumps and new releases are triggered:
+- by hotfixes of bug 
+- by a merge of the develop branch in the main branch.
+
+A diagram version of the decision-making flow we are aiming for is shown below. ([source](https://blog.axosoft.com/gitflow/))
+
+![git_flow](commenting_images/gitflow_diagram.png "gitflow_diagram")
+
+#### Conditions for merge into `dev`
+
+We can accumulate a certain level of ["technical debt"](https://en.wikipedia.org/wiki/Technical_debt) on the development branch and therefore, we are more flexible as to what can be merged in there.
+
+Conditions:
+
+- All unit tests of code not changed in the PR must still pass.
+
+<!-- that feels bit tautological -->
+
+#### Conditions for merge into `main`
+
+Eventually though this technical debt must be paid back before a new release and merging into the main branch.
+
+Conditions: 
+- All unit and integration tests must pass.
+- All checks for code style and quality must pass.
 
 ## Comments
 
