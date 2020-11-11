@@ -210,6 +210,13 @@ not ready to be merged (also known as a "work in progress" pull request,
 sometimes abbreviated by `WIP`), please use a
 [draft pull request](https://github.blog/2019-02-14-introducing-draft-pull-requests/).
 
+If your pull request include:
+
+- some new features in the code base 
+- or if it changes the expected behavior of the code that is already in place, 
+
+you may be asked to provide tests to describe the new expected behavior of the code. 
+
 A member of the BIDS-matlab team will review your changes to confirm that they
 can be merged into the main codebase.
 
