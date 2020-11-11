@@ -26,6 +26,11 @@ d(arrayfun(@(x) ~x.isdir || ismember(x.name,{'.','..','.git','.github'}),d)) = [
 sts = false(1,numel(d));
 msg = cell(1,numel(d));
 for i=1:numel(d)
+    if exist(fullfile(pth,d(i).name,'.SKIP_VALIDATION'),'file')
+        sts(i) = true;
+        fprintf('-');
+        continue;
+    end
     try
         BIDS = bids.layout(fullfile(pth,d(i).name));
         sts(i) = true;
