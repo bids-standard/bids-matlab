@@ -1,6 +1,6 @@
-# Contributing to BIDS-matlab
+# Contributing to BIDS-MATLAB
 
-**Welcome to the BIDS-matlab repository!**
+**Welcome to the BIDS-MATLAB repository!**
 
 _We're so excited you're here and want to contribute._
 
@@ -57,7 +57,7 @@ As a reminder, we expect that all contributions adhere to our
 distributed working.
 
 We know that it can be daunting to start using Git and GitHub if you haven't
-worked with them in the past, but the BIDS-matlab maintainers are here to help
+worked with them in the past, but the BIDS-MATLAB maintainers are here to help
 you figure out any of the jargon or confusing instructions you encounter!
 
 In order to contribute via GitHub you'll need to set up a free account and sign
@@ -160,18 +160,18 @@ For more information about MISS_HIT see its
 
 ## Making a change with a pull request
 
-We appreciate all contributions to BIDS-matlab. **THANK YOU** for helping us
+We appreciate all contributions to BIDS-MATLAB. **THANK YOU** for helping us
 build this useful resource.
 
 #### 1. Comment on an existing issue or open a new issue referencing your addition
 
-This allows other members of the BIDS-matlab team to confirm that you aren't
+This allows other members of the BIDS-MATLAB team to confirm that you aren't
 overlapping with work that's currently underway and that everyone is on the same
 page with the goal of the work you're going to carry out.
 
-#### 2. [Fork](https://help.github.com/articles/fork-a-repo/) [this repository](https://github.com/bids-standard/bids-matlab) to your profile
+#### 2. [Fork](https://help.github.com/articles/fork-a-repo/) [this repository](https://github.com/bids-standard/BIDS-MATLAB) to your profile
 
-This is now your own unique copy of BIDS-matlab. Changes here won't affect
+This is now your own unique copy of BIDS-MATLAB. Changes here won't affect
 anyone else's work, so it's a safe space to explore edits to the code!
 
 Make sure to
@@ -190,7 +190,7 @@ Please detail the changes you are attempting to make.
 Please keep the title of your pull request short but informative.
 
 It is important that your pull-request should target the development branch
-(`dev`) of the BIDS-matlab parent repository: this is because we aim to keep the
+(`dev`) of the BIDS-MATLAB parent repository: this is because we aim to keep the
 stable version of the toolbox in the `main` branch and the latest version in the
 `dev` branch.
 
@@ -217,7 +217,7 @@ If your pull request include:
 
 you may be asked to provide tests to describe the new expected behavior of the code. 
 
-A member of the BIDS-matlab team will review your changes to confirm that they
+A member of the BIDS-MATLAB team will review your changes to confirm that they
 can be merged into the main codebase.
 
 A [review](https://help.github.com/articles/about-pull-request-reviews/) will
@@ -225,7 +225,7 @@ usually consist of a few questions to help clarify the work you've done. Keep an
 eye on your GitHub notifications and be prepared to join in that conversation.
 
 You can update your [fork](https://help.github.com/articles/about-forks/) of
-BIDS-matlab and the pull request will automatically update with those commits.
+BIDS-MATLAB and the pull request will automatically update with those commits.
 You don't need to submit a new pull request when you make a change in response
 to a review.
 
@@ -239,7 +239,7 @@ have any questions.
 
 ## Commenting on a pull request
 
-Our primary method of adding to or enhancing BIDS-matlab occurs in the form of
+Our primary method of adding to or enhancing BIDS-MATLAB occurs in the form of
 [pull requests](https://help.github.com/articles/about-pull-requests/).
 
 This section outlines how to comment on a pull request.
@@ -247,7 +247,7 @@ This section outlines how to comment on a pull request.
 ### Navigating to open pull requests
 
 The list of pull requests can be found by clicking on the "Pull requests" tab in
-the [BIDS-matlab repository](https://github.com/bids-standard/bids-matlab).
+the [BIDS-MATLAB repository](https://github.com/bids-standard/BIDS-MATLAB).
 
 ![BIDS-mainpage](commenting_images/BIDS_GitHub_mainpage.png "BIDS_GitHub_mainpage")
 
@@ -349,13 +349,13 @@ The decision-making rules are outlined in
 
 ## Recognizing contributions
 
-BIDS-matlab follows the
+BIDS-MATLAB follows the
 [all-contributors](https://github.com/kentcdodds/all-contributors)
 specification, so we welcome and recognize all contributions from documentation
 to testing to code development. You can see a list of current contributors in
 the [README](./README.md).
 
-If you have made any type of contributions to BIDS-matlab, our team will add you
+If you have made any type of contributions to BIDS-MATLAB, our team will add you
 as a contributor (or ask to be added if we forgot).
 
 ## Thank you!

@@ -27,7 +27,7 @@ all-contributors bot.
 
 ## GitHub Workflow
 
-For the day-to-day work on the BIDS-matlab, we currently abide by the following
+For the day-to-day work on the BIDS-MATLAB, we currently abide by the following
 rules with the intention to:
 
 - Strive for consensus.
