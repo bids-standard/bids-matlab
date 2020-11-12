@@ -1,6 +1,6 @@
 function p = parse_filename(filename, fields)
   % Split a filename into its building constituents
-  % FORMAT p = bids.internal.parse_filename(filename,fields)
+  % FORMAT p = bids.internal.parse_filename(filename, fields)
   %
   % Example:
   %
