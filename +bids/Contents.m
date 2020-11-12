@@ -10,13 +10,13 @@
 %   util.jsonencode - Encode JSON-formatted file
 %   util.tsvread    - Load text and numeric data from tab-separated-value file
 %   util.tsvwrite   - Save text and numeric data to tab-separated-value file
-%__________________________________________________________________________
+% __________________________________________________________________________
 %
 % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
 %   The brain imaging data structure, a format for organizing and
 %   describing outputs of neuroimaging experiments.
 %   K. J. Gorgolewski et al, Scientific Data, 2016.
-%__________________________________________________________________________
+% __________________________________________________________________________
 %
 % BIDS-MATLAB is a library that aims at centralising MATLAB/Octave tools
 % for interacting with datasets conforming to the BIDS format.
