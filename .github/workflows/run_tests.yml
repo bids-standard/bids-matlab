@@ -23,7 +23,10 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install octave liboctave-dev
         sudo apt-get -y install nodejs npm
-        npm install -g bids-validator
+
+    - name: Install BIDS validator
+      run: |        
+        npm install `cat npm-requirements.txt`
 
     - name: Install JSONio
       run: |
@@ -33,12 +36,13 @@ jobs:
          cd ..
          octave $OCTFLAGS --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
   
-    - uses: actions/checkout@v2
+    - name: Clone bids-matlab         
+      uses: actions/checkout@v2
       with:
         submodules: true
         fetch-depth: 1
 
-    - name: add bids-matlab to path
+    - name: Add bids-matlab to path
       run: |
         octave $OCTFLAGS --eval "addpath (pwd); savepath ();"
 
