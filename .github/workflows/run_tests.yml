@@ -24,15 +24,15 @@ jobs:
         sudo apt-get -y install octave liboctave-dev
         sudo apt-get -y install nodejs npm
 
-    - name: Install BIDS validator
-      run: |        
-        npm install `cat npm-requirements.txt`
-
     - name: Clone bids-matlab         
       uses: actions/checkout@v2
       with:
         submodules: true
-        fetch-depth: 1        
+        fetch-depth: 1
+
+    - name: Install BIDS validator
+      run: |        
+        npm install `cat npm-requirements.txt`
 
     - name: Install JSONio
       run: |
