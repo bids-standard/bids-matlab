@@ -1,5 +1,5 @@
 
-name: Generate project pages from project issues
+name: updata schema
 
 # Uses the cron schedule for github actions
 # 
