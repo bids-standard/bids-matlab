@@ -20,11 +20,9 @@ jobs:
 
     - name: Install dependencies
       run: |
-        apt-get -y -qq update
-        apt-get -y install octave
-        apt-get -y install liboctave-dev
-        apt-get -y install nodejs
-        apt-get -y install npm
+        sudo apt-get -y -qq update
+        sudo apt-get -y install octave liboctave-dev
+        sudo apt-get -y install nodejs npm
         npm install -g bids-validator
 
     - name: Install JSONio
