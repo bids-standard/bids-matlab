@@ -41,7 +41,8 @@ jobs:
     - name: Convert BIDS schema
       run: |
         git clone git://github.com/bids-standard/bids-specification.git --depth 1
-        python convert_schema.py 
+        python convert_schema.py
+        rm -Rf bids-specification
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
