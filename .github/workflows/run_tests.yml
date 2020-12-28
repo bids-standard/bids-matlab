@@ -1,0 +1,52 @@
+name: run_tests
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches: '*'
+
+env:
+  OCTFLAGS: --no-gui --no-window-system --silent
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Install dependencies
+      run: |
+        apt-get -y -qq update
+        apt-get -y install octave
+        apt-get -y install liboctave-dev
+        apt-get -y install nodejs
+        apt-get -y install npm
+        npm install -g bids-validator
+
+    - name: Install JSONio
+      run: |
+         git clone git://github.com/gllmflndn/JSONio.git --depth 1
+         cd JSONio
+         mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
+         cd ..
+         octave $OCTFLAGS --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
+  
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 1
+
+    - name: add bids-matlab to path
+      run: |
+        octave $OCTFLAGS --eval "addpath (pwd); savepath ();"
+
+    - name: Run tests
+      run: |
+        cd tests
+        git clone git://github.com/bids-standard/bids-examples.git --depth 1
+        octave $OCTFLAGS --eval "results = bids_runtests; assert(all(~[results.Failed]))"
+
