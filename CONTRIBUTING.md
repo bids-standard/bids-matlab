@@ -120,7 +120,7 @@ automatically enforce / fix some code style issues and check for code quality.
 The linter is a python package that can be installed with:
 
 ```
-pip3 install --user miss_hit
+pip3 install -r requirements.txt
 ```
 
 The rules followed by MISS_HIT are in the
@@ -212,10 +212,10 @@ sometimes abbreviated by `WIP`), please use a
 
 If your pull request include:
 
-- some new features in the code base 
-- or if it changes the expected behavior of the code that is already in place, 
+- some new features in the code base
+- or if it changes the expected behavior of the code that is already in place,
 
-you may be asked to provide tests to describe the new expected behavior of the code. 
+you may be asked to provide tests to describe the new expected behavior of the code.
 
 A member of the BIDS-MATLAB team will review your changes to confirm that they
 can be merged into the main codebase.
@@ -357,6 +357,36 @@ the [README](./README.md).
 
 If you have made any type of contributions to BIDS-MATLAB, our team will add you
 as a contributor (or ask to be added if we forgot).
+
+## Updating the bids-schema
+
+The schema of the BIDS specification is available as a [set of yaml files in the
+bids-standards repository](https://github.com/bids-standard/bids-specification/blob/master/CONTRIBUTING.md#updating-the-schema).
+
+For our needs we are using a JSON conversion of that schema: this conversion is done
+by the script `convert_schema.py`.
+
+To install the required packages to run it, you can set up a virtual environment
+as follow.
+
+```bash
+virtualenv -p python3 convert_schema
+source  convert_schema/bin/activate
+pip install -r requirements.txt
+```
+
+You then need to update in the script the path to the yml schema in the bids specification
+on your computer.
+
+```python
+input_dir = "/home/remi/github/BIDS-specification/src/schema"
+```
+
+You can then convert the schema:
+
+```
+python convert_schema.py
+```
 
 ## Thank you!
 
