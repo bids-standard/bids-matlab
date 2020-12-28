@@ -49,6 +49,7 @@ jobs:
         branch: publish-project
         commit-message: BIDS schema update
         assignees: Remi-Gau, gllmflndn
+        base: master
         delete-branch: true
 
     - name: Check outputs

@@ -13,6 +13,8 @@ import os
 input_dir = "bids-specification/src/schema"
 output_dir = "schema"
 
+print("\n\nCONVERTING SCHEMA\n\n")
+
 # create output directories
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
