@@ -44,7 +44,7 @@ jobs:
     - name: Update Octave path
       run: |
         octave $OCTFLAGS --eval "addpath (pwd); savepath ();"
-        octave $OCTFLAGS --eval "addpath (fullfile (pwd, 'JSONio')); savepath ();"
+        octave $OCTFLAGS --eval "addpath (fullfile(pwd, 'JSONio')); savepath ();"
 
     - name: Run tests
       run: |
