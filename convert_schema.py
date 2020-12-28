@@ -10,7 +10,7 @@ import json
 import glob
 import os
 
-input_dir = "/home/remi/github/BIDS-specification/src/schema"
+input_dir = "bids-specification/src/schema"
 output_dir = "schema"
 
 # create output directories
