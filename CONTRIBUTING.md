@@ -366,6 +366,10 @@ bids-standards repository](https://github.com/bids-standard/bids-specification/b
 For our needs we are using a JSON conversion of that schema: this conversion is done
 by the script `convert_schema.py`.
 
+This conversion should happen automatically via continuous integration
+(see the [github action](.github/workflows/update_schema.yml)) when pushing to the repo
+or opening a pull-request. But if you need to trigger it manually, here is how to do it.
+
 To install the required packages to run it, you can set up a virtual environment
 as follow.
 
