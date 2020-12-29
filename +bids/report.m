@@ -1,4 +1,4 @@
-function report(BIDS, subj, sess, run, read_nii, output_path)
+function report(BIDS, sub, ses, run, read_nii, output_path)
   % Create a short summary of the acquisition parameters of a BIDS dataset
   % FORMAT bids.report(BIDS, Subj, Ses, Run, ReadNII)
   %
@@ -58,12 +58,12 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
     BIDS = pwd;
   end
 
-  if nargin < 2 || isempty(subj)
-    subj = 1;
+  if nargin < 2 || isempty(sub) || ~ischar(sub)
+    sub = 1;
   end
 
-  if nargin < 3 || isempty(sess)
-    sess = 1;
+  if nargin < 3 || isempty(ses) || ~ischar(ses)
+    ses = 1;
   end
 
   if nargin < 4 || isempty(run)
@@ -91,15 +91,27 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
     fprintf('Done.\n\n');
   end
 
-  % -Get sessions
+  % -Get sessions and subjects
   % --------------------------------------------------------------------------
-  subjs_ls = bids.query(BIDS, 'subjects');
-  sess_ls = bids.query(BIDS, 'sessions', 'sub', subjs_ls(subj));
-  if isempty(sess_ls)
-    sess_ls = {''};
+  if ischar(sub)
+    sub_ls = sub;
+    sub = 1;
+  else
+    sub_ls = bids.query(BIDS, 'subjects');
   end
-  if sess == 0
-    sess = 1:numel(sess_ls);
+
+  if ischar(ses)
+    ses_ls = ses;
+    ses = 1;
+  else
+    ses_ls = bids.query(BIDS, 'sessions', 'sub', sub_ls(sub));
+  end
+
+  if isempty(ses_ls)
+    ses_ls = {''};
+  end
+  if ses == 0
+    ses = 1:numel(ses_ls);
   end
 
   % -Scanner details
@@ -108,20 +120,20 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
   % -Loop through all the required sessions
   % --------------------------------------------------------------------------
-  for iSess = sess
+  for iSess = ses
 
-    if numel(sess) ~= 1 && ~strcmp(sess_ls{iSess}, '')
+    if numel(ses) ~= 1 && ~strcmp(ses_ls{iSess}, '')
       fprintf('\n-------------------------\n');
-      fprintf('  Working on session: %s', sess_ls{iSess});
+      fprintf('  Working on session: %s', ses_ls{iSess});
       fprintf('\n-------------------------\n');
     end
 
     types_ls = bids.query(BIDS, 'types', ...
-                          'sub', subjs_ls(subj), ...
-                          'ses', sess_ls(iSess));
+                          'sub', sub_ls(sub), ...
+                          'ses', ses_ls(iSess));
     tasks_ls = bids.query(BIDS, 'tasks', ...
-                          'sub', subjs_ls(subj), ...
-                          'ses', sess_ls(iSess));
+                          'sub', sub_ls(sub), ...
+                          'ses', ses_ls(iSess));
     % mods_ls = bids.query(BIDS,'modalities');
 
     for iType = 1:numel(types_ls)
@@ -132,14 +144,14 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
         case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
 
-          fprintf(file_id, '\n\n\nANATOMICAL REPORT\n\n');
+          fprintf(file_id, '\nANATOMICAL REPORT\n\n');
 
           [this_task, this_run] = return_task_and_run_labels(types_ls{iType});
 
           % get the parameters
           acq_param = get_acq_param(BIDS, ...
-                                    subjs_ls{subj}, ...
-                                    sess_ls{iSess}, ...
+                                    sub_ls{sub}, ...
+                                    ses_ls{iSess}, ...
                                     types_ls{iType}, this_task, this_run, read_nii);
 
           fprintf(file_id, boilerplate_text, ...
@@ -156,7 +168,7 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
         case 'bold'
 
-          fprintf(file_id, '\n\n\nFUNCTIONAL REPORT\n\n');
+          fprintf(file_id, '\nFUNCTIONAL REPORT\n\n');
 
           % loop through the tasks
           for iTask = 1:numel(tasks_ls)
@@ -164,15 +176,15 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
             [this_task, this_run, n_runs] = return_task_and_run_labels( ...
                                                                        types_ls{iType}, ...
                                                                        BIDS, ...
-                                                                       subjs_ls{subj}, ...
-                                                                       sess_ls{iSess}, ...
+                                                                       sub_ls{sub}, ...
+                                                                       ses_ls{iSess}, ...
                                                                        tasks_ls{iTask}, ...
                                                                        run);
 
             % get the parameters for that task
             acq_param = get_acq_param(BIDS, ...
-                                      subjs_ls{subj}, ...
-                                      sess_ls{iSess}, ...
+                                      sub_ls{sub}, ...
+                                      ses_ls{iSess}, ...
                                       'bold', this_task, ...
                                       this_run, read_nii);
 
@@ -212,20 +224,20 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
         case 'phasediff'
 
-          fprintf(file_id, '\n\n\nFIELD MAP REPORT\n\n');
+          fprintf(file_id, '\nFIELD MAP REPORT\n\n');
 
           for iTask = 1:numel(tasks_ls)
 
             [this_task, this_run] = return_task_and_run_labels(types_ls{iType}, ...
                                                                BIDS, ...
-                                                               subjs_ls{subj}, ...
-                                                               sess_ls{iSess}, ...
+                                                               sub_ls{sub}, ...
+                                                               ses_ls{iSess}, ...
                                                                tasks_ls{iTask}, ...
                                                                run);
 
             acq_param = get_acq_param(BIDS, ...
-                                      subjs_ls{subj}, ...
-                                      sess_ls{iSess}, ...
+                                      sub_ls{sub}, ...
+                                      ses_ls{iSess}, ...
                                       'phasediff', this_task, this_run, read_nii);
 
             % goes through task list to check which fieldmap is for which run
@@ -257,16 +269,18 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
           [this_task, this_run] = return_task_and_run_labels(types_ls{iType});
 
+          fprintf(file_id, '\nDWI REPORT\n\n');
+
           % get the parameters
           acq_param = get_acq_param(BIDS, ...
-                                    subjs_ls{subj}, ...
-                                    sess_ls{iSess}, ...
+                                    sub_ls{sub}, ...
+                                    ses_ls{iSess}, ...
                                     'dwi', this_task, this_run, read_nii);
 
           % dirty hack to try to look into the BIDS structure as bids.query does not
           % support querying directly for bval and bvec
           try
-            acq_param.n_vecs = num2str(size(BIDS.subjects(subj).dwi.bval, 2));
+            acq_param.n_vecs = num2str(size(BIDS.subjects(sub).dwi.bval, 2));
             %             acq_param.bval_str = ???
           catch
             warning('Could not read the bval & bvec values.');
@@ -303,7 +317,7 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
       end
 
-      fprintf(file_id, '\n\n');
+      fprintf(file_id, '\n');
 
     end
 
