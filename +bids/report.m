@@ -134,11 +134,13 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
           fprintf(file_id, '\n\n\nANATOMICAL REPORT\n\n');
 
+          [this_task, this_run] = return_task_and_run_labels(types_ls{iType});
+
           % get the parameters
           acq_param = get_acq_param(BIDS, ...
                                     subjs_ls{subj}, ...
                                     sess_ls{iSess}, ...
-                                    types_ls{iType}, '', '', read_nii);
+                                    types_ls{iType}, this_task, this_run, read_nii);
 
           fprintf(file_id, boilerplate_text, ...
                   acq_param.type, ...
@@ -159,32 +161,22 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
           % loop through the tasks
           for iTask = 1:numel(tasks_ls)
 
-            runs_ls = bids.query(BIDS, 'runs', ...
-                                 'sub', subjs_ls{subj}, ...
-                                 'ses', sess_ls{iSess}, ...
-                                 'type', 'bold', ...
-                                 'task', tasks_ls{iTask});
-
-            run_str = '1';
-            this_run = '';
-
-            if ~isempty(runs_ls)
-
-              this_run = runs_ls{run};
-
-              % compute the number of BOLD run for that task
-              run_str = num2str(numel(runs_ls));
-
-            end
+            [this_task, this_run, n_runs] = return_task_and_run_labels( ...
+                                                                       types_ls{iType}, ...
+                                                                       BIDS, ...
+                                                                       subjs_ls{subj}, ...
+                                                                       sess_ls{iSess}, ...
+                                                                       tasks_ls{iTask}, ...
+                                                                       run);
 
             % get the parameters for that task
             acq_param = get_acq_param(BIDS, ...
                                       subjs_ls{subj}, ...
                                       sess_ls{iSess}, ...
-                                      'bold', tasks_ls{iTask}, ...
+                                      'bold', this_task, ...
                                       this_run, read_nii);
 
-            acq_param.run_str = run_str;
+            acq_param.n_runs = n_runs;
 
             % set run duration
             if ~strcmp(acq_param.tr, '[XXtrXX]') && ...
@@ -197,7 +189,7 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
             end
 
             fprintf(file_id, boilerplate_text, ...
-                    acq_param.run_str, ...
+                    acq_param.n_runs, ...
                     acq_param.task, ...
                     acq_param.variants, ...
                     acq_param.seqs, ...
@@ -224,32 +216,27 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
           for iTask = 1:numel(tasks_ls)
 
-            runs_ls = bids.query(BIDS, 'runs', ...
-                                 'sub', subjs_ls{subj}, ...
-                                 'ses', sess_ls{iSess}, ...
-                                 'type', 'phasediff');
-
-            this_run = '';
-            if ~isempty(runs_ls)
-
-              this_run = runs_ls{run};
-
-            end
+            [this_task, this_run] = return_task_and_run_labels(types_ls{iType}, ...
+                                                               BIDS, ...
+                                                               subjs_ls{subj}, ...
+                                                               sess_ls{iSess}, ...
+                                                               tasks_ls{iTask}, ...
+                                                               run);
 
             acq_param = get_acq_param(BIDS, ...
                                       subjs_ls{subj}, ...
                                       sess_ls{iSess}, ...
-                                      'phasediff', '', this_run, read_nii);
+                                      'phasediff', this_task, this_run, read_nii);
 
             % goes through task list to check which fieldmap is for which run
             acq_param.for = [];
             nb_run = [];
-            tmp = strfind(acq_param.for_str, tasks_ls{iTask});
+            tmp = strfind(acq_param.for_str, this_task);
             if ~iscell(tmp)
               tmp = {tmp};
             end
             nb_run(iTask) = sum(~cellfun('isempty', tmp)); %#ok<AGROW>
-            acq_param.for = sprintf('for %i runs of %s, ', nb_run, tasks_ls{iTask});
+            acq_param.for = sprintf('for %i runs of %s, ', nb_run, this_task);
 
             fprintf(file_id, boilerplate_text, ...
                     acq_param.variants, ...
@@ -268,13 +255,13 @@ function report(BIDS, subj, sess, run, read_nii, output_path)
 
         case 'dwi'
 
-          fprintf(file_id, '\n\n\nDWI REPORT\n\n');
+          [this_task, this_run] = return_task_and_run_labels(types_ls{iType});
 
           % get the parameters
           acq_param = get_acq_param(BIDS, ...
                                     subjs_ls{subj}, ...
                                     sess_ls{iSess}, ...
-                                    'dwi', '', '', read_nii);
+                                    'dwi', this_task, this_run, read_nii);
 
           % dirty hack to try to look into the BIDS structure as bids.query does not
           % support querying directly for bval and bvec
@@ -347,6 +334,46 @@ function file_id = open_output_file(BIDS, output_path)
     else
       fprintf('Dataset description saved in:  %s', filename);
 
+    end
+
+  end
+
+end
+
+function [task, this_run, n_runs] = return_task_and_run_labels(type, BIDS, sub, ses, task, run)
+
+  if nargin < 4
+    task = '';
+  end
+
+  this_run = '';
+  n_runs = '';
+
+  switch type
+
+    case 'bold'
+
+      runs_ls = bids.query(BIDS, 'runs', ...
+                           'sub', sub, ...
+                           'ses', ses, ...
+                           'type', type, ...
+                           'task', task);
+
+    case 'phasediff'
+
+      runs_ls = bids.query(BIDS, 'runs', ...
+                           'sub', sub, ...
+                           'ses', ses, ...
+                           'type', type);
+  end
+
+  if any(strcmp(type, {'bold', 'phasediff'}))
+
+    if ~isempty(runs_ls)
+      this_run = runs_ls{run};
+      if strcmp(type, {'bold'})
+        n_runs = num2str(numel(runs_ls));
+      end
     end
 
   end
@@ -488,7 +515,7 @@ function acq_param = set_default_acq_param(type, task)
   acq_param.task  = task;
 
   % number of runs (dealt with outside this function but initialized here)
-  acq_param.run_str  = '[XXrun_strXX]';
+  acq_param.n_runs  = '[XXn_runsXX]';
   acq_param.so_str  = '[XXso_strXX]'; % slice order string
   acq_param.mb_str  = '[XXmb_strXX]'; % multiband
   acq_param.pr_str  = '[XXpr_strXX]'; % parallel imaging
