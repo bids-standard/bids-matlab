@@ -440,33 +440,29 @@ function acq_param = get_acq_param(varargin)
 
   fprintf('  Getting parameters - %s\n\n', filename{1});
 
-  if isfield(metadata, 'EchoTime')
-    acq_param.te = num2str(metadata.EchoTime * 1000);
-  elseif isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
-    acq_param.te = [ ...
-                    num2str(metadata.EchoTime1 * 1000) ' / ' ...
-                    num2str(metadata.EchoTime2 * 1000)];
+  fields_list = { ...
+                 'te', 'EchoTime'; ...
+                 'tr', 'RepetitionTime'; ...
+                 'fa', 'FlipAngle'; ...
+                 'so_str', 'SliceTiming'; ...
+                 'phs_enc_dir', 'PhaseEncodingDirection'; ...
+                 'for_str', 'IntendedFor'};
+
+  acq_param = get_parameter(acq_param, metadata, fields_list);
+
+  if isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
+    acq_param.te = [metadata.EchoTime1 metadata.EchoTime2];
   end
 
-  if isfield(metadata, 'RepetitionTime')
-    acq_param.tr = num2str(metadata.RepetitionTime * 1000);
+  acq_param = convert_field_to_millisecond(acq_param, {'tr', 'te'});
+
+  if isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
+    acq_param.te = sprintf('%0.2f / %0.2f', acq_param.te);
   end
 
-  if isfield(metadata, 'FlipAngle')
-    acq_param.fa = num2str(metadata.FlipAngle);
-  end
+  acq_param = convert_field_to_str(acq_param);
 
-  if isfield(metadata, 'SliceTiming')
-    acq_param.so_str = define_slice_timing(metadata.SliceTiming);
-  end
-
-  if isfield(metadata, 'PhaseEncodingDirection')
-    acq_param.phs_enc_dir = metadata.PhaseEncodingDirection;
-  end
-
-  if isfield(metadata, 'IntendedFor')
-    acq_param.for_str = metadata.IntendedFor;
-  end
+  acq_param.so_str = define_slice_timing(acq_param.so_str);
 
   % -Try to read the relevant NIfTI file to get more info from it
   % --------------------------------------------------------------------------
@@ -584,30 +580,67 @@ function [filename, metadata] = get_filemane_and_metadata(varargin)
 
 end
 
-function ST_def = define_slice_timing(slice_timing)
+function acq_param = get_parameter(acq_param, metadata, fields_list)
 
-  % Try to figure out the order the slices were acquired from their timing
+  for iField = 1:size(fields_list, 1)
 
-  if iscell(slice_timing)
-    slice_timing = cell2mat(slice_timing);
+    if isfield(metadata, fields_list{iField})
+      acq_param.(fields_list{iField, 1}) = metadata.(fields_list{iField, 2});
+    end
+
   end
 
-  [~, I] = sort(slice_timing);
+end
+
+function acq_param = convert_field_to_str(acq_param)
+
+  fields_list = fieldnames(acq_param);
+
+  for iField = 1:numel(fields_list)
+    if isnumeric(acq_param.(fields_list{iField}))
+      acq_param.(fields_list{iField}) = num2str(acq_param.(fields_list{iField}));
+    end
+  end
+end
+
+function acq_param = convert_field_to_millisecond(acq_param, fields_list)
+
+  for iField = 1:numel(fields_list)
+    if isnumeric(acq_param.(fields_list{iField}))
+      acq_param.(fields_list{iField}) = acq_param.(fields_list{iField}) * 1000;
+    end
+  end
+
+end
+
+function so_str = define_slice_timing(slice_timing)
+
+  so_str = slice_timing;
+  if strcmp(so_str, '[XXso_strXX]')
+    return
+  end
+
+  % Try to figure out the order the slices were acquired from their timing
+  if iscell(so_str)
+    so_str = cell2mat(so_str);
+  end
+
+  [~, I] = sort(so_str);
 
   if all(I == (1:numel(I))')
-    ST_def = 'ascending';
+    so_str = 'ascending';
 
   elseif all(I == (numel(I):-1:1)')
-    ST_def = 'descending';
+    so_str = 'descending';
 
   elseif I(1) < I(2)
-    ST_def = 'interleaved ascending';
+    so_str = 'interleaved ascending';
 
   elseif I(1) > I(2)
-    ST_def = 'interleaved descending';
+    so_str = 'interleaved descending';
 
   else
-    ST_def = '????';
+    so_str = '????';
 
   end
 
