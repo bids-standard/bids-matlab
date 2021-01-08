@@ -38,7 +38,7 @@
 		"inputs": [
 			{
 				"name": "BIDS",
-				"kind": "ordered",
+				"kind": "positional",
 				"type": [
 					[
 						"folder"
@@ -50,22 +50,22 @@
 			},
 			{
 				"name": "Subj",
-				"kind": "ordered",
+				"kind": "positional",
 				"type": "numeric"
 			},
 			{
 				"name": "Ses",
-				"kind": "ordered",
+				"kind": "positional",
 				"type": "numeric"
 			},
 			{
 				"name": "Run",
-				"kind": "ordered",
+				"kind": "positional",
 				"type": "numeric"
 			},
 			{
 				"name": "ReadNII",
-				"kind": "ordered",
+				"kind": "positional",
 				"type": "boolean"
 			}
 		]
