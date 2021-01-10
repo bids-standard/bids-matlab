@@ -646,7 +646,11 @@ function subject = parse_fmap(subject)
 
       for i = 1:numel(idx)
 
-        subject.fmap(j).type = 'epi';
+        if ~isempty(regexp(subject.fmap.filename, 'm0scan'))
+            subject.fmap(j).type = 'm0scan';
+        else
+            subject.fmap(j).type = 'epi';
+        end
         subject.fmap(j).filename = file_list{idx(i)};
         subject.fmap(j).dir = labels{idx(i)}.dir;
 
@@ -988,7 +992,7 @@ function labels = return_labels_fieldmap(file_list, fiefmap_type)
       suffix = 'fieldmap';
 
     case 'phase_encoded_direction_image'
-      suffix = 'epi';
+      suffix = '(epi|m0scan)';
 
       direction_pattern = '_dir-(?<dir>[a-zA-Z0-9]+)?';
 
