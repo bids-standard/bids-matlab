@@ -9,6 +9,11 @@ env:
   global:
     - OCTFLAGS="--no-gui --no-window-system --silent"
 
+branches:
+  only:  # only run the CI for those branches 
+  - master
+  - dev
+
 before_install:
   - travis_retry sudo apt-get -y -qq update
   - travis_retry sudo apt-get -y install octave
@@ -26,11 +31,15 @@ install:
   # Install BIDS-Validator
   - sudo npm install -g bids-validator
 
-before_script:
-  # Change current directory
-  - cd tests
-  # Download BIDS-compatible datasets
-  - travis_retry git clone git://github.com/bids-standard/bids-examples.git --depth 1
+jobs:
+  include:
+    - name: "Run tests"
 
-script:
-  - octave $OCTFLAGS --eval "results = bids_runtests; assert(all(~[results.Failed]))"
+      before_script:
+        # Change current directory
+        - cd tests
+        # Download BIDS-compatible datasets
+        - travis_retry git clone git://github.com/bids-standard/bids-examples.git --depth 1
+
+      script:
+        - octave $OCTFLAGS --eval "results = bids_runtests; assert(all(~[results.Failed]))"
