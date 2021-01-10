@@ -307,7 +307,7 @@ function subject = parse_perf(subject)
                 end
                 
                 % add type
-                subject.perf(j).type = 'time_series';
+                subject.perf(j).type = 'asl_time_series';
                 
                 % default to run 1 ((!) TODO: but could be that we need to check this
                 % at the end!)
@@ -343,48 +343,72 @@ function subject = parse_perf(subject)
                 % ---------------------------
                 % M0 field is flexible:
                 
-                if ~isfield(subject.perf(j).meta, 'M0')
-                    warning(['M0 field missing in ' subject.perf(j).json_sidecar_filename]);
+                if ~isfield(subject.perf(j).meta, 'M0Type')
+                    warning(['M0Type field missing in ' subject.perf(j).json_sidecar_filename]);
                     
-                elseif islogical(subject.perf(j).meta.M0) && subject.perf(j).meta.M0==true
-                    % M0 is one or more image(s) in the *asl.nii[.gz] timeseries
-                    if ~isfield(subject.perf(j), 'context') || ~isfield(subject.perf(j).context, 'volume_type')
-                        warning('Cannot find M0 volume in aslcontext, context-information missing');
-                    else
-                        m0indices = find(cellfun(@(x) strcmp(x, 'm0scan'), subject.perf(j).context.volume_type)==true);
-                        if isempty(m0indices)
-                            warning('No M0 volume found in aslcontext');
-                        else
-                            subject.perf(j).m0 = 'within_timeseries';
-                            subject.perf(j).m0_volume_index = m0indices;
-                        end
-                    end
-                    
-                elseif islogical(subject.perf(j).meta.M0) && subject.perf(j).meta.M0==false
-                    % this option suggests using the (average) control volume as pseudo-M0 volume
-                    % which is a safe option if no background suppression was used
-                    subject.perf(j).m0 = 'use_control_as_m0';
-                    if subject.perf(j).meta.BackgroundSuppression==true
-                        warning('Caution when using control as M0, background suppression was applied');
-                    end
-                    
-                elseif isnumeric(subject.perf(j).meta.M0)
-                    % this is a single M0 value, e.g. when the M0 is
-                    % obtained from an external scan and/or study
-                    subject.perf(j).m0 = 'single_value';
-                    subject.perf(j).m0_value = subject.perf(j).meta.M0;
-                    
-                elseif ischar(subject.perf(j).meta.M0)
-                    % the M0 was obtained as a separate scan
-                    subject.perf(j).m0 = 'separate_scan';
-                    if ~exist(fullfile(fileparts(pth), subject.perf(j).meta.M0), 'file')
-                        warning(['Missing: ' subject.perf(j).meta.M0]);
-                    else
-                        subject.perf(j).m0file = subject.perf(j).meta.M0;
-                    end
                 else
-                    warning(['Unknown M0 value in ' subject.perf(j).json_sidecar_filename]);
+                    switch subject.perf(j).meta.M0Type
+                        case 'Separate'
+                            % the M0 was obtained as a separate scan
+                            subject.perf(j).m0type = 'separate_scan';
+                            subject.perf(j).m0explanation = 'M0 was obtained as a separate scan';
+                            
+                            % M0scan.nii filename
+                            m0_filename = [subject.perf(j).filename(1:end-10) 'm0scan' subject.perf(j).ext]; % assuming the (.nii|.nii.gz) extension choice is the same throughout
+                            if ~exist(fullfile(pth, m0_filename), 'file')
+                                warning(['Missing: ' m0_filename]);
+                            else
+                                % subject.perf(j).m0_filename = m0_filename;
+                                % -> this is included in the same structure for the m0scan.nii
+                            end
+                            
+                            % M0 sidecar filename
+                            m0_json_sidecar_filename = [subject.perf(j).filename(1:end-10) 'm0scan.json'];
+                            if ~exist(fullfile(pth, m0_json_sidecar_filename), 'file')
+                                warning(['Missing: ' m0_json_sidecar_filename]);
+                            else
+                                % subject.perf(j).m0_json_sidecar_filename = m0_json_sidecar_filename;
+                                 % -> this is included in the same structure for the m0scan.nii
+                            end                            
+                            
+                        case 'Included'
+                            % M0 is one or more image(s) in the *asl.nii[.gz] timeseries
+                            if ~isfield(subject.perf(j), 'context') || ~isfield(subject.perf(j).context, 'volume_type')
+                                warning('Cannot find M0 volume in aslcontext, context-information missing');
+                            else
+                                m0indices = find(cellfun(@(x) strcmp(x, 'm0scan'), subject.perf(j).context.volume_type)==true);
+                                if isempty(m0indices)
+                                    warning('No M0 volume found in aslcontext');
+                                else
+                                    subject.perf(j).m0type = 'within_timeseries';
+                                    subject.perf(j).m0explanation = 'M0 is one or more image(s) in the *asl.nii[.gz] timeseries';
+                                    subject.perf(j).m0_volume_index = m0indices;
+                                end
+                            end                            
+                            
+                        case 'Estimate'
+                            % this is a single estimated M0 value, e.g. when the M0 is
+                            % obtained from an external scan and/or study
+                            subject.perf(j).m0type = 'single_value';
+                            subject.perf(j).m0explanation = 'this is a single estimated M0 value, e.g. when the M0 is obtained from an external scan and/or study';
+                            subject.perf(j).m0_value = subject.perf(j).meta.M0;                            
+                            
+                        case 'Absent'
+                            % this shows that there is no M0, so this
+                            % leaves us the only option to use the (average) control volume as pseudo-M0 volume
+                            % which is a safe option if no background suppression was used
+                            subject.perf(j).m0type = 'use_control_as_m0';
+                            subject.perf(j).m0explanation = 'M0 is absent, so we can use the (average) control volume as pseudo-M0 (if no background suppression was used)';
+                            % which is a safe option if no background suppression was used
+                            if subject.perf(j).meta.BackgroundSuppression==true
+                                warning('Caution when using control as M0, background suppression was applied');
+                            end
+                            
+                        otherwise
+                            warning(['Unknown M0Type:' subject.perf(j).meta.M0Type ' in ' subject.perf(j).json_sidecar_filename]);
+                    end
                 end
+                    
                 
                 % Manage labeling image metadata (OPTIONAL)
                 % ---------------------------
