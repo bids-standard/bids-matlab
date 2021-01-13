@@ -1,9 +1,9 @@
 function test_suite = test_bids_query %#ok<*STOUT>
-    try % assignment of 'localfunctions' is necessary in Matlab >= 2016
-        test_functions = localfunctions(); %#ok<*NASGU>
-    catch % no problem; early Matlab versions can use initTestSuite fine
-    end
-    initTestSuite;
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
 end
 
 function test_bids_query_basic()
@@ -22,7 +22,6 @@ function test_bids_query_basic()
 
   % Copyright (C) 2019, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2019--, BIDS-MATLAB developers
-
 
   pth = fullfile(pwd, 'bids-examples', 'ds007');
 
@@ -78,7 +77,7 @@ function test_bids_query_basic()
   %   parse a folder with sessions
   pth = fullfile(fileparts(pth), 'synthetic');
   BIDS = bids.layout(pth);
-  
+
   %   test
   sessions = {'01', '02'};
   assert(isequal(bids.query(BIDS, 'sessions'), sessions));
@@ -88,7 +87,7 @@ function test_bids_query_basic()
   %   parse a folder with different modalities per session
   pth = fullfile(fileparts(pth), '7t_trt');
   BIDS = bids.layout(pth);
-  
+
   %   test
   mods = {'anat', 'fmap', 'func'};
   assert(isequal(bids.query(BIDS, 'modalities'), mods));
@@ -96,5 +95,4 @@ function test_bids_query_basic()
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '1'), mods));
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '2'), mods(2:3)));
 
-  
 end

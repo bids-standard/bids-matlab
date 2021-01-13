@@ -1,9 +1,9 @@
 function test_suite = test_get_metadata %#ok<*STOUT>
-    try % assignment of 'localfunctions' is necessary in Matlab >= 2016
-        test_functions = localfunctions(); %#ok<*NASGU>
-    catch % no problem; early Matlab versions can use initTestSuite fine
-    end
-    initTestSuite;
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
 end
 
 function test_get_metadata_basic()
@@ -24,7 +24,6 @@ function test_get_metadata_basic()
   % unless they are overriden by metadate already present at lower levels
 
   pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
-
 
   % define the expected output from bids query metadata
   func.RepetitionTime = 7;

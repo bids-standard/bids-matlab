@@ -1,9 +1,9 @@
 function test_suite = test_tsvwrite %#ok<*STOUT>
-    try % assignment of 'localfunctions' is necessary in Matlab >= 2016
-        test_functions = localfunctions(); %#ok<*NASGU>
-    catch % no problem; early Matlab versions can use initTestSuite fine
-    end
-    initTestSuite;
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
 end
 
 function test_tsvwrite_basic()
@@ -22,7 +22,6 @@ function test_tsvwrite_basic()
   %
   % Small test to ensure that the functionality of the tsvwrite function
   pth = fileparts(mfilename('fullpath'));
-
 
   %% test tsvread on tsv file using structure input
 
