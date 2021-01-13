@@ -253,92 +253,88 @@ function entities = return_entities(modality)
 end
 
 function file_list = return_file_list(modality, subject)
-    
-    pth = fullfile(subject.path, modality);
-    
-    switch modality
-        
-        case 'anat'
-            
-            file_list = bids.internal.file_utils('List', ...
-                pth, ...
-                sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', ...
-                subject.name));
-            file_list = convert_to_cell(file_list);
-            
-        case 'func'
-            
-            file_list = bids.internal.file_utils('List', ...
-                pth, ...
-                sprintf('^%s.*_task-.*_bold\\.nii(\\.gz)?$', ...
-                subject.name));
-            file_list = convert_to_cell(file_list);
-            
-        case 'fmap'
-            
-            file_list = bids.internal.file_utils('List', ...
-                pth, ...
-                sprintf('^%s.*\\.nii(\\.gz)?$', ...
-                subject.name));
-            file_list = convert_to_cell(file_list);
-            
-        case 'eeg'
-            
-            file_list = bids.internal.file_utils('List', ...
-                pth, ...
-                sprintf('^%s.*_task-.*_eeg\\..*[^json]$', ...
-                subject.name));
-            file_list = convert_to_cell(file_list);
-            
-        case 'meg'
-            
-            [file_list, d] = bids.internal.file_utils('List', ...
-                pth, ...
-                sprintf('^%s.*_task-.*_meg\\..*[^json]$', ...
-                subject.name));
-            if isempty(file_list)
-                file_list = d;
-            end
-            file_list = convert_to_cell(file_list);
-            
-            
-        case 'beh'
-            
-            file_list = bids.internal.file_utils('FPList', ...
-                pth, ...
-                sprintf('^%s.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)$', ...
-                subject.name));
-            file_list = convert_to_cell(file_list);
-            
-        case 'dwi'
-            
-            
-            file_list = bids.internal.file_utils('FPList', ...
-                pth, ...
-                sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', ...
-                subject.name));
-            file_list = convert_to_cell(file_list);
-            
-            
-        case 'pet'
-            
-            file_list = bids.internal.file_utils('List', ...
-                pth, ...
-                sprintf('^%s.*_task-.*_pet\\.nii(\\.gz)?$', ...
-                subject.name));
-            file_list = convert_to_cell(file_list);
-            
-        case 'ieeg'
-            
-            file_list = bids.internal.file_utils('List', ...
-                pth, ...
-                sprintf('^%s.*_task-.*_ieeg\\..*[^json]$', ...
-                subject.name));
-            file_list = convert_to_cell(file_list);
-             
-    end
-    
-    
+
+  pth = fullfile(subject.path, modality);
+
+  switch modality
+
+    case 'anat'
+
+      file_list = bids.internal.file_utils('List', ...
+                                           pth, ...
+                                           sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', ...
+                                                   subject.name));
+      file_list = convert_to_cell(file_list);
+
+    case 'func'
+
+      file_list = bids.internal.file_utils('List', ...
+                                           pth, ...
+                                           sprintf('^%s.*_task-.*_bold\\.nii(\\.gz)?$', ...
+                                                   subject.name));
+      file_list = convert_to_cell(file_list);
+
+    case 'fmap'
+
+      file_list = bids.internal.file_utils('List', ...
+                                           pth, ...
+                                           sprintf('^%s.*\\.nii(\\.gz)?$', ...
+                                                   subject.name));
+      file_list = convert_to_cell(file_list);
+
+    case 'eeg'
+
+      file_list = bids.internal.file_utils('List', ...
+                                           pth, ...
+                                           sprintf('^%s.*_task-.*_eeg\\..*[^json]$', ...
+                                                   subject.name));
+      file_list = convert_to_cell(file_list);
+
+    case 'meg'
+
+      [file_list, d] = bids.internal.file_utils('List', ...
+                                                pth, ...
+                                                sprintf('^%s.*_task-.*_meg\\..*[^json]$', ...
+                                                        subject.name));
+      if isempty(file_list)
+        file_list = d;
+      end
+      file_list = convert_to_cell(file_list);
+
+    case 'beh'
+
+      file_list = bids.internal.file_utils('FPList', ...
+                                           pth, ...
+                                           sprintf('^%s.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)$', ...
+                                                   subject.name));
+      file_list = convert_to_cell(file_list);
+
+    case 'dwi'
+
+      file_list = bids.internal.file_utils('FPList', ...
+                                           pth, ...
+                                           sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', ...
+                                                   subject.name));
+      file_list = convert_to_cell(file_list);
+
+    case 'pet'
+
+      file_list = bids.internal.file_utils('List', ...
+                                           pth, ...
+                                           sprintf('^%s.*_task-.*_pet\\.nii(\\.gz)?$', ...
+                                                   subject.name));
+      file_list = convert_to_cell(file_list);
+
+    case 'ieeg'
+
+      file_list = bids.internal.file_utils('List', ...
+                                           pth, ...
+                                           sprintf('^%s.*_task-.*_ieeg\\..*[^json]$', ...
+                                                   subject.name));
+      file_list = convert_to_cell(file_list);
+
+  end
+
 end
 
 function subject = parse_anat(subject)
@@ -351,14 +347,13 @@ function subject = parse_anat(subject)
 
     entities = return_entities('anat');
 
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_file_list('anat', subject);
+
+    for i = 1:numel(file_list)
 
       % -Anatomy imaging data file
       % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(fileList{i}, entities);
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.anat = [subject.anat p];
 
     end
@@ -376,15 +371,11 @@ function subject = parse_func(subject)
 
     entities = return_entities('func');
 
-    % -Task imaging data file
-    % ----------------------------------------------------------------------
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_bold\\.nii(\\.gz)?$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_file_list('func', subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.func = [subject.func p];
       subject.func(end).meta = struct([]); % ?
 
@@ -429,35 +420,34 @@ function subject = parse_fmap(subject)
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'fmap');
   if exist(pth, 'dir')
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*\\.nii(\\.gz)?$', subject.name));
-    fileList = convert_to_cell(fileList);
-    
+
+    file_list = return_file_list('fmap', subject);
+
     j = 1;
 
     % -Phase difference image and at least one magnitude image
     % ----------------------------------------------------------------------
-    labels = regexp(fileList, [ ...
-                               '^sub-[a-zA-Z0-9]+' ...              % sub-<participant_label>
-                               '(?<ses>_ses-[a-zA-Z0-9]+)?' ...     % ses-<label>
-                               '(?<acq>_acq-[a-zA-Z0-9]+)?' ...     % acq-<label>
-                               '(?<run>_run-[a-zA-Z0-9]+)?' ...     % run-<index>
-                               '_phasediff\.nii(\.gz)?$'], 'names'); % NIfTI file extension
+    labels = regexp(file_list, [ ...
+                                '^sub-[a-zA-Z0-9]+' ...              % sub-<participant_label>
+                                '(?<ses>_ses-[a-zA-Z0-9]+)?' ...     % ses-<label>
+                                '(?<acq>_acq-[a-zA-Z0-9]+)?' ...     % acq-<label>
+                                '(?<run>_run-[a-zA-Z0-9]+)?' ...     % run-<index>
+                                '_phasediff\.nii(\.gz)?$'], 'names'); % NIfTI file extension
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
         fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               fileList{idx(i)}, ...
+                                                               file_list{idx(i)}, ...
                                                                'basename'), ...
                                       'basename');
         metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         subject.fmap(j).type = 'phasediff';
-        subject.fmap(j).filename = fileList{idx(i)};
+        subject.fmap(j).filename = file_list{idx(i)};
         subject.fmap(j).magnitude = { ...
-                                     strrep(fileList{idx(i)}, ...
+                                     strrep(file_list{idx(i)}, ...
                                             '_phasediff.nii', ...
                                             '_magnitude1.nii'), ...
-                                     strrep(fileList{idx(i)}, ...
+                                     strrep(file_list{idx(i)}, ...
                                             '_phasediff.nii', ...
                                             '_magnitude2.nii')}; % optional
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
@@ -475,31 +465,31 @@ function subject = parse_fmap(subject)
 
     % -Two phase images and two magnitude images
     % ----------------------------------------------------------------------
-    labels = regexp(fileList, [ ...
-                               '^sub-[a-zA-Z0-9]+' ...           % sub-<participant_label>
-                               '(?<ses>_ses-[a-zA-Z0-9]+)?' ...  % ses-<label>
-                               '(?<acq>_acq-[a-zA-Z0-9]+)?' ...  % acq-<label>
-                               '(?<run>_run-[a-zA-Z0-9]+)?' ...  % run-<index>
-                               '_phase1\.nii(\.gz)?$'], 'names'); % NIfTI file extension
+    labels = regexp(file_list, [ ...
+                                '^sub-[a-zA-Z0-9]+' ...           % sub-<participant_label>
+                                '(?<ses>_ses-[a-zA-Z0-9]+)?' ...  % ses-<label>
+                                '(?<acq>_acq-[a-zA-Z0-9]+)?' ...  % acq-<label>
+                                '(?<run>_run-[a-zA-Z0-9]+)?' ...  % run-<index>
+                                '_phase1\.nii(\.gz)?$'], 'names'); % NIfTI file extension
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
         fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               fileList{idx(i)}, ...
+                                                               file_list{idx(i)}, ...
                                                                'basename'), ...
                                       'basename');
         metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         subject.fmap(j).type = 'phase12';
         subject.fmap(j).filename = { ...
-                                    fileList{idx(i)}, ...
-                                    strrep(fileList{idx(i)}, ...
+                                    file_list{idx(i)}, ...
+                                    strrep(file_list{idx(i)}, ...
                                            '_phase1.nii', ...
                                            '_phase2.nii')};
         subject.fmap(j).magnitude = { ...
-                                     strrep(fileList{idx(i)}, ...
+                                     strrep(file_list{idx(i)}, ...
                                             '_phase1.nii', ...
                                             '_magnitude1.nii'), ...
-                                     strrep(fileList{idx(i)}, ...
+                                     strrep(file_list{idx(i)}, ...
                                             '_phase1.nii', ...
                                             '_magnitude2.nii')};
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
@@ -521,23 +511,23 @@ function subject = parse_fmap(subject)
 
     % -A single, real fieldmap image
     % ----------------------------------------------------------------------
-    labels = regexp(fileList, [ ...
-                               '^sub-[a-zA-Z0-9]+' ...             % sub-<participant_label>
-                               '(?<ses>_ses-[a-zA-Z0-9]+)?' ...    % ses-<label>
-                               '(?<acq>_acq-[a-zA-Z0-9]+)?' ...    % acq-<label>
-                               '(?<run>_run-[a-zA-Z0-9]+)?' ...    % run-<index>
-                               '_fieldmap\.nii(\.gz)?$'], 'names'); % NIfTI file extension
+    labels = regexp(file_list, [ ...
+                                '^sub-[a-zA-Z0-9]+' ...             % sub-<participant_label>
+                                '(?<ses>_ses-[a-zA-Z0-9]+)?' ...    % ses-<label>
+                                '(?<acq>_acq-[a-zA-Z0-9]+)?' ...    % acq-<label>
+                                '(?<run>_run-[a-zA-Z0-9]+)?' ...    % run-<index>
+                                '_fieldmap\.nii(\.gz)?$'], 'names'); % NIfTI file extension
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
         fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               fileList{idx(i)}, ...
+                                                               file_list{idx(i)}, ...
                                                                'basename'), ...
                                       'basename');
         metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         subject.fmap(j).type = 'fieldmap';
-        subject.fmap(j).filename = fileList{idx(i)};
-        subject.fmap(j).magnitude = strrep(fileList{idx(i)}, ...
+        subject.fmap(j).filename = file_list{idx(i)};
+        subject.fmap(j).magnitude = strrep(file_list{idx(i)}, ...
                                            '_fieldmap.nii', ...
                                            '_magnitude.nii');
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
@@ -555,23 +545,23 @@ function subject = parse_fmap(subject)
 
     % -Multiple phase encoded directions (topup)
     % ----------------------------------------------------------------------
-    labels = regexp(fileList, [ ...
-                               '^sub-[a-zA-Z0-9]+' ...          % sub-<participant_label>
-                               '(?<ses>_ses-[a-zA-Z0-9]+)?' ... % ses-<label>
-                               '(?<acq>_acq-[a-zA-Z0-9]+)?' ... % acq-<label>
-                               '_dir-(?<dir>[a-zA-Z0-9]+)?' ... % dir-<index>
-                               '(?<run>_run-[a-zA-Z0-9]+)?' ... % run-<index>
-                               '_epi\.nii(\.gz)?$'], 'names');   % NIfTI file extension
+    labels = regexp(file_list, [ ...
+                                '^sub-[a-zA-Z0-9]+' ...          % sub-<participant_label>
+                                '(?<ses>_ses-[a-zA-Z0-9]+)?' ... % ses-<label>
+                                '(?<acq>_acq-[a-zA-Z0-9]+)?' ... % acq-<label>
+                                '_dir-(?<dir>[a-zA-Z0-9]+)?' ... % dir-<index>
+                                '(?<run>_run-[a-zA-Z0-9]+)?' ... % run-<index>
+                                '_epi\.nii(\.gz)?$'], 'names');   % NIfTI file extension
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
         fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               fileList{idx(i)}, ...
+                                                               file_list{idx(i)}, ...
                                                                'basename'), ...
                                       'basename');
         metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         subject.fmap(j).type = 'epi';
-        subject.fmap(j).filename = fileList{idx(i)};
+        subject.fmap(j).filename = file_list{idx(i)};
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).dir = labels{idx(i)}.dir;
@@ -598,19 +588,16 @@ function subject = parse_eeg(subject)
 
     entities = return_entities('eeg');
 
-    % -EEG data file
-    % ----------------------------------------------------------------------
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_eeg\\..*[^json]$', subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_file_list('eeg', subject);
+
+    for i = 1:numel(file_list)
 
       % European data format (.edf)
       % BrainVision Core Data Format (.vhdr, .vmrk, .eeg) by Brain Products GmbH
       % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
       % Biosemi data format (.bdf)
 
-      p = bids.internal.parse_filename(fileList{i}, eeg_entities);
+      p = bids.internal.parse_filename(file_list{i}, eeg_entities);
       switch p.ext
         case {'.edf', '.vhdr', '.set', '.bdf'}
           % each recording is described with a single file,
@@ -681,18 +668,11 @@ function subject = parse_meg(subject)
 
     entities = return_entities('meg');
 
-    % -MEG data file
-    % ----------------------------------------------------------------------
-    [fileList, d] = bids.internal.file_utils('List', pth, ...
-                                             sprintf('^%s.*_task-.*_meg\\..*[^json]$', ...
-                                                     subject.name));
-    if isempty(fileList)
-      fileList = d;
-    end
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_file_list('meg', subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.meg = [subject.meg p];
       subject.meg(end).meta = struct([]); % ?
 
@@ -754,15 +734,14 @@ function subject = parse_beh(subject)
 
     entities = return_entities('beh');
 
-    fileList = bids.internal.file_utils('FPList', pth, ...
-                                        sprintf('^%s.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)$', subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_file_list('beh', subject);
+
+    for i = 1:numel(file_list)
 
       % -Event timing, metadata, physiological and other continuous
       % recordings
       % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(fileList{i}, entities);
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.beh = [subject.beh p];
 
     end
@@ -778,21 +757,19 @@ function subject = parse_dwi(subject)
 
     entities = return_entities('dwi');
 
-    fileList = bids.internal.file_utils('FPList', pth, ...
-                                        sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_file_list('dwi', subject);
+
+    for i = 1:numel(file_list)
 
       % -Diffusion imaging file
       % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(fileList{i}, entities);
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.dwi = [subject.dwi p];
 
       % -bval file
       % ------------------------------------------------------------------
       % bval file can also be stored at higher levels (inheritance principle)
-      bvalfile = bids.internal.get_metadata(fileList{i}, '^.*%s\\.bval$');
+      bvalfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bval$');
       if isfield(bvalfile, 'filename')
         subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
       end
@@ -800,7 +777,7 @@ function subject = parse_dwi(subject)
       % -bvec file
       % ------------------------------------------------------------------
       % bvec file can also be stored at higher levels (inheritance principle)
-      bvecfile = bids.internal.get_metadata(fileList{i}, '^.*%s\\.bvec$');
+      bvecfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bvec$');
       if isfield(bvalfile, 'filename')
         subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename); % ?
       end
@@ -818,15 +795,13 @@ function subject = parse_pet(subject)
 
     entities = return_entities('pet');
 
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_pet\\.nii(\\.gz)?$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_file_list('pet', subject);
+
+    for i = 1:numel(file_list)
 
       % -PET imaging file
       % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(fileList{i}, entities);
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.pet = [subject.pet p];
 
     end
@@ -842,13 +817,9 @@ function subject = parse_ieeg(subject)
 
     entities = return_entities('ieeg');
 
-    % -iEEG data file
-    % ----------------------------------------------------------------------
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_ieeg\\..*[^json]$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_file_list('ieeg', subject);
+
+    for i = 1:numel(file_list)
 
       % European Data Format (.edf)
       % BrainVision Core Data Format (.vhdr, .eeg, .vmrk) by Brain Products GmbH
@@ -856,7 +827,7 @@ function subject = parse_ieeg(subject)
       % Neurodata Without Borders (.nwb)
       % MEF3 (.mef)
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+      p = bids.internal.parse_filename(file_list{i}, entities);
       switch p.ext
         case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
           % each recording is described with a single file,
