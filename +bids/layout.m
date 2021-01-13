@@ -293,6 +293,30 @@ function file_list = return_file_list(modality, subject)
 
 end
 
+function file_list = return_event_file_list(modality, subject)
+  %
+  % TODO: events file can also be stored at higher levels (inheritance principle)
+  %
+
+  pth = fullfile(subject.path, modality);
+
+  switch modality
+
+    case {'func', 'eeg', 'meg'}
+      pattern = '_task-.*_events\\.tsv';
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s.*' pattern '$'], ...
+                                                    subject.name));
+
+  file_list = convert_to_cell(file_list);
+
+end
+
 function subject = parse_anat(subject)
 
   % --------------------------------------------------------------------------
