@@ -206,50 +206,50 @@ function f = convert_to_cell(f)
   end
 end
 
-function entities = returnEntities(modality)
-    
-    switch modality
-        
-        case 'anat'
-            
-            entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
-            
-        case 'func'
-            
-            entities = {'sub', ...
-                'ses', ...
-                'task', ...
-                'acq', ...
-                'rec', ...
-                'fa', ...
-                'echo', ...
-                'dir', ...
-                'inv', ...
-                'run', ...
-                'recording', ...
-                'meta'};
-            
-        case {'eeg', 'ieeg'}
-            
-            entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
-            
-        case 'meg'
-            
-            entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
-            
-        case 'beh'
-            
-            entities = {'sub', 'ses', 'task'};
-            
-        case 'dwi'
-            
-            entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
-            
-        case 'pet'
-            
-            entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
-            
-    end
+function entities = return_entities(modality)
+
+  switch modality
+
+    case 'anat'
+
+      entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
+
+    case 'func'
+
+      entities = {'sub', ...
+                  'ses', ...
+                  'task', ...
+                  'acq', ...
+                  'rec', ...
+                  'fa', ...
+                  'echo', ...
+                  'dir', ...
+                  'inv', ...
+                  'run', ...
+                  'recording', ...
+                  'meta'};
+
+    case {'eeg', 'ieeg'}
+
+      entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
+
+    case 'meg'
+
+      entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
+
+    case 'beh'
+
+      entities = {'sub', 'ses', 'task'};
+
+    case 'dwi'
+
+      entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
+
+    case 'pet'
+
+      entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
+
+  end
 end
 
 function subject = parse_anat(subject)
@@ -260,7 +260,7 @@ function subject = parse_anat(subject)
   pth = fullfile(subject.path, 'anat');
   if exist(pth, 'dir')
 
-    anat_entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
+    entities = return_entities('anat');
 
     fileList = bids.internal.file_utils('List', pth, ...
                                         sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', subject.name));
@@ -269,7 +269,7 @@ function subject = parse_anat(subject)
 
       % -Anatomy imaging data file
       % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(fileList{i}, anat_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.anat = [subject.anat p];
 
     end
@@ -285,18 +285,7 @@ function subject = parse_func(subject)
   pth = fullfile(subject.path, 'func');
   if exist(pth, 'dir')
 
-    func_entities = {'sub', ...
-                     'ses', ...
-                     'task', ...
-                     'acq', ...
-                     'rec', ...
-                     'fa', ...
-                     'echo', ...
-                     'dir', ...
-                     'inv', ...
-                     'run', ...
-                     'recording', ...
-                     'meta'};
+    entities = return_entities('func');
 
     % -Task imaging data file
     % ----------------------------------------------------------------------
@@ -306,7 +295,7 @@ function subject = parse_func(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, func_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.func = [subject.func p];
       subject.func(end).meta = struct([]); % ?
 
@@ -321,7 +310,7 @@ function subject = parse_func(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, func_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.func = [subject.func p];
       subject.func(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
 
@@ -333,11 +322,10 @@ function subject = parse_func(subject)
     fileList = bids.internal.file_utils('List', pth, ...
                                         sprintf('^%s.*_task-.*_(physio|stim)\\.tsv\\.gz$', ...
                                                 subject.name));
-    % see also [_recording-<label>]
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, func_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.func = [subject.func p];
       subject.func(end).meta = struct([]); % ?
 
@@ -518,7 +506,7 @@ function subject = parse_eeg(subject)
   pth = fullfile(subject.path, 'eeg');
   if exist(pth, 'dir')
 
-    eeg_entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
+    entities = return_entities('eeg');
 
     % -EEG data file
     % ----------------------------------------------------------------------
@@ -556,7 +544,7 @@ function subject = parse_eeg(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, eeg_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.eeg = [subject.eeg p];
       subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
 
@@ -571,7 +559,7 @@ function subject = parse_eeg(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, eeg_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.eeg = [subject.eeg p];
       subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
 
@@ -584,7 +572,7 @@ function subject = parse_eeg(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, eeg_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.eeg = [subject.eeg p];
       subject.eeg(end).meta = struct([]); % ?
 
@@ -601,7 +589,7 @@ function subject = parse_meg(subject)
   pth = fullfile(subject.path, 'meg');
   if exist(pth, 'dir')
 
-    meg_entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
+    entities = return_entities('meg');
 
     % -MEG data file
     % ----------------------------------------------------------------------
@@ -614,7 +602,7 @@ function subject = parse_meg(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, meg_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.meg = [subject.meg p];
       subject.meg(end).meta = struct([]); % ?
 
@@ -629,7 +617,7 @@ function subject = parse_meg(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, meg_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.meg = [subject.meg p];
       subject.meg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
 
@@ -644,7 +632,7 @@ function subject = parse_meg(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, meg_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.meg = [subject.meg p];
       subject.meg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
 
@@ -657,7 +645,7 @@ function subject = parse_meg(subject)
     fileList = convert_to_cell(fileList);
     for i = 1:numel(fileList)
 
-      p = bids.internal.parse_filename(fileList{i}, meg_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.meg = [subject.meg p];
       subject.meg(end).meta = struct([]); % ?
 
@@ -674,7 +662,7 @@ function subject = parse_beh(subject)
   pth = fullfile(subject.path, 'beh');
   if exist(pth, 'dir')
 
-    beh_entities = {'sub', 'ses', 'task'};
+    entities = return_entities('beh');
 
     fileList = bids.internal.file_utils('FPList', pth, ...
                                         sprintf('^%s.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)$', subject.name));
@@ -684,7 +672,7 @@ function subject = parse_beh(subject)
       % -Event timing, metadata, physiological and other continuous
       % recordings
       % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(fileList{i}, beh_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.beh = [subject.beh p];
 
     end
@@ -698,7 +686,7 @@ function subject = parse_dwi(subject)
   pth = fullfile(subject.path, 'dwi');
   if exist(pth, 'dir')
 
-    dwi_entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
+    entities = return_entities('dwi');
 
     fileList = bids.internal.file_utils('FPList', pth, ...
                                         sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', ...
@@ -708,7 +696,7 @@ function subject = parse_dwi(subject)
 
       % -Diffusion imaging file
       % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(fileList{i}, dwi_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.dwi = [subject.dwi p];
 
       % -bval file
@@ -738,7 +726,7 @@ function subject = parse_pet(subject)
   pth = fullfile(subject.path, 'pet');
   if exist(pth, 'dir')
 
-    pet_entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
+    entities = return_entities('pet');
 
     fileList = bids.internal.file_utils('List', pth, ...
                                         sprintf('^%s.*_task-.*_pet\\.nii(\\.gz)?$', ...
@@ -748,7 +736,7 @@ function subject = parse_pet(subject)
 
       % -PET imaging file
       % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(fileList{i}, pet_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       subject.pet = [subject.pet p];
 
     end
@@ -762,7 +750,7 @@ function subject = parse_ieeg(subject)
   pth = fullfile(subject.path, 'ieeg');
   if exist(pth, 'dir')
 
-    ieeg_entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
+    entities = return_entities('ieeg');
 
     % -iEEG data file
     % ----------------------------------------------------------------------
@@ -778,7 +766,7 @@ function subject = parse_ieeg(subject)
       % Neurodata Without Borders (.nwb)
       % MEF3 (.mef)
 
-      p = bids.internal.parse_filename(fileList{i}, ieeg_entities);
+      p = bids.internal.parse_filename(fileList{i}, entities);
       switch p.ext
         case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
           % each recording is described with a single file,
