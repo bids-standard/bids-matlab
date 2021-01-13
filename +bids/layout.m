@@ -198,6 +198,13 @@ function subject = parse_subject(pth, subjname, sesname)
 
 end
 
+function subject = append_to_structure(file, entities, subject, modality)
+
+  p = bids.internal.parse_filename(file, entities);
+  subject.(modality) = [subject.(modality) p];
+
+end
+
 function f = convert_to_cell(f)
   if isempty(f)
     f = {};
@@ -435,10 +442,7 @@ function subject = parse_anat(subject)
 
     for i = 1:numel(file_list)
 
-      % -Anatomy imaging data file
-      % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.anat = [subject.anat p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'anat');
 
     end
   end
@@ -460,8 +464,8 @@ function subject = parse_func(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.func = [subject.func p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'func');
+
       subject.func(end).meta = struct([]); % ?
 
     end
@@ -470,8 +474,8 @@ function subject = parse_func(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.func = [subject.func p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'func');
+
       subject.func(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
@@ -480,8 +484,8 @@ function subject = parse_func(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.func = [subject.func p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'func');
+
       subject.func(end).meta = struct([]); % ?
 
     end
@@ -676,8 +680,8 @@ function subject = parse_eeg(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.eeg = [subject.eeg p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
+
       subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
@@ -686,8 +690,8 @@ function subject = parse_eeg(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.eeg = [subject.eeg p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
+
       subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
@@ -696,8 +700,8 @@ function subject = parse_eeg(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.eeg = [subject.eeg p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
+
       subject.eeg(end).meta = struct([]); % ?
 
     end
@@ -720,8 +724,8 @@ function subject = parse_meg(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.meg = [subject.meg p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
+
       subject.meg(end).meta = struct([]); % ?
 
     end
@@ -730,8 +734,8 @@ function subject = parse_meg(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.meg = [subject.meg p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
+
       subject.meg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
@@ -740,8 +744,8 @@ function subject = parse_meg(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.meg = [subject.meg p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
+
       subject.meg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
@@ -750,8 +754,8 @@ function subject = parse_meg(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.meg = [subject.meg p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
+
       subject.meg(end).meta = struct([]); % ?
 
     end
@@ -763,6 +767,8 @@ end
 function subject = parse_beh(subject)
   % --------------------------------------------------------------------------
   % -Behavioral experiments data
+  %
+  % - Event timing, metadata, physiological and other continuous recordings
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'beh');
 
@@ -774,11 +780,7 @@ function subject = parse_beh(subject)
 
     for i = 1:numel(file_list)
 
-      % -Event timing, metadata, physiological and other continuous
-      % recordings
-      % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.beh = [subject.beh p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'beh');
 
     end
   end
@@ -798,10 +800,7 @@ function subject = parse_dwi(subject)
 
     for i = 1:numel(file_list)
 
-      % -Diffusion imaging file
-      % ------------------------------------------------------------------
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.dwi = [subject.dwi p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'dwi');
 
       % -bval file
       % ------------------------------------------------------------------
@@ -837,8 +836,7 @@ function subject = parse_pet(subject)
 
     for i = 1:numel(file_list)
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      subject.pet = [subject.pet p];
+      subject = append_to_structure(file_list{i}, entities, subject, 'pet');
 
     end
   end
