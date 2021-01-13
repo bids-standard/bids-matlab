@@ -211,11 +211,9 @@ function entities = return_entities(modality)
   switch modality
 
     case 'anat'
-
       entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
 
     case 'func'
-
       entities = {'sub', ...
                   'ses', ...
                   'task', ...
@@ -230,23 +228,18 @@ function entities = return_entities(modality)
                   'meta'};
 
     case {'eeg', 'ieeg'}
-
       entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
 
     case 'meg'
-
       entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
 
     case 'beh'
-
       entities = {'sub', 'ses', 'task'};
 
     case 'dwi'
-
       entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
 
     case 'pet'
-
       entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
 
   end
@@ -560,7 +553,7 @@ function subject = parse_eeg(subject)
       % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
       % Biosemi data format (.bdf)
 
-      p = bids.internal.parse_filename(file_list{i}, eeg_entities);
+      p = bids.internal.parse_filename(file_list{i}, entities);
       switch p.ext
         case {'.edf', '.vhdr', '.set', '.bdf'}
           % each recording is described with a single file,
@@ -762,8 +755,6 @@ function subject = parse_pet(subject)
 
     for i = 1:numel(file_list)
 
-      % -PET imaging file
-      % ------------------------------------------------------------------
       p = bids.internal.parse_filename(file_list{i}, entities);
       subject.pet = [subject.pet p];
 
