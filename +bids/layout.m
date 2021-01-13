@@ -206,6 +206,52 @@ function f = convert_to_cell(f)
   end
 end
 
+function entities = returnEntities(modality)
+    
+    switch modality
+        
+        case 'anat'
+            
+            entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
+            
+        case 'func'
+            
+            entities = {'sub', ...
+                'ses', ...
+                'task', ...
+                'acq', ...
+                'rec', ...
+                'fa', ...
+                'echo', ...
+                'dir', ...
+                'inv', ...
+                'run', ...
+                'recording', ...
+                'meta'};
+            
+        case {'eeg', 'ieeg'}
+            
+            entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
+            
+        case 'meg'
+            
+            entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
+            
+        case 'beh'
+            
+            entities = {'sub', 'ses', 'task'};
+            
+        case 'dwi'
+            
+            entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
+            
+        case 'pet'
+            
+            entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
+            
+    end
+end
+
 function subject = parse_anat(subject)
 
   % --------------------------------------------------------------------------
