@@ -42,9 +42,9 @@ function BIDS = layout(root, tolerant)
   % BIDS.dir          -- BIDS directory
   % BIDS.description  -- content of dataset_description.json
   % BIDS.sessions     -- cellstr of sessions
-  % BIDS.scans        -- content of sub-<participant_label>_scans.tsv (should go within subjects)
-  % BIDS.sess         -- content of sub-<participants_label>_sessions.tsv (should go within subjects)
-  % BIDS.participants -- content of participants.tsv
+  % BIDS.scans        -- for sub-<participant_label>_scans.tsv (should go within subjects)
+  % BIDS.sess         -- for sub-<participants_label>_sessions.tsv (should go within subjects)
+  % BIDS.participants -- for participants.tsv
   % BIDS.subjects'    -- structure array of subjects
 
   BIDS = struct( ...
@@ -341,6 +341,53 @@ function file_list = return_physio_stim_file_list(modality, subject)
 
 end
 
+function file_list = return_channel_description_file_list(modality, subject)
+  %
+  % Channel description table
+  %
+  % TODO: those files can also be stored at higher levels (inheritance principle)
+  %
+
+  switch modality
+
+    case {'eeg', 'meg'}
+      pattern = '_task-.*_channels\\.tsv';
+
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s.*' pattern '$'], ...
+                                                    subject.name));
+
+  file_list = convert_to_cell(file_list);
+
+end
+
+function file_list = return_session_specific_file_list(modality, subject)
+
+  switch modality
+
+    case {'eeg', 'meg'}
+      pattern = [ ...
+                 '(_ses-[a-zA-Z0-9]+)?.*_', ...
+                 '(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)'];
+
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s' pattern '$'], ...
+                                                    subject.name));
+
+  file_list = convert_to_cell(file_list);
+
+end
+
 function subject = parse_anat(subject)
 
   % --------------------------------------------------------------------------
@@ -424,7 +471,7 @@ function subject = parse_fmap(subject)
     labels = regexp(file_list, [ ...
                                 '^sub-[a-zA-Z0-9]+' ...              % sub-<participant_label>
                                 '(?<ses>_ses-[a-zA-Z0-9]+)?' ...     % ses-<label>
-                                '(?<acq>_acq-[a-zA-Z0-9]+)?' ...     % acq-<label>
+                                '(?<acq>_acq-[a-zA-Z0-9]content of+)?' ...     % acq-<label>
                                 '(?<run>_run-[a-zA-Z0-9]+)?' ...     % run-<index>
                                 '_phasediff\.nii(\.gz)?$'], 'names'); % NIfTI file extension
     if any(~cellfun(@isempty, labels))
@@ -472,7 +519,7 @@ function subject = parse_fmap(subject)
                                                                file_list{idx(i)}, ...
                                                                'basename'), ...
                                       'basename');
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
+        metafile = fullfile(pth, bids.internal.file_utilcontent ofs(fb, 'ext', 'json'));
         subject.fmap(j).type = 'phase12';
         subject.fmap(j).filename = { ...
                                     file_list{idx(i)}, ...
@@ -526,7 +573,7 @@ function subject = parse_fmap(subject)
                                            '_magnitude.nii');
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
+        subject.fmap(j).run = regexprep(labels{idx(i)}.rcontent ofun, '^_[a-zA-Z0-9]+-', '');
         if exist(metafile, 'file')
           subject.fmap(j).meta = bids.util.jsondecode(metafile);
         else
@@ -616,29 +663,21 @@ function subject = parse_eeg(subject)
 
     end
 
-    % -Channel description table
-    % ----------------------------------------------------------------------
-    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_channels\\.tsv$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_channel_description_file_list(modality, subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.eeg = [subject.eeg p];
-      subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
+      subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
 
-    % -Session-specific file
-    % ----------------------------------------------------------------------
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s(_ses-[a-zA-Z0-9]+)?.*_(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)$', subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_session_specific_file_list(modality, subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.eeg = [subject.eeg p];
       subject.eeg(end).meta = struct([]); % ?
 
@@ -677,29 +716,21 @@ function subject = parse_meg(subject)
 
     end
 
-    % -Channels description table
-    % ----------------------------------------------------------------------
-    % (!) TODO: channels file can also be stored at higher levels (inheritance principle)
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_channels\\.tsv$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_channel_description_file_list(modality, subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.meg = [subject.meg p];
-      subject.meg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
+      subject.meg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
 
-    % -Session-specific file
-    % ----------------------------------------------------------------------
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s(_ses-[a-zA-Z0-9]+)?.*_(photo\\.jpg|coordsystem\\.json|headshape\\..*)$', subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_session_specific_file_list(modality, subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.meg = [subject.meg p];
       subject.meg(end).meta = struct([]); % ?
 
