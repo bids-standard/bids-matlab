@@ -298,12 +298,11 @@ function file_list = return_event_file_list(modality, subject)
   % TODO: events file can also be stored at higher levels (inheritance principle)
   %
 
-  pth = fullfile(subject.path, modality);
-
   switch modality
 
     case {'func', 'eeg', 'meg'}
       pattern = '_task-.*_events\\.tsv';
+
   end
 
   pth = fullfile(subject.path, modality);
@@ -361,18 +360,13 @@ function subject = parse_func(subject)
 
     end
 
-    % -Task events file
-    % ----------------------------------------------------------------------
-    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_events\\.tsv$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_event_file_list('func', subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.func = [subject.func p];
-      subject.func(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
+      subject.func(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
 
@@ -592,18 +586,13 @@ function subject = parse_eeg(subject)
 
     end
 
-    % -EEG events file
-    % ----------------------------------------------------------------------
-    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_events\\.tsv$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_event_file_list('eeg', subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.eeg = [subject.eeg p];
-      subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
+      subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
 
@@ -658,18 +647,13 @@ function subject = parse_meg(subject)
 
     end
 
-    % -MEG events file
-    % ----------------------------------------------------------------------
-    % (!) TODO: events file can also be stored at higher levels (inheritance principle)
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_events\\.tsv$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_event_file_list('meg', subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.meg = [subject.meg p];
-      subject.meg(end).meta = bids.util.tsvread(fullfile(pth, fileList{i})); % ?
+      subject.meg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
 
     end
 
