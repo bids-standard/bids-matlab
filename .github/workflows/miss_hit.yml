@@ -1,4 +1,7 @@
-name: miss_hit
+name: code style and quality
+# runs the miss hit linter on the code base
+# https://github.com/florianschanda/miss_hit/
+# see CONTRIBUTING.md for more information
 
 on:
   push:
