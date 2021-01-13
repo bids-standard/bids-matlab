@@ -246,44 +246,35 @@ function entities = return_entities(modality)
 end
 
 function labels = return_labels_fieldmap(file_list, fiefmap_type)
-    
-    switch fiefmap_type
-        
-        case 'phase_difference_image'    
-            labels = regexp(file_list, [ ...
-                '^sub-[a-zA-Z0-9]+' ...              % sub-<participant_label>
-                '(?<ses>_ses-[a-zA-Z0-9]+)?' ...     % ses-<label>
-                '(?<acq>_acq-[a-zA-Z0-9]+)?' ...     % acq-<label>
-                '(?<run>_run-[a-zA-Z0-9]+)?' ...     % run-<index>
-                '_phasediff\.nii(\.gz)?$'], 'names'); % NIfTI file extension
-            
-        case 'two_phase_image'
-            labels = regexp(file_list, [ ...
-                '^sub-[a-zA-Z0-9]+' ...           % sub-<participant_label>
-                '(?<ses>_ses-[a-zA-Z0-9]+)?' ...  % ses-<label>
-                '(?<acq>_acq-[a-zA-Z0-9]+)?' ...  % acq-<label>
-                '(?<run>_run-[a-zA-Z0-9]+)?' ...  % run-<index>
-                '_phase1\.nii(\.gz)?$'], 'names'); % NIfTI file extension
-            
-        case 'fieldmap_image' 
-            labels = regexp(file_list, [ ...
-                '^sub-[a-zA-Z0-9]+' ...             % sub-<participant_label>
-                '(?<ses>_ses-[a-zA-Z0-9]+)?' ...    % ses-<label>
-                '(?<acq>_acq-[a-zA-Z0-9]+)?' ...    % acq-<label>
-                '(?<run>_run-[a-zA-Z0-9]+)?' ...    % run-<index>
-                '_fieldmap\.nii(\.gz)?$'], 'names'); % NIfTI file extension
-            
-        case 'phase_encoded_direction_image'
-            labels = regexp(file_list, [ ...
-                '^sub-[a-zA-Z0-9]+' ...          % sub-<participant_label>
-                '(?<ses>_ses-[a-zA-Z0-9]+)?' ... % ses-<label>
-                '(?<acq>_acq-[a-zA-Z0-9]+)?' ... % acq-<label>
-                '_dir-(?<dir>[a-zA-Z0-9]+)?' ... % dir-<index>
-                '(?<run>_run-[a-zA-Z0-9]+)?' ... % run-<index>
-                '_epi\.nii(\.gz)?$'], 'names');   % NIfTI file extension
-            
-    end
-    
+
+  direction_pattern = '';
+
+  switch fiefmap_type
+
+    case 'phase_difference_image'
+      suffix = 'phasediff';
+
+    case 'two_phase_image'
+      suffix = 'phase1';
+
+    case 'fieldmap_image'
+      suffix = 'fieldmap';
+
+    case 'phase_encoded_direction_image'
+      suffix = 'epi';
+
+      direction_pattern = '_dir-(?<dir>[a-zA-Z0-9]+)?';
+
+  end
+
+  labels = regexp(file_list, [ ...
+                              '^sub-[a-zA-Z0-9]+', ...          % sub-<participant_label>
+                              '(?<ses>_ses-[a-zA-Z0-9]+)?', ... % ses-<label>
+                              '(?<acq>_acq-[a-zA-Z0-9]+)?', ... % acq-<label>
+                              direction_pattern, ...            % dir-<index>
+                              '(?<run>_run-[a-zA-Z0-9]+)?', ... % run-<index>
+                              '_' suffix '\.nii(\.gz)?$'], 'names');   % NIfTI file extension
+
 end
 
 function file_list = return_file_list(modality, subject)
@@ -435,7 +426,7 @@ function subject = parse_anat(subject)
   % -Anatomy imaging data
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'anat');
-  
+
   if exist(pth, 'dir')
 
     entities = return_entities('anat');
@@ -460,7 +451,7 @@ function subject = parse_func(subject)
   % -Task imaging data
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'func');
-  
+
   if exist(pth, 'dir')
 
     entities = return_entities('func');
@@ -503,7 +494,7 @@ function subject = parse_fmap(subject)
   % -Fieldmap data
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'fmap');
-  
+
   if exist(pth, 'dir')
 
     file_list = return_file_list('fmap', subject);
@@ -513,7 +504,7 @@ function subject = parse_fmap(subject)
     % -Phase difference image and at least one magnitude image
     % ----------------------------------------------------------------------
     labels = return_labels_fieldmap(file_list, 'phase_difference_image');
-    
+
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
@@ -547,7 +538,7 @@ function subject = parse_fmap(subject)
     % -Two phase images and two magnitude images
     % ----------------------------------------------------------------------
     labels = return_labels_fieldmap(file_list, 'two_phase_image');
-                            
+
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
@@ -588,8 +579,8 @@ function subject = parse_fmap(subject)
 
     % -A single, real fieldmap image
     % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'fieldmap_image');                            
-                            
+    labels = return_labels_fieldmap(file_list, 'fieldmap_image');
+
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
@@ -617,9 +608,9 @@ function subject = parse_fmap(subject)
     end
 
     % -Multiple phase encoded directions (topup)
-    % ----------------------------------------------------------------------                           
-    labels = return_labels_fieldmap(file_list, 'phase_encoded_direction_image');                                  
-                            
+    % ----------------------------------------------------------------------
+    labels = return_labels_fieldmap(file_list, 'phase_encoded_direction_image');
+
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
@@ -652,7 +643,7 @@ function subject = parse_eeg(subject)
   % -EEG data
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'eeg');
-  
+
   if exist(pth, 'dir')
 
     entities = return_entities('eeg');
@@ -720,7 +711,7 @@ function subject = parse_meg(subject)
   % -MEG data
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'meg');
-  
+
   if exist(pth, 'dir')
 
     entities = return_entities('meg');
@@ -774,7 +765,7 @@ function subject = parse_beh(subject)
   % -Behavioral experiments data
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'beh');
-  
+
   if exist(pth, 'dir')
 
     entities = return_entities('beh');
@@ -798,7 +789,7 @@ function subject = parse_dwi(subject)
   % -Diffusion imaging data
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'dwi');
-  
+
   if exist(pth, 'dir')
 
     entities = return_entities('dwi');
@@ -837,7 +828,7 @@ function subject = parse_pet(subject)
   % -Positron Emission Tomography imaging data
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'pet');
-  
+
   if exist(pth, 'dir')
 
     entities = return_entities('pet');
@@ -858,7 +849,7 @@ function subject = parse_ieeg(subject)
   % -Human intracranial electrophysiology
   % --------------------------------------------------------------------------
   pth = fullfile(subject.path, 'ieeg');
-  
+
   if exist(pth, 'dir')
 
     entities = return_entities('ieeg');
@@ -889,5 +880,5 @@ function subject = parse_ieeg(subject)
     end
 
   end
-  
+
 end
