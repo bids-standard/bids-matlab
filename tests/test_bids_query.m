@@ -73,21 +73,36 @@ function test_bids_query_basic()
   assert(iscellstr(t1));
   assert(numel(t1) == numel(bids.query(BIDS, 'subjects')));
 
-  % Check sessions
+end
+  
+function test_bids_query_sessions()  
+  %
   %   parse a folder with sessions
+  %
+  
+  pth_bids_example = get_test_data_dir();
+  
   BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
 
   %   test
   sessions = {'01', '02'};
   assert(isequal(bids.query(BIDS, 'sessions'), sessions));
   assert(isequal(bids.query(BIDS, 'sessions', 'sub', '02'), sessions));
-
-  % Check modalities
+  
+end
+  
+function test_bids_query_modalities()  
+  %
   %   parse a folder with different modalities per session
+  %
+
+  pth_bids_example = get_test_data_dir();
+  
   BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
 
   %   test
   mods = {'anat', 'fmap', 'func'};
+  
   assert(isequal(bids.query(BIDS, 'modalities'), mods));
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), mods));
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '1'), mods));
