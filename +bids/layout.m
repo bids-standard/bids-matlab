@@ -471,7 +471,7 @@ function subject = parse_fmap(subject)
     labels = regexp(file_list, [ ...
                                 '^sub-[a-zA-Z0-9]+' ...              % sub-<participant_label>
                                 '(?<ses>_ses-[a-zA-Z0-9]+)?' ...     % ses-<label>
-                                '(?<acq>_acq-[a-zA-Z0-9]content of+)?' ...     % acq-<label>
+                                '(?<acq>_acq-[a-zA-Z0-9]+)?' ...     % acq-<label>
                                 '(?<run>_run-[a-zA-Z0-9]+)?' ...     % run-<index>
                                 '_phasediff\.nii(\.gz)?$'], 'names'); % NIfTI file extension
     if any(~cellfun(@isempty, labels))
@@ -519,7 +519,7 @@ function subject = parse_fmap(subject)
                                                                file_list{idx(i)}, ...
                                                                'basename'), ...
                                       'basename');
-        metafile = fullfile(pth, bids.internal.file_utilcontent ofs(fb, 'ext', 'json'));
+        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         subject.fmap(j).type = 'phase12';
         subject.fmap(j).filename = { ...
                                     file_list{idx(i)}, ...
@@ -573,7 +573,7 @@ function subject = parse_fmap(subject)
                                            '_magnitude.nii');
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).run = regexprep(labels{idx(i)}.rcontent ofun, '^_[a-zA-Z0-9]+-', '');
+        subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
         if exist(metafile, 'file')
           subject.fmap(j).meta = bids.util.jsondecode(metafile);
         else
