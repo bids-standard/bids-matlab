@@ -316,6 +316,31 @@ function file_list = return_event_file_list(modality, subject)
 
 end
 
+function file_list = return_physio_stim_file_list(modality, subject)
+  %
+  % Physiological and other continuous recordings file
+  %
+  % TODO: stim files can also be stored at higher levels (inheritance principle)
+  %
+
+  switch modality
+
+    case {'func'}
+      pattern = '_task-.*_(physio|stim)\\.tsv\\.gz';
+
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s.*' pattern '$'], ...
+                                                    subject.name));
+
+  file_list = convert_to_cell(file_list);
+
+end
+
 function subject = parse_anat(subject)
 
   % --------------------------------------------------------------------------
@@ -370,16 +395,11 @@ function subject = parse_func(subject)
 
     end
 
-    % -Physiological and other continuous recordings file
-    % ----------------------------------------------------------------------
-    % (!) TODO: stim file can also be stored at higher levels (inheritance principle)
-    fileList = bids.internal.file_utils('List', pth, ...
-                                        sprintf('^%s.*_task-.*_(physio|stim)\\.tsv\\.gz$', ...
-                                                subject.name));
-    fileList = convert_to_cell(fileList);
-    for i = 1:numel(fileList)
+    file_list = return_physio_stim_file_list(modality, subject);
 
-      p = bids.internal.parse_filename(fileList{i}, entities);
+    for i = 1:numel(file_list)
+
+      p = bids.internal.parse_filename(file_list{i}, entities);
       subject.func = [subject.func p];
       subject.func(end).meta = struct([]); % ?
 
