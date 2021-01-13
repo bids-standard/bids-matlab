@@ -252,6 +252,95 @@ function entities = return_entities(modality)
   end
 end
 
+function file_list = return_file_list(modality, subject)
+    
+    pth = fullfile(subject.path, modality);
+    
+    switch modality
+        
+        case 'anat'
+            
+            file_list = bids.internal.file_utils('List', ...
+                pth, ...
+                sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', ...
+                subject.name));
+            file_list = convert_to_cell(file_list);
+            
+        case 'func'
+            
+            file_list = bids.internal.file_utils('List', ...
+                pth, ...
+                sprintf('^%s.*_task-.*_bold\\.nii(\\.gz)?$', ...
+                subject.name));
+            file_list = convert_to_cell(file_list);
+            
+        case 'fmap'
+            
+            file_list = bids.internal.file_utils('List', ...
+                pth, ...
+                sprintf('^%s.*\\.nii(\\.gz)?$', ...
+                subject.name));
+            file_list = convert_to_cell(file_list);
+            
+        case 'eeg'
+            
+            file_list = bids.internal.file_utils('List', ...
+                pth, ...
+                sprintf('^%s.*_task-.*_eeg\\..*[^json]$', ...
+                subject.name));
+            file_list = convert_to_cell(file_list);
+            
+        case 'meg'
+            
+            [file_list, d] = bids.internal.file_utils('List', ...
+                pth, ...
+                sprintf('^%s.*_task-.*_meg\\..*[^json]$', ...
+                subject.name));
+            if isempty(file_list)
+                file_list = d;
+            end
+            file_list = convert_to_cell(file_list);
+            
+            
+        case 'beh'
+            
+            file_list = bids.internal.file_utils('FPList', ...
+                pth, ...
+                sprintf('^%s.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)$', ...
+                subject.name));
+            file_list = convert_to_cell(file_list);
+            
+        case 'dwi'
+            
+            
+            file_list = bids.internal.file_utils('FPList', ...
+                pth, ...
+                sprintf('^%s.*_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?$', ...
+                subject.name));
+            file_list = convert_to_cell(file_list);
+            
+            
+        case 'pet'
+            
+            file_list = bids.internal.file_utils('List', ...
+                pth, ...
+                sprintf('^%s.*_task-.*_pet\\.nii(\\.gz)?$', ...
+                subject.name));
+            file_list = convert_to_cell(file_list);
+            
+        case 'ieeg'
+            
+            file_list = bids.internal.file_utils('List', ...
+                pth, ...
+                sprintf('^%s.*_task-.*_ieeg\\..*[^json]$', ...
+                subject.name));
+            file_list = convert_to_cell(file_list);
+             
+    end
+    
+    
+end
+
 function subject = parse_anat(subject)
 
   % --------------------------------------------------------------------------
@@ -343,6 +432,7 @@ function subject = parse_fmap(subject)
     fileList = bids.internal.file_utils('List', pth, ...
                                         sprintf('^%s.*\\.nii(\\.gz)?$', subject.name));
     fileList = convert_to_cell(fileList);
+    
     j = 1;
 
     % -Phase difference image and at least one magnitude image
