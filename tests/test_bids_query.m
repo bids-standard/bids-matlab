@@ -23,9 +23,9 @@ function test_bids_query_basic()
   % Copyright (C) 2019, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2019--, BIDS-MATLAB developers
 
-  pth = fullfile(pwd, 'bids-examples', 'ds007');
+  pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(pth);
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
 
   subjs = arrayfun(@(x) sprintf('%02d', x), 1:20, 'UniformOutput', false);
   assert(isequal(bids.query(BIDS, 'subjects'), subjs));
@@ -75,8 +75,7 @@ function test_bids_query_basic()
 
   % Check sessions
   %   parse a folder with sessions
-  pth = fullfile(fileparts(pth), 'synthetic');
-  BIDS = bids.layout(pth);
+  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
 
   %   test
   sessions = {'01', '02'};
@@ -85,8 +84,7 @@ function test_bids_query_basic()
 
   % Check modalities
   %   parse a folder with different modalities per session
-  pth = fullfile(fileparts(pth), '7t_trt');
-  BIDS = bids.layout(pth);
+  BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
 
   %   test
   mods = {'anat', 'fmap', 'func'};

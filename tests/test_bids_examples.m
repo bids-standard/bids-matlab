@@ -23,9 +23,9 @@ function test_bids_examples_basic()
 
   % -List all the directories in the bids-example folder that are actual
   % datasets
-  pth = fullfile(pwd, 'bids-examples');
+  pth_bids_example = get_test_data_dir();
 
-  d = dir(pth);
+  d = dir(pth_bids_example);
   d(arrayfun(@(x) ~x.isdir || ismember(x.name, {'.', '..', '.git', '.github'}), d)) = [];
 
   % -Try to run bids.layout on each dataset directory and keep track of any
@@ -33,13 +33,13 @@ function test_bids_examples_basic()
   sts = false(1, numel(d));
   msg = cell(1, numel(d));
   for i = 1:numel(d)
-    if exist(fullfile(pth, d(i).name, '.SKIP_VALIDATION'), 'file')
+    if exist(fullfile(pth_bids_example, d(i).name, '.SKIP_VALIDATION'), 'file')
       sts(i) = true;
       fprintf('-');
       continue
     end
     try
-      BIDS = bids.layout(fullfile(pth, d(i).name));
+      BIDS = bids.layout(fullfile(pth_bids_example, d(i).name));
       sts(i) = true;
       fprintf('.');
     catch err

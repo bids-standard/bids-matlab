@@ -47,7 +47,7 @@ jobs:
       with:
         tests: tests # files or directories containing the MOxUnit test cases
         src: +bids # directories to be added to the Octave search path before running the tests. 
-        ext: JSONio # External resources to add to the search put (excluded from coverage)
+        ext: JSONio tests/utils # External resources to add to the search put (excluded from coverage)
         # data: # Directory for test data  
         with_coverage: true
         cover_xml_file: coverage.xml
