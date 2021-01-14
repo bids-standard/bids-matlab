@@ -301,11 +301,10 @@ function subject = parse_fmap(subject)
                                      strrep(file_list{idx(i)}, ...
                                             '_phasediff.nii', ...
                                             '_magnitude2.nii')}; % optional
-        subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
 
-        metafile = return_fmap_metadata_file(file_list{idx(i)});
+        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
+
+        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
         subject.fmap(j).meta = struct([]);
         % (!) TODO: file can also be stored at higher levels (inheritance principle)
         if ~isempty(metafile)
@@ -340,11 +339,10 @@ function subject = parse_fmap(subject)
                                      strrep(file_list{idx(i)}, ...
                                             '_phase1.nii', ...
                                             '_magnitude2.nii')};
-        subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
 
-        metafile = return_fmap_metadata_file(file_list{idx(i)});
+        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
+
+        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
         subject.fmap(j).meta = struct([]);
         % (!) TODO: file can also be stored at higher levels (inheritance principle)
         if ~isempty(metafile)
@@ -376,11 +374,10 @@ function subject = parse_fmap(subject)
         subject.fmap(j).magnitude = strrep(file_list{idx(i)}, ...
                                            '_fieldmap.nii', ...
                                            '_magnitude.nii');
-        subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
 
-        metafile = return_fmap_metadata_file(file_list{idx(i)});
+        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
+
+        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
         subject.fmap(j).meta = struct([]);
         % (!) TODO: file can also be stored at higher levels (inheritance principle)
         if ~isempty(metafile)
@@ -404,12 +401,11 @@ function subject = parse_fmap(subject)
 
         subject.fmap(j).type = 'epi';
         subject.fmap(j).filename = file_list{idx(i)};
-        subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
-        subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).dir = labels{idx(i)}.dir;
-        subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
 
-        metafile = return_fmap_metadata_file(file_list{idx(i)});
+        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
+
+        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
         subject.fmap(j).meta = struct([]);
         % (!) TODO: file can also be stored at higher levels (inheritance principle)
         if ~isempty(metafile)
@@ -674,6 +670,14 @@ function subject = append_to_structure(file, entities, subject, modality)
 
 end
 
+function subject = append_common_fmap_fields_to_structure(subject, labels, idx)
+
+  subject.fmap(idx).ses = regexprep(labels.ses, '^_[a-zA-Z0-9]+-', '');
+  subject.fmap(idx).acq = regexprep(labels.acq, '^_[a-zA-Z0-9]+-', '');
+  subject.fmap(idx).run = regexprep(labels.run, '^_[a-zA-Z0-9]+-', '');
+
+end
+
 function f = convert_to_cell(f)
   if isempty(f)
     f = {};
@@ -854,7 +858,9 @@ function file_list = return_physio_stim_file_list(modality, subject)
 
 end
 
-function metafile = return_fmap_metadata_file(fmap_file)
+function metafile = return_fmap_metadata_file(subject, fmap_file)
+
+  pth = fullfile(subject.path, 'fmap');
 
   fb = bids.internal.file_utils(bids.internal.file_utils( ...
                                                          fmap_file, ...
