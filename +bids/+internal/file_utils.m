@@ -52,9 +52,9 @@ function varargout = file_utils(str, varargin)
         case 'filename'
           str{n} = [nam ext];
         case 'cpath'
-          str(n) = cpath(str(n));
+          str(n) = canonicalise_path(str(n));
         case 'fpath'
-          str{n} = fileparts(char(cpath(str(n))));
+          str{n} = fileparts(char(canonicalise_path(str(n))));
         otherwise
           error('Unknown option: ''%s''', options{1});
       end
@@ -97,10 +97,12 @@ function varargout = file_utils(str, varargin)
   end
   varargout = {str};
 
+end
+function t = canonicalise_path(t, d)
   % ==========================================================================
   % -Canonicalise paths to full path names
   % ==========================================================================
-function t = cpath(t, d)
+  %
   % canonicalise paths to full path names, removing xxx/./yyy and xxx/../yyy
   % constructs
   % t must be a cell array of (relative or absolute) paths, d must be a
