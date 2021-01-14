@@ -2,6 +2,18 @@ function varargout = file_utils(str, varargin)
   %
   % Character array (or cell array of strings) handling facility
   %
+  %
+  % To list files or directories (with fullpath if necessary)
+  %
+  % FORMAT [files, dirs] = bids.internal.file_utils('List',   directory,        regexp)
+  % FORMAT [files, dirs] = bids.internal.file_utils('FPList', directory,        regexp)
+  % FORMAT [dirs]        = bids.internal.file_utils('List',   directory, 'dir', regexp)
+  % FORMAT [dirs]        = bids.internal.file_utils('FPList', directory, 'dir', regexp)
+  %
+  %
+  %
+  % To get a certain piece of information from a file.
+  %
   % FORMAT str = bids.internal.file_utils(str, option)
   %
   % str        - character array, or cell array of strings
@@ -9,6 +21,9 @@ function varargout = file_utils(str, varargin)
   % option     - string of requested item - one among:
   %              {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}
   %
+  %
+  %
+  % To set a certain piece of information from a file.
   %
   % FORMAT str = bids.internal.file_utils(str, opt_key, opt_val,...)
   %
@@ -18,6 +33,7 @@ function varargout = file_utils(str, varargin)
   %              {'path', 'basename', 'ext', 'filename', 'prefix', 'suffix'}
   %
   % opt_val    - string of new value for feature
+  %
   % __________________________________________________________________________
   %
   % Based on spm_file.m and spm_select.m from SPM12.
@@ -98,6 +114,7 @@ function varargout = file_utils(str, varargin)
   varargout = {str};
 
 end
+
 function t = canonicalise_path(t, d)
   % ==========================================================================
   % -Canonicalise paths to full path names
@@ -105,8 +122,6 @@ function t = canonicalise_path(t, d)
   %
   % canonicalise paths to full path names, removing xxx/./yyy and xxx/../yyy
   % constructs
-  % t must be a cell array of (relative or absolute) paths, d must be a
-  % single cell containing the base path of relative paths in t
   %
   % - t must be a cell array of (relative or absolute) paths
   %
@@ -169,10 +184,11 @@ function t = canonicalise_path(t, d)
   end
 
 
+function pp = pathparts(p)
   % ==========================================================================
   % -Parse paths
   % ==========================================================================
-function pp = pathparts(p)
+  %
   % parse paths in cellstr p
   %
   % returns cell array of path component cellstr arrays
@@ -185,7 +201,11 @@ function pp = pathparts(p)
   if ispc
     file_separator = '\\/';
   end
-  pp = cellfun(@(p1)textscan(p1, '%s', 'delimiter', fs, 'MultipleDelimsAsOne', 1), p);
+
+  pp = cellfun(@(p1)textscan(p1, '%s', ...
+                             'delimiter', file_separator, ...
+                             'MultipleDelimsAsOne', 1), p);
+
   if ispc
     for k = 1:numel(pp)
       if ~isempty(regexp(pp{k}{1}, '^[a-zA-Z]:$', 'once'))
