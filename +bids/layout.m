@@ -264,6 +264,12 @@ function subject = parse_func(subject)
 end
 
 function subject = parse_fmap(subject)
+  %
+  % TODO:
+  %
+  % 20210114 - From Remi:
+  % For other modalities, metadata are fetched upon query.
+  % It is unclear why we do it differently for fmaps
 
   % --------------------------------------------------------------------------
   % -Fieldmap data
@@ -299,16 +305,11 @@ function subject = parse_fmap(subject)
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
 
-        fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
-        if exist(metafile, 'file')
+        metafile = return_fmap_metadata_file(file_list{idx(i)});
+        subject.fmap(j).meta = struct([]);
+        % (!) TODO: file can also be stored at higher levels (inheritance principle)
+        if ~isempty(metafile)
           subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        else
-          % (!) TODO: file can also be stored at higher levels (inheritance principle)
-          subject.fmap(j).meta = struct([]); % ?
         end
 
         j = j + 1;
@@ -343,20 +344,15 @@ function subject = parse_fmap(subject)
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
 
-        fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
-        if exist(metafile, 'file')
+        metafile = return_fmap_metadata_file(file_list{idx(i)});
+        subject.fmap(j).meta = struct([]);
+        % (!) TODO: file can also be stored at higher levels (inheritance principle)
+        if ~isempty(metafile)
           subject.fmap(j).meta = { ...
                                   bids.util.jsondecode(metafile), ...
                                   bids.util.jsondecode(strrep(metafile, ...
                                                               '_phase1.json', ...
                                                               '_phase2.json'))};
-        else
-          % (!) TODO: file can also be stored at higher levels (inheritance principle)
-          subject.fmap(j).meta = struct([]); % ?
         end
 
         j = j + 1;
@@ -384,17 +380,11 @@ function subject = parse_fmap(subject)
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
 
-        fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
-
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
-        if exist(metafile, 'file')
+        metafile = return_fmap_metadata_file(file_list{idx(i)});
+        subject.fmap(j).meta = struct([]);
+        % (!) TODO: file can also be stored at higher levels (inheritance principle)
+        if ~isempty(metafile)
           subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        else
-          % (!) TODO: file can also be stored at higher levels (inheritance principle)
-          subject.fmap(j).meta = struct([]); % ?
         end
 
         j = j + 1;
@@ -419,16 +409,11 @@ function subject = parse_fmap(subject)
         subject.fmap(j).dir = labels{idx(i)}.dir;
         subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
 
-        fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
-        if exist(metafile, 'file')
+        metafile = return_fmap_metadata_file(file_list{idx(i)});
+        subject.fmap(j).meta = struct([]);
+        % (!) TODO: file can also be stored at higher levels (inheritance principle)
+        if ~isempty(metafile)
           subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        else
-          % (!) TODO: file can also be stored at higher levels (inheritance principle)
-          subject.fmap(j).meta = struct([]); % ?
         end
 
         j = j + 1;
@@ -866,6 +851,20 @@ function file_list = return_physio_stim_file_list(modality, subject)
                                                     subject.name));
 
   file_list = convert_to_cell(file_list);
+
+end
+
+function metafile = return_fmap_metadata_file(fmap_file)
+
+  fb = bids.internal.file_utils(bids.internal.file_utils( ...
+                                                         fmap_file, ...
+                                                         'basename'), ...
+                                'basename');
+  metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
+
+  if ~exist(metafile, 'file')
+    metafile = [];
+  end
 
 end
 
