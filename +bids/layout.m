@@ -251,7 +251,7 @@ function subject = parse_func(subject)
 
     end
 
-    file_list = return_physio_stim_file_list(modality, subject);
+    file_list = return_physio_stim_file_list('func', subject);
 
     for i = 1:numel(file_list)
 
@@ -464,7 +464,7 @@ function subject = parse_eeg(subject)
 
     end
 
-    file_list = return_channel_description_file_list(modality, subject);
+    file_list = return_channel_description_file_list('eeg', subject);
 
     for i = 1:numel(file_list)
 
@@ -474,7 +474,7 @@ function subject = parse_eeg(subject)
 
     end
 
-    file_list = return_session_specific_file_list(modality, subject);
+    file_list = return_session_specific_file_list('eeg', subject);
 
     for i = 1:numel(file_list)
 
@@ -518,7 +518,7 @@ function subject = parse_meg(subject)
 
     end
 
-    file_list = return_channel_description_file_list(modality, subject);
+    file_list = return_channel_description_file_list('meg', subject);
 
     for i = 1:numel(file_list)
 
@@ -528,7 +528,7 @@ function subject = parse_meg(subject)
 
     end
 
-    file_list = return_session_specific_file_list(modality, subject);
+    file_list = return_session_specific_file_list('meg', subject);
 
     for i = 1:numel(file_list)
 
@@ -802,7 +802,7 @@ function file_list = return_file_list(modality, subject)
                                             sprintf(['^%s.*' pattern '$'], ...
                                                     subject.name));
 
-  if strcmpt(modality, 'meg') && isempty(file_list)
+  if strcmp(modality, 'meg') && isempty(file_list)
     file_list = d;
   end
 
