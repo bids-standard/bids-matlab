@@ -281,13 +281,11 @@ function subject = parse_fmap(subject)
     labels = return_labels_fieldmap(file_list, 'phase_difference_image');
 
     if any(~cellfun(@isempty, labels))
+
       idx = find(~cellfun(@isempty, labels));
+
       for i = 1:numel(idx)
-        fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
+
         subject.fmap(j).type = 'phasediff';
         subject.fmap(j).filename = file_list{idx(i)};
         subject.fmap(j).magnitude = { ...
@@ -300,13 +298,21 @@ function subject = parse_fmap(subject)
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
+
+        fb = bids.internal.file_utils(bids.internal.file_utils( ...
+                                                               file_list{idx(i)}, ...
+                                                               'basename'), ...
+                                      'basename');
+        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         if exist(metafile, 'file')
           subject.fmap(j).meta = bids.util.jsondecode(metafile);
         else
           % (!) TODO: file can also be stored at higher levels (inheritance principle)
           subject.fmap(j).meta = struct([]); % ?
         end
+
         j = j + 1;
+
       end
     end
 
@@ -315,13 +321,11 @@ function subject = parse_fmap(subject)
     labels = return_labels_fieldmap(file_list, 'two_phase_image');
 
     if any(~cellfun(@isempty, labels))
+
       idx = find(~cellfun(@isempty, labels));
+
       for i = 1:numel(idx)
-        fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
+
         subject.fmap(j).type = 'phase12';
         subject.fmap(j).filename = { ...
                                     file_list{idx(i)}, ...
@@ -338,6 +342,12 @@ function subject = parse_fmap(subject)
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
+
+        fb = bids.internal.file_utils(bids.internal.file_utils( ...
+                                                               file_list{idx(i)}, ...
+                                                               'basename'), ...
+                                      'basename');
+        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         if exist(metafile, 'file')
           subject.fmap(j).meta = { ...
                                   bids.util.jsondecode(metafile), ...
@@ -348,8 +358,11 @@ function subject = parse_fmap(subject)
           % (!) TODO: file can also be stored at higher levels (inheritance principle)
           subject.fmap(j).meta = struct([]); % ?
         end
+
         j = j + 1;
+
       end
+
     end
 
     % -A single, real fieldmap image
@@ -357,13 +370,11 @@ function subject = parse_fmap(subject)
     labels = return_labels_fieldmap(file_list, 'fieldmap_image');
 
     if any(~cellfun(@isempty, labels))
+
       idx = find(~cellfun(@isempty, labels));
+
       for i = 1:numel(idx)
-        fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
+
         subject.fmap(j).type = 'fieldmap';
         subject.fmap(j).filename = file_list{idx(i)};
         subject.fmap(j).magnitude = strrep(file_list{idx(i)}, ...
@@ -372,13 +383,22 @@ function subject = parse_fmap(subject)
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
+
+        fb = bids.internal.file_utils(bids.internal.file_utils( ...
+                                                               file_list{idx(i)}, ...
+                                                               'basename'), ...
+                                      'basename');
+
+        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         if exist(metafile, 'file')
           subject.fmap(j).meta = bids.util.jsondecode(metafile);
         else
           % (!) TODO: file can also be stored at higher levels (inheritance principle)
           subject.fmap(j).meta = struct([]); % ?
         end
+
         j = j + 1;
+
       end
     end
 
@@ -387,26 +407,32 @@ function subject = parse_fmap(subject)
     labels = return_labels_fieldmap(file_list, 'phase_encoded_direction_image');
 
     if any(~cellfun(@isempty, labels))
+
       idx = find(~cellfun(@isempty, labels));
+
       for i = 1:numel(idx)
-        fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                               file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
+
         subject.fmap(j).type = 'epi';
         subject.fmap(j).filename = file_list{idx(i)};
         subject.fmap(j).ses = regexprep(labels{idx(i)}.ses, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).acq = regexprep(labels{idx(i)}.acq, '^_[a-zA-Z0-9]+-', '');
         subject.fmap(j).dir = labels{idx(i)}.dir;
         subject.fmap(j).run = regexprep(labels{idx(i)}.run, '^_[a-zA-Z0-9]+-', '');
+
+        fb = bids.internal.file_utils(bids.internal.file_utils( ...
+                                                               file_list{idx(i)}, ...
+                                                               'basename'), ...
+                                      'basename');
+        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
         if exist(metafile, 'file')
           subject.fmap(j).meta = bids.util.jsondecode(metafile);
         else
           % (!) TODO: file can also be stored at higher levels (inheritance principle)
           subject.fmap(j).meta = struct([]); % ?
         end
+
         j = j + 1;
+
       end
     end
   end
