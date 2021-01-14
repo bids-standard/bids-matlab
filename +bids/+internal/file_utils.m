@@ -127,11 +127,11 @@ function t = canonicalise_path(t, d)
   %
   % - d must be a single cell containing the base path of relative paths in t
   %
+
+  mch = '^/';
   if ispc % valid absolute paths
     % Allow drive letter or UNC path
     mch = '^([a-zA-Z]:)|(\\\\[^\\]*)';
-  else
-    mch = '^/';
   end
 
   if (nargin < 2) || isempty(d)
@@ -177,12 +177,12 @@ function t = canonicalise_path(t, d)
   end
 
   % Assemble paths
+  t = cellfun(@(pt1)fullfile(filesep, pt1{:}), pt, 'UniformOutput', false);
   if ispc
     t = cellfun(@(pt1)fullfile(pt1{:}), pt, 'UniformOutput', false);
-  else
-    t = cellfun(@(pt1)fullfile(filesep, pt1{:}), pt, 'UniformOutput', false);
   end
 
+end
 
 function pp = pathparts(p)
   % ==========================================================================
@@ -251,24 +251,20 @@ function [files, dirs] = listfiles(action, directory, varargin)
     return
   end
 
+  % set if we work on directory or files
+  % set regular expression to use
   dirmode = false;
-  if nargin < 3
-    expr = '.*';
-  else
-    if strcmpi(varargin{1}, 'dir')
-      dirmode = true;
-      if nargin < 4
-        expr = '.*';
-      else
-        expr = varargin{2};
-      end
-    else
-      expr = varargin{1};
-    end
+  expr = '.*';
+
+  if nargin >= 3
+    expr = varargin{1};
+  end 
+  if nargin == 3 && strcmpi(varargin{1}, 'dir')
+    dirmode = true;
   end
-      
-  if nargin == 3 && strcmpi(varargin{1}, 'dir') 
-      dirmode = true;
+  if nargin >= 3 && strcmpi(varargin{1}, 'dir')
+    dirmode = true;
+    expr = varargin{2};
   end
 
   files = sort({dd(~[dd.isdir]).name})';
