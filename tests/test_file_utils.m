@@ -1,6 +1,6 @@
 function test_file_utils()
 
-  % test to get certain part of a filename
+  %% test to get certain part of a filename
   % {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}
 
   str = fullfile('folder', 'filename.extension');
@@ -22,7 +22,7 @@ function test_file_utils()
   assert(isequal(cpath, ...
                  fullfile(pwd, 'folder', 'filename.extension')));
 
-  % test to set certain part of a filename
+  %% test to set certain part of a filename
   % {'path', 'basename', 'ext', 'filename', 'prefix', 'suffix'}
 
   str = fullfile('folder', 'filename.extension');
@@ -49,5 +49,32 @@ function test_file_utils()
                                      'prefix', 'pre_', ...
                                      'suffix', '_suffix');
   assert(isequal(new_str, fullfile('folder', 'pre_filename_suffix.extension')));
+
+  %% test to list files
+
+  test_directory = fileparts(mfilename('fullpath'));
+
+  file = bids.internal.file_utils('List', ...
+                                  test_directory, ...
+                                  '^test_file_utils.m$');
+  assert(isequal(file, 'test_file_utils.m'));
+
+  directory = bids.internal.file_utils('List', ...
+                                       test_directory, ...
+                                       'dir', ...
+                                       '^data$');
+  assert(isequal(directory, 'data'));
+
+  fp_file = bids.internal.file_utils('FPList', ...
+                                     test_directory, ...
+                                     '^test_file_utils.m$');
+  assert(isequal(fp_file, [mfilename('fullpath') '.m']));
+
+  fp_directory = bids.internal.file_utils('FPList', ...
+                                          test_directory, ...
+                                          'dir', ...
+                                          '^data$');
+  assert(isequal(fp_directory, ...
+                 fullfile(test_directory, 'data')));
 
 end
