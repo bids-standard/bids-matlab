@@ -1,14 +1,22 @@
 function varargout = file_utils(str, varargin)
+  %
   % Character array (or cell array of strings) handling facility
-  % FORMAT str = bids.internal.file_utils(str,option)
+  %
+  % FORMAT str = bids.internal.file_utils(str, option)
+  %
   % str        - character array, or cell array of strings
+  %
   % option     - string of requested item - one among:
   %              {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}
   %
-  % FORMAT str = bids.internal.file_utils(str,opt_key,opt_val,...)
+  %
+  % FORMAT str = bids.internal.file_utils(str, opt_key, opt_val,...)
+  %
   % str        - character array, or cell array of strings
+  %
   % opt_key    - string of targeted item - one among:
   %              {'path', 'basename', 'ext', 'filename', 'prefix', 'suffix'}
+  %
   % opt_val    - string of new value for feature
   % __________________________________________________________________________
   %
@@ -97,34 +105,45 @@ function t = cpath(t, d)
   % constructs
   % t must be a cell array of (relative or absolute) paths, d must be a
   % single cell containing the base path of relative paths in t
+  %
+  % - t must be a cell array of (relative or absolute) paths
+  %
+  % - d must be a single cell containing the base path of relative paths in t
+  %
   if ispc % valid absolute paths
     % Allow drive letter or UNC path
     mch = '^([a-zA-Z]:)|(\\\\[^\\]*)';
   else
     mch = '^/';
   end
+
   if (nargin < 2) || isempty(d)
     d = {pwd};
   end
+
   % Find partial paths, prepend them with d
   ppsel    = cellfun(@isempty, regexp(t, mch, 'once'));
   t(ppsel) = cellfun(@(t1)fullfile(d{1}, t1), t(ppsel), 'UniformOutput', false);
+
   % Break paths into cell lists of folder names
   pt = pathparts(t);
+
   % Remove single '.' folder names
   sd = cellfun(@(pt1)strcmp(pt1, '.'), pt, 'UniformOutput', false);
   for cp = 1:numel(pt)
     pt{cp} = pt{cp}(~sd{cp});
   end
-  % Go up one level for '..' folders, don't remove drive letter/server name
-  % from PC path
+
+  % Go up one level for '..' folders, don't remove drive letter/server name from PC path
+  ptstart = 1;
   if ispc
     ptstart = 2;
-  else
-    ptstart = 1;
   end
+
   for cp = 1:numel(pt)
+
     tmppt = {};
+
     for cdir = ptstart:numel(pt{cp})
       if strcmp(pt{cp}{cdir}, '..')
         tmppt = tmppt(1:end - 1);
@@ -132,12 +151,14 @@ function t = cpath(t, d)
         tmppt{end + 1} = pt{cp}{cdir};
       end
     end
+
+    pt{cp} = tmppt;
     if ispc
       pt{cp} = [pt{cp}(1) tmppt];
-    else
-      pt{cp} = tmppt;
     end
+
   end
+
   % Assemble paths
   if ispc
     t = cellfun(@(pt1)fullfile(pt1{:}), pt, 'UniformOutput', false);
@@ -145,18 +166,22 @@ function t = cpath(t, d)
     t = cellfun(@(pt1)fullfile(filesep, pt1{:}), pt, 'UniformOutput', false);
   end
 
+
   % ==========================================================================
   % -Parse paths
   % ==========================================================================
 function pp = pathparts(p)
   % parse paths in cellstr p
+  %
   % returns cell array of path component cellstr arrays
+  %
   % For PC (WIN) targets, both '\' and '/' are accepted as filesep, similar
   % to MATLAB fileparts
+  %
+
+  file_separator = filesep;
   if ispc
-    fs = '\\/';
-  else
-    fs = filesep;
+    file_separator = '\\/';
   end
   pp = cellfun(@(p1)textscan(p1, '%s', 'delimiter', fs, 'MultipleDelimsAsOne', 1), p);
   if ispc
@@ -169,17 +194,22 @@ function pp = pathparts(p)
     end
   end
 
+end
+
+function [files, dirs] = listfiles(action, directory, varargin)
   % ==========================================================================
   % -List files and directories
   % ==========================================================================
-function [fi, di] = listfiles(action, d, varargin)
-  % FORMAT [files, dirs] = listfiles('List',dir,regexp)
-  % FORMAT [files, dirs] = listfiles('FPList',dir,regexp)
-  % FORMAT [dirs] = listfiles('List',dir,'dir',regexp)
-  % FORMAT [dirs] = listfiles('FPList',dir,'dir',regexp)
+  %
+  % FORMAT [files, dirs] = listfiles('List',   directory,        regexp)
+  % FORMAT [files, dirs] = listfiles('FPList', directory,        regexp)
+  % FORMAT [dirs]        = listfiles('List',   directory, 'dir', regexp)
+  % FORMAT [dirs]        = listfiles('FPList', directory, 'dir', regexp)
+  %
 
-  fi = '';
-  di = '';
+  files = '';
+  dirs = '';
+
   switch lower(action)
     case 'list'
       fp = false;
@@ -188,11 +218,17 @@ function [fi, di] = listfiles(action, d, varargin)
     otherwise
       error('Invalid action: ''%s''.', action);
   end
+
+  directory = bids.internal.file_utils(directory, 'cpath');
   if nargin < 2
-    d = pwd;
-  else
-    d = bids.internal.file_utils(d, 'cpath');
+    directory = pwd;
   end
+
+  dd = dir(directory);
+  if isempty(dd)
+    return
+  end
+
   dirmode = false;
   if nargin < 3
     expr = '.*';
@@ -208,30 +244,42 @@ function [fi, di] = listfiles(action, d, varargin)
       expr = varargin{1};
     end
   end
-  dd = dir(d);
-  if isempty(dd)
-    return
+      
+  if nargin == 3 && strcmpi(varargin{1}, 'dir') 
+      dirmode = true;
   end
-  fi = sort({dd(~[dd.isdir]).name})';
-  di = sort({dd([dd.isdir]).name})';
-  di = setdiff(di, {'.', '..'});
+
+  files = sort({dd(~[dd.isdir]).name})';
+  dirs = sort({dd([dd.isdir]).name})';
+  dirs = setdiff(dirs, {'.', '..'});
+
   if dirmode
-    t = regexp(di, expr);
-    if numel(di) == 1 && ~iscell(t)
+
+    t = regexp(dirs, expr);
+
+    if numel(dirs) == 1 && ~iscell(t)
       t = {t};
     end
-    di = di(~cellfun(@isempty, t));
-    fi = di;
+    dirs = dirs(~cellfun(@isempty, t));
+    files = dirs;
+
   else
-    t = regexp(fi, expr);
-    if numel(fi) == 1 && ~iscell(t)
+
+    t = regexp(files, expr);
+
+    if numel(files) == 1 && ~iscell(t)
       t = {t};
     end
-    fi = fi(~cellfun(@isempty, t));
+    files = files(~cellfun(@isempty, t));
+
   end
+
   if fp
-    fi = cellfun(@(x) fullfile(d, x), fi, 'UniformOutput', false);
-    di = cellfun(@(x) fullfile(d, x), di, 'UniformOutput', false);
+    files = cellfun(@(x) fullfile(directory, x), files, 'UniformOutput', false);
+    dirs = cellfun(@(x) fullfile(directory, x), dirs, 'UniformOutput', false);
   end
-  fi = char(fi);
-  di = char(di);
+
+  files = char(files);
+  dirs = char(dirs);
+
+end
