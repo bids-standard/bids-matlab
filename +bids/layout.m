@@ -198,235 +198,6 @@ function subject = parse_subject(pth, subjname, sesname)
 
 end
 
-function subject = append_to_structure(file, entities, subject, modality)
-
-  p = bids.internal.parse_filename(file, entities);
-  subject.(modality) = [subject.(modality) p];
-
-end
-
-function f = convert_to_cell(f)
-  if isempty(f)
-    f = {};
-  else
-    f = cellstr(f);
-  end
-end
-
-function entities = return_entities(modality)
-
-  switch modality
-
-    case 'anat'
-      entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
-
-    case 'func'
-      entities = {'sub', ...
-                  'ses', ...
-                  'task', ...
-                  'acq', ...
-                  'rec', ...
-                  'fa', ...
-                  'echo', ...
-                  'dir', ...
-                  'inv', ...
-                  'run', ...
-                  'recording', ...
-                  'meta'};
-
-    case {'eeg', 'ieeg'}
-      entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
-
-    case 'meg'
-      entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
-
-    case 'beh'
-      entities = {'sub', 'ses', 'task'};
-
-    case 'dwi'
-      entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
-
-    case 'pet'
-      entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
-
-  end
-end
-
-function labels = return_labels_fieldmap(file_list, fiefmap_type)
-
-  direction_pattern = '';
-
-  switch fiefmap_type
-
-    case 'phase_difference_image'
-      suffix = 'phasediff';
-
-    case 'two_phase_image'
-      suffix = 'phase1';
-
-    case 'fieldmap_image'
-      suffix = 'fieldmap';
-
-    case 'phase_encoded_direction_image'
-      suffix = 'epi';
-
-      direction_pattern = '_dir-(?<dir>[a-zA-Z0-9]+)?';
-
-  end
-
-  labels = regexp(file_list, [ ...
-                              '^sub-[a-zA-Z0-9]+', ...          % sub-<participant_label>
-                              '(?<ses>_ses-[a-zA-Z0-9]+)?', ... % ses-<label>
-                              '(?<acq>_acq-[a-zA-Z0-9]+)?', ... % acq-<label>
-                              direction_pattern, ...            % dir-<index>
-                              '(?<run>_run-[a-zA-Z0-9]+)?', ... % run-<index>
-                              '_' suffix '\.nii(\.gz)?$'], 'names');   % NIfTI file extension
-
-end
-
-function file_list = return_file_list(modality, subject)
-
-  switch modality
-
-    case 'anat'
-      pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
-
-    case 'func'
-      pattern = '_task-.*_bold\\.nii(\\.gz)?';
-
-    case 'fmap'
-      pattern = '\\.nii(\\.gz)?';
-
-    case 'eeg'
-      pattern = '_task-.*_eeg\\..*[^json]';
-
-    case 'meg'
-      pattern = '_task-.*_meg\\..*[^json]';
-
-    case 'beh'
-      pattern = '_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
-
-    case 'dwi'
-      pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
-
-    case 'pet'
-      pattern = '_task-.*_pet\\.nii(\\.gz)?';
-
-    case 'ieeg'
-      pattern = '_task-.*_ieeg\\..*[^json]';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
-
-  if strcmpt(modality, 'meg') && isempty(file_list)
-    file_list = d;
-  end
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_event_file_list(modality, subject)
-  %
-  % TODO: events file can also be stored at higher levels (inheritance principle)
-  %
-
-  switch modality
-
-    case {'func', 'eeg', 'meg'}
-      pattern = '_task-.*_events\\.tsv';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_physio_stim_file_list(modality, subject)
-  %
-  % Physiological and other continuous recordings file
-  %
-  % TODO: stim files can also be stored at higher levels (inheritance principle)
-  %
-
-  switch modality
-
-    case {'func'}
-      pattern = '_task-.*_(physio|stim)\\.tsv\\.gz';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_channel_description_file_list(modality, subject)
-  %
-  % Channel description table
-  %
-  % TODO: those files can also be stored at higher levels (inheritance principle)
-  %
-
-  switch modality
-
-    case {'eeg', 'meg'}
-      pattern = '_task-.*_channels\\.tsv';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_session_specific_file_list(modality, subject)
-
-  switch modality
-
-    case {'eeg', 'meg'}
-      pattern = [ ...
-                 '(_ses-[a-zA-Z0-9]+)?.*_', ...
-                 '(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)'];
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s' pattern '$'], ...
-                                                    subject.name));
-
-  file_list = convert_to_cell(file_list);
-
-end
-
 function subject = parse_anat(subject)
 
   % --------------------------------------------------------------------------
@@ -878,5 +649,243 @@ function subject = parse_ieeg(subject)
     end
 
   end
+
+end
+
+% --------------------------------------------------------------------------
+%                            HELPER FUNCTIONS
+% --------------------------------------------------------------------------
+
+function subject = append_to_structure(file, entities, subject, modality)
+
+  p = bids.internal.parse_filename(file, entities);
+  subject.(modality) = [subject.(modality) p];
+
+end
+
+function f = convert_to_cell(f)
+  if isempty(f)
+    f = {};
+  else
+    f = cellstr(f);
+  end
+end
+
+function entities = return_entities(modality)
+
+  switch modality
+
+    case 'anat'
+      entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
+
+    case 'func'
+      entities = {'sub', ...
+                  'ses', ...
+                  'task', ...
+                  'acq', ...
+                  'rec', ...
+                  'fa', ...
+                  'echo', ...
+                  'dir', ...
+                  'inv', ...
+                  'run', ...
+                  'recording', ...
+                  'meta'};
+
+    case {'eeg', 'ieeg'}
+      entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
+
+    case 'meg'
+      entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
+
+    case 'beh'
+      entities = {'sub', 'ses', 'task'};
+
+    case 'dwi'
+      entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
+
+    case 'pet'
+      entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
+
+  end
+end
+
+function labels = return_labels_fieldmap(file_list, fiefmap_type)
+
+  direction_pattern = '';
+
+  switch fiefmap_type
+
+    case 'phase_difference_image'
+      suffix = 'phasediff';
+
+    case 'two_phase_image'
+      suffix = 'phase1';
+
+    case 'fieldmap_image'
+      suffix = 'fieldmap';
+
+    case 'phase_encoded_direction_image'
+      suffix = 'epi';
+
+      direction_pattern = '_dir-(?<dir>[a-zA-Z0-9]+)?';
+
+  end
+
+  labels = regexp(file_list, [ ...
+                              '^sub-[a-zA-Z0-9]+', ...          % sub-<participant_label>
+                              '(?<ses>_ses-[a-zA-Z0-9]+)?', ... % ses-<label>
+                              '(?<acq>_acq-[a-zA-Z0-9]+)?', ... % acq-<label>
+                              direction_pattern, ...            % dir-<index>
+                              '(?<run>_run-[a-zA-Z0-9]+)?', ... % run-<index>
+                              '_' suffix '\.nii(\.gz)?$'], 'names');   % NIfTI file extension
+
+end
+
+% TODO
+%
+% more refactoring can be done across the several 'return_X_file_list' functions
+%
+
+function file_list = return_file_list(modality, subject)
+
+  switch modality
+
+    case 'anat'
+      pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
+
+    case 'func'
+      pattern = '_task-.*_bold\\.nii(\\.gz)?';
+
+    case 'fmap'
+      pattern = '\\.nii(\\.gz)?';
+
+    case 'eeg'
+      pattern = '_task-.*_eeg\\..*[^json]';
+
+    case 'meg'
+      pattern = '_task-.*_meg\\..*[^json]';
+
+    case 'beh'
+      pattern = '_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
+
+    case 'dwi'
+      pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
+
+    case 'pet'
+      pattern = '_task-.*_pet\\.nii(\\.gz)?';
+
+    case 'ieeg'
+      pattern = '_task-.*_ieeg\\..*[^json]';
+
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s.*' pattern '$'], ...
+                                                    subject.name));
+
+  if strcmpt(modality, 'meg') && isempty(file_list)
+    file_list = d;
+  end
+
+  file_list = convert_to_cell(file_list);
+
+end
+
+function file_list = return_event_file_list(modality, subject)
+  %
+  % TODO: events file can also be stored at higher levels (inheritance principle)
+  %
+
+  switch modality
+
+    case {'func', 'eeg', 'meg'}
+      pattern = '_task-.*_events\\.tsv';
+
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s.*' pattern '$'], ...
+                                                    subject.name));
+
+  file_list = convert_to_cell(file_list);
+
+end
+
+function file_list = return_physio_stim_file_list(modality, subject)
+  %
+  % Physiological and other continuous recordings file
+  %
+  % TODO: stim files can also be stored at higher levels (inheritance principle)
+  %
+
+  switch modality
+
+    case {'func'}
+      pattern = '_task-.*_(physio|stim)\\.tsv\\.gz';
+
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s.*' pattern '$'], ...
+                                                    subject.name));
+
+  file_list = convert_to_cell(file_list);
+
+end
+
+function file_list = return_channel_description_file_list(modality, subject)
+  %
+  % Channel description table
+  %
+  % TODO: those files can also be stored at higher levels (inheritance principle)
+  %
+
+  switch modality
+
+    case {'eeg', 'meg'}
+      pattern = '_task-.*_channels\\.tsv';
+
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s.*' pattern '$'], ...
+                                                    subject.name));
+
+  file_list = convert_to_cell(file_list);
+
+end
+
+function file_list = return_session_specific_file_list(modality, subject)
+
+  switch modality
+
+    case {'eeg', 'meg'}
+      pattern = [ ...
+                 '(_ses-[a-zA-Z0-9]+)?.*_', ...
+                 '(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)'];
+
+  end
+
+  pth = fullfile(subject.path, modality);
+
+  [file_list, d] = bids.internal.file_utils('List', ...
+                                            pth, ...
+                                            sprintf(['^%s' pattern '$'], ...
+                                                    subject.name));
+
+  file_list = convert_to_cell(file_list);
 
 end
