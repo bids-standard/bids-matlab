@@ -1,0 +1,53 @@
+[
+  {
+    "suffixes": [
+      "asl",
+      "m0scan"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "acq": "optional",
+      "rec": "optional",
+      "dir": "optional",
+      "run": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "aslcontext"
+    ],
+    "extensions": [
+      ".tsv",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "acq": "optional",
+      "rec": "optional",
+      "dir": "optional",
+      "run": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "asllabeling"
+    ],
+    "extensions": [
+      ".jpg"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "acq": "optional",
+      "rec": "optional",
+      "run": "optional"
+    }
+  }
+]
