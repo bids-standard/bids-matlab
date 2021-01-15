@@ -3,17 +3,12 @@
     "suffixes": [
       "T1w",
       "T2w",
-      "T1rho",
-      "T1map",
-      "T2map",
-      "T2star",
+      "PDw",
+      "T2starw",
       "FLAIR",
-      "FLASH",
-      "PD",
-      "PDmap",
-      "PDT2",
       "inplaneT1",
       "inplaneT2",
+      "PDT2",
       "angio"
     ],
     "extensions": [
@@ -33,6 +28,42 @@
   },
   {
     "suffixes": [
+      "T1map",
+      "T2map",
+      "T2starmap",
+      "R1map",
+      "R2map",
+      "R2starmap",
+      "PDmap",
+      "MTRmap",
+      "MTsat",
+      "UNIT1",
+      "T1rho",
+      "MWFmap",
+      "MTVmap",
+      "PDT2map",
+      "Chimap",
+      "TB1map",
+      "RB1map",
+      "S0map",
+      "M0map"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "run": "optional",
+      "acq": "optional",
+      "ce": "optional",
+      "rec": "optional"
+    }
+  },
+  {
+    "suffixes": [
       "defacemask"
     ],
     "extensions": [
@@ -48,6 +79,132 @@
       "ce": "optional",
       "rec": "optional",
       "mod": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "MESE",
+      "MEGRE"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "run": "optional",
+      "acq": "optional",
+      "ce": "optional",
+      "rec": "optional",
+      "echo": "required",
+      "part": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "VFA"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "run": "optional",
+      "acq": "optional",
+      "ce": "optional",
+      "rec": "optional",
+      "flip": "required",
+      "part": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "IRT1"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "run": "optional",
+      "acq": "optional",
+      "ce": "optional",
+      "rec": "optional",
+      "inv": "required",
+      "part": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "MP2RAGE"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "run": "optional",
+      "acq": "optional",
+      "ce": "optional",
+      "rec": "optional",
+      "echo": "optional",
+      "flip": "required",
+      "inv": "required",
+      "part": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "MPM",
+      "MTS"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "run": "optional",
+      "acq": "optional",
+      "ce": "optional",
+      "rec": "optional",
+      "echo": "optional",
+      "flip": "required",
+      "mt": "required",
+      "part": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "MTR"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "sub": "required",
+      "ses": "optional",
+      "run": "optional",
+      "acq": "optional",
+      "ce": "optional",
+      "rec": "optional",
+      "mt": "required",
+      "part": "optional"
     }
   }
 ]
