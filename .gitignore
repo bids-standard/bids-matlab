@@ -1,3 +1,9 @@
 *.asv
 *.*~
 /tests/bids-examples
+
+# ignore virtual env
+convert_schema/*
+
+# ignore bids-specification repo that gets cloned during CI
+bids-specification/*
