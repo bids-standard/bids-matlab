@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - main
       - dev
   pull_request:
     branches: '*'
@@ -40,15 +41,28 @@ jobs:
          cd JSONio
          mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
          cd ..
-         
-    - name: Update Octave path
-      run: |
-        octave $OCTFLAGS --eval "addpath (pwd); savepath ();"
-        octave $OCTFLAGS --eval "addpath (fullfile(pwd, 'JSONio')); savepath ();"
 
-    - name: Run tests
+    - name: Install bids example
       run: |
-        cd tests
-        git clone git://github.com/bids-standard/bids-examples.git --depth 1
-        octave $OCTFLAGS --eval "results = bids_runtests; assert(all(~[results.Failed]))"
+         cd tests
+         git clone git://github.com/bids-standard/bids-examples.git --depth 1 
+         cd ..
+        
+    - name: MOxUnit Action
+      uses: joergbrech/moxunit-action@master
+      with:
+        tests: tests # files or directories containing the MOxUnit test cases
+        src: +bids # directories to be added to the Octave search path before running the tests. 
+        ext: JSONio tests/utils # External resources to add to the search put (excluded from coverage)
+        # data: # Directory for test data  
+        with_coverage: true
+        cover_xml_file: coverage.xml
+
+    - name: Code coverage
+      uses: codecov/codecov-action@v1
+      with:
+       file:  coverage.xml # optional
+       flags: unittests # optional
+       name: codecov-umbrella # optional
+       fail_ci_if_error: true # optional (default = false)        
 
