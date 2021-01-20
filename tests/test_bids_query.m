@@ -74,39 +74,39 @@ function test_bids_query_basic()
   assert(numel(t1) == numel(bids.query(BIDS, 'subjects')));
 
 end
-  
-function test_bids_query_sessions()  
+
+function test_bids_query_sessions()
   %
   %   parse a folder with sessions
   %
-  
+
   pth_bids_example = get_test_data_dir();
-  
+
   BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
 
   %   test
   sessions = {'01', '02'};
   assert(isequal(bids.query(BIDS, 'sessions'), sessions));
   assert(isequal(bids.query(BIDS, 'sessions', 'sub', '02'), sessions));
-  
+
 end
-  
-function test_bids_query_modalities()  
+
+function test_bids_query_modalities()
   %
   %   parse a folder with different modalities per session
   %
 
   pth_bids_example = get_test_data_dir();
-  
+
   BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
 
   %   test
   mods = {'anat', 'fmap', 'func'};
-  
+
   assert(isequal(bids.query(BIDS, 'modalities'), mods));
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), mods));
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '1'), mods));
-  
+
   %
   % this now fails on octave 4.2.2 but not on Matlab
   %
@@ -120,8 +120,7 @@ function test_bids_query_modalities()
   % }
   %
   % when it should return
-  
-  
+
   % assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '2'), mods(2:3)));
 
 end

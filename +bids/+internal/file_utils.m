@@ -258,7 +258,7 @@ function [files, dirs] = listfiles(action, directory, varargin)
 
   if nargin >= 3
     expr = varargin{1};
-  end 
+  end
   if nargin == 3 && strcmpi(varargin{1}, 'dir')
     dirmode = true;
   end
