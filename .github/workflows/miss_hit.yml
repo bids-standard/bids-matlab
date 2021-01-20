@@ -33,6 +33,12 @@ jobs:
         python -m pip install --upgrade pip setuptools
         pip3 install -r requirements.txt
 
+    - name: Install bids example
+      run: |
+         cd tests
+         git clone git://github.com/bids-standard/bids-examples.git --depth 1 
+         cd ..
+
     - name: MISS_HIT Code style
       run: |
         mh_style --process-slx
