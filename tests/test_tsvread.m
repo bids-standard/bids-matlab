@@ -1,4 +1,12 @@
-function test_tsvread(pth)
+function test_suite = test_tsvread %#ok<*STOUT>
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
+end
+
+function test_tsvread_basic()
   % Test the tsvread function
   % __________________________________________________________________________
   %
@@ -14,9 +22,7 @@ function test_tsvread(pth)
   %
   % Small test to ensure that the functionality of the tsvread function
 
-  if ~nargin
-    pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
-  end
+  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
@@ -32,3 +38,5 @@ function test_tsvread(pth)
                                       'data', ...
                                       'sub-01_task-auditory_events.tsv.gz'));
   assert(isequal(output.onset', events.onset));
+
+end

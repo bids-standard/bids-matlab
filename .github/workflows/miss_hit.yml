@@ -1,17 +1,20 @@
-name: miss_hit
+name: code style and quality
+# runs the miss hit linter on the code base
+# https://github.com/florianschanda/miss_hit/
+# see CONTRIBUTING.md for more information
 
 on:
   push:
-    branches:
-      - master
-      - dev
+    branches: [master, main, dev]
   pull_request:
-    branches: '*'
+    branches: [master, main]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+
+    if: github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'main'
 
     steps:
 
@@ -28,14 +31,22 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools
-        pip3 install miss_hit
+        pip3 install -r requirements.txt
 
-    - name: Miss_hit code style
+    - name: Install bids example
       run: |
-        mh_style .
+         cd tests
+         git clone git://github.com/bids-standard/bids-examples.git --depth 1 
+         cd ..
 
-    - name: Miss_hit code quality
+    - name: MISS_HIT Code style
       run: |
-        mh_metric . --ci
+        mh_style --process-slx
 
+    - name: MISS_HIT Metrics
+      run: |
+        mh_metric --ci
 
+    - name: MISS_HIT Bug finder
+      run: |
+        mh_lint

@@ -1,6 +1,8 @@
 *.asv
 *.*~
+
 /tests/bids-examples
+/tests/*.tsv
 
 # ignore virtual env
 convert_schema/*

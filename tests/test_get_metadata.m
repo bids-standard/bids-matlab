@@ -1,4 +1,12 @@
-function test_get_metadata(pth)
+function test_suite = test_get_metadata %#ok<*STOUT>
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
+end
+
+function test_get_metadata_basic()
   % Test metadata and the inheritance principle
   % __________________________________________________________________________
   %
@@ -15,9 +23,7 @@ function test_get_metadata(pth)
   % also tests inheritance principle: metadata are passed on to lower levels
   % unless they are overriden by metadate already present at lower levels
 
-  if ~nargin
-    pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
-  end
+  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
 
   % define the expected output from bids query metadata
   func.RepetitionTime = 7;
@@ -48,3 +54,5 @@ function test_get_metadata(pth)
   metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'type', 'T1w');
   assert(metadata.FlipAngle == anat_sub_01.FlipAngle);
   assert(strcmp(metadata.Manufacturer, anat_sub_01.Manufacturer));
+
+end

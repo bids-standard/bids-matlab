@@ -1,4 +1,12 @@
-function test_bids_examples(pth)
+function test_suite = test_bids_examples %#ok<*STOUT>
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
+end
+
+function test_bids_examples_basic()
   % Test datasets from https://github.com/bids-standard/bids-examples
   % This repository is downloaded automatically by the continuous integration
   % framework and is required for the tests to be run.
@@ -15,11 +23,9 @@ function test_bids_examples(pth)
 
   % -List all the directories in the bids-example folder that are actual
   % datasets
-  if ~nargin
-    pth = fullfile(pwd, 'bids-examples');
-  end
+  pth_bids_example = get_test_data_dir();
 
-  d = dir(pth);
+  d = dir(pth_bids_example);
   d(arrayfun(@(x) ~x.isdir || ismember(x.name, {'.', '..', '.git', '.github'}), d)) = [];
 
   % -Try to run bids.layout on each dataset directory and keep track of any
@@ -27,13 +33,13 @@ function test_bids_examples(pth)
   sts = false(1, numel(d));
   msg = cell(1, numel(d));
   for i = 1:numel(d)
-    if exist(fullfile(pth, d(i).name, '.SKIP_VALIDATION'), 'file')
+    if exist(fullfile(pth_bids_example, d(i).name, '.SKIP_VALIDATION'), 'file')
       sts(i) = true;
       fprintf('-');
       continue
     end
     try
-      BIDS = bids.layout(fullfile(pth, d(i).name));
+      BIDS = bids.layout(fullfile(pth_bids_example, d(i).name));
       sts(i) = true;
       fprintf('.');
     catch err
@@ -50,3 +56,5 @@ function test_bids_examples(pth)
     end
     error('Parsing of BIDS-compatible datasets failed.');
   end
+
+end
