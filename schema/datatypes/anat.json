@@ -17,12 +17,12 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
       "part": "optional"
     }
   },
@@ -54,12 +54,12 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional"
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional"
     }
   },
   {
@@ -72,13 +72,13 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional",
-      "mod": "optional"
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
+      "modality": "optional"
     }
   },
   {
@@ -92,12 +92,12 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
       "echo": "required",
       "part": "optional"
     }
@@ -112,12 +112,12 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
       "flip": "required",
       "part": "optional"
     }
@@ -132,12 +132,12 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
       "inv": "required",
       "part": "optional"
     }
@@ -152,12 +152,12 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
       "echo": "optional",
       "flip": "required",
       "inv": "required",
@@ -175,12 +175,12 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
       "echo": "optional",
       "flip": "required",
       "mt": "required",
@@ -197,12 +197,12 @@
       ".json"
     ],
     "entities": {
-      "sub": "required",
-      "ses": "optional",
+      "subject": "required",
+      "session": "optional",
       "run": "optional",
-      "acq": "optional",
-      "ce": "optional",
-      "rec": "optional",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
       "mt": "required",
       "part": "optional"
     }
