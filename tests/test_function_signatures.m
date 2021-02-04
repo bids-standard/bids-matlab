@@ -22,10 +22,10 @@ function test_function_signatures_basic()
   % Copyright (C) 2020--, BIDS-MATLAB developers
 
   root_dir = fullfile(fileparts(mfilename('fullpath')), '..');
-  
+
   % Run a smoke test - see if the file is a readable json
   signatures = bids.util.jsondecode( ...
                                     fullfile(root_dir, 'functionSignatures.json'));
   assert(isstruct(signatures));
-  
+
 end
