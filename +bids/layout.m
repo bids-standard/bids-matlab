@@ -229,22 +229,23 @@ end
 
 function subject = parse_anat(subject)
 
+  datatype = 'anat';
+
   % --------------------------------------------------------------------------
   % -Anatomy imaging data
   % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'anat');
+  pth = fullfile(subject.path, datatype);
 
   if exist(pth, 'dir')
 
-    entities = return_entities('anat');
-
-    file_list = return_file_list('anat', subject);
+    file_list = return_file_list(datatype, subject);
 
     for i = 1:numel(file_list)
 
-      subject = append_to_structure(file_list{i}, entities, subject, 'anat');
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype);
 
     end
+
   end
 
 end
