@@ -6,14 +6,13 @@ function test_suite = test_return_datatype_entities %#ok<*STOUT>
   initTestSuite;
 end
 
-
 function test_return_datatype_entities_basic
 
   schema = bids.schema.load_schema();
 
   entities = bids.schema.return_datatype_entities(schema.datatypes.func(1));
 
-  expected_output = {'sub','ses','task','acq','ce','rec','dir','run','echo','part'};
+  expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
 
   assert(isequal(entities, expected_output));
 

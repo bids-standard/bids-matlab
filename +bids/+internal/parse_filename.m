@@ -4,20 +4,20 @@ function p = parse_filename(filename, fields)
   %
   % Example:
   %
-  % >> filename = '../sub-16/anat/sub-16_ses-mri_run-1_echo-2_FLASH.nii.gz';
+  % >> filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   % >> bids.internal.parse_filename(filename)
   %
   % ans =
   %
   %   struct with fields:
   %
-  %     filename: 'sub-16_ses-mri_run-1_echo-2_FLASH.nii.gz'
-  %         type: 'FLASH'
+  %     filename: 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz'
+  %         type: 'T1w'
   %          ext: '.nii.gz'
   %          sub: '16'
   %          ses: 'mri'
   %          run: '1'
-  %         echo: '2'
+  %         acq: 'hd'
   % __________________________________________________________________________
 
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
