@@ -187,7 +187,7 @@ function subject = parse_subject(pth, subjname, sesname)
   subject.pet     = struct([]); % PET imaging data
 
   % use BIDS schema to organizing parsing of subject data
-  schema = bids.internal.load_schema();
+  schema = bids.schema.load_schema();
   modalities = fieldnames(schema.modalities);
 
   for iModality = 1:numel(modalities)

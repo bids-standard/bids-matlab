@@ -2,7 +2,7 @@ function test_load_schema()
 
   SCHEMA_DIR = fullfile(fileparts(mfilename('fullpath')), 'schema');
 
-  schema = bids.internal.load_schema(SCHEMA_DIR);
+  schema = bids.schema.load_schema(SCHEMA_DIR);
 
   assert(isfield(schema, 'base'));
   assert(isfield(schema, 'subfolder_1'));
