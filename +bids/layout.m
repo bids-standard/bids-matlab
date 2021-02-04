@@ -196,10 +196,8 @@ function subject = parse_subject(pth, subjname, sesname)
 
     for iDatatype = 1:numel(datatypes)
       switch datatypes{iDatatype}
-        case 'anat'
-          subject = parse_anat(subject);
-        case 'beh'
-          subject = parse_beh(subject);
+        case {'anat', 'beh'}
+          subject = parse_using_schema(subject, datatypes{iDatatype});
         case 'dwi'
           subject = parse_dwi(subject);
         case 'eeg'
@@ -223,9 +221,7 @@ function subject = parse_subject(pth, subjname, sesname)
 
 end
 
-function subject = parse_anat(subject)
-
-  datatype = 'anat';
+function subject = parse_using_schema(subject, datatype)
 
   % --------------------------------------------------------------------------
   % -Anatomy imaging data
@@ -567,28 +563,6 @@ function subject = parse_meg(subject)
 
 end
 
-function subject = parse_beh(subject)
-  % --------------------------------------------------------------------------
-  % -Behavioral experiments data
-  %
-  % - Event timing, metadata, physiological and other continuous recordings
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'beh');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('beh');
-
-    file_list = return_file_list('beh', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'beh');
-
-    end
-  end
-end
-
 function subject = parse_dwi(subject)
   % --------------------------------------------------------------------------
   % -Diffusion imaging data
@@ -715,9 +689,6 @@ function entities = return_entities(modality)
 
   switch modality
 
-    case 'anat'
-      entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
-
     case 'func'
       entities = {'sub', ...
                   'ses', ...
@@ -737,9 +708,6 @@ function entities = return_entities(modality)
 
     case 'meg'
       entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
-
-    case 'beh'
-      entities = {'sub', 'ses', 'task'};
 
     case 'dwi'
       entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
