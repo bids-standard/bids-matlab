@@ -186,15 +186,40 @@ function subject = parse_subject(pth, subjname, sesname)
   subject.ieeg    = struct([]); % iEEG data
   subject.pet     = struct([]); % PET imaging data
 
-  subject = parse_anat(subject);
-  subject = parse_func(subject);
-  subject = parse_fmap(subject);
-  subject = parse_eeg(subject);
-  subject = parse_meg(subject);
-  subject = parse_beh(subject);
-  subject = parse_dwi(subject);
+  % use BIDS schema to organizing parsing of subject data
+  schema = bids.internal.load_schema();
+  modalities = fieldnames(schema.modalities);
+
+  for iModality = 1:numel(modalities)
+
+    datatypes = schema.modalities.(modalities{iModality}).datatypes;
+
+    for iDatatype = 1:numel(datatypes)
+      switch datatypes{iDatatype}
+        case 'anat'
+          subject = parse_anat(subject);
+        case 'beh'
+          subject = parse_beh(subject);
+        case 'dwi'
+          subject = parse_dwi(subject);
+        case 'eeg'
+          subject = parse_eeg(subject);
+        case 'fmap'
+          subject = parse_fmap(subject);
+        case 'func'
+          subject = parse_func(subject);
+        case 'ieeg'
+          subject = parse_ieeg(subject);
+        case 'meg'
+          subject = parse_meg(subject);
+        case 'perf'
+      end
+    end
+
+  end
+
+  % not covered by schema... yet
   subject = parse_pet(subject);
-  subject = parse_ieeg(subject);
 
 end
 
@@ -236,7 +261,6 @@ function subject = parse_func(subject)
     for i = 1:numel(file_list)
 
       subject = append_to_structure(file_list{i}, entities, subject, 'func');
-
       subject.func(end).meta = struct([]); % ?
 
     end
