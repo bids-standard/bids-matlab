@@ -1,4 +1,12 @@
-function test_load_schema()
+function test_suite = test_load_schema %#ok<*STOUT>
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
+end
+
+function test_load_schema_basic()
 
   SCHEMA_DIR = fullfile(fileparts(mfilename('fullpath')), 'schema');
 

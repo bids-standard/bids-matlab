@@ -1,4 +1,12 @@
-function test_file_utils()
+function test_suite = test_file_utils %#ok<*STOUT>
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
+end
+
+function test_file_utils_basic()
 
   %% test to get certain part of a filename
   % {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}

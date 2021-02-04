@@ -1,6 +1,14 @@
-function test_return_datatype_regular_expression
+function test_suite = test_return_datatype_regular_expression %#ok<*STOUT>
+  try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+    test_functions = localfunctions(); %#ok<*NASGU>
+  catch % no problem; early Matlab versions can use initTestSuite fine
+  end
+  initTestSuite;
+end
 
-  schema = bids.internal.load_schema();
+function test_return_datatype_regular_expression_basic
+
+  schema = bids.schema.load_schema();
 
   regular_expression = bids.internal.return_datatype_regular_expression(schema.datatypes.anat(1));
 
