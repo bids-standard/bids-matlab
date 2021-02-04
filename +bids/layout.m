@@ -242,6 +242,41 @@ function subject = parse_using_schema(subject, datatype)
 
 end
 
+function subject = parse_dwi(subject)
+  % --------------------------------------------------------------------------
+  % -Diffusion imaging data
+  % --------------------------------------------------------------------------
+  datatype = 'dwi';
+  pth = fullfile(subject.path, datatype);
+
+  if exist(pth, 'dir')
+
+    file_list = return_file_list(datatype, subject);
+
+    for i = 1:numel(file_list)
+
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype);
+
+      % -bval file
+      % ------------------------------------------------------------------
+      % bval file can also be stored at higher levels (inheritance principle)
+      bvalfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bval$');
+      if isfield(bvalfile, 'filename')
+        subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
+      end
+
+      % -bvec file
+      % ------------------------------------------------------------------
+      % bvec file can also be stored at higher levels (inheritance principle)
+      bvecfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bvec$');
+      if isfield(bvalfile, 'filename')
+        subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename); % ?
+      end
+
+    end
+  end
+end
+
 function subject = parse_func(subject)
 
   % --------------------------------------------------------------------------
@@ -563,42 +598,6 @@ function subject = parse_meg(subject)
 
 end
 
-function subject = parse_dwi(subject)
-  % --------------------------------------------------------------------------
-  % -Diffusion imaging data
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'dwi');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('dwi');
-
-    file_list = return_file_list('dwi', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'dwi');
-
-      % -bval file
-      % ------------------------------------------------------------------
-      % bval file can also be stored at higher levels (inheritance principle)
-      bvalfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bval$');
-      if isfield(bvalfile, 'filename')
-        subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
-      end
-
-      % -bvec file
-      % ------------------------------------------------------------------
-      % bvec file can also be stored at higher levels (inheritance principle)
-      bvecfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bvec$');
-      if isfield(bvalfile, 'filename')
-        subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename); % ?
-      end
-
-    end
-  end
-end
-
 function subject = parse_pet(subject)
   % --------------------------------------------------------------------------
   % -Positron Emission Tomography imaging data
@@ -708,9 +707,6 @@ function entities = return_entities(modality)
 
     case 'meg'
       entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
-
-    case 'dwi'
-      entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
 
     case 'pet'
       entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
