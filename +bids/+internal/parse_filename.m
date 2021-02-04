@@ -50,7 +50,8 @@ function p = parse_filename(filename, fields)
     try
       p = orderfields(p, ['filename', 'ext', 'type', fields]);
     catch
-      warning('Ignoring file ''%s'' not matching template.', filename);
+      warning('bidsMatlab:noMatchingTemplate', ...
+              'Ignoring file %s not matching template.', filename);
       p = struct([]);
     end
   end
