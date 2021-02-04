@@ -43,6 +43,9 @@ function test_bids_query_basic()
   types = {'T1w', 'bold', 'events', 'inplaneT2'};
   assert(isequal(bids.query(BIDS, 'types'), types));
 
+  data = bids.query(BIDS, 'data', 'sub', '01', 'task', 'stopsignalwithpseudowordnaming');
+  assertEqual(size(data, 1), 4);
+
   mods = {'anat', 'func'};
   assert(isequal(bids.query(BIDS, 'modalities'), mods));
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), mods));
@@ -107,7 +110,6 @@ function test_bids_query_modalities()
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), mods));
   assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '1'), mods));
 
-  %
   % this now fails on octave 4.2.2 but not on Matlab
   %
   % bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '2')

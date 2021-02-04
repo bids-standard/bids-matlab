@@ -279,40 +279,30 @@ function subject = parse_func(subject)
   % --------------------------------------------------------------------------
   % -Task imaging data
   % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'func');
+  datatype = 'func';
+  pth = fullfile(subject.path, datatype);
 
   if exist(pth, 'dir')
 
-    entities = return_entities('func');
-
-    file_list = return_file_list('func', subject);
+    file_list = return_file_list(datatype, subject);
 
     for i = 1:numel(file_list)
 
-      subject = append_to_structure(file_list{i}, entities, subject, 'func');
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype);
       subject.func(end).meta = struct([]); % ?
 
-    end
+      % TODO:
+      %
+      % Events, physiological and other continuous recordings file
+      % can also be stored at higher levels (inheritance principle).
+      %
 
-    file_list = return_event_file_list('func', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'func');
-
-      subject.func(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_physio_stim_file_list('func', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'func');
-
-      subject.func(end).meta = struct([]); % ?
+      if strcmp(subject.func(end).meta, 'events')
+        subject.func(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
+      end
 
     end
+
   end
 end
 
@@ -685,20 +675,6 @@ function entities = return_entities(modality)
 
   switch modality
 
-    case 'func'
-      entities = {'sub', ...
-                  'ses', ...
-                  'task', ...
-                  'acq', ...
-                  'rec', ...
-                  'fa', ...
-                  'echo', ...
-                  'dir', ...
-                  'inv', ...
-                  'run', ...
-                  'recording', ...
-                  'meta'};
-
     case {'eeg', 'ieeg'}
       entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
 
@@ -752,11 +728,15 @@ function file_list = return_file_list(modality, subject)
 
   switch modality
 
+    % TODO
+    % it should be possible to create some of those patterns for the regexp
+    % based on some of the required entities written down in the schema
+
     case {'anat', 'dwi', 'perf'}
       pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
 
     case 'func'
-      pattern = '_task-.*_bold\\.nii(\\.gz)?';
+      pattern = '_task-.*\\.nii(\\.gz)|events\\.tsv|physio\\.tsv\\.gz|stim\\.tsv\\.gz?';
 
     case 'fmap'
       pattern = '\\.nii(\\.gz)?';
@@ -768,7 +748,7 @@ function file_list = return_file_list(modality, subject)
       pattern = '_task-.*_meg\\..*[^json]';
 
     case 'beh'
-      pattern = '_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
+      pattern = '_task-.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
 
     case 'pet'
       pattern = '_task-.*_pet\\.nii(\\.gz)?';
@@ -800,33 +780,8 @@ function file_list = return_event_file_list(modality, subject)
 
   switch modality
 
-    case {'func', 'eeg', 'meg'}
+    case {'eeg', 'meg'}
       pattern = '_task-.*_events\\.tsv';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_physio_stim_file_list(modality, subject)
-  %
-  % Physiological and other continuous recordings file
-  %
-  % TODO: stim files can also be stored at higher levels (inheritance principle)
-  %
-
-  switch modality
-
-    case {'func'}
-      pattern = '_task-.*_(physio|stim)\\.tsv\\.gz';
 
   end
 
