@@ -10,5 +10,6 @@ function test_layout_smoke_test()
 
   pth_bids_example = get_test_data_dir();
   BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001'));
 
 end

@@ -53,7 +53,8 @@ function structure = inspect_subdir(structure, subdir_list)
     if ~isempty(json_file_list)
       field_name = bids.internal.file_utils(directory, 'basename');
       structure.(field_name) = struct();
-      structure.(field_name) = append_json_content_to_structure(structure.(field_name), json_file_list);
+      structure.(field_name) = append_json_content_to_structure(structure.(field_name), ...
+                                                                json_file_list);
     end
 
     structure = inspect_subdir(structure, dirs);
