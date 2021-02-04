@@ -1,6 +1,6 @@
 function entities = return_datatype_entities(datatype)
 
-  schema = bids.internal.load_schema();
+  schema = bids.schema.load_schema();
 
   entity_names = fieldnames(datatype.entities);
 
