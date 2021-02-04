@@ -19,7 +19,7 @@ function schema = load_schema(SCHEMA_DIR)
 
   schema = struct();
 
-  [json_file_list, dirs] = bids.internal.file_utils('FPList', SCHEMA_DIR, '^*.json$');
+  [json_file_list, dirs] = bids.internal.file_utils('FPList', SCHEMA_DIR, '^.*.json$');
 
   schema = append_json_content_to_structure(schema, json_file_list);
 
@@ -48,7 +48,7 @@ function structure = inspect_subdir(structure, subdir_list)
 
     directory = deblank(subdir_list(iDir, :));
 
-    [json_file_list, dirs] = bids.internal.file_utils('FPList', directory, '^*.json$');
+    [json_file_list, dirs] = bids.internal.file_utils('FPList', directory, '^.*.json$');
 
     if ~isempty(json_file_list)
       field_name = bids.internal.file_utils(directory, 'basename');

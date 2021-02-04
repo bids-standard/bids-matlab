@@ -1,8 +1,10 @@
 function suffixes = return_datatype_suffixes(datatype)
 
   suffixes = '_(';
+  
+  datatype
 
-  for iExt = 1:numel(datatype.suffixes)
+  for iExt = 1:numel(datatype(:).suffixes)
     suffixes = [suffixes,  datatype.suffixes{iExt}, '|']; %#ok<AGROW>
   end
 

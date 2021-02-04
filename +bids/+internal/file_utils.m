@@ -282,7 +282,6 @@ function [files, dirs] = listfiles(action, directory, varargin)
     files = dirs;
 
   else
-
     t = regexp(files, expr);
 
     if numel(files) == 1 && ~iscell(t)

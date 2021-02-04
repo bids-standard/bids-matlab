@@ -43,12 +43,11 @@ function idx = find_suffix_group(modality, suffix)
   idx = [];
 
   schema = bids.schema.load_schema();
-  suffix_groups = {schema.datatypes.(modality).suffixes}';
 
   % the following loop could probably be improved with some cellfun magic
   %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
-  for i = 1:numel(suffix_groups)
-    if any(strcmp(suffix, suffix_groups{i}))
+  for i = 1:size(schema.datatypes.(modality), 1)
+    if any(strcmp(suffix, schema.datatypes.(modality)(i).suffixes))
       idx = i;
       break
     end
