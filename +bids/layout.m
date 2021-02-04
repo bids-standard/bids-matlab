@@ -227,9 +227,6 @@ end
 
 function subject = parse_using_schema(subject, datatype)
 
-  % --------------------------------------------------------------------------
-  % -Anatomy imaging data
-  % --------------------------------------------------------------------------
   pth = fullfile(subject.path, datatype);
 
   if exist(pth, 'dir')
