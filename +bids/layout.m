@@ -184,6 +184,7 @@ function subject = parse_subject(pth, subjname, sesname)
   subject.eeg     = struct([]); % EEG data
   subject.meg     = struct([]); % MEG data
   subject.ieeg    = struct([]); % iEEG data
+  subject.perf     = struct([]); % ASL imaging data
   subject.pet     = struct([]); % PET imaging data
 
   % use BIDS schema to organizing parsing of subject data
@@ -196,7 +197,7 @@ function subject = parse_subject(pth, subjname, sesname)
 
     for iDatatype = 1:numel(datatypes)
       switch datatypes{iDatatype}
-        case {'anat', 'beh'}
+        case {'anat', 'beh', 'perf'}
           subject = parse_using_schema(subject, datatypes{iDatatype});
         case 'dwi'
           subject = parse_dwi(subject);
@@ -210,7 +211,6 @@ function subject = parse_subject(pth, subjname, sesname)
           subject = parse_ieeg(subject);
         case 'meg'
           subject = parse_meg(subject);
-        case 'perf'
       end
     end
 
@@ -759,7 +759,7 @@ function file_list = return_file_list(modality, subject)
 
   switch modality
 
-    case 'anat'
+    case {'anat', 'dwi', 'perf'}
       pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
 
     case 'func'
@@ -776,9 +776,6 @@ function file_list = return_file_list(modality, subject)
 
     case 'beh'
       pattern = '_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
-
-    case 'dwi'
-      pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
 
     case 'pet'
       pattern = '_task-.*_pet\\.nii(\\.gz)?';
