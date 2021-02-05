@@ -646,12 +646,12 @@ function subject = parse_fmap(subject)
 
       for i = 1:numel(idx)
 
+        subject.fmap(j).filename = file_list{idx(i)};          
         if ~isempty(regexp(subject.fmap.filename, 'm0scan'))
             subject.fmap(j).type = 'm0scan';
         else
             subject.fmap(j).type = 'epi';
         end
-        subject.fmap(j).filename = file_list{idx(i)};
         subject.fmap(j).dir = labels{idx(i)}.dir;
 
         subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
