@@ -675,7 +675,7 @@ function subject = parse_fmap(subject)
       for i = 1:numel(idx)
 
         subject.fmap(j).filename = file_list{idx(i)};
-        if ~isempty(regexp(subject.fmap.filename, 'm0scan'))
+        if ~isempty(regexp(subject.fmap(j).filename, 'm0scan', 'ONCE'))
           subject.fmap(j).type = 'm0scan';
         else
           subject.fmap(j).type = 'epi';
