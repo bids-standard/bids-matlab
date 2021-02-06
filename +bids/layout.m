@@ -146,7 +146,7 @@ function BIDS = layout(root, tolerant)
                                             fullfile(BIDS.dir, sub{iSub}), ...
                                             'dir', ...
                                             '^ses-.*$'));
-                                        
+
     for iSess = 1:numel(sess)
       if isempty(BIDS.subjects)
         BIDS.subjects = parse_subject(BIDS.dir, sub{iSub}, sess{iSess});
@@ -154,7 +154,7 @@ function BIDS = layout(root, tolerant)
         BIDS.subjects(end + 1) = parse_subject(BIDS.dir, sub{iSub}, sess{iSess});
       end
     end
-    
+
   end
 
 end
@@ -214,6 +214,8 @@ function subject = parse_subject(pth, subjname, sesname)
           subject = parse_ieeg(subject);
         case 'meg'
           subject = parse_meg(subject);
+        case 'perf'
+          subject = parse_perf(subject);
       end
     end
 
@@ -314,17 +316,18 @@ function subject = parse_perf(subject)
   % --------------------------------------------------------------------------
   % -ASL perfusion imaging data
   % --------------------------------------------------------------------------
+  datatype = 'perf';
   pth = fullfile(subject.path, 'perf');
 
   if exist(pth, 'dir')
 
-    entities = return_entities('perf');
+    file_list = return_file_list(datatype, subject);
 
-    file_list = return_file_list('perf', subject);
+    for i = 1:numel(file_list)
 
-    file_list = convert_to_cell(file_list);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype);
 
-    j = 1;
+    end
 
     % ASL timeseries NIfTI file
     % ----------------------------------------------------------------------
@@ -338,18 +341,9 @@ function subject = parse_perf(subject)
 
       for i = 1:numel(idx)
 
-        % Parse filename
-        % ---------------------------
-        fb = bids.internal.file_utils(bids.internal.file_utils(file_list{idx(i)}, ...
-                                                               'basename'), ...
-                                      'basename');
+        j = idx(i);
 
-        p = bids.internal.parse_filename(file_list{idx(i)}, entities);
-
-        subject = append_to_perf(subject, p, j);
-
-        % add type
-        subject.perf(j).type = 'asl';
+        fb = bids.internal.file_utils(bids.internal.file_utils(file_list{j}, 'basename'), 'basename');
 
         % Manage JSON-sidecar metadata (REQUIRED)
         % ---------------------------
@@ -485,8 +479,8 @@ function subject = parse_perf(subject)
           subject.perf(j).labeling_image_filename = [Ffile '.jpg'];
         end
 
-        j = j + 1;
       end % for i = 1:numel(idx)
+
     end % if any(~cellfun(@isempty, labels))
 
     % -M0scan NIfTI file
@@ -498,12 +492,10 @@ function subject = parse_perf(subject)
     if any(~cellfun(@isempty, labels))
       idx = find(~cellfun(@isempty, labels));
       for i = 1:numel(idx)
-        % Parse filename
-        % ---------------------------
-        fb = bids.internal.file_utils(bids.internal.file_utils(file_list{idx(i)}, 'basename'), 'basename');
-        p = bids.internal.parse_filename(file_list{idx(i)}, entities);
 
-        subject = append_to_perf(subject, p, j);
+        j = idx(i);
+
+        fb = bids.internal.file_utils(bids.internal.file_utils(file_list{j}, 'basename'), 'basename');
 
         % Manage JSON-sidecar metadata (REQUIRED)
         % ---------------------------
@@ -555,30 +547,11 @@ function subject = parse_perf(subject)
           end
         end
       end % for i = 1:numel(idx)
-      j = j + 1;
+
     end  % if any(~cellfun(@isempty, labels))
 
   end % if exist(pth, 'dir')
 end % function subject = parse_perf(subject)
-
-function subject = append_to_perf(subject, p, j)
-
-  if j == 1
-    subject.perf = p;
-  else
-    fields_p = fieldnames(p);
-    for iField = 1:length(fields_p)
-      subject.perf(j).(fields_p{iField}) = p.(fields_p{iField});
-    end
-  end
-
-  % default to run 1 ((!) TODO: but could be that we need to check this
-  % at the end!)
-  if isempty(subject.perf(j).run)
-    subject.perf(j).run = '1';
-  end
-
-end
 
 function subject = parse_fmap(subject)
   %
@@ -962,9 +935,6 @@ function entities = return_entities(modality)
     case 'pet'
       entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
 
-    case 'perf'
-      entities = {'sub', 'ses', 'acq', 'dir', 'rec', 'run'};
-
   end
 end
 
@@ -1038,7 +1008,7 @@ function file_list = return_file_list(modality, subject)
       pattern = '_task-.*_ieeg\\..*[^json]';
 
     case 'perf'
-      pattern = '_(asl|m0scan)\\.nii(\\.gz)?';
+      pattern = '_(asl|m0scan)\\.nii(\\.gz)|aslcontext\\.tsv|asllabeling\\.jpg';
 
   end
 
