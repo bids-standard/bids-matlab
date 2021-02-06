@@ -200,7 +200,7 @@ function subject = parse_subject(pth, subjname, sesname)
 
     for iDatatype = 1:numel(datatypes)
       switch datatypes{iDatatype}
-        case {'anat', 'beh'}
+        case {'anat', 'beh', 'ieeg'}
           subject = parse_using_schema(subject, datatypes{iDatatype}, schema);
         case 'dwi'
           subject = parse_dwi(subject, schema);
@@ -210,8 +210,6 @@ function subject = parse_subject(pth, subjname, sesname)
           subject = parse_fmap(subject, schema);
         case 'func'
           subject = parse_func(subject, schema);
-        case 'ieeg'
-          subject = parse_ieeg(subject);
         case 'meg'
           subject = parse_meg(subject);
         case 'perf'
@@ -792,45 +790,6 @@ function subject = parse_pet(subject)
   end
 end
 
-function subject = parse_ieeg(subject)
-  % --------------------------------------------------------------------------
-  % -Human intracranial electrophysiology
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'ieeg');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('ieeg');
-
-    file_list = return_file_list('ieeg', subject);
-
-    for i = 1:numel(file_list)
-
-      % European Data Format (.edf)
-      % BrainVision Core Data Format (.vhdr, .eeg, .vmrk) by Brain Products GmbH
-      % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
-      % Neurodata Without Borders (.nwb)
-      % MEF3 (.mef)
-
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      switch p.ext
-        case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
-          % each recording is described with a single file,
-          % even though the data can consist of multiple
-          subject.ieeg = [subject.ieeg p];
-          subject.ieeg(end).meta = struct([]); % ?
-        case {'.vmrk', '.eeg', '.fdt'}
-          % skip the additional files that come with certain data formats
-        otherwise
-          % skip unknown files
-      end
-
-    end
-
-  end
-
-end
-
 % --------------------------------------------------------------------------
 %                            HELPER FUNCTIONS
 % --------------------------------------------------------------------------
@@ -854,7 +813,7 @@ function entities = return_entities(modality)
 
   switch modality
 
-    case {'eeg', 'ieeg'}
+    case 'eeg'
       entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
 
     case 'meg'
@@ -880,17 +839,11 @@ function file_list = return_file_list(modality, subject)
     case 'func'
       pattern = '_task-.*\\.nii(\\.gz)|events\\.tsv|physio\\.tsv\\.gz|stim\\.tsv\\.gz?';
 
-    case 'eeg'
-      pattern = '_task-.*_eeg\\..*[^json]';
-
-    case 'meg'
-      pattern = '_task-.*_meg\\..*[^json]';
+    case {'eeg', 'meg', 'ieeg'}
+      pattern = ['_task-.*_' modality '\\..*[^json]'];
 
     case 'beh'
       pattern = '_task-.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
-
-    case 'ieeg'
-      pattern = '_task-.*_ieeg\\..*[^json]';
 
     case 'perf'
       pattern = '_(asl|m0scan)\\.nii(\\.gz)|aslcontext\\.tsv|asllabeling\\.jpg';
