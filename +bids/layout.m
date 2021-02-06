@@ -188,7 +188,6 @@ function subject = parse_subject(pth, subjname, sesname)
   subject.eeg     = struct([]); % EEG data
   subject.meg     = struct([]); % MEG data
   subject.ieeg    = struct([]); % iEEG data
-  subject.perf     = struct([]); % ASL imaging data
   subject.pet     = struct([]); % PET imaging data
 
   % use BIDS schema to organizing parsing of subject data
@@ -201,7 +200,7 @@ function subject = parse_subject(pth, subjname, sesname)
 
     for iDatatype = 1:numel(datatypes)
       switch datatypes{iDatatype}
-        case {'anat', 'beh', 'perf'}
+        case {'anat', 'beh'}
           subject = parse_using_schema(subject, datatypes{iDatatype});
         case 'dwi'
           subject = parse_dwi(subject);
@@ -1014,7 +1013,7 @@ function file_list = return_file_list(modality, subject)
     % it should be possible to create some of those patterns for the regexp
     % based on some of the required entities written down in the schema
 
-    case {'anat', 'dwi', 'perf'}
+    case {'anat', 'dwi'}
       pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
 
     case 'func'
