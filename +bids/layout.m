@@ -524,7 +524,7 @@ function subject = append_to_perf(subject, p, j)
   if j == 1
     subject.perf = p;
   else
-    fields_p = fields(p);
+    fields_p = fieldnames(p);
     for iField = 1:length(fields_p)
       subject.perf(j).(fields_p{iField}) = p.(fields_p{iField});
     end
