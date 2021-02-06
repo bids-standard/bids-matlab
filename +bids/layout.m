@@ -205,7 +205,7 @@ function subject = parse_subject(pth, subjname, sesname)
         case 'dwi'
           subject = parse_dwi(subject, schema);
         case 'eeg'
-          subject = parse_eeg(subject);
+          subject = parse_eeg(subject, schema);
         case 'fmap'
           subject = parse_fmap(subject, schema);
         case 'func'
@@ -243,9 +243,11 @@ function subject = parse_using_schema(subject, datatype, schema)
 end
 
 function subject = parse_dwi(subject, schema)
+
   % --------------------------------------------------------------------------
-  % -Diffusion imaging data
+  %  Diffusion imaging data
   % --------------------------------------------------------------------------
+
   datatype = 'dwi';
   pth = fullfile(subject.path, datatype);
 
@@ -262,7 +264,7 @@ function subject = parse_dwi(subject, schema)
       % bval file can also be stored at higher levels (inheritance principle)
       bvalfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bval$');
       if isfield(bvalfile, 'filename')
-        subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
+        subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename);
       end
 
       % -bvec file
@@ -270,7 +272,7 @@ function subject = parse_dwi(subject, schema)
       % bvec file can also be stored at higher levels (inheritance principle)
       bvecfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bvec$');
       if isfield(bvalfile, 'filename')
-        subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename); % ?
+        subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename);
       end
 
     end
@@ -280,8 +282,9 @@ end
 function subject = parse_func(subject, schema)
 
   % --------------------------------------------------------------------------
-  % -Task imaging data
+  %  Task imaging data
   % --------------------------------------------------------------------------
+
   datatype = 'func';
   pth = fullfile(subject.path, datatype);
 
@@ -300,8 +303,8 @@ function subject = parse_func(subject, schema)
       % can also be stored at higher levels (inheritance principle).
       %
 
-      if strcmp(subject.func(end).meta, 'events')
-        subject.func(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
+      if strcmp(subject.func(end).type, 'events')
+        subject.func(end).meta = bids.util.tsvread(fullfile(pth, file_list{i}));
       end
 
     end
@@ -312,8 +315,9 @@ end
 function subject = parse_perf(subject, schema)
 
   % --------------------------------------------------------------------------
-  % -ASL perfusion imaging data
+  % ASL perfusion imaging data
   % --------------------------------------------------------------------------
+
   datatype = 'perf';
   pth = fullfile(subject.path, 'perf');
 
@@ -648,67 +652,28 @@ function subject = parse_fmap(subject, schema)
 
 end
 
-function subject = parse_eeg(subject)
-  % --------------------------------------------------------------------------
-  % -EEG data
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'eeg');
+function subject = parse_eeg(subject, schema)
+
+  datatype = 'eeg';
+
+  pth = fullfile(subject.path, datatype);
 
   if exist(pth, 'dir')
 
-    entities = return_entities('eeg');
-
-    file_list = return_file_list('eeg', subject);
+    file_list = return_file_list(datatype, subject);
 
     for i = 1:numel(file_list)
 
-      % European data format (.edf)
-      % BrainVision Core Data Format (.vhdr, .vmrk, .eeg) by Brain Products GmbH
-      % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
-      % Biosemi data format (.bdf)
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      switch p.ext
-        case {'.edf', '.vhdr', '.set', '.bdf'}
-          % each recording is described with a single file,
-          % even though the data can consist of multiple
-          subject.eeg = [subject.eeg p];
-          subject.eeg(end).meta = struct([]); % ?
-        case {'.vmrk', '.eeg', '.fdt'}
-          % skip the additional files that come with certain data formats
-        otherwise
-          % skip unknown files
+      switch subject.eeg(end).type
+
+        case {'events', 'channels', 'electrodes'}
+          subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i}));
+
+        case {'photo', 'coordsystem'}
+
       end
-
-    end
-
-    file_list = return_event_file_list('eeg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
-
-      subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_channel_description_file_list('eeg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
-
-      subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_session_specific_file_list('eeg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
-
-      subject.eeg(end).meta = struct([]); % ?
 
     end
 
@@ -717,9 +682,7 @@ function subject = parse_eeg(subject)
 end
 
 function subject = parse_meg(subject)
-  % --------------------------------------------------------------------------
-  % -MEG data
-  % --------------------------------------------------------------------------
+
   pth = fullfile(subject.path, 'meg');
 
   if exist(pth, 'dir')
@@ -872,7 +835,7 @@ function file_list = return_event_file_list(modality, subject)
 
   switch modality
 
-    case {'eeg', 'meg'}
+    case 'meg'
       pattern = '_task-.*_events\\.tsv';
 
   end
@@ -897,7 +860,7 @@ function file_list = return_channel_description_file_list(modality, subject)
 
   switch modality
 
-    case {'eeg', 'meg'}
+    case 'meg'
       pattern = '_task-.*_channels\\.tsv';
 
   end
@@ -917,7 +880,7 @@ function file_list = return_session_specific_file_list(modality, subject)
 
   switch modality
 
-    case {'eeg', 'meg'}
+    case 'meg'
       pattern = [ ...
                  '(_ses-[a-zA-Z0-9]+)?.*_', ...
                  '(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)'];
