@@ -480,6 +480,7 @@ function subject = parse_perf(subject)
           % ---------------------------
 
           % Get all NIfTIs that this m0scan is intended for
+          path_intended_for = {};
           if ~isfield(subject.perf(j).meta, 'IntendedFor')
             warning(['Missing field IntendedFor in ' metafile]);
 
@@ -488,7 +489,7 @@ function subject = parse_perf(subject)
 
           elseif isstruct(subject.perf(j).meta.IntendedFor)
             for iPath = 1:length(subject.perf(j).meta.IntendedFor)
-              path_intended_for{iPath} = subject.perf(j).meta.IntendedFor(iPath);
+              path_intended_for{iPath} = subject.perf(j).meta.IntendedFor(iPath); %#ok<*AGROW>
             end
 
           end
