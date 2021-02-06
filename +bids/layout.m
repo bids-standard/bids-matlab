@@ -354,9 +354,9 @@ function subject = parse_perf(subject)
 
         subject.perf(j) = manage_M0(subject.perf(j), pth);
 
-      end % for i = 1:numel(idx)
+      end
 
-    end % if any(~cellfun(@isempty, labels))
+    end
 
     % -M0scan NIfTI file
     % ---------------------------------------------------------------------
@@ -370,62 +370,16 @@ function subject = parse_perf(subject)
 
         j = idx(i);
 
-        fb = bids.internal.file_utils(bids.internal.file_utils(file_list{j}, 'basename'), 'basename');
+        subject.perf(j).intended_for = [];
 
-        % Manage JSON-sidecar metadata (REQUIRED)
-        % ---------------------------
-        metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
+        subject.perf(j) = manage_intended_for(subject.perf(j), subject, pth);
 
-        if ~exist(metafile, 'file')
-          warning(['Missing: ' metafile]);
+      end
 
-        else
-          [~, Ffile] = fileparts(metafile);
-          subject.perf(j).json_sidecar_filename = [Ffile '.json'];
-          subject.perf(j).meta = bids.util.jsondecode(metafile);
-
-          % Manage intended-for (REQUIRED)
-          % ---------------------------
-
-          % Get all NIfTIs that this m0scan is intended for
-          path_intended_for = {};
-          if ~isfield(subject.perf(j).meta, 'IntendedFor')
-            warning(['Missing field IntendedFor in ' metafile]);
-
-          elseif ischar(subject.perf(j).meta.IntendedFor)
-            path_intended_for{1} = subject.perf(j).meta.IntendedFor;
-
-          elseif isstruct(subject.perf(j).meta.IntendedFor)
-            for iPath = 1:length(subject.perf(j).meta.IntendedFor)
-              path_intended_for{iPath} = subject.perf(j).meta.IntendedFor(iPath); %#ok<*AGROW>
-            end
-
-          end
-
-          for iPath = 1:length(path_intended_for)
-            % check if this NIfTI is not missing
-            if ~exist(fullfile(fileparts(pth), path_intended_for{iPath}), 'file')
-              warning(['Missing: ' fullfile(fileparts(pth), path_intended_for{iPath})]);
-
-            else
-              % also check that this NIfTI aims to the same m0scan
-              [~, path2check, ext2check] = fileparts(path_intended_for{iPath});
-              filename_found = max(arrayfun(@(x) strcmp(x.filename, [path2check ext2check]), subject.perf));
-              if ~filename_found
-                warning(['Did not find NIfTI for which is intended: ' subject.perf(j).filename]);
-
-              else
-                subject.perf(j).intended_for = path_intended_for{iPath};
-
-              end
-            end
-          end
-        end
-      end % for i = 1:numel(idx)
-
-    end  % if any(~cellfun(@isempty, labels))
+    end
 
   end % if exist(pth, 'dir')
+
 end % function subject = parse_perf(subject)
 
 function structure = manage_json_sidecar(structure, pth)
@@ -593,6 +547,55 @@ function perf = manage_M0(perf, pth)
 
     if ~isempty(m0_sidecar)
       perf.dependencies.m0.sidecar = m0_sidecar;
+    end
+
+  end
+
+end
+
+function structure = manage_intended_for(structure, subject, pth)
+
+  structure = manage_json_sidecar(structure, pth);
+
+  if isempty(structure.meta)
+    return
+
+  else
+
+    % Get all NIfTIs that this m0scan is intended for
+    path_intended_for = {};
+    if ~isfield(structure.meta, 'IntendedFor')
+      warning(['Missing field IntendedFor in ' structure.dependencies.sidecar]);
+
+    elseif ischar(structure.meta.IntendedFor)
+      path_intended_for{1} = structure.meta.IntendedFor;
+
+    elseif isstruct(structure.meta.IntendedFor)
+      for iPath = 1:length(structure.meta.IntendedFor)
+        path_intended_for{iPath} = structure.meta.IntendedFor(iPath); %#ok<*AGROW>
+      end
+
+    end
+
+    for iPath = 1:length(path_intended_for)
+      % check if this NIfTI is not missing
+      if ~exist(fullfile(fileparts(pth), path_intended_for{iPath}), 'file')
+        warning(['Missing: ' fullfile(fileparts(pth), path_intended_for{iPath})]);
+
+      else
+        % also check that this NIfTI aims to the same m0scan
+        [~, path2check, ext2check] = fileparts(path_intended_for{iPath});
+        filename_found = max(arrayfun(@(x) strcmp(x.filename, ...
+                                                  [path2check ext2check]), ...
+                                      subject.perf));
+        if ~filename_found
+          warning(['Did not find NIfTI for which is intended: ' structure.filename]);
+
+        else
+          structure.intended_for = path_intended_for{iPath};
+
+        end
+      end
     end
 
   end

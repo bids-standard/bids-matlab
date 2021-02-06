@@ -14,23 +14,21 @@ function test_bids_query_asl_basic()
   pth_bids_example = get_test_data_dir();
 
   %% 'asl001'
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001 '));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001'));
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl'};
-  %   types = {'T1w', 'asl', 'aslcontext', 'asllabelling'};
+  types = {'T1w', 'asl', 'aslcontext', 'asllabeling'};
   assertEqual(bids.query(BIDS, 'types'), types);
 
   %% 'asl002'
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl002 '));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'm0scan'};
-  %   types = {'T1w', 'asl', 'aslcontext', 'asllabelling', 'm0scan'};
+  types = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
   assertEqual(bids.query(BIDS, 'types'), types);
   assertEqual(bids.internal.file_utils(bids.query(BIDS, 'data', 'type', 'm0scan'), 'basename'), ...
               {'sub-Sub103_m0scan.nii'});
@@ -41,8 +39,7 @@ function test_bids_query_asl_basic()
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'm0scan'};
-  %   types = {'T1w', 'asl', 'aslcontext', 'asllabelling', 'm0scan'};
+  types = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
   assertEqual(bids.query(BIDS, 'types'), types);
 
   %% 'asl004'
@@ -51,8 +48,7 @@ function test_bids_query_asl_basic()
   modalities = {'anat', 'fmap', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'm0scan'};
-  %   types = {'T1w', 'asl', 'aslcontext', 'asllabelling', 'm0scan'};
+  types = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
   assertEqual(bids.query(BIDS, 'types'), types);
 
 end
