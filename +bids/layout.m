@@ -346,7 +346,11 @@ function subject = parse_perf(subject, schema)
         subject.perf(j).meta = [];
         subject.perf(j).dependencies = [];
 
-        subject.perf(j) = manage_json_sidecar(subject.perf(j), pth);
+        subject.perf(j).meta = bids.internal.get_metadata( ...
+                                                          fullfile( ...
+                                                                   subject.path, ...
+                                                                   datatype, ...
+                                                                   file_list{j}));
 
         subject.perf(j) = manage_aslcontext(subject.perf(j), pth);
 
@@ -372,6 +376,12 @@ function subject = parse_perf(subject, schema)
 
         subject.perf(j).intended_for = [];
 
+        subject.perf(j).meta = bids.internal.get_metadata( ...
+                                                          fullfile( ...
+                                                                   subject.path, ...
+                                                                   datatype, ...
+                                                                   file_list{j}));
+
         subject.perf(j) = manage_intended_for(subject.perf(j), subject, pth);
 
       end
@@ -379,23 +389,6 @@ function subject = parse_perf(subject, schema)
     end
 
   end % if exist(pth, 'dir')
-
-end % function subject = parse_perf(subject)
-
-function structure = manage_json_sidecar(structure, pth)
-
-  % Manage JSON-sidecar metadata (REQUIRED)
-  % ---------------------------
-  metafile = fullfile(pth, strrep(structure.filename, structure.ext, '.json'));
-
-  if exist(metafile, 'file')
-    [~, Ffile] = fileparts(metafile);
-    structure.dependencies.sidecar = [Ffile '.json'];
-    structure.meta = bids.util.jsondecode(metafile);
-  else
-    warning(['Missing: ' metafile]);
-
-  end
 
 end
 
@@ -439,7 +432,7 @@ function perf = manage_M0(perf, pth)
   % M0 field is flexible:
 
   if ~isfield(perf.meta, 'M0Type')
-    warning(['M0Type field missing in ' perf.dependencies.sidecar]);
+    warning('M0Type field missing for %s', perf.filename);
 
   else
 
@@ -555,8 +548,6 @@ end
 
 function structure = manage_intended_for(structure, subject, pth)
 
-  structure = manage_json_sidecar(structure, pth);
-
   if isempty(structure.meta)
     return
 
@@ -565,7 +556,7 @@ function structure = manage_intended_for(structure, subject, pth)
     % Get all NIfTIs that this m0scan is intended for
     path_intended_for = {};
     if ~isfield(structure.meta, 'IntendedFor')
-      warning(['Missing field IntendedFor in ' structure.dependencies.sidecar]);
+      warning('Missing field IntendedFor for %s', structure.filename);
 
     elseif ischar(structure.meta.IntendedFor)
       path_intended_for{1} = structure.meta.IntendedFor;
@@ -613,11 +604,13 @@ function subject = parse_fmap(subject)
   % --------------------------------------------------------------------------
   % -Fieldmap data
   % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'fmap');
+  datatype = 'fmap';
+
+  pth = fullfile(subject.path, datatype);
 
   if exist(pth, 'dir')
 
-    file_list = return_file_list('fmap', subject);
+    file_list = return_file_list(datatype, subject);
 
     j = 1;
 
@@ -643,12 +636,11 @@ function subject = parse_fmap(subject)
 
         subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
 
-        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
-        subject.fmap(j).meta = struct([]);
-        % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(metafile)
-          subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        end
+        subject.fmap(j).meta = bids.internal.get_metadata( ...
+                                                          fullfile( ...
+                                                                   subject.path, ...
+                                                                   datatype, ...
+                                                                   file_list{j}));
 
         j = j + 1;
 
@@ -681,13 +673,13 @@ function subject = parse_fmap(subject)
 
         subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
 
-        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
+        json_file = return_jsonfile(subject, file_list{idx(i)}, datatype);
         subject.fmap(j).meta = struct([]);
         % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(metafile)
+        if ~isempty(json_file)
           subject.fmap(j).meta = { ...
-                                  bids.util.jsondecode(metafile), ...
-                                  bids.util.jsondecode(strrep(metafile, ...
+                                  bids.util.jsondecode(json_file), ...
+                                  bids.util.jsondecode(strrep(json_file, ...
                                                               '_phase1.json', ...
                                                               '_phase2.json'))};
         end
@@ -716,12 +708,11 @@ function subject = parse_fmap(subject)
 
         subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
 
-        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
-        subject.fmap(j).meta = struct([]);
-        % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(metafile)
-          subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        end
+        subject.fmap(j).meta = bids.internal.get_metadata( ...
+                                                          fullfile( ...
+                                                                   subject.path, ...
+                                                                   datatype, ...
+                                                                   file_list{j}));
 
         j = j + 1;
 
@@ -748,12 +739,11 @@ function subject = parse_fmap(subject)
 
         subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
 
-        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
-        subject.fmap(j).meta = struct([]);
-        % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(metafile)
-          subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        end
+        subject.fmap(j).meta = bids.internal.get_metadata( ...
+                                                          fullfile( ...
+                                                                   subject.path, ...
+                                                                   datatype, ...
+                                                                   file_list{j}));
 
         j = j + 1;
 
@@ -1019,11 +1009,6 @@ function labels = return_labels_fieldmap(file_list, fiefmap_type)
 
 end
 
-% TODO
-%
-% more refactoring can be done across the several 'return_X_file_list' functions
-%
-
 function file_list = return_file_list(modality, subject)
 
   switch modality
@@ -1099,18 +1084,18 @@ function file_list = return_event_file_list(modality, subject)
 
 end
 
-function metafile = return_fmap_metadata_file(subject, fmap_file)
+function json_file = return_jsonfile(subject, filename, modality)
 
-  pth = fullfile(subject.path, 'fmap');
+  pth = fullfile(subject.path, modality);
 
   fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                         fmap_file, ...
+                                                         filename, ...
                                                          'basename'), ...
                                 'basename');
-  metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
+  json_file = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
 
-  if ~exist(metafile, 'file')
-    metafile = [];
+  if ~exist(json_file, 'file')
+    json_file = [];
   end
 
 end

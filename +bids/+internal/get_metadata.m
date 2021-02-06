@@ -73,9 +73,15 @@ function meta = get_metadata(filename, pattern)
 
   end
 
-  % ==========================================================================
-  % -Inheritance principle
-  % ==========================================================================
+  if isempty(meta)
+    warning('No metadata for %s', filename);
+  end
+
+end
+
+% ==========================================================================
+% -Inheritance principle
+% ==========================================================================
 function s1 = update_metadata(s1, s2, file)
   if isempty(s2)
     return
@@ -88,3 +94,4 @@ function s1 = update_metadata(s1, s2, file)
       s1.(fn{i}) = s2.(fn{i});
     end
   end
+end
