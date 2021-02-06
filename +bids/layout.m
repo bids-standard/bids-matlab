@@ -207,7 +207,7 @@ function subject = parse_subject(pth, subjname, sesname)
         case 'eeg'
           subject = parse_eeg(subject);
         case 'fmap'
-          subject = parse_fmap(subject);
+          subject = parse_fmap(subject, schema);
         case 'func'
           subject = parse_func(subject, schema);
         case 'ieeg'
@@ -593,162 +593,59 @@ function structure = manage_intended_for(structure, subject, pth)
 
 end
 
-function subject = parse_fmap(subject)
-  %
-  % TODO:
-  %
-  % 20210114 - From Remi:
-  % For other modalities, metadata are fetched upon query.
-  % It is unclear why we do it differently for fmaps
+function subject = parse_fmap(subject, schema)
 
-  % --------------------------------------------------------------------------
-  % -Fieldmap data
-  % --------------------------------------------------------------------------
   datatype = 'fmap';
-
   pth = fullfile(subject.path, datatype);
 
   if exist(pth, 'dir')
 
     file_list = return_file_list(datatype, subject);
 
-    j = 1;
+    for i = 1:numel(file_list)
 
-    % -Phase difference image and at least one magnitude image
-    % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'phase_difference_image');
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
 
-    if any(~cellfun(@isempty, labels))
+      subject.fmap(i).meta = bids.internal.get_metadata( ...
+                                                        fullfile( ...
+                                                                 subject.path, ...
+                                                                 datatype, ...
+                                                                 file_list{i}));
+      %       subject.perf(i).intended_for = [];
+      %       subject.fmap(i) = manage_intended_for(subject.fmap(i), subject, pth);
 
-      idx = find(~cellfun(@isempty, labels));
+      switch subject.fmap(i).type
 
-      for i = 1:numel(idx)
+        % -A single, real fieldmap image
+        case {'fieldmap', 'magnitude'}
+          subject.fmap(i).dependencies.magnitude = strrep(file_list{idx(i)}, ...
+                                                          '_fieldmap.nii', ...
+                                                          '_magnitude.nii');
 
-        subject.fmap(j).type = 'phasediff';
-        subject.fmap(j).filename = file_list{idx(i)};
-        subject.fmap(j).magnitude = { ...
-                                     strrep(file_list{idx(i)}, ...
-                                            '_phasediff.nii', ...
-                                            '_magnitude1.nii'), ...
-                                     strrep(file_list{idx(i)}, ...
-                                            '_phasediff.nii', ...
-                                            '_magnitude2.nii')}; % optional
+          % -Phase difference image and at least one magnitude image
+        case {'phasediff'}
+          subject.fmap(i).dependencies.magnitude = { ...
+                                                    strrep(file_list{i}, ...
+                                                           '_phasediff.nii', ...
+                                                           '_magnitude1.nii'), ...
+                                                    strrep(file_list{i}, ...
+                                                           '_phasediff.nii', ...
+                                                           '_magnitude2.nii')}; % optional
 
-        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
-
-        subject.fmap(j).meta = bids.internal.get_metadata( ...
-                                                          fullfile( ...
-                                                                   subject.path, ...
-                                                                   datatype, ...
-                                                                   file_list{j}));
-
-        j = j + 1;
-
-      end
-    end
-
-    % -Two phase images and two magnitude images
-    % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'two_phase_image');
-
-    if any(~cellfun(@isempty, labels))
-
-      idx = find(~cellfun(@isempty, labels));
-
-      for i = 1:numel(idx)
-
-        subject.fmap(j).type = 'phase12';
-        subject.fmap(j).filename = { ...
-                                    file_list{idx(i)}, ...
-                                    strrep(file_list{idx(i)}, ...
-                                           '_phase1.nii', ...
-                                           '_phase2.nii')};
-        subject.fmap(j).magnitude = { ...
-                                     strrep(file_list{idx(i)}, ...
-                                            '_phase1.nii', ...
-                                            '_magnitude1.nii'), ...
-                                     strrep(file_list{idx(i)}, ...
-                                            '_phase1.nii', ...
-                                            '_magnitude2.nii')};
-
-        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
-
-        json_file = return_jsonfile(subject, file_list{idx(i)}, datatype);
-        subject.fmap(j).meta = struct([]);
-        % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(json_file)
-          subject.fmap(j).meta = { ...
-                                  bids.util.jsondecode(json_file), ...
-                                  bids.util.jsondecode(strrep(json_file, ...
-                                                              '_phase1.json', ...
-                                                              '_phase2.json'))};
-        end
-
-        j = j + 1;
+          % -Two phase images and two magnitude images
+        case {'phase1', 'phase2'}
+          subject.fmap(i).dependencies.magnitude = { ...
+                                                    strrep(file_list{i}, ...
+                                                           '_phase1.nii', ...
+                                                           '_magnitude1.nii'), ...
+                                                    strrep(file_list{i}, ...
+                                                           '_phase1.nii', ...
+                                                           '_magnitude2.nii')};
 
       end
 
     end
 
-    % -A single, real fieldmap image
-    % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'fieldmap_image');
-
-    if any(~cellfun(@isempty, labels))
-
-      idx = find(~cellfun(@isempty, labels));
-
-      for i = 1:numel(idx)
-
-        subject.fmap(j).type = 'fieldmap';
-        subject.fmap(j).filename = file_list{idx(i)};
-        subject.fmap(j).magnitude = strrep(file_list{idx(i)}, ...
-                                           '_fieldmap.nii', ...
-                                           '_magnitude.nii');
-
-        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
-
-        subject.fmap(j).meta = bids.internal.get_metadata( ...
-                                                          fullfile( ...
-                                                                   subject.path, ...
-                                                                   datatype, ...
-                                                                   file_list{j}));
-
-        j = j + 1;
-
-      end
-    end
-
-    % -Multiple phase encoded directions (topup)
-    % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'phase_encoded_direction_image');
-
-    if any(~cellfun(@isempty, labels))
-
-      idx = find(~cellfun(@isempty, labels));
-
-      for i = 1:numel(idx)
-
-        subject.fmap(j).filename = file_list{idx(i)};
-        if ~isempty(regexp(subject.fmap(j).filename, 'm0scan', 'ONCE'))
-          subject.fmap(j).type = 'm0scan';
-        else
-          subject.fmap(j).type = 'epi';
-        end
-        subject.fmap(j).dir = labels{idx(i)}.dir;
-
-        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
-
-        subject.fmap(j).meta = bids.internal.get_metadata( ...
-                                                          fullfile( ...
-                                                                   subject.path, ...
-                                                                   datatype, ...
-                                                                   file_list{j}));
-
-        j = j + 1;
-
-      end
-    end
   end
 
 end
@@ -945,14 +842,6 @@ function subject = append_to_structure(file, entities, subject, modality)
 
 end
 
-function subject = append_common_fmap_fields_to_structure(subject, labels, idx)
-
-  subject.fmap(idx).ses = regexprep(labels.ses, '^_[a-zA-Z0-9]+-', '');
-  subject.fmap(idx).acq = regexprep(labels.acq, '^_[a-zA-Z0-9]+-', '');
-  subject.fmap(idx).run = regexprep(labels.run, '^_[a-zA-Z0-9]+-', '');
-
-end
-
 function f = convert_to_cell(f)
   if isempty(f)
     f = {};
@@ -977,38 +866,6 @@ function entities = return_entities(modality)
   end
 end
 
-function labels = return_labels_fieldmap(file_list, fiefmap_type)
-
-  direction_pattern = '';
-
-  switch fiefmap_type
-
-    case 'phase_difference_image'
-      suffix = 'phasediff';
-
-    case 'two_phase_image'
-      suffix = 'phase1';
-
-    case 'fieldmap_image'
-      suffix = 'fieldmap';
-
-    case 'phase_encoded_direction_image'
-      suffix = '(epi|m0scan)';
-
-      direction_pattern = '_dir-(?<dir>[a-zA-Z0-9]+)?';
-
-  end
-
-  labels = regexp(file_list, [ ...
-                              '^sub-[a-zA-Z0-9]+', ...          % sub-<participant_label>
-                              '(?<ses>_ses-[a-zA-Z0-9]+)?', ... % ses-<label>
-                              '(?<acq>_acq-[a-zA-Z0-9]+)?', ... % acq-<label>
-                              direction_pattern, ...            % dir-<index>
-                              '(?<run>_run-[a-zA-Z0-9]+)?', ... % run-<index>
-                              '_' suffix '\.nii(\.gz)?$'], 'names');   % NIfTI file extension
-
-end
-
 function file_list = return_file_list(modality, subject)
 
   switch modality
@@ -1017,14 +874,11 @@ function file_list = return_file_list(modality, subject)
     % it should be possible to create some of those patterns for the regexp
     % based on some of the required entities written down in the schema
 
-    case {'anat', 'dwi'}
+    case {'anat', 'dwi', 'fmap', 'pet'}
       pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
 
     case 'func'
       pattern = '_task-.*\\.nii(\\.gz)|events\\.tsv|physio\\.tsv\\.gz|stim\\.tsv\\.gz?';
-
-    case 'fmap'
-      pattern = '\\.nii(\\.gz)?';
 
     case 'eeg'
       pattern = '_task-.*_eeg\\..*[^json]';
@@ -1034,9 +888,6 @@ function file_list = return_file_list(modality, subject)
 
     case 'beh'
       pattern = '_task-.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
-
-    case 'pet'
-      pattern = '_task-.*_pet\\.nii(\\.gz)?';
 
     case 'ieeg'
       pattern = '_task-.*_ieeg\\..*[^json]';
@@ -1075,28 +926,12 @@ function file_list = return_event_file_list(modality, subject)
 
   pth = fullfile(subject.path, modality);
 
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
+  file_list = bids.internal.file_utils('List', ...
+                                       pth, ...
+                                       sprintf(['^%s.*' pattern '$'], ...
+                                               subject.name));
 
   file_list = convert_to_cell(file_list);
-
-end
-
-function json_file = return_jsonfile(subject, filename, modality)
-
-  pth = fullfile(subject.path, modality);
-
-  fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                         filename, ...
-                                                         'basename'), ...
-                                'basename');
-  json_file = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
-
-  if ~exist(json_file, 'file')
-    json_file = [];
-  end
 
 end
 
@@ -1116,10 +951,10 @@ function file_list = return_channel_description_file_list(modality, subject)
 
   pth = fullfile(subject.path, modality);
 
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
+  file_list = bids.internal.file_utils('List', ...
+                                       pth, ...
+                                       sprintf(['^%s.*' pattern '$'], ...
+                                               subject.name));
 
   file_list = convert_to_cell(file_list);
 
@@ -1138,10 +973,10 @@ function file_list = return_session_specific_file_list(modality, subject)
 
   pth = fullfile(subject.path, modality);
 
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s' pattern '$'], ...
-                                                    subject.name));
+  file_list = bids.internal.file_utils('List', ...
+                                       pth, ...
+                                       sprintf(['^%s' pattern '$'], ...
+                                               subject.name));
 
   file_list = convert_to_cell(file_list);
 
