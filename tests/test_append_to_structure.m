@@ -8,13 +8,15 @@ end
 
 function test_append_to_structure_basic()
 
+  schema = bids.schema.load_schema();
+
   subject = struct('anat', struct([]));
 
   modality = 'anat';
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec', 'part'};
-  subject = bids.internal.append_to_structure(file, subject, modality);
+  subject = bids.internal.append_to_structure(file, subject, modality, schema);
 
   expected.anat = struct( ...
                          'filename', 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz', ...
@@ -34,16 +36,18 @@ end
 
 function test_append_to_structure_basic_test()
 
+  schema = bids.schema.load_schema();
+
   subject = struct('anat', struct([]));
   modality = 'anat';
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec', 'part'};
-  subject = bids.internal.append_to_structure(file, subject, modality);
+  subject = bids.internal.append_to_structure(file, subject, modality, schema);
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_T1map.nii.gz';
   entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec'};
-  subject = bids.internal.append_to_structure(file, subject, modality);
+  subject = bids.internal.append_to_structure(file, subject, modality, schema);
 
   expected(1).anat = struct( ...
                             'filename', 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz', ...

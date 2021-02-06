@@ -201,21 +201,21 @@ function subject = parse_subject(pth, subjname, sesname)
     for iDatatype = 1:numel(datatypes)
       switch datatypes{iDatatype}
         case {'anat', 'beh'}
-          subject = parse_using_schema(subject, datatypes{iDatatype});
+          subject = parse_using_schema(subject, datatypes{iDatatype}, schema);
         case 'dwi'
-          subject = parse_dwi(subject);
+          subject = parse_dwi(subject, schema);
         case 'eeg'
           subject = parse_eeg(subject);
         case 'fmap'
           subject = parse_fmap(subject);
         case 'func'
-          subject = parse_func(subject);
+          subject = parse_func(subject, schema);
         case 'ieeg'
           subject = parse_ieeg(subject);
         case 'meg'
           subject = parse_meg(subject);
         case 'perf'
-          subject = parse_perf(subject);
+          subject = parse_perf(subject, schema);
       end
     end
 
@@ -226,7 +226,7 @@ function subject = parse_subject(pth, subjname, sesname)
 
 end
 
-function subject = parse_using_schema(subject, datatype)
+function subject = parse_using_schema(subject, datatype, schema)
 
   pth = fullfile(subject.path, datatype);
 
@@ -236,7 +236,7 @@ function subject = parse_using_schema(subject, datatype)
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
 
     end
 
@@ -244,7 +244,7 @@ function subject = parse_using_schema(subject, datatype)
 
 end
 
-function subject = parse_dwi(subject)
+function subject = parse_dwi(subject, schema)
   % --------------------------------------------------------------------------
   % -Diffusion imaging data
   % --------------------------------------------------------------------------
@@ -257,7 +257,7 @@ function subject = parse_dwi(subject)
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
 
       % -bval file
       % ------------------------------------------------------------------
@@ -279,7 +279,7 @@ function subject = parse_dwi(subject)
   end
 end
 
-function subject = parse_func(subject)
+function subject = parse_func(subject, schema)
 
   % --------------------------------------------------------------------------
   % -Task imaging data
@@ -293,7 +293,7 @@ function subject = parse_func(subject)
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
       subject.func(end).meta = struct([]); % ?
 
       % TODO:
@@ -311,7 +311,7 @@ function subject = parse_func(subject)
   end
 end
 
-function subject = parse_perf(subject)
+function subject = parse_perf(subject, schema)
 
   % --------------------------------------------------------------------------
   % -ASL perfusion imaging data
@@ -325,7 +325,7 @@ function subject = parse_perf(subject)
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
 
     end
 

@@ -1,15 +1,14 @@
-function subject = append_to_structure(file, subject, modality)
+function subject = append_to_structure(file, subject, modality, schema)
   % Copyright (C) 2021--, BIDS-MATLAB developers
 
   p = bids.internal.parse_filename(file);
-  idx = find_suffix_group(modality, p.type);
+  idx = find_suffix_group(modality, p.type, schema);
   if isempty(idx)
     warning('append_to_structure:noMatchingSuffix', ...
             'Skipping file with no valid suffix in schema: %s', file);
     return
   end
 
-  schema = bids.schema.load_schema();
   entities = bids.schema.return_datatype_entities(schema.datatypes.(modality)(idx));
   p = bids.internal.parse_filename(file, entities);
 
@@ -38,11 +37,9 @@ function structure = add_missing_field(structure, field)
   end
 end
 
-function idx = find_suffix_group(modality, suffix)
+function idx = find_suffix_group(modality, suffix, schema)
 
   idx = [];
-
-  schema = bids.schema.load_schema();
 
   % the following loop could probably be improved with some cellfun magic
   %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
