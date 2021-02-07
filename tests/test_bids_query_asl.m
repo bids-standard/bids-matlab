@@ -52,4 +52,8 @@ function test_bids_query_asl_basic()
   suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
+  filename = bids.query(BIDS, 'data', 'suffix', 'm0scan', 'dir', 'pa');
+  basename = bids.internal.file_utils(filename, 'basename');
+  assertEqual(basename, {'sub-Sub1_dir-pa_m0scan.nii'});
+
 end

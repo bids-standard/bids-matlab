@@ -30,164 +30,217 @@ function result = query(BIDS, query, varargin)
 
   BIDS = bids.layout(BIDS);
 
-  opts = parse_query(varargin);
+  options = parse_query(varargin);
 
   switch query
-    case {'sessions', 'subjects', 'modalities', 'tasks', 'runs', 'suffixes', 'data', 'metadata'}
 
-      % Initialise output variable
-      result = {};
+    case {'sessions', 'subjects', 'modalities', 'tasks', 'runs', 'suffixes', 'data', 'metadata'}
 
       % For subjects and modality we pass only the subjects/modalities asked for
       % otherwise we pass all of them
 
-      % Filter according to subjects
-      if any(ismember(opts(:, 1), 'sub'))
-        subs = opts{ismember(opts(:, 1), 'sub'), 2};
-        opts(ismember(opts(:, 1), 'sub'), :) = [];
-      else
-        subs = unique({BIDS.subjects.name});
-        subs = regexprep(subs, '^[a-zA-Z0-9]+-', '');
-      end
+      [subjects, options] = get_subjects(BIDS, options);
 
-      % Filter according to modality
-      if any(ismember(opts(:, 1), 'modality'))
-        mods = opts{ismember(opts(:, 1), 'modality'), 2};
-        opts(ismember(opts(:, 1), 'modality'), :) = [];
-      else
-        hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x), y), ...
-                          BIDS.subjects, 'UniformOutput', false);
-        hasmod = any([hasmod{:}], 2);
-        mods   = fieldnames(BIDS.subjects)';
-        mods   = mods(hasmod);
-      end
+      [modalities, options] = get_modalities(BIDS, options);
 
       % Get optional target option for metadata query
-      if strcmp(query, 'metadata') && any(ismember(opts(:, 1), 'target'))
-        target = opts{ismember(opts(:, 1), 'target'), 2};
-        opts(ismember(opts(:, 1), 'target'), :) = [];
-        if iscellstr(target)
-          target = substruct('.', target{1});
-        end
-      else
-        target = [];
-      end
+      [target, options] = get_target(query, options);
 
-      %% Perform query
-
-      % Loop through all the subjects and modalities filtered previously
-      for i = 1:numel(BIDS.subjects)
-        % -Only continue if this subject is one of those filtered
-        if ~ismember(BIDS.subjects(i).name(5:end), subs)
-          continue
-        end
-        for j = 1:numel(mods)
-          d = BIDS.subjects(i).(mods{j});
-          for k = 1:numel(d)
-            % -sts is kept true only if this modality is one of those filtered
-            sts = true;
-            for l = 1:size(opts, 1)
-              if ~isfield(d(k), opts{l, 1}) || ~ismember(d(k).(opts{l, 1}), opts{l, 2})
-                sts = false;
-              end
-            end
-            switch query
-              case 'subjects'
-                if sts
-                  result{end + 1} = BIDS.subjects(i).name;
-                end
-              case 'sessions'
-                if sts
-                  result{end + 1} = BIDS.subjects(i).session;
-                end
-              case 'modalities'
-                if sts
-                  hasmod = structfun(@(x) isstruct(x) & ~isempty(x), ...
-                                     BIDS.subjects(i));
-                  allmods = fieldnames(BIDS.subjects(i))';
-                  result = union(result, allmods(hasmod));
-                end
-              case 'data'
-                if sts && isfield(d(k), 'filename')
-                  result{end + 1} = fullfile(BIDS.subjects(i).path, mods{j}, d(k).filename);
-                end
-              case 'metadata'
-                if sts && isfield(d(k), 'filename')
-                  f = fullfile(BIDS.subjects(i).path, mods{j}, d(k).filename);
-                  result{end + 1} = bids.internal.get_metadata(f);
-                  if ~isempty(target)
-                    try
-                      result{end} = subsref(result{end}, target);
-                    catch
-                      warning('Non-existent field for metadata.');
-                      result{end} = [];
-                    end
-                  end
-                end
-                %                             if sts && isfield(d(k),'meta')
-                %                                 result{end+1} = d(k).meta;
-                %                             end
-              case 'runs'
-                if sts && isfield(d(k), 'run')
-                  result{end + 1} = d(k).run;
-                end
-              case 'tasks'
-                if sts && isfield(d(k), 'task')
-                  result{end + 1} = d(k).task;
-                end
-              case 'suffixes'
-                if sts && isfield(d(k), 'suffix')
-                  result{end + 1} = d(k).suffix;
-                end
-            end
-          end
-        end
-      end
+      result = perform_query(BIDS, query, options, subjects, modalities, target);
 
       %% Postprocessing output variable
       switch query
+
         case 'subjects'
           result = unique(result);
           result = regexprep(result, '^[a-zA-Z0-9]+-', '');
+
         case 'sessions'
           result = unique(result);
           result = regexprep(result, '^[a-zA-Z0-9]+-', '');
           result(cellfun('isempty', result)) = [];
+
         case {'modalities', 'data'}
           result = result';
+
         case 'metadata'
           if numel(result) == 1
             result = result{1};
           end
+
         case {'tasks', 'runs', 'suffixes'}
           result = unique(result);
           result(cellfun('isempty', result)) = [];
       end
+
     otherwise
       error('Invalid query input: ''%s''', query);
+
   end
 
 end
 
-% ==========================================================================
-% -Parse BIDS query
-% ==========================================================================
-function query = parse_query(query)
-  if numel(query) == 1 && isstruct(query{1})
-    query = [fieldnames(query{1}), struct2cell(query{1})];
+function options = parse_query(options)
+
+  if numel(options) == 1 && isstruct(options{1})
+    options = [fieldnames(options{1}), struct2cell(options{1})];
+
   else
-    if mod(numel(query), 2)
+    if mod(numel(options), 2)
       error('Invalid input syntax: each BIDS entity requires an associated label');
     end
-    query = reshape(query, 2, [])';
+    options = reshape(options, 2, [])';
+
   end
-  for i = 1:size(query, 1)
-    if ischar(query{i, 2})
-      query{i, 2} = cellstr(query{i, 2});
+
+  for i = 1:size(options, 1)
+
+    if ischar(options{i, 2})
+      options{i, 2} = cellstr(options{i, 2});
     end
-    for j = 1:numel(query{i, 2})
-      if iscellstr(query{i, 2})
-        query{i, 2}{j} = regexprep(query{i, 2}{j}, sprintf('^%s-', query{i, 1}), '');
+
+    for j = 1:numel(options{i, 2})
+      if iscellstr(options{i, 2})
+        options{i, 2}{j} = regexprep(options{i, 2}{j}, sprintf('^%s-', options{i, 1}), '');
+      end
+    end
+
+  end
+
+end
+
+function [subjects, options] = get_subjects(BIDS, options)
+
+  if any(ismember(options(:, 1), 'sub'))
+    subjects = options{ismember(options(:, 1), 'sub'), 2};
+    options(ismember(options(:, 1), 'sub'), :) = [];
+  else
+    subjects = unique({BIDS.subjects.name});
+    subjects = regexprep(subjects, '^[a-zA-Z0-9]+-', '');
+  end
+
+end
+
+function [modalities, options] = get_modalities(BIDS, options)
+
+  if any(ismember(options(:, 1), 'modality'))
+    modalities = options{ismember(options(:, 1), 'modality'), 2};
+    options(ismember(options(:, 1), 'modality'), :) = [];
+  else
+    hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x), y), ...
+                      BIDS.subjects, 'UniformOutput', false);
+    hasmod = any([hasmod{:}], 2);
+    modalities   = fieldnames(BIDS.subjects)';
+    modalities   = modalities(hasmod);
+  end
+
+end
+
+function [target, options] = get_target(query, options)
+
+  target = [];
+
+  if strcmp(query, 'metadata') && any(ismember(options(:, 1), 'target'))
+
+    target = options{ismember(options(:, 1), 'target'), 2};
+    options(ismember(options(:, 1), 'target'), :) = [];
+
+    if iscellstr(target)
+      target = substruct('.', target{1});
+    end
+
+  end
+
+end
+
+function result = perform_query(BIDS, query, options, subjects, modalities, target)
+
+  % Initialise output variable
+  result = {};
+
+  % Loop through all the subjects and modalities filtered previously
+  for i = 1:numel(BIDS.subjects)
+
+    % -Only continue if this subject is one of those filtered
+    if ~ismember(BIDS.subjects(i).name(5:end), subjects)
+      continue
+    end
+
+    for j = 1:numel(modalities)
+
+      d = BIDS.subjects(i).(modalities{j});
+
+      for k = 1:numel(d)
+
+        % status is kept true only if this modality is one of those filtered
+        status = true;
+
+        for l = 1:size(options, 1)
+          if ~isfield(d(k), options{l, 1}) || ~ismember(d(k).(options{l, 1}), options{l, 2})
+            status = false;
+          end
+        end
+
+        switch query
+
+          case 'subjects'
+            if status
+              result{end + 1} = BIDS.subjects(i).name;
+            end
+
+          case 'sessions'
+            if status
+              result{end + 1} = BIDS.subjects(i).session;
+            end
+
+          case 'modalities'
+            if status
+              hasmod = structfun(@(x) isstruct(x) & ~isempty(x), ...
+                                 BIDS.subjects(i));
+              allmods = fieldnames(BIDS.subjects(i))';
+              result = union(result, allmods(hasmod));
+            end
+
+          case 'data'
+            if status && isfield(d(k), 'filename')
+              result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
+            end
+
+          case 'metadata'
+            if status && isfield(d(k), 'filename')
+
+              f = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
+              result{end + 1} = bids.internal.get_metadata(f);
+              if ~isempty(target)
+                try
+                  result{end} = subsref(result{end}, target);
+                catch
+                  warning('Non-existent field for metadata.');
+                  result{end} = [];
+                end
+              end
+
+            end
+            % if status && isfield(d(k),'meta')
+            %   result{end+1} = d(k).meta;
+            % end
+
+          case 'runs'
+            if status && isfield(d(k), 'run')
+              result{end + 1} = d(k).run;
+            end
+
+          case 'tasks'
+            if status && isfield(d(k), 'task')
+              result{end + 1} = d(k).task;
+            end
+
+          case 'suffixes'
+            if status && isfield(d(k), 'suffix')
+              result{end + 1} = d(k).suffix;
+            end
+
+        end
       end
     end
   end
