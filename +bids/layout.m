@@ -112,7 +112,8 @@ function BIDS = layout(root, tolerant)
   p = bids.internal.file_utils('FPList', BIDS.dir, '^participants\.tsv$');
   if ~isempty(p)
     try
-      BIDS.participants = bids.util.tsvread(p);
+      BIDS.participants = struct('content', [], 'meta', []);
+      BIDS.participants.content = bids.util.tsvread(p);
     catch
       msg = ['unable to read ' p];
       tolerant_message(tolerant, msg);
@@ -256,18 +257,18 @@ function subject = parse_dwi(subject, schema)
     for i = 1:numel(file_list)
 
       subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
-      
+
       % bval & bvec file
       % ------------------------------------------------------------------
       % TODO: they can also be stored at higher levels (inheritance principle)
       bvalfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bval$');
       if isfield(bvalfile, 'filename')
-          subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename);
+        subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename);
       end
-      
+
       bvecfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bvec$');
       if isfield(bvalfile, 'filename')
-          subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename);
+        subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename);
       end
 
     end
@@ -290,7 +291,6 @@ function subject = parse_func(subject, schema)
     for i = 1:numel(file_list)
 
       subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
-      subject.func(end).meta = struct([]); % ?
 
       % TODO:
       %
@@ -299,7 +299,7 @@ function subject = parse_func(subject, schema)
       %
 
       if strcmp(subject.func(end).type, 'events')
-        subject.func(end).meta = bids.util.tsvread(fullfile(pth, file_list{i}));
+        subject.func(i).content = bids.util.tsvread(fullfile(pth, file_list{i}));
       end
 
     end
@@ -324,68 +324,42 @@ function subject = parse_perf(subject, schema)
 
       subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
 
-    end
+      switch subject.perf(i).type
 
-    % ASL timeseries NIfTI file
-    % ----------------------------------------------------------------------
-    labels = regexp(file_list, [ ...
-                                '^sub-[a-zA-Z0-9]+' ...              % sub-<participant_label>
-                                '_asl\.nii(\.gz)?$'], 'names'); % NIfTI file suffix/extension
+        case 'asl'
 
-    if any(~cellfun(@isempty, labels))
+          subject.perf(i).meta = [];
+          subject.perf(i).dependencies = [];
 
-      idx = find(~cellfun(@isempty, labels));
+          subject.perf(i).meta = bids.internal.get_metadata( ...
+                                                            fullfile( ...
+                                                                     subject.path, ...
+                                                                     datatype, ...
+                                                                     file_list{i}));
 
-      for i = 1:numel(idx)
+          subject.perf(i) = manage_aslcontext(subject.perf(i), pth);
 
-        j = idx(i);
+          subject.perf(i) = manage_asllabeling(subject.perf(i), pth);
 
-        subject.perf(j).meta = [];
-        subject.perf(j).dependencies = [];
+          subject.perf(i) = manage_M0(subject.perf(i), pth);
 
-        subject.perf(j).meta = bids.internal.get_metadata( ...
-                                                          fullfile( ...
-                                                                   subject.path, ...
-                                                                   datatype, ...
-                                                                   file_list{j}));
+        case 'm0scan'
 
-        subject.perf(j) = manage_aslcontext(subject.perf(j), pth);
+          subject.perf(i).intended_for = [];
 
-        subject.perf(j) = manage_asllabeling(subject.perf(j), pth);
+          subject.perf(i).meta = bids.internal.get_metadata( ...
+                                                            fullfile( ...
+                                                                     subject.path, ...
+                                                                     datatype, ...
+                                                                     file_list{i}));
 
-        subject.perf(j) = manage_M0(subject.perf(j), pth);
-
-      end
-
-    end
-
-    % -M0scan NIfTI file
-    % ---------------------------------------------------------------------
-    labels = regexp(file_list, [ ...
-                                '^sub-[a-zA-Z0-9]+' ...              % sub-<participant_label>
-                                '_m0scan\.nii(\.gz)?$'], 'names'); % NIfTI file suffix/extension
-
-    if any(~cellfun(@isempty, labels))
-      idx = find(~cellfun(@isempty, labels));
-      for i = 1:numel(idx)
-
-        j = idx(i);
-
-        subject.perf(j).intended_for = [];
-
-        subject.perf(j).meta = bids.internal.get_metadata( ...
-                                                          fullfile( ...
-                                                                   subject.path, ...
-                                                                   datatype, ...
-                                                                   file_list{j}));
-
-        subject.perf(j) = manage_intended_for(subject.perf(j), subject, pth);
+          subject.perf(i) = manage_intended_for(subject.perf(i), subject, pth);
 
       end
 
     end
 
-  end % if exist(pth, 'dir')
+  end
 
 end
 
@@ -399,7 +373,7 @@ function perf = manage_aslcontext(perf, pth)
 
   if exist(metafile, 'file')
     [~, Ffile] = fileparts(metafile);
-    perf.dependencies.context.sidecar = [Ffile '.tsv'];
+    perf.dependencies.context.filename = [Ffile '.tsv'];
     perf.dependencies.context.content = bids.util.tsvread(metafile);
 
   else
@@ -418,7 +392,7 @@ function perf = manage_asllabeling(perf, pth)
 
   if exist(metafile, 'file')
     [~, Ffile] = fileparts(metafile);
-    perf.dependencies.labeling_image = [Ffile '.jpg'];
+    perf.dependencies.labeling_image.filename = [Ffile '.jpg'];
 
   end
 
@@ -512,10 +486,8 @@ function perf = manage_M0(perf, pth)
         end
 
       otherwise
-        warning(['Unknown M0Type:', ...
-                 perf.meta.M0Type, ...
-                 ' in ', ...
-                 perf.json_sidecar_filename]);
+        warning(['Unknown M0Type:', perf.meta.M0Type]);
+
     end
 
     if ~isempty(m0_type)
@@ -619,7 +591,7 @@ function subject = parse_fmap(subject, schema)
                                                           '_fieldmap.nii', ...
                                                           '_magnitude.nii');
 
-          % -Phase difference image and at least one magnitude image
+          % Phase difference image and at least one magnitude image
         case {'phasediff'}
           subject.fmap(i).dependencies.magnitude = { ...
                                                     strrep(file_list{i}, ...
@@ -629,7 +601,7 @@ function subject = parse_fmap(subject, schema)
                                                            '_phasediff.nii', ...
                                                            '_magnitude2.nii')}; % optional
 
-          % -Two phase images and two magnitude images
+          % Two phase images and two magnitude images
         case {'phase1', 'phase2'}
           subject.fmap(i).dependencies.magnitude = { ...
                                                     strrep(file_list{i}, ...
@@ -659,13 +631,13 @@ function subject = parse_meeg(subject, datatype, schema)
 
       subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
 
-      switch subject.(datatype)(end).type
+      switch subject.(datatype)(i).type
 
         case {'events', 'channels', 'electrodes'}  %
           % TODO: events / channels file can also be stored
           % at higher levels (inheritance principle)
           %
-          subject.(datatype)(end).meta = bids.util.tsvread(fullfile(pth, file_list{i}));
+          subject.(datatype)(i).content = bids.util.tsvread(fullfile(pth, file_list{i}));
 
         case {'photo', 'coordsystem'}
 
