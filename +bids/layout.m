@@ -1,9 +1,16 @@
 function BIDS = layout(root, tolerant)
+  %
   % Parse a directory structure formated according to the BIDS standard
-  % FORMAT BIDS = bids.layout(root)
-  % root     - directory formated according to BIDS [Default: pwd]
-  % tolerant - if set to 0 (default) only files g
-  % BIDS     - structure containing the BIDS file layout
+  %
+  % USAGE::
+  %
+  %   BIDS = bids.layout(root==pwd, tolerant==false)
+  %
+  % :param root:     directoryof the dataset formated according to BIDS [default: ``pwd``]
+  % :type  root:     string
+  % :param tolerant: if set to ``false`` (default) only valid BIDS datasets will be parsed
+  %                  following the bids-schema
+  % :type  tolerant: boolean
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -19,15 +26,17 @@ function BIDS = layout(root, tolerant)
   % ==========================================================================
   if ~nargin
     root = pwd;
+
   elseif nargin == 1
     if ischar(root)
       root = bids.internal.file_utils(root, 'CPath');
     elseif isstruct(root)
-      BIDS = root; % or BIDS = bids.layout(root.root);
+      BIDS = root;
       return
     else
       error('Invalid syntax.');
     end
+
   elseif nargin > 2
     error('Too many input arguments.');
   end
@@ -36,7 +45,7 @@ function BIDS = layout(root, tolerant)
     tolerant = false;
   end
 
-  % -BIDS structure
+  % BIDS structure
   % ==========================================================================
 
   % BIDS.dir          -- BIDS directory
@@ -52,7 +61,8 @@ function BIDS = layout(root, tolerant)
                 'participants', struct([]), ...
                 'subjects', struct([]));
 
-  % -Validation of BIDS root directory
+  % ==========================================================================
+  % REFACTOR STARTS - Validation of BIDS root directory
   % ==========================================================================
   if ~exist(BIDS.dir, 'dir')
     error('BIDS directory does not exist: ''%s''', BIDS.dir);
@@ -65,8 +75,12 @@ function BIDS = layout(root, tolerant)
     tolerant_message(tolerant, msg);
 
   end
+  % ==========================================================================
+  % REFACTOR ENDS - Validation of BIDS root directory
+  % ==========================================================================
 
-  % -Dataset description
+  % ==========================================================================
+  % REFACTOR STARTS - Dataset description
   % ==========================================================================
   try
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
@@ -86,36 +100,45 @@ function BIDS = layout(root, tolerant)
     end
 
   end
-
-  % -Optional directories
   % ==========================================================================
-  % [code/]
+  % REFACTOR ENDS - Dataset description
+  % ==========================================================================
+
+  % Optional directories
+  % ==========================================================================
+  % [code/] - ignore
   % [derivatives/]
-  % [stimuli/]
-  % [sourcedata/]
+  % [stimuli/] - ingore
+  % [sourcedata/] - ignore
   % [phenotype/]
 
   BIDS.participants = [];
   BIDS.participants = manage_tsv(BIDS.participants, BIDS.dir, 'participants.tsv');
 
-  % -Subjects
+  % Subjects
   % ==========================================================================
-  sub = cellstr(bids.internal.file_utils('List', BIDS.dir, 'dir', '^sub-.*$'));
-  if isequal(sub, {''})
+  subjects = cellstr(bids.internal.file_utils('List', BIDS.dir, 'dir', '^sub-.*$'));
+  if isequal(subjects, {''})
     error('No subjects found in BIDS directory.');
   end
 
-  for iSub = 1:numel(sub)
-    sess = cellstr(bids.internal.file_utils('List', ...
-                                            fullfile(BIDS.dir, sub{iSub}), ...
-                                            'dir', ...
-                                            '^ses-.*$'));
+  % if in tolerant mode we go schema-less
+  schema = bids.schema.load_schema();
+  if tolerant
+    schema = [];
+  end
 
-    for iSess = 1:numel(sess)
+  for iSub = 1:numel(subjects)
+    sessions = cellstr(bids.internal.file_utils('List', ...
+                                                fullfile(BIDS.dir, subjects{iSub}), ...
+                                                'dir', ...
+                                                '^ses-.*$'));
+
+    for iSess = 1:numel(sessions)
       if isempty(BIDS.subjects)
-        BIDS.subjects = parse_subject(BIDS.dir, sub{iSub}, sess{iSess});
+        BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
       else
-        BIDS.subjects(end + 1) = parse_subject(BIDS.dir, sub{iSub}, sess{iSess});
+        BIDS.subjects(end + 1) = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
       end
     end
 
@@ -123,14 +146,13 @@ function BIDS = layout(root, tolerant)
 
 end
 
-% ==========================================================================
-% -Parse a subject's directory
-% ==========================================================================
-function subject = parse_subject(pth, subjname, sesname)
-
+function subject = parse_subject(pth, subjname, sesname, schema)
+  %
+  % Parse a subject's directory
+  %
   % For each modality (anat, func, eeg...) all the files from the
-  % corresponding directory are listed and their filenames parsed with extra
-  % BIDS valid entities listed (e.g. 'acq','ce','rec','fa'...).
+  % corresponding directory are listed and their filenames parsed with
+  % BIDS valid entities as listed in the schema (if the schema is not empty).
 
   subject.name    = subjname;   % subject name ('sub-<participant_label>')
   subject.path    = fullfile(pth, subjname, sesname); % full path to subject directory
@@ -148,18 +170,30 @@ function subject = parse_subject(pth, subjname, sesname)
   subject.ieeg    = struct([]); % iEEG data
   subject.pet     = struct([]); % PET imaging data
 
-  % use BIDS schema to organizing parsing of subject data
-  schema = bids.schema.load_schema();
-  modality_groups = fieldnames(schema.modalities);
+  % dummy variable if we go schema less
+  modality_groups = true;
+  if ~isempty(schema)
+    modality_groups = fieldnames(schema.modalities);
+  end
 
   for iGroup = 1:numel(modality_groups)
 
-    modality = schema.modalities.(modality_groups{iGroup}).datatypes;
+    % if we go schema-less we list directories in the subject/session folder
+    % as proxy of the modalities that we have to parse
+    modalities = cellstr(bids.internal.file_utils('List', ...
+                                                  subject.path, ...
+                                                  'dir', ...
+                                                  '.*'));
+    if ~isempty(schema)
+      modalities = schema.modalities.(modality_groups{iGroup}).datatypes;
+    end
 
-    for iModality = 1:numel(modality)
-      switch modality{iModality}
+    % if we go schema-less, we pass an empty schema to all the parsing functions
+    % so the parsing is unconstrained
+    for iModality = 1:numel(modalities)
+      switch modalities{iModality}
         case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg'}
-          subject = parse_using_schema(subject, modality{iModality}, schema);
+          subject = parse_using_schema(subject, modalities{iModality}, schema);
         case 'dwi'
           subject = parse_dwi(subject, schema);
         case 'fmap'
@@ -169,6 +203,11 @@ function subject = parse_subject(pth, subjname, sesname)
         case 'pet'
           % not covered by schema... yet
           subject = parse_pet(subject, schema);
+        otherwise
+          % in case we are going schemaless and the modality is not one of the
+          % usual suspect
+          subject.(modalities{iModality}) = struct([]);
+          subject = parse_using_schema(subject, modalities{iModality}, []);
       end
     end
 

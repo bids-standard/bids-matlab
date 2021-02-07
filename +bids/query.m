@@ -161,7 +161,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
   % Loop through all the subjects and modalities filtered previously
   for i = 1:numel(BIDS.subjects)
 
-    % -Only continue if this subject is one of those filtered
+    % Only continue if this subject is one of those filtered
     if ~ismember(BIDS.subjects(i).name(5:end), subjects)
       continue
     end

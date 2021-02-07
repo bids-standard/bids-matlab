@@ -1,17 +1,48 @@
 function subject = append_to_layout(file, subject, modality, schema)
+  %
+  % appends a file to the BIDS layout by parsing it according to the schema
+  %
+  % USAGE::
+  %
+  %   subject = append_to_layout(file, subject, modality, schema == [])
+  %
+  % :param file:
+  % :type  file: string
+  % :param subject: subject sub-structure from the BIDS layout
+  % :type  subject: strcture
+  % :param modality:
+  % :type  modality: string
+  % :param schema:
+  % :type  schema: strcture
+  %
+  %
   % Copyright (C) 2021--, BIDS-MATLAB developers
 
-  p = bids.internal.parse_filename(file);
-  idx = find_suffix_group(modality, p.suffix, schema);
-  if isempty(idx)
-    warning('append_to_structure:noMatchingSuffix', ...
-            'Skipping file with no valid suffix in schema: %s', file);
-    return
+  if ~exist('schema', 'var')
+    schema = [];
   end
 
-  entities = bids.schema.return_modality_entities(schema.datatypes.(modality)(idx));
-  p = bids.internal.parse_filename(file, entities);
+  % Parse file fist to identify the suffix group in the template.
+  % Then reparse the file using the entity-label pairs defined in the schema.
+  p = bids.internal.parse_filename(file);
 
+  idx = find_suffix_group(modality, p.suffix, schema);
+
+  if ~isempty(schema)
+
+    if isempty(idx)
+      warning('append_to_structure:noMatchingSuffix', ...
+              'Skipping file with no valid suffix in schema: %s', file);
+      return
+    end
+
+    entities = bids.schema.return_modality_entities(schema.datatypes.(modality)(idx));
+    p = bids.internal.parse_filename(file, entities);
+
+  end
+
+  % Check any new entity field that needs to be added into the layout or the output
+  % of the parsing to make sure the 2 structures can be concatenated
   if ~isempty(subject.(modality))
 
     missing_fields = setxor(fieldnames(subject.(modality)), fieldnames(p));
@@ -40,6 +71,10 @@ end
 function idx = find_suffix_group(modality, suffix, schema)
 
   idx = [];
+
+  if isempty(schema)
+    return
+  end
 
   % the following loop could probably be improved with some cellfun magic
   %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)

@@ -15,7 +15,6 @@ function test_append_to_layout_basic()
   modality = 'anat';
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
-  entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec', 'part'};
   subject = bids.internal.append_to_layout(file, subject, modality, schema);
 
   expected.anat = struct( ...
@@ -42,11 +41,9 @@ function test_append_to_structure_basic_test()
   modality = 'anat';
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
-  entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec', 'part'};
   subject = bids.internal.append_to_layout(file, subject, modality, schema);
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_T1map.nii.gz';
-  entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec'};
   subject = bids.internal.append_to_layout(file, subject, modality, schema);
 
   expected(1).anat = struct( ...
@@ -72,5 +69,26 @@ function test_append_to_structure_basic_test()
                             'ce', '', ...
                             'rec', '', ...
                             'part', '');     %#ok<*STRNU>
+
+end
+
+function test_append_to_layout_schemaless()
+
+  subject = struct('newmod', struct([]));
+
+  modality = 'newmod';
+
+  file = '../sub-16/newmod/sub-16_schema-less_anything-goes_newsuffix.EXT';
+  subject = bids.internal.append_to_layout(file, subject, modality);
+
+  expected.newmod = struct( ...
+                           'filename', 'sub-16_schema-less_anything-goes_newsuffix.EXT', ...
+                           'suffix', 'newsuffix', ...
+                           'ext', '.EXT', ...
+                           'sub', '16', ...
+                           'schema', 'less', ...
+                           'anything', 'goes');
+
+  assertEqual(subject.newmod, expected.newmod);
 
 end
