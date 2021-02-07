@@ -8,7 +8,7 @@ end
 
 function test_bids_query_asl_basic()
   %
-  %   asl specific queries
+  %   asl queries
   %
 
   pth_bids_example = get_test_data_dir();

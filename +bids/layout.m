@@ -744,7 +744,7 @@ function file_list = return_file_list(modality, subject)
       pattern = '_task-.*\\.nii(\\.gz)|events\\.tsv|physio\\.tsv\\.gz|stim\\.tsv\\.gz?';
 
     case {'eeg', 'meg', 'ieeg'}
-      pattern = ['_task-.*_' modality '\\..*[^json]'];
+      pattern = '_([a-zA-Z0-9]+){1}\\..*[^json]';
 
     case 'beh'
       pattern = '_task-.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';

@@ -7,7 +7,7 @@ function test_suite = test_bids_query %#ok<*STOUT>
 end
 
 function test_bids_query_basic()
-  % Test BIDS queries on ds007
+  % Test BIDS queries
   % This dataset comes from https://github.com/bids-standard/bids-examples
   % and is downloaded automatically by the continuous integration framework
   % and is required for the tests to be run.
@@ -30,8 +30,6 @@ function test_bids_query_basic()
   subjs = arrayfun(@(x) sprintf('%02d', x), 1:20, 'UniformOutput', false);
   assert(isequal(bids.query(BIDS, 'subjects'), subjs));
 
-  assert(isempty(bids.query(BIDS, 'sessions')));
-
   assert(isequal(bids.query(BIDS, 'runs'), {'01', '02'}));
 
   tasks = { ...
@@ -45,10 +43,6 @@ function test_bids_query_basic()
 
   data = bids.query(BIDS, 'data', 'sub', '01', 'task', 'stopsignalwithpseudowordnaming');
   assertEqual(size(data, 1), 4);
-
-  mods = {'anat', 'func'};
-  assert(isequal(bids.query(BIDS, 'modalities'), mods));
-  assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), mods));
 
   assert(isempty(bids.query(BIDS, 'runs', 'type', 'T1w')));
 
@@ -79,31 +73,32 @@ function test_bids_query_basic()
 end
 
 function test_bids_query_sessions()
-  %
-  %   parse a folder with sessions
-  %
 
   pth_bids_example = get_test_data_dir();
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
-
-  %   test
   sessions = {'01', '02'};
   assert(isequal(bids.query(BIDS, 'sessions'), sessions));
   assert(isequal(bids.query(BIDS, 'sessions', 'sub', '02'), sessions));
 
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+
+  assert(isempty(bids.query(BIDS, 'sessions')));
+
 end
 
 function test_bids_query_modalities()
-  %
-  %   parse a folder with different modalities per session
-  %
 
   pth_bids_example = get_test_data_dir();
 
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+
+  mods = {'anat', 'func'};
+  assert(isequal(bids.query(BIDS, 'modalities'), mods));
+  assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), mods));
+
   BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
 
-  %   test
   mods = {'anat', 'fmap', 'func'};
 
   assert(isequal(bids.query(BIDS, 'modalities'), mods));
