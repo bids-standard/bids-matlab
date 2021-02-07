@@ -728,14 +728,15 @@ end
 
 function file_list = return_file_list(modality, subject)
 
-    % We list anything but json files
-    
-    % TODO
-    % it should be possible to create some of those patterns for the regexp
-    % based on some of the required entities written down in the schema
-    
-  pattern = '_([a-zA-Z0-9]+){1}\\..*[^json]';
-    
+  % We list anything but json files
+
+  % TODO
+  % it should be possible to create some of those patterns for the regexp
+  % based on some of the required entities written down in the schema
+
+  % jn to omit json but not .pos file for headshape.pos
+  pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
+
   pth = fullfile(subject.path, modality);
 
   [file_list, d] = bids.internal.file_utils('List', ...
@@ -743,10 +744,12 @@ function file_list = return_file_list(modality, subject)
                                             sprintf(['^%s.*' pattern '$'], ...
                                                     subject.name));
 
-  if strcmp(modality, 'meg') && isempty(file_list)
-    file_list = d;
-  end
-
   file_list = convert_to_cell(file_list);
+
+  if strcmp(modality, 'meg') && ~isempty(d)
+    for i = 1:size(d, 1)
+      file_list{end + 1, 1} = d(i, :);
+    end
+  end
 
 end

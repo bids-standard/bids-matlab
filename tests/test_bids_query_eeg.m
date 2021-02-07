@@ -29,7 +29,8 @@ function test_bids_query_eeg_basic()
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
   types = {'T1w', 'eeg', 'electrodes', 'events'};
-  % Missing: 'coordsystem', 'channels'
+  % Missing: 'coordsystem',
+  % Missing: 'channels' in root folder
   assertEqual(bids.query(BIDS, 'types'), types);
 
   %%
