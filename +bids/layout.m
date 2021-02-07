@@ -204,14 +204,12 @@ function subject = parse_subject(pth, subjname, sesname)
           subject = parse_using_schema(subject, datatypes{iDatatype}, schema);
         case 'dwi'
           subject = parse_dwi(subject, schema);
-        case 'eeg'
-          subject = parse_eeg(subject, schema);
+        case {'eeg', 'meg'}
+          subject = parse_meeg(subject, datatypes{iDatatype}, schema);
         case 'fmap'
           subject = parse_fmap(subject, schema);
         case 'func'
           subject = parse_func(subject, schema);
-        case 'meg'
-          subject = parse_meg(subject);
         case 'perf'
           subject = parse_perf(subject, schema);
       end
@@ -652,9 +650,7 @@ function subject = parse_fmap(subject, schema)
 
 end
 
-function subject = parse_eeg(subject, schema)
-
-  datatype = 'eeg';
+function subject = parse_meeg(subject, datatype, schema)
 
   pth = fullfile(subject.path, datatype);
 
@@ -666,66 +662,17 @@ function subject = parse_eeg(subject, schema)
 
       subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
 
-      switch subject.eeg(end).type
+      switch subject.(datatype)(end).type
 
-        case {'events', 'channels', 'electrodes'}
-          subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i}));
+        case {'events', 'channels', 'electrodes'}  %
+          % TODO: events / channels file can also be stored
+          % at higher levels (inheritance principle)
+          %
+          subject.(datatype)(end).meta = bids.util.tsvread(fullfile(pth, file_list{i}));
 
         case {'photo', 'coordsystem'}
 
       end
-
-    end
-
-  end
-
-end
-
-function subject = parse_meg(subject)
-
-  pth = fullfile(subject.path, 'meg');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('meg');
-
-    file_list = return_file_list('meg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
-
-      subject.meg(end).meta = struct([]); % ?
-
-    end
-
-    file_list = return_event_file_list('meg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
-
-      subject.meg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_channel_description_file_list('meg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
-
-      subject.meg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_session_specific_file_list('meg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
-
-      subject.meg(end).meta = struct([]); % ?
 
     end
 
@@ -776,12 +723,6 @@ function entities = return_entities(modality)
 
   switch modality
 
-    case 'eeg'
-      entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
-
-    case 'meg'
-      entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
-
     case 'pet'
       entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
 
@@ -823,76 +764,6 @@ function file_list = return_file_list(modality, subject)
   if strcmp(modality, 'meg') && isempty(file_list)
     file_list = d;
   end
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_event_file_list(modality, subject)
-  %
-  % TODO: events file can also be stored at higher levels (inheritance principle)
-  %
-
-  switch modality
-
-    case 'meg'
-      pattern = '_task-.*_events\\.tsv';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  file_list = bids.internal.file_utils('List', ...
-                                       pth, ...
-                                       sprintf(['^%s.*' pattern '$'], ...
-                                               subject.name));
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_channel_description_file_list(modality, subject)
-  %
-  % Channel description table
-  %
-  % TODO: those files can also be stored at higher levels (inheritance principle)
-  %
-
-  switch modality
-
-    case 'meg'
-      pattern = '_task-.*_channels\\.tsv';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  file_list = bids.internal.file_utils('List', ...
-                                       pth, ...
-                                       sprintf(['^%s.*' pattern '$'], ...
-                                               subject.name));
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_session_specific_file_list(modality, subject)
-
-  switch modality
-
-    case 'meg'
-      pattern = [ ...
-                 '(_ses-[a-zA-Z0-9]+)?.*_', ...
-                 '(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)'];
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  file_list = bids.internal.file_utils('List', ...
-                                       pth, ...
-                                       sprintf(['^%s' pattern '$'], ...
-                                               subject.name));
 
   file_list = convert_to_cell(file_list);
 
