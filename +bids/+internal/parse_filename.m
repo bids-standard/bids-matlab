@@ -12,7 +12,7 @@ function p = parse_filename(filename, fields)
   %   struct with fields:
   %
   %     filename: 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz'
-  %         type: 'T1w'
+  %         suffix: 'T1w'
   %          ext: '.nii.gz'
   %          sub: '16'
   %          ses: 'mri'
@@ -32,7 +32,7 @@ function p = parse_filename(filename, fields)
 
   % -Identify the suffix and extension of this file
   % https://bids-specification.readthedocs.io/en/stable/02-common-principles.html#file-name-structure
-  [p.type, p.ext] = strtok(parts{end}, '.');
+  [p.suffix, p.ext] = strtok(parts{end}, '.');
 
   % -Separate the entity from the label for each pair identified above
   for i = 1:numel(parts) - 1
@@ -48,7 +48,7 @@ function p = parse_filename(filename, fields)
       end
     end
     try
-      p = orderfields(p, ['filename', 'ext', 'type', fields]);
+      p = orderfields(p, ['filename', 'ext', 'suffix', fields]);
     catch
       warning('bidsMatlab:noMatchingTemplate', ...
               'Ignoring file %s not matching template.', filename);

@@ -9,7 +9,7 @@ function result = query(BIDS, query, varargin)
   %                          - 'subjects',
   %                          - 'runs',
   %                          - 'tasks',
-  %                          - 'types',
+  %                          - 'suffixes',
   %                          - 'modalities'
   % result - outcome of query
   %
@@ -33,14 +33,15 @@ function result = query(BIDS, query, varargin)
   opts = parse_query(varargin);
 
   switch query
-    case {'sessions', 'subjects', 'modalities', 'tasks', 'runs', 'types', 'data', 'metadata'}
-      % -Initialise output variable
+    case {'sessions', 'subjects', 'modalities', 'tasks', 'runs', 'suffixes', 'data', 'metadata'}
+
+      % Initialise output variable
       result = {};
 
-      % -For subjects and modality we pass only the subjects/modalities asked for
+      % For subjects and modality we pass only the subjects/modalities asked for
       % otherwise we pass all of them
 
-      % -Filter according to subjects
+      % Filter according to subjects
       if any(ismember(opts(:, 1), 'sub'))
         subs = opts{ismember(opts(:, 1), 'sub'), 2};
         opts(ismember(opts(:, 1), 'sub'), :) = [];
@@ -48,7 +49,8 @@ function result = query(BIDS, query, varargin)
         subs = unique({BIDS.subjects.name});
         subs = regexprep(subs, '^[a-zA-Z0-9]+-', '');
       end
-      % -Filter according to modality
+
+      % Filter according to modality
       if any(ismember(opts(:, 1), 'modality'))
         mods = opts{ismember(opts(:, 1), 'modality'), 2};
         opts(ismember(opts(:, 1), 'modality'), :) = [];
@@ -60,7 +62,7 @@ function result = query(BIDS, query, varargin)
         mods   = mods(hasmod);
       end
 
-      % -Get optional target option for metadata query
+      % Get optional target option for metadata query
       if strcmp(query, 'metadata') && any(ismember(opts(:, 1), 'target'))
         target = opts{ismember(opts(:, 1), 'target'), 2};
         opts(ismember(opts(:, 1), 'target'), :) = [];
@@ -71,7 +73,8 @@ function result = query(BIDS, query, varargin)
         target = [];
       end
 
-      % -Perform query
+      %% Perform query
+
       % Loop through all the subjects and modalities filtered previously
       for i = 1:numel(BIDS.subjects)
         % -Only continue if this subject is one of those filtered
@@ -132,16 +135,16 @@ function result = query(BIDS, query, varargin)
                 if sts && isfield(d(k), 'task')
                   result{end + 1} = d(k).task;
                 end
-              case 'types'
-                if sts && isfield(d(k), 'type')
-                  result{end + 1} = d(k).type;
+              case 'suffixes'
+                if sts && isfield(d(k), 'suffix')
+                  result{end + 1} = d(k).suffix;
                 end
             end
           end
         end
       end
 
-      % -Postprocessing output variable
+      %% Postprocessing output variable
       switch query
         case 'subjects'
           result = unique(result);
@@ -156,7 +159,7 @@ function result = query(BIDS, query, varargin)
           if numel(result) == 1
             result = result{1};
           end
-        case {'tasks', 'runs', 'types'}
+        case {'tasks', 'runs', 'suffixes'}
           result = unique(result);
           result(cellfun('isempty', result)) = [];
       end
@@ -164,9 +167,11 @@ function result = query(BIDS, query, varargin)
       error('Invalid query input: ''%s''', query);
   end
 
-  % ==========================================================================
-  % -Parse BIDS query
-  % ==========================================================================
+end
+
+% ==========================================================================
+% -Parse BIDS query
+% ==========================================================================
 function query = parse_query(query)
   if numel(query) == 1 && isstruct(query{1})
     query = [fieldnames(query{1}), struct2cell(query{1})];
@@ -186,3 +191,5 @@ function query = parse_query(query)
       end
     end
   end
+
+end

@@ -150,24 +150,20 @@ function subject = parse_subject(pth, subjname, sesname)
 
   % use BIDS schema to organizing parsing of subject data
   schema = bids.schema.load_schema();
-  modalities = fieldnames(schema.modalities);
+  modality_groups = fieldnames(schema.modalities);
 
-  for iModality = 1:numel(modalities)
+  for iGroup = 1:numel(modality_groups)
 
-    datatypes = schema.modalities.(modalities{iModality}).datatypes;
+    modality = schema.modalities.(modality_groups{iGroup}).datatypes;
 
-    for iDatatype = 1:numel(datatypes)
-      switch datatypes{iDatatype}
+    for iModality = 1:numel(modality)
+      switch modality{iModality}
         case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg'}
-          subject = parse_using_schema(subject, datatypes{iDatatype}, schema);
+          subject = parse_using_schema(subject, modality{iModality}, schema);
         case 'dwi'
           subject = parse_dwi(subject, schema);
-          %         case {'eeg', 'meg'}
-          %           subject = parse_meeg(subject, datatypes{iDatatype}, schema);
         case 'fmap'
           subject = parse_fmap(subject, schema);
-          %         case 'func'
-          %           subject = parse_func(subject, schema);
         case 'perf'
           subject = parse_perf(subject, schema);
       end
@@ -180,19 +176,19 @@ function subject = parse_subject(pth, subjname, sesname)
 
 end
 
-function subject = parse_using_schema(subject, datatype, schema)
+function subject = parse_using_schema(subject, modality, schema)
 
-  pth = fullfile(subject.path, datatype);
+  pth = fullfile(subject.path, modality);
 
   if exist(pth, 'dir')
 
-    file_list = return_file_list(datatype, subject);
+    file_list = return_file_list(modality, subject);
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, modality, schema);
 
-      if ~isempty(subject.(datatype)) && strcmp(subject.(datatype)(end).ext, '.tsv')
+      if ~isempty(subject.(modality)) && strcmp(subject.(modality)(end).ext, '.tsv')
         % events
         % stim
         % channels
@@ -200,13 +196,13 @@ function subject = parse_using_schema(subject, datatype, schema)
         %
         % does not cover physio.tsv.gz or stim.tsv.gz
 
-        subject.(datatype)(end).content = [];
-        subject.(datatype)(end).meta = [];
+        subject.(modality)(end).content = [];
+        subject.(modality)(end).meta = [];
 
-        subject.(datatype)(end) = manage_tsv( ...
-                                             subject.(datatype)(end), ...
+        subject.(modality)(end) = manage_tsv( ...
+                                             subject.(modality)(end), ...
                                              pth, ...
-                                             subject.(datatype)(end).filename);
+                                             subject.(modality)(end).filename);
 
       end
 
@@ -224,16 +220,16 @@ function subject = parse_dwi(subject, schema)
   %  Diffusion imaging data
   % --------------------------------------------------------------------------
 
-  datatype = 'dwi';
-  pth = fullfile(subject.path, datatype);
+  modality = 'dwi';
+  pth = fullfile(subject.path, modality);
 
   if exist(pth, 'dir')
 
-    file_list = return_file_list(datatype, subject);
+    file_list = return_file_list(modality, subject);
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, modality, schema);
 
       % bval & bvec file
       % ------------------------------------------------------------------
@@ -258,18 +254,18 @@ function subject = parse_perf(subject, schema)
   % ASL perfusion imaging data
   % --------------------------------------------------------------------------
 
-  datatype = 'perf';
+  modality = 'perf';
   pth = fullfile(subject.path, 'perf');
 
   if exist(pth, 'dir')
 
-    file_list = return_file_list(datatype, subject);
+    file_list = return_file_list(modality, subject);
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, modality, schema);
 
-      switch subject.perf(i).type
+      switch subject.perf(i).suffix
 
         case 'asl'
 
@@ -279,7 +275,7 @@ function subject = parse_perf(subject, schema)
           subject.perf(i).meta = bids.internal.get_metadata( ...
                                                             fullfile( ...
                                                                      subject.path, ...
-                                                                     datatype, ...
+                                                                     modality, ...
                                                                      file_list{i}));
 
           aslcontext_file = strrep(subject.perf(i).filename, ...
@@ -301,7 +297,7 @@ function subject = parse_perf(subject, schema)
           subject.perf(i).meta = bids.internal.get_metadata( ...
                                                             fullfile( ...
                                                                      subject.path, ...
-                                                                     datatype, ...
+                                                                     modality, ...
                                                                      file_list{i}));
 
           subject.perf(i) = manage_intended_for(subject.perf(i), subject, pth);
@@ -316,26 +312,26 @@ end
 
 function subject = parse_fmap(subject, schema)
 
-  datatype = 'fmap';
-  pth = fullfile(subject.path, datatype);
+  modality = 'fmap';
+  pth = fullfile(subject.path, modality);
 
   if exist(pth, 'dir')
 
-    file_list = return_file_list(datatype, subject);
+    file_list = return_file_list(modality, subject);
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
+      subject = bids.internal.append_to_structure(file_list{i}, subject, modality, schema);
 
       subject.fmap(i).meta = bids.internal.get_metadata( ...
                                                         fullfile( ...
                                                                  subject.path, ...
-                                                                 datatype, ...
+                                                                 modality, ...
                                                                  file_list{i}));
       %       subject.perf(i).intended_for = [];
       %       subject.fmap(i) = manage_intended_for(subject.fmap(i), subject, pth);
 
-      switch subject.fmap(i).type
+      switch subject.fmap(i).suffix
 
         % -A single, real fieldmap image
         case {'fieldmap', 'magnitude'}

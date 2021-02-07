@@ -19,9 +19,9 @@ function test_bids_query_ieeg_basic()
   modalities = {'anat', 'ieeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'channels', 'electrodes', 'events', 'ieeg'};
+  suffixes = {'T1w', 'channels', 'electrodes', 'events', 'ieeg'};
   % Missing: 'coordsystem'
-  assertEqual(bids.query(BIDS, 'types'), types);
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %%
   BIDS = bids.layout(fullfile(pth_bids_example, 'ieeg_epilepsy_ecog'));
@@ -29,8 +29,8 @@ function test_bids_query_ieeg_basic()
   modalities = {'anat', 'ieeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'channels', 'electrodes', 'events', 'ieeg', 'photo'};
+  suffixes = {'T1w', 'channels', 'electrodes', 'events', 'ieeg', 'photo'};
   % Missing: 'coordsystem'
-  assertEqual(bids.query(BIDS, 'types'), types);
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end

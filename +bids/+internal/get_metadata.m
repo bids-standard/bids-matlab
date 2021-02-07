@@ -31,7 +31,7 @@ function meta = get_metadata(filename, pattern)
 
     % -List the potential metadata files associated with this file suffix type
     % Default is to assume it is a JSON file
-    metafile = bids.internal.file_utils('FPList', pth, sprintf(pattern, p.type));
+    metafile = bids.internal.file_utils('FPList', pth, sprintf(pattern, p.suffix));
 
     if isempty(metafile)
       metafile = {};

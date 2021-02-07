@@ -19,9 +19,9 @@ function test_bids_query_dwi_basic()
   modalities = {'anat',    'beh',    'dwi',    'fmap',    'func',    'meg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'bold', 'dwi', 'events', 'headshape', ...
-           'magnitude1', 'magnitude2', 'meg', 'phasediff'};
+  suffixes = {'T1w', 'bold', 'dwi', 'events', 'headshape', ...
+              'magnitude1', 'magnitude2', 'meg', 'phasediff'};
   % Missing: 'FLASH'
-  assertEqual(bids.query(BIDS, 'types'), types);
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end

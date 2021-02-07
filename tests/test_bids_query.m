@@ -38,22 +38,22 @@ function test_bids_query_basic()
            'stopsignalwithpseudowordnaming'};
   assert(isequal(bids.query(BIDS, 'tasks'), tasks));
 
-  types = {'T1w', 'bold', 'events', 'inplaneT2'};
-  assert(isequal(bids.query(BIDS, 'types'), types));
+  suffixes = {'T1w', 'bold', 'events', 'inplaneT2'};
+  assert(isequal(bids.query(BIDS, 'suffixes'), suffixes));
 
   data = bids.query(BIDS, 'data', 'sub', '01', 'task', 'stopsignalwithpseudowordnaming');
   assertEqual(size(data, 1), 4);
 
-  assert(isempty(bids.query(BIDS, 'runs', 'type', 'T1w')));
+  assert(isempty(bids.query(BIDS, 'runs', 'suffix', 'T1w')));
 
   runs = {'01', '02'};
-  assert(isequal(bids.query(BIDS, 'runs', 'type', 'bold'), runs));
+  assert(isequal(bids.query(BIDS, 'runs', 'suffix', 'bold'), runs));
 
   bold = bids.query(BIDS, 'data', ...
                     'sub', '05', ...
                     'run', '02', ...
                     'task', 'stopsignalwithmanualresponse', ...
-                    'type', 'bold');
+                    'suffix', 'bold');
   assert(iscellstr(bold));
   assert(numel(bold) == 1);
 
@@ -61,12 +61,12 @@ function test_bids_query_basic()
                   'sub', '05', ...
                   'run', '02', ...
                   'task', 'stopsignalwithmanualresponse', ...
-                  'type', 'bold');
+                  'suffix', 'bold');
   assert(isstruct(md) & isfield(md, 'RepetitionTime') & isfield(md, 'TaskName'));
   assert(md.RepetitionTime == 2);
   assert(strcmp(md.TaskName, 'stop signal with manual response'));
 
-  t1 = bids.query(BIDS, 'data', 'type', 'T1w');
+  t1 = bids.query(BIDS, 'data', 'suffix', 'T1w');
   assert(iscellstr(t1));
   assert(numel(t1) == numel(bids.query(BIDS, 'subjects')));
 
@@ -93,17 +93,17 @@ function test_bids_query_modalities()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
 
-  mods = {'anat', 'func'};
-  assert(isequal(bids.query(BIDS, 'modalities'), mods));
-  assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), mods));
+  modalities = {'anat', 'func'};
+  assert(isequal(bids.query(BIDS, 'modalities'), modalities));
+  assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), modalities));
 
   BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
 
-  mods = {'anat', 'fmap', 'func'};
+  modalities = {'anat', 'fmap', 'func'};
 
-  assert(isequal(bids.query(BIDS, 'modalities'), mods));
-  assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), mods));
-  assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '1'), mods));
+  assert(isequal(bids.query(BIDS, 'modalities'), modalities));
+  assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01'), modalities));
+  assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '1'), modalities));
 
   % this now fails on octave 4.2.2 but not on Matlab
   %

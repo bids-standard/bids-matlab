@@ -2,14 +2,14 @@ function subject = append_to_structure(file, subject, modality, schema)
   % Copyright (C) 2021--, BIDS-MATLAB developers
 
   p = bids.internal.parse_filename(file);
-  idx = find_suffix_group(modality, p.type, schema);
+  idx = find_suffix_group(modality, p.suffix, schema);
   if isempty(idx)
     warning('append_to_structure:noMatchingSuffix', ...
             'Skipping file with no valid suffix in schema: %s', file);
     return
   end
 
-  entities = bids.schema.return_datatype_entities(schema.datatypes.(modality)(idx));
+  entities = bids.schema.return_modality_entities(schema.datatypes.(modality)(idx));
   p = bids.internal.parse_filename(file, entities);
 
   if ~isempty(subject.(modality))

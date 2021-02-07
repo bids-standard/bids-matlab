@@ -19,8 +19,8 @@ function test_bids_query_eeg_basic()
   modalities = {'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'channels', 'eeg', 'events'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'channels', 'eeg', 'events'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %%
   BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_ds000117'));
@@ -28,10 +28,10 @@ function test_bids_query_eeg_basic()
   modalities = {'anat', 'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'eeg', 'electrodes', 'events'};
+  suffixes = {'T1w', 'eeg', 'electrodes', 'events'};
   % Missing: 'coordsystem',
   % Missing: 'channels' in root folder
-  assertEqual(bids.query(BIDS, 'types'), types);
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %%
   BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_face13'));
@@ -39,10 +39,10 @@ function test_bids_query_eeg_basic()
   modalities = {'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'channels', 'eeg', 'events'};
+  suffixes = {'channels', 'eeg', 'events'};
   % Missing: 'electrodes'
   % skipped as it contains a task entity and thus does not match the schema
-  assertEqual(bids.query(BIDS, 'types'), types);
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %%
   BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_matchingpennies'));
@@ -50,8 +50,8 @@ function test_bids_query_eeg_basic()
   modalities = {'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'channels', 'eeg', 'events'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'channels', 'eeg', 'events'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %%
   BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_rishikesh'));
@@ -59,7 +59,7 @@ function test_bids_query_eeg_basic()
   modalities = {'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'channels', 'eeg', 'events'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'channels', 'eeg', 'events'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end

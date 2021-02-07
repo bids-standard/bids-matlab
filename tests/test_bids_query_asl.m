@@ -19,8 +19,8 @@ function test_bids_query_asl_basic()
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'aslcontext', 'asllabeling'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %% 'asl002'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));
@@ -28,9 +28,10 @@ function test_bids_query_asl_basic()
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
-  assertEqual(bids.query(BIDS, 'types'), types);
-  assertEqual(bids.internal.file_utils(bids.query(BIDS, 'data', 'type', 'm0scan'), 'basename'), ...
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+  assertEqual(bids.internal.file_utils(bids.query(BIDS, 'data', 'suffix', 'm0scan'), ...
+                                       'basename'), ...
               {'sub-Sub103_m0scan.nii'});
 
   %% 'asl003'
@@ -39,8 +40,8 @@ function test_bids_query_asl_basic()
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %% 'asl004'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl004'));
@@ -48,7 +49,7 @@ function test_bids_query_asl_basic()
   modalities = {'anat', 'fmap', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end
