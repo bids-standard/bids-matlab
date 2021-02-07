@@ -1,4 +1,4 @@
-function subject = append_to_structure(file, subject, modality, schema)
+function subject = append_to_layout(file, subject, modality, schema)
   % Copyright (C) 2021--, BIDS-MATLAB developers
 
   p = bids.internal.parse_filename(file);

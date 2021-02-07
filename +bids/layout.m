@@ -166,13 +166,13 @@ function subject = parse_subject(pth, subjname, sesname)
           subject = parse_fmap(subject, schema);
         case 'perf'
           subject = parse_perf(subject, schema);
+        case 'pet'
+          % not covered by schema... yet
+          subject = parse_pet(subject, schema);
       end
     end
 
   end
-
-  % not covered by schema... yet
-  subject = parse_pet(subject);
 
 end
 
@@ -186,7 +186,7 @@ function subject = parse_using_schema(subject, modality, schema)
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, modality, schema);
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
       if ~isempty(subject.(modality)) && strcmp(subject.(modality)(end).ext, '.tsv')
         % events
@@ -229,7 +229,7 @@ function subject = parse_dwi(subject, schema)
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, modality, schema);
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
       % bval & bvec file
       % ------------------------------------------------------------------
@@ -263,7 +263,7 @@ function subject = parse_perf(subject, schema)
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, modality, schema);
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
       switch subject.perf(i).suffix
 
@@ -321,7 +321,7 @@ function subject = parse_fmap(subject, schema)
 
     for i = 1:numel(file_list)
 
-      subject = bids.internal.append_to_structure(file_list{i}, subject, modality, schema);
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
       subject.fmap(i).meta = bids.internal.get_metadata( ...
                                                         fullfile( ...
@@ -368,20 +368,18 @@ function subject = parse_fmap(subject, schema)
 end
 
 function subject = parse_pet(subject)
-  % --------------------------------------------------------------------------
-  % -Positron Emission Tomography imaging data
-  % --------------------------------------------------------------------------
+
+  modality = 'pet';
+
   pth = fullfile(subject.path, 'pet');
 
   if exist(pth, 'dir')
 
-    entities = return_entities('pet');
-
-    file_list = return_file_list('pet', subject);
+    file_list = return_file_list(modality, subject);
 
     for i = 1:numel(file_list)
 
-      subject = append_to_structure(file_list{i}, entities, subject, 'pet');
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
     end
   end
@@ -399,28 +397,11 @@ function tolerant_message(tolerant, msg)
   end
 end
 
-function subject = append_to_structure(file, entities, subject, modality)
-
-  p = bids.internal.parse_filename(file, entities);
-  subject.(modality) = [subject.(modality) p];
-
-end
-
 function f = convert_to_cell(f)
   if isempty(f)
     f = {};
   else
     f = cellstr(f);
-  end
-end
-
-function entities = return_entities(modality)
-
-  switch modality
-
-    case 'pet'
-      entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
-
   end
 end
 
@@ -431,6 +412,9 @@ function file_list = return_file_list(modality, subject)
   % TODO
   % it should be possible to create some of those patterns for the regexp
   % based on some of the required entities written down in the schema
+
+  % TODO
+  % this does not cover coordsystem.json
 
   % jn to omit json but not .pos file for headshape.pos
   pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';

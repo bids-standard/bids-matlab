@@ -1,4 +1,4 @@
-function test_suite = test_append_to_structure %#ok<*STOUT>
+function test_suite = test_append_to_layout %#ok<*STOUT>
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine
@@ -6,7 +6,7 @@ function test_suite = test_append_to_structure %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_append_to_structure_basic()
+function test_append_to_layout_basic()
 
   schema = bids.schema.load_schema();
 
@@ -16,7 +16,7 @@ function test_append_to_structure_basic()
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec', 'part'};
-  subject = bids.internal.append_to_structure(file, subject, modality, schema);
+  subject = bids.internal.append_to_layout(file, subject, modality, schema);
 
   expected.anat = struct( ...
                          'filename', 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz', ...
@@ -43,11 +43,11 @@ function test_append_to_structure_basic_test()
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec', 'part'};
-  subject = bids.internal.append_to_structure(file, subject, modality, schema);
+  subject = bids.internal.append_to_layout(file, subject, modality, schema);
 
   file = '../sub-16/anat/sub-16_ses-mri_run-1_T1map.nii.gz';
   entities = {'sub', 'ses', 'run', 'acq', 'ce', 'rec'};
-  subject = bids.internal.append_to_structure(file, subject, modality, schema);
+  subject = bids.internal.append_to_layout(file, subject, modality, schema);
 
   expected(1).anat = struct( ...
                             'filename', 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz', ...
