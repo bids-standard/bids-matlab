@@ -256,21 +256,18 @@ function subject = parse_dwi(subject, schema)
     for i = 1:numel(file_list)
 
       subject = bids.internal.append_to_structure(file_list{i}, subject, datatype, schema);
-
-      % -bval file
+      
+      % bval & bvec file
       % ------------------------------------------------------------------
-      % bval file can also be stored at higher levels (inheritance principle)
+      % TODO: they can also be stored at higher levels (inheritance principle)
       bvalfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bval$');
       if isfield(bvalfile, 'filename')
-        subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename);
+          subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename);
       end
-
-      % -bvec file
-      % ------------------------------------------------------------------
-      % bvec file can also be stored at higher levels (inheritance principle)
+      
       bvecfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bvec$');
       if isfield(bvalfile, 'filename')
-        subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename);
+          subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename);
       end
 
     end
@@ -731,29 +728,14 @@ end
 
 function file_list = return_file_list(modality, subject)
 
-  switch modality
-
+    % We list anything but json files
+    
     % TODO
     % it should be possible to create some of those patterns for the regexp
     % based on some of the required entities written down in the schema
-
-    case {'anat', 'dwi', 'fmap', 'pet'}
-      pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
-
-    case 'func'
-      pattern = '_task-.*\\.nii(\\.gz)|events\\.tsv|physio\\.tsv\\.gz|stim\\.tsv\\.gz?';
-
-    case {'eeg', 'meg', 'ieeg'}
-      pattern = '_([a-zA-Z0-9]+){1}\\..*[^json]';
-
-    case 'beh'
-      pattern = '_task-.*_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
-
-    case 'perf'
-      pattern = '_(asl|m0scan)\\.nii(\\.gz)|aslcontext\\.tsv|asllabeling\\.jpg';
-
-  end
-
+    
+  pattern = '_([a-zA-Z0-9]+){1}\\..*[^json]';
+    
   pth = fullfile(subject.path, modality);
 
   [file_list, d] = bids.internal.file_utils('List', ...
