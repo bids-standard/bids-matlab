@@ -1,8 +1,14 @@
 function result = query(BIDS, query, varargin)
-  % QUERY Query a directory structure formatted according to the BIDS standard
-  % FORMAT result = bids.query(BIDS,query,...)
-  % BIDS   - BIDS directory name or BIDS structure (from bids.layout)
-  % query  - type of query:
+  %
+  % Queries a directory structure formatted according to the BIDS standard
+  %
+  % USAGE::
+  %
+  %   result = bids.query(BIDS, query, ...)
+  %
+  % :param BIDS: BIDS directory name or BIDS structure (from bids.layout)
+  % :type  BIDS: (strcuture or string)
+  % :param query: type of query:
   %                          - 'data',
   %                          - 'metadata',
   %                          - 'sessions',
@@ -11,7 +17,8 @@ function result = query(BIDS, query, varargin)
   %                          - 'tasks',
   %                          - 'suffixes',
   %                          - 'modalities'
-  % result - outcome of query
+  % :type  query: string
+  %
   %
 
   % __________________________________________________________________________

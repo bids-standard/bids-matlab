@@ -4,7 +4,7 @@ function BIDS = layout(root, use_schema)
   %
   % USAGE::
   %
-  %   BIDS = bids.layout(root==pwd, use_schema==false)
+  %   BIDS = bids.layout(root = pwd, use_schema = false)
   %
   % :param root:       directory of the dataset formated according to BIDS [default: ``pwd``]
   % :type  root:       string

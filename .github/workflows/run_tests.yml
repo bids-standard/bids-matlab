@@ -58,6 +58,12 @@ jobs:
         with_coverage: true
         cover_xml_file: coverage.xml
 
+    - name: Upload coverage
+      uses: actions/upload-artifact@v1 
+      with: 
+        name: coverage_file 
+        path: coverage.xml         
+
     - name: Code coverage
       uses: codecov/codecov-action@v1
       with:
