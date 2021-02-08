@@ -35,21 +35,30 @@ function BIDS = layout(root, use_schema)
     root = pwd;
 
   elseif nargin == 1
+
     if ischar(root)
       root = bids.internal.file_utils(root, 'CPath');
+
     elseif isstruct(root)
-      BIDS = root;
+      BIDS = root; % ?????
       return
+
     else
       error('Invalid syntax.');
+
     end
 
   elseif nargin > 2
     error('Too many input arguments.');
+
   end
 
   if ~exist('use_schema', 'var')
     use_schema = true;
+  end
+
+  if ~exist(root, 'dir')
+    error('BIDS directory does not exist: ''%s''', root);
   end
 
   % BIDS structure
@@ -68,48 +77,7 @@ function BIDS = layout(root, use_schema)
                 'participants', struct([]), ...
                 'subjects', struct([]));
 
-  % ==========================================================================
-  % REFACTOR STARTS - Validation of BIDS root directory
-  % ==========================================================================
-  if ~exist(BIDS.dir, 'dir')
-    error('BIDS directory does not exist: ''%s''', BIDS.dir);
-
-  elseif ~exist(fullfile(BIDS.dir, 'dataset_description.json'), 'file')
-
-    msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
-                  BIDS.dir);
-
-    tolerant_message(use_schema, msg);
-
-  end
-  % ==========================================================================
-  % REFACTOR ENDS - Validation of BIDS root directory
-  % ==========================================================================
-
-  % ==========================================================================
-  % REFACTOR STARTS - Dataset description
-  % ==========================================================================
-  try
-    BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
-  catch err
-    msg = sprintf('BIDS dataset description could not be read: %s', err.message);
-    tolerant_message(use_schema, msg);
-  end
-
-  fields_to_check = {'BIDSVersion', 'Name'};
-  for iField = 1:numel(fields_to_check)
-
-    if ~isfield(BIDS.description, fields_to_check{iField})
-      msg = sprintf( ...
-                    'BIDS dataset description not valid: missing %s field.', ...
-                    fields_to_check{iField});
-      tolerant_message(use_schema, msg);
-    end
-
-  end
-  % ==========================================================================
-  % REFACTOR ENDS - Dataset description
-  % ==========================================================================
+  BIDS = validate_description(BIDS, use_schema);
 
   % Optional directories
   % ==========================================================================
@@ -418,6 +386,40 @@ end
 % --------------------------------------------------------------------------
 %                            HELPER FUNCTIONS
 % --------------------------------------------------------------------------
+
+function BIDS = validate_description(BIDS, use_schema)
+
+  if ~exist(fullfile(BIDS.dir, 'dataset_description.json'), 'file')
+
+    msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
+                  BIDS.dir);
+
+    tolerant_message(use_schema, msg);
+
+  end
+  try
+    BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
+  catch err
+    msg = sprintf('BIDS dataset description could not be read: %s', err.message);
+    tolerant_message(use_schema, msg);
+  end
+
+  fields_to_check = {'BIDSVersion', 'Name'};
+  for iField = 1:numel(fields_to_check)
+
+    if ~isfield(BIDS.description, fields_to_check{iField})
+      msg = sprintf( ...
+                    'BIDS dataset description not valid: missing %s field.', ...
+                    fields_to_check{iField});
+      tolerant_message(use_schema, msg);
+    end
+
+    % TODO
+    % Add warning if bids version does not match schema version
+
+  end
+
+end
 
 function tolerant_message(use_schema, msg)
   if use_schema
