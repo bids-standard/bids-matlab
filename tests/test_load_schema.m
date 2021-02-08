@@ -6,7 +6,7 @@ function test_suite = test_load_schema %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_load_schema_basic()
+function test_load_schema_path()
 
   use_schema = fullfile(fileparts(mfilename('fullpath')), 'schema');
 
