@@ -28,54 +28,60 @@ function result = query(BIDS, query, varargin)
   %#ok<*AGROW>
   narginchk(2, Inf);
 
+  VALID_QUERIES = { ...
+                   'sessions', ...
+                   'subjects', ...
+                   'modalities', ...
+                   'tasks', ...
+                   'runs', ...
+                   'suffixes', ...
+                   'data', ...
+                   'metadata', ...
+                   'dependencies'};
+
+  if ~any(strcmp(query, VALID_QUERIES))
+    error('Invalid query input: ''%s''', query);
+  end
+
   BIDS = bids.layout(BIDS);
 
   options = parse_query(varargin);
 
+  % For subjects and modality we pass only the subjects/modalities asked for
+  % otherwise we pass all of them
+
+  [subjects, options] = get_subjects(BIDS, options);
+
+  [modalities, options] = get_modalities(BIDS, options);
+
+  % Get optional target option for metadata query
+  [target, options] = get_target(query, options);
+
+  result = perform_query(BIDS, query, options, subjects, modalities, target);
+
+  %% Postprocessing output variable
   switch query
 
-    case {'sessions', 'subjects', 'modalities', 'tasks', 'runs', 'suffixes', 'data', 'metadata'}
+    case 'subjects'
+      result = unique(result);
+      result = regexprep(result, '^[a-zA-Z0-9]+-', '');
 
-      % For subjects and modality we pass only the subjects/modalities asked for
-      % otherwise we pass all of them
+    case 'sessions'
+      result = unique(result);
+      result = regexprep(result, '^[a-zA-Z0-9]+-', '');
+      result(cellfun('isempty', result)) = [];
 
-      [subjects, options] = get_subjects(BIDS, options);
+    case {'modalities', 'data'}
+      result = result';
 
-      [modalities, options] = get_modalities(BIDS, options);
-
-      % Get optional target option for metadata query
-      [target, options] = get_target(query, options);
-
-      result = perform_query(BIDS, query, options, subjects, modalities, target);
-
-      %% Postprocessing output variable
-      switch query
-
-        case 'subjects'
-          result = unique(result);
-          result = regexprep(result, '^[a-zA-Z0-9]+-', '');
-
-        case 'sessions'
-          result = unique(result);
-          result = regexprep(result, '^[a-zA-Z0-9]+-', '');
-          result(cellfun('isempty', result)) = [];
-
-        case {'modalities', 'data'}
-          result = result';
-
-        case 'metadata'
-          if numel(result) == 1
-            result = result{1};
-          end
-
-        case {'tasks', 'runs', 'suffixes'}
-          result = unique(result);
-          result(cellfun('isempty', result)) = [];
+    case 'metadata'
+      if numel(result) == 1
+        result = result{1};
       end
 
-    otherwise
-      error('Invalid query input: ''%s''', query);
-
+    case {'tasks', 'runs', 'suffixes'}
+      result = unique(result);
+      result(cellfun('isempty', result)) = [];
   end
 
 end
@@ -238,6 +244,11 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
           case 'suffixes'
             if status && isfield(d(k), 'suffix')
               result{end + 1} = d(k).suffix;
+            end
+
+          case 'dependencies'
+            if status && isfield(d(k), 'dependencies')
+              result{end + 1} = d(k).dependencies;
             end
 
         end

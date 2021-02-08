@@ -40,7 +40,7 @@ function BIDS = layout(root, use_schema)
       root = bids.internal.file_utils(root, 'CPath');
 
     elseif isstruct(root)
-      BIDS = root; % ?????
+      BIDS = root; % for bids.query
       return
 
     else

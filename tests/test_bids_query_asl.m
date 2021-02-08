@@ -22,6 +22,19 @@ function test_bids_query_asl_basic()
   suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
+  BIDS.subjects(1).perf(1);
+
+  filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'asl');
+  basename = bids.internal.file_utils(filename, 'basename');
+  assertEqual(basename, {'sub-Sub103_asl.nii'});
+
+  meta = bids.query(BIDS, 'metadata', 'sub', 'Sub103', 'suffix', 'asl');
+
+  dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl');
+  dependencies{1}.labeling_image;
+  dependencies{1}.context;
+  dependencies{1}.m0;
+
   %% 'asl002'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));
 
@@ -30,9 +43,10 @@ function test_bids_query_asl_basic()
 
   suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
-  assertEqual(bids.internal.file_utils(bids.query(BIDS, 'data', 'suffix', 'm0scan'), ...
-                                       'basename'), ...
-              {'sub-Sub103_m0scan.nii'});
+
+  filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'm0scan');
+  basename = bids.internal.file_utils(filename, 'basename');
+  assertEqual(basename, {'sub-Sub103_m0scan.nii'});
 
   %% 'asl003'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl003'));
