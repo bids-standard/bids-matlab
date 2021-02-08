@@ -10,7 +10,7 @@ function test_return_modality_entities_basic
 
   schema = bids.schema.load_schema();
 
-  entities = bids.schema.return_modality_entities(schema.datatypes.func(1));
+  entities = bids.schema.return_modality_entities(schema.datatypes.func(1), schema);
 
   expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
 

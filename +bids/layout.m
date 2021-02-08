@@ -1,16 +1,23 @@
-function BIDS = layout(root, tolerant)
+function BIDS = layout(root, use_schema)
   %
   % Parse a directory structure formated according to the BIDS standard
   %
   % USAGE::
   %
-  %   BIDS = bids.layout(root==pwd, tolerant==false)
+  %   BIDS = bids.layout(root==pwd, use_schema==false)
   %
-  % :param root:     directoryof the dataset formated according to BIDS [default: ``pwd``]
-  % :type  root:     string
-  % :param tolerant: if set to ``false`` (default) only valid BIDS datasets will be parsed
-  %                  following the bids-schema
-  % :type  tolerant: boolean
+  % :param root:       directory of the dataset formated according to BIDS [default: ``pwd``]
+  % :type  root:       string
+  % :param use_schema: If set to ``true`` (default), the parsing of the dataset
+  %                    will follow the bids-schema provided with bids-matlab.
+  %                    If set to ``false`` files just have to be of the form
+  %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
+  %                    If a folder path is provided, then the schema contained
+  %                    in that folder willl be used for parsing.
+  % :type  use_schema: boolean
+  %
+  %
+
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -18,7 +25,7 @@ function BIDS = layout(root, tolerant)
   %   describing outputs of neuroimaging experiments.
   %   K. J. Gorgolewski et al, Scientific Data, 2016.
   % __________________________________________________________________________
-
+  %
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2018--, BIDS-MATLAB developers
 
@@ -41,8 +48,8 @@ function BIDS = layout(root, tolerant)
     error('Too many input arguments.');
   end
 
-  if ~exist('tolerant', 'var')
-    tolerant = false;
+  if ~exist('use_schema', 'var')
+    use_schema = true;
   end
 
   % BIDS structure
@@ -72,7 +79,7 @@ function BIDS = layout(root, tolerant)
     msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
                   BIDS.dir);
 
-    tolerant_message(tolerant, msg);
+    tolerant_message(use_schema, msg);
 
   end
   % ==========================================================================
@@ -86,7 +93,7 @@ function BIDS = layout(root, tolerant)
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
   catch err
     msg = sprintf('BIDS dataset description could not be read: %s', err.message);
-    tolerant_message(tolerant, msg);
+    tolerant_message(use_schema, msg);
   end
 
   fields_to_check = {'BIDSVersion', 'Name'};
@@ -96,7 +103,7 @@ function BIDS = layout(root, tolerant)
       msg = sprintf( ...
                     'BIDS dataset description not valid: missing %s field.', ...
                     fields_to_check{iField});
-      tolerant_message(tolerant, msg);
+      tolerant_message(use_schema, msg);
     end
 
   end
@@ -122,11 +129,7 @@ function BIDS = layout(root, tolerant)
     error('No subjects found in BIDS directory.');
   end
 
-  % if in tolerant mode we go schema-less
-  schema = bids.schema.load_schema();
-  if tolerant
-    schema = [];
-  end
+  schema = bids.schema.load_schema(use_schema);
 
   for iSub = 1:numel(subjects)
     sessions = cellstr(bids.internal.file_utils('List', ...
@@ -170,23 +173,11 @@ function subject = parse_subject(pth, subjname, sesname, schema)
   subject.ieeg    = struct([]); % iEEG data
   subject.pet     = struct([]); % PET imaging data
 
-  % dummy variable if we go schema less
-  modality_groups = true;
-  if ~isempty(schema)
-    modality_groups = fieldnames(schema.modalities);
-  end
+  modality_groups = bids.schema.return_modality_groups(schema);
 
   for iGroup = 1:numel(modality_groups)
 
-    % if we go schema-less we list directories in the subject/session folder
-    % as proxy of the modalities that we have to parse
-    modalities = cellstr(bids.internal.file_utils('List', ...
-                                                  subject.path, ...
-                                                  'dir', ...
-                                                  '.*'));
-    if ~isempty(schema)
-      modalities = schema.modalities.(modality_groups{iGroup}).datatypes;
-    end
+    modalities = bids.schema.return_modalities(subject, schema, modality_groups{iGroup});
 
     % if we go schema-less, we pass an empty schema to all the parsing functions
     % so the parsing is unconstrained
@@ -428,11 +419,11 @@ end
 %                            HELPER FUNCTIONS
 % --------------------------------------------------------------------------
 
-function tolerant_message(tolerant, msg)
-  if tolerant
-    warning(msg);
-  else
+function tolerant_message(use_schema, msg)
+  if use_schema
     error(msg);
+  else
+    warning(msg);
   end
 end
 

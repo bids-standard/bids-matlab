@@ -1,4 +1,4 @@
-function schema = load_schema(SCHEMA_DIR)
+function schema = load_schema(use_schema)
   % Loads a json schema by recursively looking through a folder structure.
   %
   % The nesting of the output structure reflects a combination of the folder structure and
@@ -14,12 +14,27 @@ function schema = load_schema(SCHEMA_DIR)
   %  for more info.
 
   if nargin < 1
-    SCHEMA_DIR = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'schema');
+    use_schema = true();
+  end
+
+  if ~use_schema
+    schema = [];
+    return
+  end
+
+  if ischar(use_schema)
+    schema_dir = use_schema;
+  else
+    schema_dir = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'schema');
+  end
+
+  if ~exist(schema_dir, 'dir')
+    error('The schema directory %s does not exist.', schema_dir);
   end
 
   schema = struct();
 
-  [json_file_list, dirs] = bids.internal.file_utils('FPList', SCHEMA_DIR, '^.*.json$');
+  [json_file_list, dirs] = bids.internal.file_utils('FPList', schema_dir, '^.*.json$');
 
   schema = append_json_content_to_structure(schema, json_file_list);
 

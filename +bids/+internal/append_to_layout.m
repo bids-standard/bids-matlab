@@ -1,6 +1,6 @@
 function subject = append_to_layout(file, subject, modality, schema)
   %
-  % appends a file to the BIDS layout by parsing it according to the schema
+  % appends a file to the BIDS layout by parsing it according to the provided schema
   %
   % USAGE::
   %
@@ -36,7 +36,7 @@ function subject = append_to_layout(file, subject, modality, schema)
       return
     end
 
-    entities = bids.schema.return_modality_entities(schema.datatypes.(modality)(idx));
+    entities = bids.schema.return_modality_entities(schema.datatypes.(modality)(idx), schema);
     p = bids.internal.parse_filename(file, entities);
 
   end

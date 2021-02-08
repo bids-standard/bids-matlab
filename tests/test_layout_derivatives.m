@@ -10,10 +10,10 @@ function test_layout_schemaless()
 
   pth_bids_example = get_test_data_dir();
 
-  tolerant = true();
+  use_schema = false();
 
   BIDS = bids.layout(fullfile(pth_bids_example, ...
-                              'ds000001-fmriprep'), tolerant);
+                              'ds000001-fmriprep'), use_schema);
 
   modalities = {'anat', 'figures', 'func'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -38,12 +38,12 @@ function test_layout_nested_derivatives()
 
   pth_bids_example = get_test_data_dir();
 
-  tolerant = true();
+  use_schema = false();
 
   BIDS = bids.layout(fullfile(pth_bids_example, ...
                               'ds000117', ...
                               'derivatives', ...
-                              'meg_derivatives'), tolerant);
+                              'meg_derivatives'), use_schema);
 
   modalities = {'meg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);

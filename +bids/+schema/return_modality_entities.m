@@ -1,8 +1,6 @@
-function entities = return_datatype_entities(datatype)
+function entities = return_modality_entities(suffix_group, schema)
 
-  schema = bids.schema.load_schema();
-
-  entity_names = fieldnames(datatype.entities);
+  entity_names = fieldnames(suffix_group.entities);
 
   for i = 1:size(entity_names, 1)
     entities{1, i} = schema.entities.(entity_names{i}).entity; %#ok<*AGROW>

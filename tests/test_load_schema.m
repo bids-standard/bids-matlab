@@ -8,9 +8,9 @@ end
 
 function test_load_schema_basic()
 
-  SCHEMA_DIR = fullfile(fileparts(mfilename('fullpath')), 'schema');
+  use_schema = fullfile(fileparts(mfilename('fullpath')), 'schema');
 
-  schema = bids.schema.load_schema(SCHEMA_DIR);
+  schema = bids.schema.load_schema(use_schema);
 
   assert(isfield(schema, 'base'));
   assert(isfield(schema, 'subfolder_1'));
@@ -18,5 +18,15 @@ function test_load_schema_basic()
   %     assert(isfield(schema.subfolder_2, 'subfolder_3'));
   %     assert(isfield(schema.subfolder_2.subfolder_3, 'sub'));
   assert(~isfield(schema, 'subfolder_4'));
+
+end
+
+function test_load_schema_schemaless()
+
+  use_schema = false();
+
+  schema = bids.schema.load_schema(use_schema);
+
+  assertEqual(schema, []);
 
 end
