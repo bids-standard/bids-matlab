@@ -151,7 +151,7 @@ function subject = parse_subject(pth, subjname, sesname, schema)
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
-        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg'}
+        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet'}
           subject = parse_using_schema(subject, modalities{iModality}, schema);
         case 'dwi'
           subject = parse_dwi(subject, schema);
@@ -363,24 +363,6 @@ function subject = parse_fmap(subject, schema)
 
   end
 
-end
-
-function subject = parse_pet(subject)
-
-  modality = 'pet';
-
-  pth = fullfile(subject.path, 'pet');
-
-  if exist(pth, 'dir')
-
-    file_list = return_file_list(modality, subject);
-
-    for i = 1:numel(file_list)
-
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-
-    end
-  end
 end
 
 % --------------------------------------------------------------------------
