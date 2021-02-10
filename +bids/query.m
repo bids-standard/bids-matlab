@@ -187,7 +187,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
 
         % status is kept true only if this file matches
         % the options of the query
-        status = bids.internal.keep_file(d(k), options);
+        status = bids.internal.keep_file_for_query(d(k), options);
 
         if status
 

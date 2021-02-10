@@ -15,43 +15,43 @@ function test_keep_file_basic()
                                           'sub', '02'));
 
   options = {'ses', {'01'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), true);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
 
   options = {'ses', {'02'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), false);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
 
   options = {'ses', {'01', '02'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), true);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
 
   options = {'suffix', {'T1w'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), false);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
 
   options = {'suffix', {'bold'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), true);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
 
   options = {'suffix', {'T1w', 'bold'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), true);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
 
   options = {'sub', {'02'}
              'ses', {'01'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), true);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
 
   options = {'sub', {'02'}
              'ses', {'02'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), false);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
 
   options = {'sub', {'02'}
              'ses', {'01'}
              'suffix', {'T1w'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), false);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
 
   options = {'sub', {'02'}
              'task', {'balloon'}};
-  assertEqual(bids.internal.keep_file(file_struct, options), true);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
 
   file_struct = struct('suffix', 'T1w', ...
                        'entities', struct('ses', '01', ...
                                           'sub', '02'));
-  assertEqual(bids.internal.keep_file(file_struct, options), false);
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
 
 end
