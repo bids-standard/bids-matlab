@@ -43,9 +43,7 @@ function p = parse_filename(filename, fields)
   % -Extra fields can be added to the structure and ordered specifically.
   if nargin == 2
     for i = 1:numel(fields)
-      if ~isfield(p.entities, fields{i})
-        p.entities.(fields{i}) = '';
-      end
+      p.entities = bids.internal.add_missing_field(p.entities, fields{i});
     end
     try
       p = orderfields(p, {'filename', 'ext', 'suffix', 'entities'});
@@ -56,3 +54,5 @@ function p = parse_filename(filename, fields)
       p = struct([]);
     end
   end
+
+end

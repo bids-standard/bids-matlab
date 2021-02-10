@@ -109,7 +109,11 @@ function BIDS = layout(root, use_schema)
       if isempty(BIDS.subjects)
         BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
       else
-        BIDS.subjects(end + 1) = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
+        new_subject = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
+        [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
+                                                                            new_subject);
+        BIDS.subjects(end + 1) = new_subject;
+
       end
     end
 
@@ -130,16 +134,6 @@ function subject = parse_subject(pth, subjname, sesname, schema)
   subject.session = sesname;    % session name ('' or 'ses-<label>')
   subject.scans   = struct([]); % for sub-<participant_label>_scans.tsv
   subject.sess    = struct([]); % for sub-<participants_label>_sessions.tsv
-  subject.anat    = struct([]); % anatomy imaging data
-  subject.func    = struct([]); % task imaging data
-  subject.fmap    = struct([]); % fieldmap data
-  subject.beh     = struct([]); % behavioral experiment data
-  subject.dwi     = struct([]); % diffusion imaging data
-  subject.perf    = struct([]); % ASL perfusion imaging data
-  subject.eeg     = struct([]); % EEG data
-  subject.meg     = struct([]); % MEG data
-  subject.ieeg    = struct([]); % iEEG data
-  subject.pet     = struct([]); % PET imaging data
 
   modality_groups = bids.schema.return_modality_groups(schema);
 
@@ -159,12 +153,9 @@ function subject = parse_subject(pth, subjname, sesname, schema)
           subject = parse_fmap(subject, schema);
         case 'perf'
           subject = parse_perf(subject, schema);
-        case 'pet'
-          % not covered by schema... yet
-          subject = parse_pet(subject, schema);
         otherwise
-          % in case we are going schemaless and the modality is not one of the
-          % usual suspect
+          % in case we are going schemaless
+          % and the modality is not one of the usual suspect
           subject.(modalities{iModality}) = struct([]);
           subject = parse_using_schema(subject, modalities{iModality}, []);
       end
@@ -179,6 +170,8 @@ function subject = parse_using_schema(subject, modality, schema)
   pth = fullfile(subject.path, modality);
 
   if exist(pth, 'dir')
+
+    subject = bids.internal.add_missing_field(subject, modality);
 
     file_list = return_file_list(modality, subject);
 
@@ -223,6 +216,8 @@ function subject = parse_dwi(subject, schema)
 
   if exist(pth, 'dir')
 
+    subject = bids.internal.add_missing_field(subject, modality);
+
     file_list = return_file_list(modality, subject);
 
     for i = 1:numel(file_list)
@@ -256,6 +251,8 @@ function subject = parse_perf(subject, schema)
   pth = fullfile(subject.path, 'perf');
 
   if exist(pth, 'dir')
+
+    subject = bids.internal.add_missing_field(subject, modality);
 
     file_list = return_file_list(modality, subject);
 
@@ -314,6 +311,8 @@ function subject = parse_fmap(subject, schema)
   pth = fullfile(subject.path, modality);
 
   if exist(pth, 'dir')
+
+    subject = bids.internal.add_missing_field(subject, modality);
 
     file_list = return_file_list(modality, subject);
 

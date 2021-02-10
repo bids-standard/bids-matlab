@@ -45,27 +45,24 @@ function subject = append_to_layout(file, subject, modality, schema)
   % of the parsing to make sure the 2 structures can be concatenated
   if ~isempty(subject.(modality))
 
-    missing_fields = setxor(fieldnames(subject.(modality)), fieldnames(p));
+    [subject.(modality), p] = bids.internal.match_structure_fields(subject.(modality), p);
 
-    if ~isempty(missing_fields)
-      for iField = 1:numel(missing_fields)
-        p = add_missing_field(p, ...
-                              missing_fields{iField});
-        subject.(modality) = add_missing_field(subject.(modality), ...
-                                               missing_fields{iField});
-      end
-    end
+    %     missing_fields = setxor(fieldnames(subject.(modality)), fieldnames(p));
+
+    %     if ~isempty(missing_fields)
+    %       for iField = 1:numel(missing_fields)
+    %
+    %         p = bids.internal.add_missing_field(p, missing_fields{iField});
+    %
+    %         subject.(modality) = bids.internal.add_missing_field(subject.(modality), ...
+    %                                                missing_fields{iField});
+    %       end
+    %     end
 
   end
 
   subject.(modality) = [subject.(modality) p];
 
-end
-
-function structure = add_missing_field(structure, field)
-  if ~isfield(structure, field)
-    structure(1).(field) = '';
-  end
 end
 
 function idx = find_suffix_group(modality, suffix, schema)
