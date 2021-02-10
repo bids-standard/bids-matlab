@@ -21,7 +21,7 @@ function meta = get_metadata(filename, pattern)
   N = 3;
 
   % -There is a session level in the hierarchy
-  if isfield(p, 'ses') && ~isempty(p.ses)
+  if isfield(p.entities, 'ses') && ~isempty(p.entities.ses)
     N = N + 1;
   end
 
@@ -44,13 +44,17 @@ function meta = get_metadata(filename, pattern)
     for i = 1:numel(metafile)
 
       p2 = bids.internal.parse_filename(metafile{i});
-      fn = setdiff(fieldnames(p2), {'filename', 'ext', 'type'});
+      entities = {};
+      if isfield(p2, 'entities')
+        entities = fieldnames(p2.entities);
+      end
 
       % -Check if this metadata file contains the same entity-label pairs as its
       % data file counterpart
       ismeta = true;
-      for j = 1:numel(fn)
-        if ~isfield(p, fn{j}) || ~strcmp(p.(fn{j}), p2.(fn{j}))
+      for j = 1:numel(entities)
+        if ~isfield(p.entities, entities{j}) || ...
+                ~strcmp(p.entities.(entities{j}), p2.entities.(entities{j}))
           ismeta = false;
           break
         end

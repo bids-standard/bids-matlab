@@ -185,78 +185,71 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
 
       for k = 1:numel(d)
 
-        % status is kept true only if this modality is one of those filtered
-        status = true;
+        % status is kept true only if this file matches
+        % the options of the query
+        status = bids.internal.keep_file(d(k), options);
 
-        for l = 1:size(options, 1)
-          if ~isfield(d(k), options{l, 1}) || ~ismember(d(k).(options{l, 1}), options{l, 2})
-            status = false;
-          end
-        end
+        if status
 
-        switch query
+          switch query
 
-          case 'subjects'
-            if status
+            case 'subjects'
               result{end + 1} = BIDS.subjects(i).name;
-            end
 
-          case 'sessions'
-            if status
+            case 'sessions'
               result{end + 1} = BIDS.subjects(i).session;
-            end
 
-          case 'modalities'
-            if status
+            case 'modalities'
               hasmod = structfun(@(x) isstruct(x) & ~isempty(x), ...
                                  BIDS.subjects(i));
               allmods = fieldnames(BIDS.subjects(i))';
               result = union(result, allmods(hasmod));
-            end
 
-          case 'data'
-            if status && isfield(d(k), 'filename')
-              result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
-            end
-
-          case 'metadata'
-            if status && isfield(d(k), 'filename')
-
-              f = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
-              result{end + 1} = bids.internal.get_metadata(f);
-              if ~isempty(target)
-                try
-                  result{end} = subsref(result{end}, target);
-                catch
-                  warning('Non-existent field for metadata.');
-                  result{end} = [];
-                end
+            case 'data'
+              if isfield(d(k), 'filename')
+                result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
               end
 
-            end
-            % if status && isfield(d(k),'meta')
-            %   result{end+1} = d(k).meta;
-            % end
+            case 'metadata'
+              if isfield(d(k), 'filename')
 
-          case 'runs'
-            if status && isfield(d(k), 'run')
-              result{end + 1} = d(k).run;
-            end
+                f = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
+                result{end + 1} = bids.internal.get_metadata(f);
+                if ~isempty(target)
+                  try
+                    result{end} = subsref(result{end}, target);
+                  catch
+                    warning('Non-existent field for metadata.');
+                    result{end} = [];
+                  end
+                end
 
-          case 'tasks'
-            if status && isfield(d(k), 'task')
-              result{end + 1} = d(k).task;
-            end
+              end
+              % if status && isfield(d(k),'meta')
+              %   result{end+1} = d(k).meta;
+              % end
 
-          case 'suffixes'
-            if status && isfield(d(k), 'suffix')
-              result{end + 1} = d(k).suffix;
-            end
+            case 'runs'
+              if isfield(d(k).entities, 'run')
+                result{end + 1} = d(k).entities.run;
+              end
 
-          case 'dependencies'
-            if status && isfield(d(k), 'dependencies')
-              result{end + 1} = d(k).dependencies;
-            end
+            case 'tasks'
+              if isfield(d(k).entities, 'task')
+                result{end + 1} = d(k).entities.task;
+              end
+
+            case 'suffixes'
+              if isfield(d(k), 'suffix')
+                result{end + 1} = d(k).suffix;
+              end
+
+            case 'dependencies'
+              if isfield(d(k), 'dependencies')
+                result{end + 1} = d(k).dependencies;
+              end
+
+          end
 
         end
       end

@@ -37,18 +37,19 @@ function p = parse_filename(filename, fields)
   % -Separate the entity from the label for each pair identified above
   for i = 1:numel(parts) - 1
     [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match'); %#ok<ASGLU>
-    p.(d{1}) = d{2};
+    p.entities.(d{1}) = d{2};
   end
 
   % -Extra fields can be added to the structure and ordered specifically.
   if nargin == 2
     for i = 1:numel(fields)
-      if ~isfield(p, fields{i})
-        p.(fields{i}) = '';
+      if ~isfield(p.entities, fields{i})
+        p.entities.(fields{i}) = '';
       end
     end
     try
-      p = orderfields(p, ['filename', 'ext', 'suffix', fields]);
+      p = orderfields(p, {'filename', 'ext', 'suffix', 'entities'});
+      p.entities = orderfields(p.entities, fields);
     catch
       warning('bidsMatlab:noMatchingTemplate', ...
               'Ignoring file %s not matching template.', filename);

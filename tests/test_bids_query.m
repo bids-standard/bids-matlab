@@ -4,9 +4,7 @@ function test_suite = test_bids_query %#ok<*STOUT>
   catch % no problem; early Matlab versions can use initTestSuite fine
   end
   initTestSuite;
-end
 
-function test_bids_query_basic()
   % Test BIDS queries
   % This dataset comes from https://github.com/bids-standard/bids-examples
   % and is downloaded automatically by the continuous integration framework
@@ -23,31 +21,20 @@ function test_bids_query_basic()
   % Copyright (C) 2019, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2019--, BIDS-MATLAB developers
 
+end
+
+function test_bids_query_data()
+
   pth_bids_example = get_test_data_dir();
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
 
-  subjs = arrayfun(@(x) sprintf('%02d', x), 1:20, 'UniformOutput', false);
-  assert(isequal(bids.query(BIDS, 'subjects'), subjs));
-
-  assert(isequal(bids.query(BIDS, 'runs'), {'01', '02'}));
-
-  tasks = { ...
-           'stopsignalwithletternaming', ...
-           'stopsignalwithmanualresponse', ...
-           'stopsignalwithpseudowordnaming'};
-  assert(isequal(bids.query(BIDS, 'tasks'), tasks));
-
-  suffixes = {'T1w', 'bold', 'events', 'inplaneT2'};
-  assert(isequal(bids.query(BIDS, 'suffixes'), suffixes));
+  t1 = bids.query(BIDS, 'data', 'suffix', 'T1w');
+  assert(iscellstr(t1));
+  assert(numel(t1) == numel(bids.query(BIDS, 'subjects')));
 
   data = bids.query(BIDS, 'data', 'sub', '01', 'task', 'stopsignalwithpseudowordnaming');
   assertEqual(size(data, 1), 4);
-
-  assert(isempty(bids.query(BIDS, 'runs', 'suffix', 'T1w')));
-
-  runs = {'01', '02'};
-  assert(isequal(bids.query(BIDS, 'runs', 'suffix', 'bold'), runs));
 
   bold = bids.query(BIDS, 'data', ...
                     'sub', '05', ...
@@ -57,6 +44,14 @@ function test_bids_query_basic()
   assert(iscellstr(bold));
   assert(numel(bold) == 1);
 
+end
+
+function test_bids_query_metadata()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+
   md = bids.query(BIDS, 'metadata', ...
                   'sub', '05', ...
                   'run', '02', ...
@@ -65,25 +60,6 @@ function test_bids_query_basic()
   assert(isstruct(md) & isfield(md, 'RepetitionTime') & isfield(md, 'TaskName'));
   assert(md.RepetitionTime == 2);
   assert(strcmp(md.TaskName, 'stop signal with manual response'));
-
-  t1 = bids.query(BIDS, 'data', 'suffix', 'T1w');
-  assert(iscellstr(t1));
-  assert(numel(t1) == numel(bids.query(BIDS, 'subjects')));
-
-end
-
-function test_bids_query_sessions()
-
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
-  sessions = {'01', '02'};
-  assert(isequal(bids.query(BIDS, 'sessions'), sessions));
-  assert(isequal(bids.query(BIDS, 'sessions', 'sub', '02'), sessions));
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
-
-  assert(isempty(bids.query(BIDS, 'sessions')));
 
 end
 
@@ -119,5 +95,62 @@ function test_bids_query_modalities()
   % when it should return
 
   % assert(isequal(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '2'), mods(2:3)));
+
+end
+
+function test_bids_query_basic()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+
+  tasks = { ...
+           'stopsignalwithletternaming', ...
+           'stopsignalwithmanualresponse', ...
+           'stopsignalwithpseudowordnaming'};
+  assert(isequal(bids.query(BIDS, 'tasks'), tasks));
+
+  assert(isempty(bids.query(BIDS, 'runs', 'suffix', 'T1w')));
+
+  runs = {'01', '02'};
+  assert(isequal(bids.query(BIDS, 'runs'), runs));
+  assert(isequal(bids.query(BIDS, 'runs', 'suffix', 'bold'), runs));
+
+end
+
+function test_bids_query_subjects()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+
+  subjs = arrayfun(@(x) sprintf('%02d', x), 1:20, 'UniformOutput', false);
+  assert(isequal(bids.query(BIDS, 'subjects'), subjs));
+
+end
+
+function test_bids_query_sessions()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+  sessions = {'01', '02'};
+  assert(isequal(bids.query(BIDS, 'sessions'), sessions));
+  assert(isequal(bids.query(BIDS, 'sessions', 'sub', '02'), sessions));
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+
+  assert(isempty(bids.query(BIDS, 'sessions')));
+
+end
+
+function test_bids_query_suffixes()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+
+  suffixes = {'T1w', 'bold', 'events', 'inplaneT2'};
+  assert(isequal(bids.query(BIDS, 'suffixes'), suffixes));
 
 end
