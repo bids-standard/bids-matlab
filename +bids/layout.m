@@ -402,7 +402,7 @@ function subject = parse_perf(subject)
               m0_explanation = [ ...
                                 'this is a single estimated M0 value, ', ...
                                 'e.g. when the M0 is obtained from an external scan and/or study'];
-              m0_value = subject.perf(j).meta.M0;
+              m0_value = subject.perf(j).meta.M0Estimate;
 
             case 'Absent'
               m0_type = 'use_control_as_m0';
