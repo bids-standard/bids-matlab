@@ -1,8 +1,17 @@
 function meta = get_metadata(filename, pattern)
+  %
   % Read a BIDS's file metadata according to the inheritance principle
-  % FORMAT meta = bids.internal.get_metadata(filename, pattern)
-  % filename    - name of file following BIDS standard
-  % pattern     - regular expression matching metadata file
+  %
+  % USAGE::
+  %
+  %    meta = bids.internal.get_metadata(filename, pattern)
+  %
+  % :param filename: name of file following BIDS standard
+  % :type  filename: string
+  % :param pattern:  regular expression matching metadata file
+  % :type  pattern:  string
+  %
+  %
   % meta        - metadata structure
   % __________________________________________________________________________
 
