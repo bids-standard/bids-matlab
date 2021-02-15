@@ -44,7 +44,8 @@ function result = query(BIDS, query, varargin)
                    'suffixes', ...
                    'data', ...
                    'metadata', ...
-                   'dependencies'};
+                   'dependencies', ...
+                   'extensions'};
 
   if ~any(strcmp(query, VALID_QUERIES))
     error('Invalid query input: ''%s''', query);
@@ -86,7 +87,7 @@ function result = query(BIDS, query, varargin)
         result = result{1};
       end
 
-    case {'tasks', 'runs', 'suffixes'}
+    case {'tasks', 'runs', 'suffixes', 'extensions'}
       result = unique(result);
       result(cellfun('isempty', result)) = [];
   end
@@ -247,6 +248,11 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
             case 'suffixes'
               if isfield(d(k), 'suffix')
                 result{end + 1} = d(k).suffix;
+              end
+
+            case 'extensions'
+              if isfield(d(k), 'ext')
+                result{end + 1} = d(k).ext;
               end
 
             case 'dependencies'
