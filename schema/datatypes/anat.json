@@ -9,7 +9,10 @@
       "inplaneT1",
       "inplaneT2",
       "PDT2",
-      "angio"
+      "angio",
+      "T2star",
+      "FLASH",
+      "PD"
     ],
     "extensions": [
       ".nii.gz",
@@ -43,8 +46,6 @@
       "MTVmap",
       "PDT2map",
       "Chimap",
-      "TB1map",
-      "RB1map",
       "S0map",
       "M0map"
     ],
