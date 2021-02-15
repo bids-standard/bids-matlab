@@ -181,13 +181,16 @@ function subject = parse_using_schema(subject, modality, schema)
 
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
-      if ~isempty(subject.(modality)) && strcmp(subject.(modality)(end).ext, '.tsv')
-        % events
-        % stim
-        % channels
-        % electrodes
-        %
-        % does not cover physio.tsv.gz or stim.tsv.gz
+      % Loaded
+          % events
+          % channels
+          % electrodes
+      
+      % Not loaded because takes too long during indexing
+          % stim
+          % physio
+      if ~isempty(subject.(modality)) && ...
+          strcmp(subject.(modality)(end).ext, '.tsv')
 
         subject.(modality)(end).content = [];
         subject.(modality)(end).meta = [];
@@ -199,7 +202,7 @@ function subject = parse_using_schema(subject, modality, schema)
 
       end
 
-      % case {'photo', 'coordsystem'}
+      % case {'coordsystem'}
 
     end
 
@@ -438,8 +441,8 @@ function file_list = return_file_list(modality, subject, schema)
 
   % TODO
   % this does not cover coordsystem.json
-
   % jn to omit json but not .pos file for headshape.pos
+
   pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
   if isempty(schema)
     pattern = '_([a-zA-Z0-9]+){1}\\..*';
@@ -464,7 +467,8 @@ end
 
 function structure = manage_tsv(structure, pth, filename)
 
-  p = bids.internal.file_utils('FPList', pth,  ['^' strrep(filename, '.tsv', '\.tsv') '$']);
+  ext = bids.internal.file_utils(filename, 'ext');
+  p = bids.internal.file_utils('FPList', pth,  ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
   if isempty(p)
     warning('Missing: %s', fullfile(pth, filename));
@@ -472,7 +476,7 @@ function structure = manage_tsv(structure, pth, filename)
   else
     structure.content = bids.util.tsvread(p);
 
-    p = bids.internal.file_utils('FPList', pth,  ['^' strrep(filename, '.tsv', '\.json') '$']);
+    p = bids.internal.file_utils('FPList', pth,  ['^' strrep(filename, ['.' ext], '\.json') '$']);
     if ~isempty(p)
       structure.meta = bids.util.jsondecode(p);
     end
