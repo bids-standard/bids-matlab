@@ -49,7 +49,12 @@ function subject = append_to_layout(file, subject, modality, schema)
 
   end
 
-  subject.(modality) = [subject.(modality) p];
+  if isempty(subject.(modality))
+      subject.(modality) = p;
+  else
+      subject.(modality)(end+1,1) = p;
+  end
+  
 
 end
 
