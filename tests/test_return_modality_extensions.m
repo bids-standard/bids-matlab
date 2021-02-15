@@ -11,6 +11,6 @@ function test_return_modality_extensions_basic
   schema = bids.schema.load_schema();
 
   extensions = bids.internal.return_modality_extensions(schema.datatypes.func(1));
-  assert(isequal(extensions, '(.nii.gz|.nii){1}'));
+  assertEqual(extensions, '(.nii.gz|.nii){1}');
 
 end
