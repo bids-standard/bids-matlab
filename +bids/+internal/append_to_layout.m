@@ -47,18 +47,6 @@ function subject = append_to_layout(file, subject, modality, schema)
 
     [subject.(modality), p] = bids.internal.match_structure_fields(subject.(modality), p);
 
-    %     missing_fields = setxor(fieldnames(subject.(modality)), fieldnames(p));
-
-    %     if ~isempty(missing_fields)
-    %       for iField = 1:numel(missing_fields)
-    %
-    %         p = bids.internal.add_missing_field(p, missing_fields{iField});
-    %
-    %         subject.(modality) = bids.internal.add_missing_field(subject.(modality), ...
-    %                                                missing_fields{iField});
-    %       end
-    %     end
-
   end
 
   subject.(modality) = [subject.(modality) p];
