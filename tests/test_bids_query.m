@@ -23,7 +23,7 @@ function test_suite = test_bids_query %#ok<*STOUT>
 
 end
 
-function test_bids_query_data()
+function test_query_data()
 
   pth_bids_example = get_test_data_dir();
 
@@ -46,7 +46,7 @@ function test_bids_query_data()
 
 end
 
-function test_bids_query_metadata()
+function test_query_metadata()
 
   pth_bids_example = get_test_data_dir();
 
@@ -63,7 +63,7 @@ function test_bids_query_metadata()
 
 end
 
-function test_bids_query_modalities()
+function test_query_modalities()
 
   pth_bids_example = get_test_data_dir();
 
@@ -98,7 +98,7 @@ function test_bids_query_modalities()
 
 end
 
-function test_bids_query_basic()
+function test_query_basic()
 
   pth_bids_example = get_test_data_dir();
 
@@ -118,7 +118,7 @@ function test_bids_query_basic()
 
 end
 
-function test_bids_query_subjects()
+function test_query_subjects()
 
   pth_bids_example = get_test_data_dir();
 
@@ -129,7 +129,7 @@ function test_bids_query_subjects()
 
 end
 
-function test_bids_query_sessions()
+function test_query_sessions()
 
   pth_bids_example = get_test_data_dir();
 
@@ -144,7 +144,7 @@ function test_bids_query_sessions()
 
 end
 
-function test_bids_query_suffixes()
+function test_query_suffixes()
 
   pth_bids_example = get_test_data_dir();
 

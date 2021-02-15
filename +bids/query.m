@@ -181,6 +181,11 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
 
     for j = 1:numel(modalities)
 
+      % Only continue if this modality is one of those filtered
+      if ~ismember(modalities{j}, fieldnames(BIDS.subjects(i)))
+        continue
+      end
+
       d = BIDS.subjects(i).(modalities{j});
 
       for k = 1:numel(d)
