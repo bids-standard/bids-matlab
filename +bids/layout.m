@@ -610,7 +610,7 @@ function perf = manage_M0(perf, pth)
         m0_explanation = [ ...
                           'this is a single estimated M0 value, ', ...
                           'e.g. when the M0 is obtained from an external scan and/or study'];
-        m0_value = perf.meta.M0;
+        m0_value = perf.meta.M0Estimate;
 
       case 'Absent'
         m0_type = 'use_control_as_m0';
