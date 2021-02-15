@@ -31,9 +31,9 @@ function test_bids_query_asl_basic()
   meta = bids.query(BIDS, 'metadata', 'sub', 'Sub103', 'suffix', 'asl');
 
   dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl');
-  dependencies{1}.labeling_image;
-  dependencies{1}.context;
-  dependencies{1}.m0;
+  assertEqual(dependencies.labeling_image.filename, 'sub-Sub103_asllabeling.jpg');
+  dependencies.context;
+  dependencies.m0;
 
   %% 'asl002'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));

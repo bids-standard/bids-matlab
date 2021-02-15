@@ -82,7 +82,7 @@ function result = query(BIDS, query, varargin)
     case {'modalities', 'data'}
       result = result';
 
-    case 'metadata'
+    case {'metadata', 'dependencies'}
       if numel(result) == 1
         result = result{1};
       end
