@@ -23,6 +23,29 @@ function test_suite = test_bids_query %#ok<*STOUT>
 
 end
 
+function test_query_extension()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+
+  extensions = bids.query(BIDS, 'extensions');
+
+  data = bids.query(BIDS, 'data', ...
+                    'sub', '01', ...
+                    'task', 'stopsignalwithpseudowordnaming', ...
+                    'extension', '.nii.gz', ...
+                    'suffix', 'bold');
+  assertEqual(size(data, 1), 2);
+
+  data = bids.query(BIDS, 'data', ...
+                    'sub', '01', ...
+                    'task', 'stopsignalwithpseudowordnaming', ...
+                    'extension', '.tsv');
+  assertEqual(size(data, 1), 2);
+
+end
+
 function test_query_data()
 
   pth_bids_example = get_test_data_dir();

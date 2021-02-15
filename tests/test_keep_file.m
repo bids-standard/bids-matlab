@@ -10,6 +10,7 @@ end
 function test_keep_file_basic()
 
   file_struct = struct('suffix', 'bold', ...
+                       'ext', '.nii.gz', ...
                        'entities', struct('task', 'balloon', ...
                                           'ses', '01', ...
                                           'sub', '02'));
@@ -28,6 +29,10 @@ function test_keep_file_basic()
 
   options = {'suffix', {'bold'}};
   assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
+
+  options = {'suffix', {'bold'}
+             'extension', {'.nii'}};
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
 
   options = {'suffix', {'T1w', 'bold'}};
   assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
