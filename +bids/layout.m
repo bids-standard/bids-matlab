@@ -468,17 +468,21 @@ end
 function structure = manage_tsv(structure, pth, filename)
 
   ext = bids.internal.file_utils(filename, 'ext');
-  p = bids.internal.file_utils('FPList', pth,  ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
+  tsv_file = bids.internal.file_utils('FPList', ...
+                                      pth,  ...
+                                      ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
-  if isempty(p)
+  if isempty(tsv_file)
     warning('Missing: %s', fullfile(pth, filename));
 
   else
-    structure.content = bids.util.tsvread(p);
+    structure.content = bids.util.tsvread(tsv_file);
 
-    p = bids.internal.file_utils('FPList', pth,  ['^' strrep(filename, ['.' ext], '\.json') '$']);
-    if ~isempty(p)
-      structure.meta = bids.util.jsondecode(p);
+    tsv_file = bids.internal.file_utils('FPList', ...
+                                        pth,  ...
+                                        ['^' strrep(filename, ['.' ext], '\.json') '$']);
+    if ~isempty(tsv_file)
+      structure.meta = bids.util.jsondecode(tsv_file);
     end
 
   end
