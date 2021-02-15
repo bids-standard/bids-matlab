@@ -226,17 +226,25 @@ function subject = parse_dwi(subject, schema)
 
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
-      % bval & bvec file
-      % ------------------------------------------------------------------
-      % TODO: they can also be stored at higher levels (inheritance principle)
-      bvalfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bval$');
-      if isfield(bvalfile, 'filename')
-        subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename);
-      end
+      % if this file is a nifti image we add the bval and bvec as dependencies
+      if ~isempty(subject.(modality)) && ...
+              any(strcmp(subject.(modality)(end).ext, {'.nii', '.nii.gz'}))
 
-      bvecfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bvec$');
-      if isfield(bvalfile, 'filename')
-        subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename);
+        fullpath_filename = fullfile(subject.path, modality, file_list{i});
+
+        % bval & bvec file
+        % ------------------------------------------------------------------
+        % TODO: they can also be stored at higher levels (inheritance principle)
+        bvalfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bval$');
+        if isfield(bvalfile, 'filename')
+          subject.dwi(end).dependencies.bval = bids.util.tsvread(bvalfile.filename);
+        end
+
+        bvecfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bvec$');
+        if isfield(bvalfile, 'filename')
+          subject.dwi(end).dependencies.bvec = bids.util.tsvread(bvecfile.filename);
+        end
+
       end
 
     end
