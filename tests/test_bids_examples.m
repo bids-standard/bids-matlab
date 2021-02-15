@@ -30,17 +30,17 @@ function test_bids_examples_basic()
 
   % -Try to run bids.layout on each dataset directory and keep track of any
   % failure with a try/catch
-  sts = false(1, numel(d));
+  status = false(1, numel(d));
   msg = cell(1, numel(d));
   for i = 1:numel(d)
     if exist(fullfile(pth_bids_example, d(i).name, '.SKIP_VALIDATION'), 'file')
-      sts(i) = true;
+      status(i) = true;
       fprintf('-');
       continue
     end
     try
       BIDS = bids.layout(fullfile(pth_bids_example, d(i).name));
-      sts(i) = true;
+      status(i) = true;
       fprintf('.');
     catch err
       fprintf('X');
@@ -50,8 +50,8 @@ function test_bids_examples_basic()
   fprintf('\n');
 
   % lists all the folder for which bids.layout failed
-  if ~all(sts)
-    for i = find(~sts)
+  if ~all(status)
+    for i = find(~status)
       fprintf('* %s: %s\n', d(i).name, msg{i});
     end
     error('Parsing of BIDS-compatible datasets failed.');

@@ -30,13 +30,13 @@ function test_tsvread_basic()
   %% test tsvread on tsv file
   tsv_file = fullfile(pth, 'sub-01', 'func', 'sub-01_task-auditory_events.tsv');
   output = bids.util.tsvread(tsv_file);
-  assert(isequal(output.onset', events.onset));
+  assertEqual(output.onset', events.onset);
 
   %% test tsvread on zipped tsv file
   output = bids.util.tsvread(fullfile( ...
                                       fileparts(mfilename('fullpath')), ....
                                       'data', ...
                                       'sub-01_task-auditory_events.tsv.gz'));
-  assert(isequal(output.onset', events.onset));
+  assertEqual(output.onset', events.onset);
 
 end

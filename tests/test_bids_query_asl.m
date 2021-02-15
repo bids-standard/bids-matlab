@@ -8,32 +8,45 @@ end
 
 function test_bids_query_asl_basic()
   %
-  %   asl specific queries
+  %   asl queries
   %
 
   pth_bids_example = get_test_data_dir();
 
   %% 'asl001'
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001 '));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001'));
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl'};
-  %   types = {'T1w', 'asl', 'aslcontext', 'asllabelling'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+
+  BIDS.subjects(1).perf(1);
+
+  filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'asl');
+  basename = bids.internal.file_utils(filename, 'basename');
+  assertEqual(basename, {'sub-Sub103_asl.nii'});
+
+  meta = bids.query(BIDS, 'metadata', 'sub', 'Sub103', 'suffix', 'asl');
+
+  dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl');
+  dependencies{1}.labeling_image;
+  dependencies{1}.context;
+  dependencies{1}.m0;
 
   %% 'asl002'
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl002 '));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'm0scan'};
-  %   types = {'T1w', 'asl', 'aslcontext', 'asllabelling', 'm0scan'};
-  assertEqual(bids.query(BIDS, 'types'), types);
-  assertEqual(bids.internal.file_utils(bids.query(BIDS, 'data', 'type', 'm0scan'), 'basename'), ...
-              {'sub-Sub103_m0scan.nii'});
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+
+  filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'm0scan');
+  basename = bids.internal.file_utils(filename, 'basename');
+  assertEqual(basename, {'sub-Sub103_m0scan.nii'});
 
   %% 'asl003'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl003'));
@@ -41,9 +54,8 @@ function test_bids_query_asl_basic()
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'm0scan'};
-  %   types = {'T1w', 'asl', 'aslcontext', 'asllabelling', 'm0scan'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %% 'asl004'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl004'));
@@ -51,8 +63,11 @@ function test_bids_query_asl_basic()
   modalities = {'anat', 'fmap', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  types = {'T1w', 'asl', 'm0scan'};
-  %   types = {'T1w', 'asl', 'aslcontext', 'asllabelling', 'm0scan'};
-  assertEqual(bids.query(BIDS, 'types'), types);
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+
+  filename = bids.query(BIDS, 'data', 'suffix', 'm0scan', 'dir', 'pa');
+  basename = bids.internal.file_utils(filename, 'basename');
+  assertEqual(basename, {'sub-Sub1_dir-pa_m0scan.nii'});
 
 end
