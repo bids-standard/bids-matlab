@@ -175,7 +175,7 @@ function subject = parse_using_schema(subject, modality, schema)
 
     subject = bids.internal.add_missing_field(subject, modality);
 
-    file_list = return_file_list(modality, subject);
+    file_list = return_file_list(modality, subject, schema);
 
     for i = 1:numel(file_list)
 
@@ -220,7 +220,7 @@ function subject = parse_dwi(subject, schema)
 
     subject = bids.internal.add_missing_field(subject, modality);
 
-    file_list = return_file_list(modality, subject);
+    file_list = return_file_list(modality, subject, schema);
 
     for i = 1:numel(file_list)
 
@@ -256,7 +256,7 @@ function subject = parse_perf(subject, schema)
 
     subject = bids.internal.add_missing_field(subject, modality);
 
-    file_list = return_file_list(modality, subject);
+    file_list = return_file_list(modality, subject, schema);
 
     for i = 1:numel(file_list)
 
@@ -316,7 +316,7 @@ function subject = parse_fmap(subject, schema)
 
     subject = bids.internal.add_missing_field(subject, modality);
 
-    file_list = return_file_list(modality, subject);
+    file_list = return_file_list(modality, subject, schema);
 
     for i = 1:numel(file_list)
 
@@ -420,7 +420,7 @@ function f = convert_to_cell(f)
   end
 end
 
-function file_list = return_file_list(modality, subject)
+function file_list = return_file_list(modality, subject, schema)
 
   % We list anything but json files
 
@@ -433,6 +433,9 @@ function file_list = return_file_list(modality, subject)
 
   % jn to omit json but not .pos file for headshape.pos
   pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
+  if isempty(schema)
+    pattern = '_([a-zA-Z0-9]+){1}\\..*';
+  end
 
   pth = fullfile(subject.path, modality);
 

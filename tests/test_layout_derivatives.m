@@ -6,6 +6,31 @@ function test_suite = test_layout_derivatives %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_parse_json()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'));
+
+  data = bids.query(BIDS, 'data', ...
+                    'sub', '01', ...
+                    'modality', 'anat');
+
+  assertEqual(size(data, 1), 2);
+
+  %%
+  use_schema = false();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'), use_schema);
+
+  data = bids.query(BIDS, 'data', ...
+                    'sub', '01', ...
+                    'modality', 'anat');
+
+  assertEqual(size(data, 1), 4);
+
+end
+
 function test_layout_schemaless()
 
   pth_bids_example = get_test_data_dir();
@@ -18,7 +43,6 @@ function test_layout_schemaless()
   modalities = {'anat', 'figures', 'func'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  % Those fail for now
   data = bids.query(BIDS, 'data', ...
                     'sub', '10', ...
                     'modality', 'func', ...
@@ -27,10 +51,10 @@ function test_layout_schemaless()
                     'res', '2');
 
   basename = bids.internal.file_utils(data, 'basename');
-  assertEqual(basename, {
-                         ['sub-10_task-balloonanalogrisktask_run-1', ...
-                          '_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii']
-                        });
+  assertEqual(basename(2), {
+                            ['sub-10_task-balloonanalogrisktask_run-1', ...
+                             '_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii']
+                           });
 
   data = bids.query(BIDS, 'data', ...
                     'sub', '10', ...

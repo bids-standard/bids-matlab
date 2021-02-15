@@ -14,6 +14,17 @@ function test_bids_query_eeg_basic()
   pth_bids_example = get_test_data_dir();
 
   %%
+  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_face13'));
+
+  modalities = {'eeg'};
+  assertEqual(bids.query(BIDS, 'modalities'), modalities);
+
+  suffixes = {'channels', 'eeg', 'events'};
+  % Missing: 'electrodes'
+  % skipped as it contains a task entity and thus does not match the schema
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+
+  %%
   BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_cbm'));
 
   modalities = {'eeg'};
@@ -31,17 +42,6 @@ function test_bids_query_eeg_basic()
   suffixes = {'T1w', 'eeg', 'electrodes', 'events'};
   % Missing: 'coordsystem',
   % Missing: 'channels' in root folder
-  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
-
-  %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_face13'));
-
-  modalities = {'eeg'};
-  assertEqual(bids.query(BIDS, 'modalities'), modalities);
-
-  suffixes = {'channels', 'eeg', 'events'};
-  % Missing: 'electrodes'
-  % skipped as it contains a task entity and thus does not match the schema
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %%

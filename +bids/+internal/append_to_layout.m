@@ -39,6 +39,11 @@ function subject = append_to_layout(file, subject, modality, schema)
     entities = bids.schema.return_modality_entities(schema.datatypes.(modality)(idx), schema);
     p = bids.internal.parse_filename(file, entities);
 
+    % do not index json files when using the schema
+    if ~isempty(p) && strcmp(p.ext, '.json')
+      return
+    end
+
   end
 
   % Check any new entity field that needs to be added into the layout or the output
