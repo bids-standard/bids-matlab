@@ -52,7 +52,7 @@ function test_get_metadata_basic()
 
   %% test anat metadata subject 01
   metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'suffix', 'T1w');
-  assert(metadata.FlipAngle == anat_sub_01.FlipAngle);
-  assert(strcmp(metadata.Manufacturer, anat_sub_01.Manufacturer));
+  assertEqual(metadata.FlipAngle, anat_sub_01.FlipAngle);
+  assertEqual(metadata.Manufacturer, anat_sub_01.Manufacturer);
 
 end

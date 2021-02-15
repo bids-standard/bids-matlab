@@ -14,6 +14,6 @@ function test_return_modality_entities_basic
 
   expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
 
-  assert(isequal(entities, expected_output));
+  assertEqual(entities, expected_output);
 
 end

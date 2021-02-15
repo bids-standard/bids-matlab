@@ -110,11 +110,11 @@ function BIDS = layout(root, use_schema)
         BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
       else
         new_subject = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
-       
+
         [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
                                                                             new_subject);
         % TODO: this can be added to "match_structure_fields"
-        BIDS.subjects(end + 1) = new_subject; 
+        BIDS.subjects(end + 1) = new_subject;
 
       end
     end

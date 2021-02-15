@@ -51,19 +51,19 @@ function test_tsvwrite_basic()
   C = textscan(FID, '%s%s%s%s%s', 'Delimiter', '\t', 'EndOfLine', '\n');
 
   % check header
-  assert(isequal(C{4}{1}, 'speed'));
+  assertEqual(C{4}{1}, 'speed');
 
   % check that empty values are entered as NaN: logFile(1,1).speed
-  assert(isequal(C{4}{2}, 'n/a'));
+  assertEqual(C{4}{2}, 'n/a');
 
   % check that missing fields are entered as NaN: logFile(2,1).speed
-  assert(isequal(C{4}{3}, 'n/a'));
+  assertEqual(C{4}{3}, 'n/a');
 
   % check that NaN are written as : logFile(2,1).onset
-  assert(isequal(C{1}{3}, 'n/a')); %
+  assertEqual(C{1}{3}, 'n/a'); %
 
   % check values entered properly: logFile(2,1).is_fixation
-  assert(isequal(str2double(C{5}{3}), 3));
+  assertEqual(str2double(C{5}{3}), 3);
 
   %% test tsvread on tsv file using cell input
   % TO DO?
@@ -79,6 +79,6 @@ function test_tsvwrite_basic()
 
   FID = fopen(tsv_file, 'r');
   C = textscan(FID, '%s%s', 'Delimiter', '\t', 'EndOfLine', '\n');
-  assert(isequal(C{1}{2}, 'n/a')); %
+  assertEqual(C{1}{2}, 'n/a'); %
 
 end

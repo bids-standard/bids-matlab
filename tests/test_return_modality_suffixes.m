@@ -11,6 +11,6 @@ function test_return_modality_suffixes_basic
   schema = bids.schema.load_schema();
 
   suffixes = bids.internal.return_modality_suffixes(schema.datatypes.func(1));
-  assert(isequal(suffixes, '_(bold|cbv|sbref){1}'));
+  assertEqual(suffixes, '_(bold|cbv|sbref){1}');
 
 end
