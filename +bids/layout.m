@@ -243,6 +243,7 @@ function subject = parse_dwi(subject, schema)
         % bval & bvec file
         % ------------------------------------------------------------------
         % TODO: they can also be stored at higher levels (inheritance principle)
+        % TODO: refactor and deal with all this after file indexing
         bvalfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bval$');
         if isfield(bvalfile, 'filename')
           subject.dwi(end).dependencies.bval = bids.util.tsvread(bvalfile.filename);
@@ -476,6 +477,12 @@ end
 
 function BIDS = manage_intended_for(BIDS)
 
+  % Loops through all the files with potential ``intentedFor`` metadata
+  % and creates an ``intended_for`` field with the fullpath list of all the target files
+  % it is intended for that exist.
+  %
+  % Also update the structure of each target file with an ``informed_by`` field
+
   suffix_with_intended_for = { ...
                               'phasediff'; ...
                               'phase1'; ...
@@ -503,9 +510,14 @@ function BIDS = manage_intended_for(BIDS)
           intended_for;
 
       % update "dependency" field of target file
+      informed_by = [];
       for iTargetFile = 1:size(intended_for, 1)
         info_tgt = bids.internal.return_file_info(BIDS, intended_for{iTargetFile});
 
+        % TODO: this should probably check that the informed_by field does not
+        % already exist in the structure
+        % TODO: This assumes that a file will only be informed by a single file from
+        % this moodality
         informed_by.(info_src.modality) = file_list{iFile};
         BIDS.subjects(info_tgt.sub_idx).(info_tgt.modality)(info_tgt.file_idx).informed_by = ...
             informed_by;
