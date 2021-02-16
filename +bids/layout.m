@@ -29,7 +29,7 @@ function BIDS = layout(root, use_schema)
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2018--, BIDS-MATLAB developers
 
-  % -Validate input arguments
+  %% Validate input arguments
   % ==========================================================================
   if ~nargin
     root = pwd;
@@ -61,7 +61,7 @@ function BIDS = layout(root, use_schema)
     error('BIDS directory does not exist: ''%s''', root);
   end
 
-  % BIDS structure
+  %% BIDS structure
   % ==========================================================================
 
   % BIDS.dir          -- BIDS directory
@@ -79,7 +79,7 @@ function BIDS = layout(root, use_schema)
 
   BIDS = validate_description(BIDS, use_schema);
 
-  % Optional directories
+  %% Optional directories
   % ==========================================================================
   % [code/] - ignore
   % [derivatives/]
@@ -90,7 +90,7 @@ function BIDS = layout(root, use_schema)
   BIDS.participants = [];
   BIDS.participants = manage_tsv(BIDS.participants, BIDS.dir, 'participants.tsv');
 
-  % Subjects
+  %% Subjects
   % ==========================================================================
   subjects = cellstr(bids.internal.file_utils('List', BIDS.dir, 'dir', '^sub-.*$'));
   if isequal(subjects, {''})
@@ -120,6 +120,11 @@ function BIDS = layout(root, use_schema)
     end
 
   end
+
+  %% Dependencies
+  % ==========================================================================
+
+  BIDS = manage_intended_for(BIDS);
 
 end
 
@@ -182,13 +187,13 @@ function subject = parse_using_schema(subject, modality, schema)
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
       % Loaded
-          % events
-          % channels
-          % electrodes
-      
+      % events
+      % channels
+      % electrodes
+
       % Not loaded because takes too long during indexing
-          % stim
-          % physio
+      % stim
+      % physio
       if ~isempty(subject.(modality)) && ...
           strcmp(subject.(modality)(end).ext, '.tsv')
 
@@ -298,18 +303,6 @@ function subject = parse_perf(subject, schema)
 
           subject.perf(i) = manage_M0(subject.perf(i), pth);
 
-        case 'm0scan'
-
-          subject.perf(i).intended_for = [];
-
-          subject.perf(i).meta = bids.internal.get_metadata( ...
-                                                            fullfile( ...
-                                                                     subject.path, ...
-                                                                     modality, ...
-                                                                     file_list{i}));
-
-          subject.perf(i) = manage_intended_for(subject.perf(i), subject, pth);
-
       end
 
     end
@@ -332,14 +325,6 @@ function subject = parse_fmap(subject, schema)
     for i = 1:numel(file_list)
 
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-
-      subject.fmap(i).meta = bids.internal.get_metadata( ...
-                                                        fullfile( ...
-                                                                 subject.path, ...
-                                                                 modality, ...
-                                                                 file_list{i}));
-      %       subject.perf(i).intended_for = [];
-      %       subject.fmap(i) = manage_intended_for(subject.fmap(i), subject, pth);
 
       switch subject.fmap(i).suffix
 
@@ -489,49 +474,87 @@ function structure = manage_tsv(structure, pth, filename)
 
 end
 
-function structure = manage_intended_for(structure, subject, pth)
+function BIDS = manage_intended_for(BIDS)
 
-  if isempty(structure.meta)
+  suffix_with_intended_for = { ...
+                              'phasediff'; ...
+                              'phase1'; ...
+                              'phase2'; ...
+                              'fieldmap'; ...
+                              'epi'; ...
+                              'm0scan'; ...
+                              'coordsystem'};
+
+  for iSuffix = 1:numel(suffix_with_intended_for)
+    file_list = bids.query(BIDS, 'data', 'suffix', suffix_with_intended_for(iSuffix));
+
+    for iFile = 1:size(file_list, 1)
+
+      info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
+
+      [metadata, intended_for] = check_intended_for_exist(BIDS.subjects(info_src.sub_idx), ...
+                                                          fullfile( ...
+                                                                   info_src.path, ...
+                                                                   info_src.modality, ...
+                                                                   info_src.filename));
+
+      BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx).meta = metadata;
+      BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx).intended_for = ...
+          intended_for;
+
+      % update "dependency" field of target file
+      for iTargetFile = 1:size(intended_for, 1)
+        info_tgt = bids.internal.return_file_info(BIDS, intended_for{iTargetFile});
+
+        informed_by.(info_src.modality) = file_list{iFile};
+        BIDS.subjects(info_tgt.sub_idx).(info_tgt.modality)(info_tgt.file_idx).informed_by = ...
+            informed_by;
+      end
+
+    end
+
+  end
+
+end
+
+function [metadata, intended_for] = check_intended_for_exist(subject, filename)
+
+  metadata =  bids.internal.get_metadata(filename);
+
+  intended_for = {};
+
+  if isempty(metadata) || ~isfield(metadata, 'IntendedFor')
+    warning('Missing field IntendedFor for %s', filename);
     return
 
   else
 
-    % Get all NIfTIs that this m0scan is intended for
     path_intended_for = {};
-    if ~isfield(structure.meta, 'IntendedFor')
-      warning('Missing field IntendedFor for %s', structure.filename);
 
-    elseif ischar(structure.meta.IntendedFor)
-      path_intended_for{1} = structure.meta.IntendedFor;
+    if ischar(metadata.IntendedFor)
+      path_intended_for{1} = metadata.IntendedFor;
 
-    elseif isstruct(structure.meta.IntendedFor)
-      for iPath = 1:length(structure.meta.IntendedFor)
-        path_intended_for{iPath} = structure.meta.IntendedFor(iPath); %#ok<*AGROW>
+    elseif isstruct(metadata.IntendedFor)
+      for iPath = 1:length(metadata.IntendedFor)
+        path_intended_for{iPath} = metadata.IntendedFor(iPath); %#ok<*AGROW>
       end
 
     end
+  end
 
-    for iPath = 1:length(path_intended_for)
-      % check if this NIfTI is not missing
-      if ~exist(fullfile(fileparts(pth), path_intended_for{iPath}), 'file')
-        warning(['Missing: ' fullfile(fileparts(pth), path_intended_for{iPath})]);
+  for iPath = 1:length(path_intended_for)
 
-      else
-        % also check that this NIfTI aims to the same m0scan
-        [~, path2check, ext2check] = fileparts(path_intended_for{iPath});
-        filename_found = max(arrayfun(@(x) strcmp(x.filename, ...
-                                                  [path2check ext2check]), ...
-                                      subject.perf));
-        if ~filename_found
-          warning(['Did not find NIfTI for which is intended: ' structure.filename]);
+    file_path = strrep(subject.path, subject.session, '');
+    fullpath_filename = fullfile(file_path, path_intended_for{iPath});
 
-        else
-          structure.intended_for = path_intended_for{iPath};
+    % check if this NIfTI is not missing
+    if ~exist(fullpath_filename, 'file')
+      warning(['Missing: ' fullpath_filename]);
 
-        end
-      end
+    else
+      intended_for{end + 1, 1} = fullpath_filename;
+
     end
-
   end
 
 end

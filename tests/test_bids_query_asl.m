@@ -48,6 +48,8 @@ function test_bids_query_asl_basic()
   basename = bids.internal.file_utils(filename, 'basename');
   assertEqual(basename, {'sub-Sub103_m0scan.nii'});
 
+  assert(isfield(BIDS.subjects.perf(4), 'intended_for'));
+
   %% 'asl003'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl003'));
 
@@ -69,5 +71,8 @@ function test_bids_query_asl_basic()
   filename = bids.query(BIDS, 'data', 'suffix', 'm0scan', 'dir', 'pa');
   basename = bids.internal.file_utils(filename, 'basename');
   assertEqual(basename, {'sub-Sub1_dir-pa_m0scan.nii'});
+
+  assert(isfield(BIDS.subjects.fmap, 'intended_for'));
+  assert(isfield(BIDS.subjects.perf(4), 'intended_for'));
 
 end
