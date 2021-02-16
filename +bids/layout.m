@@ -186,29 +186,6 @@ function subject = parse_using_schema(subject, modality, schema)
 
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
-      % Loaded
-      % events
-      % channels
-      % electrodes
-
-      % Not loaded because takes too long during indexing
-      % stim
-      % physio
-      if ~isempty(subject.(modality)) && ...
-          strcmp(subject.(modality)(end).ext, '.tsv')
-
-        subject.(modality)(end).content = [];
-        subject.(modality)(end).meta = [];
-
-        subject.(modality)(end) = manage_tsv( ...
-                                             subject.(modality)(end), ...
-                                             pth, ...
-                                             subject.(modality)(end).filename);
-
-      end
-
-      % case {'coordsystem'}
-
     end
 
   end

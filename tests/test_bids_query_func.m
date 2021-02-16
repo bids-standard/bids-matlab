@@ -15,6 +15,4 @@ function test_bids_query_func_basic()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
 
-  BIDS.subjects(1).func(2).content;
-
 end
