@@ -433,15 +433,17 @@ function file_list = return_file_list(modality, subject, schema)
 
   % jn to omit json but not .pos file for headshape.pos
   pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
+  prefix = '';
   if isempty(schema)
     pattern = '_([a-zA-Z0-9]+){1}\\..*';
+    prefix = '([a-zA-Z0-9]*)';
   end
 
   pth = fullfile(subject.path, modality);
 
   [file_list, d] = bids.internal.file_utils('List', ...
                                             pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
+                                            sprintf(['^' prefix '%s.*' pattern '$'], ...
                                                     subject.name));
 
   file_list = convert_to_cell(file_list);
