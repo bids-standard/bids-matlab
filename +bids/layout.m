@@ -512,6 +512,7 @@ function BIDS = manage_intended_for(BIDS)
       % update "dependency" field of target file
       informed_by = [];
       for iTargetFile = 1:size(intended_for, 1)
+
         info_tgt = bids.internal.return_file_info(BIDS, intended_for{iTargetFile});
 
         % TODO: this should probably check that the informed_by field does not
@@ -544,22 +545,30 @@ function [metadata, intended_for] = check_intended_for_exist(subject, filename)
     path_intended_for = {};
 
     if ischar(metadata.IntendedFor)
-      path_intended_for{1} = metadata.IntendedFor;
+      path_intended_for{1, 1} = metadata.IntendedFor;
 
     elseif isstruct(metadata.IntendedFor)
       for iPath = 1:length(metadata.IntendedFor)
-        path_intended_for{iPath} = metadata.IntendedFor(iPath); %#ok<*AGROW>
+        path_intended_for{iPath, 1} = metadata.IntendedFor(iPath); %#ok<*AGROW>
       end
 
     end
   end
 
-  for iPath = 1:length(path_intended_for)
+  % get "subject path" without the session folder (if it exists)
+  subject_path = subject.path;
+  tmp = bids.internal.file_utils(subject_path, 'filename');
+  if strcmp(tmp(1:3), 'ses')
+    subject_path = bids.internal.file_utils(subject_path, 'path');
+  end
 
-    file_path = strrep(subject.path, subject.session, '');
-    fullpath_filename = fullfile(file_path, path_intended_for{iPath});
+  for iPath = 1:size(path_intended_for, 1)
 
-    % check if this NIfTI is not missing
+    % create a fullname path for current operating system
+    fullpath_filename = fullfile(subject_path, ...
+                                 strrep(path_intended_for{iPath}, '/', filesep));
+
+    % check if this file is missing
     if ~exist(fullpath_filename, 'file')
       warning(['Missing: ' fullpath_filename]);
 

@@ -16,4 +16,8 @@ function test_query_extension()
   BIDS.subjects(1).fmap(3).intended_for;
   BIDS.subjects(1).func(1).informed_by;
 
+  BIDS = bids.layout(fullfile(pth_bids_example, 'hcp_example_bids')); % sub-100307
+
+  BIDS.subjects(1).fmap(3).intended_for{1};
+
 end
