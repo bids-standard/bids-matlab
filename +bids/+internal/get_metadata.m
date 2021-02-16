@@ -4,11 +4,12 @@ function meta = get_metadata(filename, pattern)
   %
   % USAGE::
   %
-  %    meta = bids.internal.get_metadata(filename, pattern)
+  %    meta = bids.internal.get_metadata(filename, pattern = '^.*%s\\.json$')
   %
-  % :param filename: name of file following BIDS standard
+  % :param filename: fullpath name of file following BIDS standard
   % :type  filename: string
-  % :param pattern:  regular expression matching metadata file
+  % :param pattern:  Regular expression matching the metadata file (default is ``'^.*%s\\.json$'``)
+  %                  If provided, it must at least be ``'%s'``.
   % :type  pattern:  string
   %
   %
