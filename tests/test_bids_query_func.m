@@ -17,5 +17,4 @@ function test_bids_query_func_basic()
 
   BIDS.subjects(1).func(2).content;
 
-
 end

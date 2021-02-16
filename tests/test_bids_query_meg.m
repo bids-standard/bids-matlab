@@ -22,7 +22,8 @@ function test_bids_query_meg_basic()
   % missing: 'coordsystem'
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000247'));
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'));
+  % smoke tests
+  %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds000247'));
+  %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'));
 
 end

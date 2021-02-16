@@ -5,19 +5,6 @@ function test_suite = test_bids_query %#ok<*STOUT>
   end
   initTestSuite;
 
-  % Test BIDS queries
-  % This dataset comes from https://github.com/bids-standard/bids-examples
-  % and is downloaded automatically by the continuous integration framework
-  % and is required for the tests to be run.
-  % Based on https://en.wikibooks.org/wiki/SPM/BIDS#BIDS_parser_and_queries
-  % __________________________________________________________________________
-  %
-  % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
-  %   The brain imaging data structure, a format for organizing and
-  %   describing outputs of neuroimaging experiments.
-  %   K. J. Gorgolewski et al, Scientific Data, 2016.
-  % __________________________________________________________________________
-
   % Copyright (C) 2019, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2019--, BIDS-MATLAB developers
 
