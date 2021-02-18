@@ -1,8 +1,18 @@
 function meta = get_metadata(filename, pattern)
+  %
   % Read a BIDS's file metadata according to the inheritance principle
-  % FORMAT meta = bids.internal.get_metadata(filename, pattern)
-  % filename    - name of file following BIDS standard
-  % pattern     - regular expression matching metadata file
+  %
+  % USAGE::
+  %
+  %    meta = bids.internal.get_metadata(filename, pattern = '^.*%s\\.json$')
+  %
+  % :param filename: fullpath name of file following BIDS standard
+  % :type  filename: string
+  % :param pattern:  Regular expression matching the metadata file (default is ``'^.*%s\\.json$'``)
+  %                  If provided, it must at least be ``'%s'``.
+  % :type  pattern:  string
+  %
+  %
   % meta        - metadata structure
   % __________________________________________________________________________
 

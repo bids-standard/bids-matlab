@@ -82,7 +82,7 @@ function result = query(BIDS, query, varargin)
     case {'modalities', 'data'}
       result = result';
 
-    case 'metadata'
+    case {'metadata', 'dependencies'}
       if numel(result) == 1
         result = result{1};
       end
@@ -220,7 +220,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
               if isfield(d(k), 'filename')
 
                 f = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
-                result{end + 1} = bids.internal.get_metadata(f);
+                result{end + 1, 1} = bids.internal.get_metadata(f);
                 if ~isempty(target)
                   try
                     result{end} = subsref(result{end}, target);
@@ -257,7 +257,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
 
             case 'dependencies'
               if isfield(d(k), 'dependencies')
-                result{end + 1} = d(k).dependencies;
+                result{end + 1, 1} = d(k).dependencies;
               end
 
           end

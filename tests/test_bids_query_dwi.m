@@ -8,20 +8,26 @@ end
 
 function test_bids_query_dwi_basic()
   %
-  %   eeg queries
+  %   dwi queries
   %
 
   pth_bids_example = get_test_data_dir();
 
   %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_rest_fmri'));
 
-  modalities = {'anat',    'beh',    'dwi',    'fmap',    'func',    'meg'};
+  modalities = {'anat',    'dwi',    'eeg', 'func'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  suffixes = {'T1w', 'bold', 'dwi', 'events', 'headshape', ...
-              'magnitude1', 'magnitude2', 'meg', 'phasediff'};
-  % Missing: 'FLASH'
+  suffixes = {'T1w', 'bold', 'dwi', 'eeg'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+
+  dependencies = bids.query(BIDS, 'dependencies', ...
+                            'sub', '32', ...
+                            'acq', 'NODDI10DIR', ...
+                            'suffix', 'dwi', ...
+                            'extension', '.nii.gz');
+
+  assertEqual(dependencies.bval(1:11), [0 repmat(2400, 1, 10)]);
 
 end

@@ -31,9 +31,9 @@ function test_bids_query_asl_basic()
   meta = bids.query(BIDS, 'metadata', 'sub', 'Sub103', 'suffix', 'asl');
 
   dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl');
-  dependencies{1}.labeling_image;
-  dependencies{1}.context;
-  dependencies{1}.m0;
+  assertEqual(dependencies.labeling_image.filename, 'sub-Sub103_asllabeling.jpg');
+  dependencies.context;
+  dependencies.m0;
 
   %% 'asl002'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));
@@ -47,6 +47,8 @@ function test_bids_query_asl_basic()
   filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'm0scan');
   basename = bids.internal.file_utils(filename, 'basename');
   assertEqual(basename, {'sub-Sub103_m0scan.nii'});
+
+  assert(isfield(BIDS.subjects.perf(4), 'intended_for'));
 
   %% 'asl003'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl003'));
@@ -69,5 +71,8 @@ function test_bids_query_asl_basic()
   filename = bids.query(BIDS, 'data', 'suffix', 'm0scan', 'dir', 'pa');
   basename = bids.internal.file_utils(filename, 'basename');
   assertEqual(basename, {'sub-Sub1_dir-pa_m0scan.nii'});
+
+  assert(isfield(BIDS.subjects.fmap, 'intended_for'));
+  assert(isfield(BIDS.subjects.perf(4), 'intended_for'));
 
 end

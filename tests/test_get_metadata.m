@@ -56,3 +56,18 @@ function test_get_metadata_basic()
   assertEqual(metadata.Manufacturer, anat_sub_01.Manufacturer);
 
 end
+
+function test_get_metadata_internal()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'));
+
+  bids.internal.get_metadata( ...
+                             fullfile( ...
+                                      BIDS(1).subjects(2).path, ...
+                                      'anat', ...
+                                      BIDS(1).subjects(2).anat(1).filename), ...
+                             '%s');
+
+end
