@@ -37,7 +37,7 @@ function tsvwrite(f, var)
 
       end
 
-      var = [fn'; var];
+      var = [fn'; var{:}];
 
     elseif iscell(var) || isnumeric(var) || islogical(var)
 
