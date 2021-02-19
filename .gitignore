@@ -1,5 +1,6 @@
 *.asv
 *.*~
+*.swp
 
 /tests/bids-examples
 /tests/*.tsv
