@@ -209,26 +209,30 @@ function subject = parse_dwi(subject, schema)
 
     for i = 1:numel(file_list)
 
+      fullpath_filename = fullfile(pth, file_list{i});
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
+      subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
 
       % if this file is a nifti image we add the bval and bvec as dependencies
       if ~isempty(subject.(modality)) && ...
               any(strcmp(subject.(modality)(end).ext, {'.nii', '.nii.gz'}))
 
-        fullpath_filename = fullfile(subject.path, modality, file_list{i});
-
         % bval & bvec file
         % ------------------------------------------------------------------
         % TODO: they can also be stored at higher levels (inheritance principle)
         % TODO: refactor and deal with all this after file indexing
-        bvalfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bval$');
-        if isfield(bvalfile, 'filename')
-          subject.dwi(end).dependencies.bval = bids.util.tsvread(bvalfile.filename);
+        bvalfile = bids.internal.get_meta_list(fullpath_filename, '^.*%s\\.bval$');
+        if ~isempty(bvalfile)
+          subject.dwi(end).dependencies.bval = bvalfile;
+        else
+          warning(['DWI: ' fullpath_filename ' missing bval file'])
         end
 
-        bvecfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bvec$');
-        if isfield(bvalfile, 'filename')
-          subject.dwi(end).dependencies.bvec = bids.util.tsvread(bvecfile.filename);
+        bvecfile = bids.internal.get_meta_list(fullpath_filename, '^.*%s\\.bvec$');
+        if ~isempty(bvalfile)
+          subject.dwi(end).dependencies.bvec = bvecfile;
+        else
+          warning(['DWI: ' fullpath_filename ' missing bvec file'])
         end
 
       end
