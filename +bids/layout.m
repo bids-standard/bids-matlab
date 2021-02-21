@@ -233,6 +233,29 @@ function subject = parse_perf(subject, schema)
       fullpath_filename = fullfile(pth, file_list{i});
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
       subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+      subject.(modality)(end).dependencies.explicit = {};
+      subject.(modality)(end).dependencies.data = {};
+      subject.(modality)(end).dependencies.group = {};
+
+      ext = subject.(modality)(end).ext;
+      suffix = subject.(modality)(end).suffix;
+      search = strrep(file_list{i}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
+      candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
+      candidates = cellstr(candidates);
+      for ii = 1:numel(candidates)
+        if strcmp(candidates{ii}, file_list{i})
+          continue;
+        end
+        if endsWith(candidates{ii}, '.json')
+          continue
+        end
+        match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
+        if isempty(match) % different suffix
+          subject.(modality)(end).dependencies.group{end+1} = fullfile(pth, candidates{ii});
+        else  % same suffix
+          subject.(modality)(end).dependencies.data{end+1} = fullfile(pth, candidates{ii});
+        end
+      end
 
       switch subject.perf(i).suffix
 
