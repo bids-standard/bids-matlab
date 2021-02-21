@@ -43,8 +43,6 @@ function subject = append_to_layout(file, subject, modality, schema)
     if ~isempty(p) && strcmp(p.ext, '.json')
       return
     end
-    file
-    p.metafile = bids.internal.get_meta_list(file)
 
   end
 
