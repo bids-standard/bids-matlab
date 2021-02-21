@@ -124,7 +124,8 @@ function BIDS = layout(root, use_schema)
   %% Dependencies
   % ==========================================================================
 
-  BIDS = manage_intended_for(BIDS);
+  % BIDS = manage_intended_for(BIDS);
+  BIDS = manage_dependencies(BIDS);
 
 end
 
@@ -184,7 +185,12 @@ function subject = parse_using_schema(subject, modality, schema)
 
     for i = 1:numel(file_list)
 
+      fullpath_filename = fullfile(pth, file_list{i});
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
+      subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+      subject.(modality)(end).dependencies.explicit = {};
+      subject.(modality)(end).dependencies.data = {};
+      subject.(modality)(end).dependencies.implicit = {};
 
     end
 
@@ -212,6 +218,9 @@ function subject = parse_dwi(subject, schema)
       fullpath_filename = fullfile(pth, file_list{i});
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
       subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+      subject.(modality)(end).dependencies.explicit = {};
+      subject.(modality)(end).dependencies.data = {};
+      subject.(modality)(end).dependencies.implicit = {};
 
       % if this file is a nifti image we add the bval and bvec as dependencies
       if ~isempty(subject.(modality)) && ...
@@ -258,7 +267,12 @@ function subject = parse_perf(subject, schema)
 
     for i = 1:numel(file_list)
 
+      fullpath_filename = fullfile(pth, file_list{i});
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
+      subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+      subject.(modality)(end).dependencies.explicit = {};
+      subject.(modality)(end).dependencies.data = {};
+      subject.(modality)(end).dependencies.implicit = {};
 
       switch subject.perf(i).suffix
 
@@ -306,7 +320,12 @@ function subject = parse_fmap(subject, schema)
 
     for i = 1:numel(file_list)
 
+      fullpath_filename = fullfile(pth, file_list{i});
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
+      subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+      subject.(modality)(end).dependencies.explicit = {};
+      subject.(modality)(end).dependencies.data = {};
+      subject.(modality)(end).dependencies.implicit = {};
 
       switch subject.fmap(i).suffix
 
@@ -454,6 +473,34 @@ function structure = manage_tsv(structure, pth, filename)
 
   end
 
+end
+
+function BIDS = manage_dependencies(BIDS)
+  % Loops over all files and retrieve all files that current file depends on
+  file_list = bids.query(BIDS, 'data');
+  for iFile = 1:size(file_list, 1)
+    info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
+    file = BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx);
+    metadata = bids.internal.get_metadata(file.metafile);
+
+    intended = {};
+    if isfield(metadata, 'IntendedFor')
+      intended = cellstr(metadata.IntendedFor);
+    end
+
+    for iIntended = 1:numel(intended)
+      dest = fullfile(BIDS.dir, BIDS.subjects(info_src.sub_idx).name, ...
+                      intended{iIntended});
+      if ~exist(dest, 'file')
+        warning(['IntendedFor file ' dest ' from ' file.filename ' not found']);
+        continue;
+      end
+      info_dest = bids.internal.return_file_info(BIDS, dest);
+      BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx)...
+          .dependencies.explicit{end+1} = file_list{iFile};
+    end
+
+  end
 end
 
 function BIDS = manage_intended_for(BIDS)
