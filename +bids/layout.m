@@ -197,7 +197,7 @@ function subject = parse_using_schema(subject, modality, schema)
         if strcmp(candidates{ii}, file_list{i})
           continue;
         end
-        if endsWith(candidates{ii}, '.json')
+        if bids.internal.endsWith(candidates{ii}, '.json')
           continue
         end
         match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
@@ -246,7 +246,7 @@ function subject = parse_perf(subject, schema)
         if strcmp(candidates{ii}, file_list{i})
           continue;
         end
-        if endsWith(candidates{ii}, '.json')
+        if bids.internal.endsWith(candidates{ii}, '.json')
           continue
         end
         match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');

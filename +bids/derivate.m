@@ -101,7 +101,7 @@ function status = copy_file(BIDS, derivatives_folder, data_file)
     mkdir(out_dir);
   end
   % copy data file
-  if endsWith(file.ext, '.gz')
+  if bids.internal.endsWith(file.ext, '.gz')
     gunzip(data_file, out_dir);
   else
     [status,message,messageId] = copyfile(data_file, [out_path file.ext]);
