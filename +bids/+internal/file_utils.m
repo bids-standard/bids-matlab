@@ -127,7 +127,6 @@ function t = canonicalise_path(t, d)
   %
   % - d must be a single cell containing the base path of relative paths in t
   %
-
   mch = '^/';
   if ispc % valid absolute paths
     % Allow drive letter or UNC path
@@ -169,9 +168,10 @@ function t = canonicalise_path(t, d)
       end
     end
 
-    pt{cp} = tmppt;
     if ispc
       pt{cp} = [pt{cp}(1) tmppt];
+    else
+      pt{cp} = tmppt;
     end
 
   end
@@ -196,7 +196,6 @@ function pp = pathparts(p)
   % For PC (WIN) targets, both '\' and '/' are accepted as filesep, similar
   % to MATLAB fileparts
   %
-
   file_separator = filesep;
   if ispc
     file_separator = '\\/';
