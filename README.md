@@ -1,7 +1,7 @@
 # BIDS for MATLAB / Octave
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![Build Status](https://travis-ci.com/bids-standard/bids-matlab.svg?branch=master)](https://travis-ci.com/bids-standard/bids-matlab)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb)
@@ -106,6 +106,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/mslw"><img src="https://avatars1.githubusercontent.com/u/11985212?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Michał Szczepanik</b></sub></a><br /><a href="#infra-mslw" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#ideas-mslw" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/bids-standard/bids-matlab/commits?author=mslw" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.ExploreASL.org"><img src="https://avatars.githubusercontent.com/u/27774254?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Henk Mutsaerts</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/commits?author=HenkMutsaerts" title="Code">💻</a> <a href="#ideas-HenkMutsaerts" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/nbeliy"><img src="https://avatars.githubusercontent.com/u/44231332?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nikita Beliy</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/commits?author=nbeliy" title="Code">💻</a> <a href="#ideas-nbeliy" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
