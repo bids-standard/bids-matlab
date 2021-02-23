@@ -1,9 +1,23 @@
-function BIDS = layout(root, tolerant)
+function BIDS = layout(root, use_schema)
+  %
   % Parse a directory structure formated according to the BIDS standard
-  % FORMAT BIDS = bids.layout(root)
-  % root     - directory formated according to BIDS [Default: pwd]
-  % tolerant - if set to 0 (default) only files g
-  % BIDS     - structure containing the BIDS file layout
+  %
+  % USAGE::
+  %
+  %   BIDS = bids.layout(root = pwd, use_schema = false)
+  %
+  % :param root:       directory of the dataset formated according to BIDS [default: ``pwd``]
+  % :type  root:       string
+  % :param use_schema: If set to ``true`` (default), the parsing of the dataset
+  %                    will follow the bids-schema provided with bids-matlab.
+  %                    If set to ``false`` files just have to be of the form
+  %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
+  %                    If a folder path is provided, then the schema contained
+  %                    in that folder willl be used for parsing.
+  % :type  use_schema: boolean
+  %
+  %
+
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -11,39 +25,48 @@ function BIDS = layout(root, tolerant)
   %   describing outputs of neuroimaging experiments.
   %   K. J. Gorgolewski et al, Scientific Data, 2016.
   % __________________________________________________________________________
-
+  %
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2018--, BIDS-MATLAB developers
 
-  % -Validate input arguments
+  %% Validate input arguments
   % ==========================================================================
   if ~nargin
     root = pwd;
+
   elseif nargin == 1
+
     if ischar(root)
       root = bids.internal.file_utils(root, 'CPath');
+
     elseif isstruct(root)
-      BIDS = root; % or BIDS = bids.layout(root.root);
+      BIDS = root; % for bids.query
       return
+
     else
       error('Invalid syntax.');
+
     end
+
   elseif nargin > 2
     error('Too many input arguments.');
+
   end
 
-  if ~exist('tolerant', 'var')
-    tolerant = false;
+  if ~exist('use_schema', 'var')
+    use_schema = true;
   end
 
-  % -BIDS structure
+  if ~exist(root, 'dir')
+    error('BIDS directory does not exist: ''%s''', root);
+  end
+
+  %% BIDS structure
   % ==========================================================================
 
   % BIDS.dir          -- BIDS directory
   % BIDS.description  -- content of dataset_description.json
   % BIDS.sessions     -- cellstr of sessions
-  % BIDS.scans        -- for sub-<participant_label>_scans.tsv (should go within subjects)
-  % BIDS.sess         -- for sub-<participants_label>_sessions.tsv (should go within subjects)
   % BIDS.participants -- for participants.tsv
   % BIDS.subjects'    -- structure array of subjects
 
@@ -51,436 +74,117 @@ function BIDS = layout(root, tolerant)
                 'dir', root, ...
                 'description', struct([]), ...
                 'sessions', {{}}, ...
-                'scans', struct([]), ...
-                'sess', struct([]), ...
                 'participants', struct([]), ...
                 'subjects', struct([]));
 
-  % -Validation of BIDS root directory
+  BIDS = validate_description(BIDS, use_schema);
+
+  %% Optional directories
   % ==========================================================================
-  if ~exist(BIDS.dir, 'dir')
-    error('BIDS directory does not exist: ''%s''', BIDS.dir);
-
-  elseif ~exist(fullfile(BIDS.dir, 'dataset_description.json'), 'file')
-
-    msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
-                  BIDS.dir);
-
-    tolerant_message(tolerant, msg);
-
-  end
-
-  % -Dataset description
-  % ==========================================================================
-  try
-    BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
-  catch err
-    msg = sprintf('BIDS dataset description could not be read: %s', err.message);
-    tolerant_message(tolerant, msg);
-  end
-
-  fields_to_check = {'BIDSVersion', 'Name'};
-  for iField = 1:numel(fields_to_check)
-
-    if ~isfield(BIDS.description, fields_to_check{iField})
-      msg = sprintf( ...
-                    'BIDS dataset description not valid: missing %s field.', ...
-                    fields_to_check{iField});
-      tolerant_message(tolerant, msg);
-    end
-
-  end
-
-  % -Optional directories
-  % ==========================================================================
-  % [code/]
+  % [code/] - ignore
   % [derivatives/]
-  % [stimuli/]
-  % [sourcedata/]
+  % [stimuli/] - ingore
+  % [sourcedata/] - ignore
   % [phenotype/]
 
-  % -Scans key file
+  BIDS.participants = [];
+  BIDS.participants = manage_tsv(BIDS.participants, BIDS.dir, 'participants.tsv');
+
+  %% Subjects
   % ==========================================================================
-
-  % sub-<participant_label>/[ses-<session_label>/]
-  %     sub-<participant_label>_scans.tsv
-
-  % See also optional README and CHANGES files
-
-  % -Participant key file
-  % ==========================================================================
-  p = bids.internal.file_utils('FPList', BIDS.dir, '^participants\.tsv$');
-  if ~isempty(p)
-    try
-      BIDS.participants = bids.util.tsvread(p);
-    catch
-      msg = ['unable to read ' p];
-      tolerant_message(tolerant, msg);
-    end
-  end
-  p = bids.internal.file_utils('FPList', BIDS.dir, '^participants\.json$');
-  if ~isempty(p)
-    BIDS.participants.meta = bids.util.jsondecode(p);
-  end
-
-  % -Sessions file
-  % ==========================================================================
-
-  % sub-<participant_label>/[ses-<session_label>/]
-  %      sub-<participant_label>[_ses-<session_label>]_sessions.tsv
-
-  % -Tasks: JSON files are accessed through metadata
-  % ==========================================================================
-  % t = bids.internal.file_utils('FPList',BIDS.dir,...
-  %    '^task-.*_(beh|bold|events|channels|physio|stim|meg)\.(json|tsv)$');
-
-  % -Subjects
-  % ==========================================================================
-  sub = cellstr(bids.internal.file_utils('List', BIDS.dir, 'dir', '^sub-.*$'));
-  if isequal(sub, {''})
+  subjects = cellstr(bids.internal.file_utils('List', BIDS.dir, 'dir', '^sub-.*$'));
+  if isequal(subjects, {''})
     error('No subjects found in BIDS directory.');
   end
 
-  for iSub = 1:numel(sub)
-    sess = cellstr(bids.internal.file_utils('List', ...
-                                            fullfile(BIDS.dir, sub{iSub}), ...
-                                            'dir', ...
-                                            '^ses-.*$'));
-    for iSess = 1:numel(sess)
+  schema = bids.schema.load_schema(use_schema);
+
+  for iSub = 1:numel(subjects)
+    sessions = cellstr(bids.internal.file_utils('List', ...
+                                                fullfile(BIDS.dir, subjects{iSub}), ...
+                                                'dir', ...
+                                                '^ses-.*$'));
+
+    for iSess = 1:numel(sessions)
       if isempty(BIDS.subjects)
-        BIDS.subjects = parse_subject(BIDS.dir, sub{iSub}, sess{iSess});
+        BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
       else
-        BIDS.subjects(end + 1) = parse_subject(BIDS.dir, sub{iSub}, sess{iSess});
+        new_subject = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
+
+        [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
+                                                                            new_subject);
+        % TODO: this can be added to "match_structure_fields"
+        BIDS.subjects(end + 1) = new_subject;
+
       end
     end
+
   end
+
+  %% Dependencies
+  % ==========================================================================
+
+  BIDS = manage_intended_for(BIDS);
 
 end
 
-function tolerant_message(tolerant, msg)
-  if tolerant
-    warning(msg);
-  else
-    error(msg);
-  end
-end
-
-% ==========================================================================
-% -Parse a subject's directory
-% ==========================================================================
-function subject = parse_subject(pth, subjname, sesname)
+function subject = parse_subject(pth, subjname, sesname, schema)
+  %
+  % Parse a subject's directory
+  %
   % For each modality (anat, func, eeg...) all the files from the
-  % corresponding directory are listed and their filenames parsed with extra
-  % BIDS valid entities listed (e.g. 'acq','ce','rec','fa'...).
+  % corresponding directory are listed and their filenames parsed with
+  % BIDS valid entities as listed in the schema (if the schema is not empty).
 
   subject.name    = subjname;   % subject name ('sub-<participant_label>')
   subject.path    = fullfile(pth, subjname, sesname); % full path to subject directory
-  subject.session = sesname; % session name ('' or 'ses-<label>')
-  subject.anat    = struct([]); % anatomy imaging data
-  subject.func    = struct([]); % task imaging data
-  subject.fmap    = struct([]); % fieldmap data
-  subject.beh     = struct([]); % behavioral experiment data
-  subject.dwi     = struct([]); % diffusion imaging data
-  subject.eeg     = struct([]); % EEG data
-  subject.meg     = struct([]); % MEG data
-  subject.ieeg    = struct([]); % iEEG data
-  subject.pet     = struct([]); % PET imaging data
-
-  subject = parse_anat(subject);
-  subject = parse_func(subject);
-  subject = parse_fmap(subject);
-  subject = parse_eeg(subject);
-  subject = parse_meg(subject);
-  subject = parse_beh(subject);
-  subject = parse_dwi(subject);
-  subject = parse_pet(subject);
-  subject = parse_ieeg(subject);
-
-end
-
-function subject = parse_anat(subject)
-
-  % --------------------------------------------------------------------------
-  % -Anatomy imaging data
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'anat');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('anat');
-
-    file_list = return_file_list('anat', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'anat');
-
-    end
-  end
-
-end
-
-function subject = parse_func(subject)
-
-  % --------------------------------------------------------------------------
-  % -Task imaging data
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'func');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('func');
-
-    file_list = return_file_list('func', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'func');
-
-      subject.func(end).meta = struct([]); % ?
-
-    end
-
-    file_list = return_event_file_list('func', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'func');
-
-      subject.func(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_physio_stim_file_list('func', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'func');
-
-      subject.func(end).meta = struct([]); % ?
-
-    end
-  end
-end
-
-function subject = parse_fmap(subject)
-  %
-  % TODO:
-  %
-  % 20210114 - From Remi:
-  % For other modalities, metadata are fetched upon query.
-  % It is unclear why we do it differently for fmaps
-
-  % --------------------------------------------------------------------------
-  % -Fieldmap data
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'fmap');
-
-  if exist(pth, 'dir')
-
-    file_list = return_file_list('fmap', subject);
-
-    j = 1;
-
-    % -Phase difference image and at least one magnitude image
-    % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'phase_difference_image');
-
-    if any(~cellfun(@isempty, labels))
-
-      idx = find(~cellfun(@isempty, labels));
-
-      for i = 1:numel(idx)
-
-        subject.fmap(j).type = 'phasediff';
-        subject.fmap(j).filename = file_list{idx(i)};
-        subject.fmap(j).magnitude = { ...
-                                     strrep(file_list{idx(i)}, ...
-                                            '_phasediff.nii', ...
-                                            '_magnitude1.nii'), ...
-                                     strrep(file_list{idx(i)}, ...
-                                            '_phasediff.nii', ...
-                                            '_magnitude2.nii')}; % optional
-
-        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
-
-        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
-        subject.fmap(j).meta = struct([]);
-        % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(metafile)
-          subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        end
-
-        j = j + 1;
-
-      end
-    end
-
-    % -Two phase images and two magnitude images
-    % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'two_phase_image');
-
-    if any(~cellfun(@isempty, labels))
-
-      idx = find(~cellfun(@isempty, labels));
-
-      for i = 1:numel(idx)
-
-        subject.fmap(j).type = 'phase12';
-        subject.fmap(j).filename = { ...
-                                    file_list{idx(i)}, ...
-                                    strrep(file_list{idx(i)}, ...
-                                           '_phase1.nii', ...
-                                           '_phase2.nii')};
-        subject.fmap(j).magnitude = { ...
-                                     strrep(file_list{idx(i)}, ...
-                                            '_phase1.nii', ...
-                                            '_magnitude1.nii'), ...
-                                     strrep(file_list{idx(i)}, ...
-                                            '_phase1.nii', ...
-                                            '_magnitude2.nii')};
-
-        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
-
-        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
-        subject.fmap(j).meta = struct([]);
-        % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(metafile)
-          subject.fmap(j).meta = { ...
-                                  bids.util.jsondecode(metafile), ...
-                                  bids.util.jsondecode(strrep(metafile, ...
-                                                              '_phase1.json', ...
-                                                              '_phase2.json'))};
-        end
-
-        j = j + 1;
-
-      end
-
-    end
-
-    % -A single, real fieldmap image
-    % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'fieldmap_image');
-
-    if any(~cellfun(@isempty, labels))
-
-      idx = find(~cellfun(@isempty, labels));
-
-      for i = 1:numel(idx)
-
-        subject.fmap(j).type = 'fieldmap';
-        subject.fmap(j).filename = file_list{idx(i)};
-        subject.fmap(j).magnitude = strrep(file_list{idx(i)}, ...
-                                           '_fieldmap.nii', ...
-                                           '_magnitude.nii');
-
-        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
-
-        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
-        subject.fmap(j).meta = struct([]);
-        % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(metafile)
-          subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        end
-
-        j = j + 1;
-
-      end
-    end
-
-    % -Multiple phase encoded directions (topup)
-    % ----------------------------------------------------------------------
-    labels = return_labels_fieldmap(file_list, 'phase_encoded_direction_image');
-
-    if any(~cellfun(@isempty, labels))
-
-      idx = find(~cellfun(@isempty, labels));
-
-      for i = 1:numel(idx)
-
-        subject.fmap(j).type = 'epi';
-        subject.fmap(j).filename = file_list{idx(i)};
-        subject.fmap(j).dir = labels{idx(i)}.dir;
-
-        subject = append_common_fmap_fields_to_structure(subject, labels{idx(i)}, j);
-
-        metafile = return_fmap_metadata_file(subject, file_list{idx(i)});
-        subject.fmap(j).meta = struct([]);
-        % (!) TODO: file can also be stored at higher levels (inheritance principle)
-        if ~isempty(metafile)
-          subject.fmap(j).meta = bids.util.jsondecode(metafile);
-        end
-
-        j = j + 1;
-
-      end
-    end
-  end
-
-end
-
-function subject = parse_eeg(subject)
-  % --------------------------------------------------------------------------
-  % -EEG data
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'eeg');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('eeg');
-
-    file_list = return_file_list('eeg', subject);
-
-    for i = 1:numel(file_list)
-
-      % European data format (.edf)
-      % BrainVision Core Data Format (.vhdr, .vmrk, .eeg) by Brain Products GmbH
-      % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
-      % Biosemi data format (.bdf)
-
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      switch p.ext
-        case {'.edf', '.vhdr', '.set', '.bdf'}
-          % each recording is described with a single file,
-          % even though the data can consist of multiple
-          subject.eeg = [subject.eeg p];
-          subject.eeg(end).meta = struct([]); % ?
-        case {'.vmrk', '.eeg', '.fdt'}
-          % skip the additional files that come with certain data formats
+  subject.session = sesname;    % session name ('' or 'ses-<label>')
+  subject.scans   = struct([]); % for sub-<participant_label>_scans.tsv
+  subject.sess    = struct([]); % for sub-<participants_label>_sessions.tsv
+
+  modality_groups = bids.schema.return_modality_groups(schema);
+
+  for iGroup = 1:numel(modality_groups)
+
+    modalities = bids.schema.return_modalities(subject, schema, modality_groups{iGroup});
+
+    % if we go schema-less, we pass an empty schema to all the parsing functions
+    % so the parsing is unconstrained
+    for iModality = 1:numel(modalities)
+      switch modalities{iModality}
+        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet'}
+          subject = parse_using_schema(subject, modalities{iModality}, schema);
+        case 'dwi'
+          subject = parse_dwi(subject, schema);
+        case 'fmap'
+          subject = parse_fmap(subject, schema);
+        case 'perf'
+          subject = parse_perf(subject, schema);
         otherwise
-          % skip unknown files
+          % in case we are going schemaless
+          % and the modality is not one of the usual suspect
+          subject.(modalities{iModality}) = struct([]);
+          subject = parse_using_schema(subject, modalities{iModality}, []);
       end
-
     end
 
-    file_list = return_event_file_list('eeg', subject);
+  end
+
+end
+
+function subject = parse_using_schema(subject, modality, schema)
+
+  pth = fullfile(subject.path, modality);
+
+  if exist(pth, 'dir')
+
+    subject = bids.internal.add_missing_field(subject, modality);
+
+    file_list = return_file_list(modality, subject, schema);
 
     for i = 1:numel(file_list)
 
-      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
-
-      subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_channel_description_file_list('eeg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
-
-      subject.eeg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_session_specific_file_list('eeg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'eeg');
-
-      subject.eeg(end).meta = struct([]); % ?
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
     end
 
@@ -488,169 +192,146 @@ function subject = parse_eeg(subject)
 
 end
 
-function subject = parse_meg(subject)
+function subject = parse_dwi(subject, schema)
+
   % --------------------------------------------------------------------------
-  % -MEG data
+  %  Diffusion imaging data
   % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'meg');
+
+  modality = 'dwi';
+  pth = fullfile(subject.path, modality);
 
   if exist(pth, 'dir')
 
-    entities = return_entities('meg');
+    subject = bids.internal.add_missing_field(subject, modality);
 
-    file_list = return_file_list('meg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
-
-      subject.meg(end).meta = struct([]); % ?
-
-    end
-
-    file_list = return_event_file_list('meg', subject);
+    file_list = return_file_list(modality, subject, schema);
 
     for i = 1:numel(file_list)
 
-      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
-      subject.meg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
+      % if this file is a nifti image we add the bval and bvec as dependencies
+      if ~isempty(subject.(modality)) && ...
+              any(strcmp(subject.(modality)(end).ext, {'.nii', '.nii.gz'}))
 
-    end
+        fullpath_filename = fullfile(subject.path, modality, file_list{i});
 
-    file_list = return_channel_description_file_list('meg', subject);
+        % bval & bvec file
+        % ------------------------------------------------------------------
+        % TODO: they can also be stored at higher levels (inheritance principle)
+        % TODO: refactor and deal with all this after file indexing
+        bvalfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bval$');
+        if isfield(bvalfile, 'filename')
+          subject.dwi(end).dependencies.bval = bids.util.tsvread(bvalfile.filename);
+        end
 
-    for i = 1:numel(file_list)
+        bvecfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bvec$');
+        if isfield(bvalfile, 'filename')
+          subject.dwi(end).dependencies.bvec = bids.util.tsvread(bvecfile.filename);
+        end
 
-      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
-
-      subject.meg(end).meta = bids.util.tsvread(fullfile(pth, file_list{i})); % ?
-
-    end
-
-    file_list = return_session_specific_file_list('meg', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'meg');
-
-      subject.meg(end).meta = struct([]); % ?
-
-    end
-
-  end
-
-end
-
-function subject = parse_beh(subject)
-  % --------------------------------------------------------------------------
-  % -Behavioral experiments data
-  %
-  % - Event timing, metadata, physiological and other continuous recordings
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'beh');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('beh');
-
-    file_list = return_file_list('beh', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'beh');
-
-    end
-  end
-end
-
-function subject = parse_dwi(subject)
-  % --------------------------------------------------------------------------
-  % -Diffusion imaging data
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'dwi');
-
-  if exist(pth, 'dir')
-
-    entities = return_entities('dwi');
-
-    file_list = return_file_list('dwi', subject);
-
-    for i = 1:numel(file_list)
-
-      subject = append_to_structure(file_list{i}, entities, subject, 'dwi');
-
-      % -bval file
-      % ------------------------------------------------------------------
-      % bval file can also be stored at higher levels (inheritance principle)
-      bvalfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bval$');
-      if isfield(bvalfile, 'filename')
-        subject.dwi(end).bval = bids.util.tsvread(bvalfile.filename); % ?
-      end
-
-      % -bvec file
-      % ------------------------------------------------------------------
-      % bvec file can also be stored at higher levels (inheritance principle)
-      bvecfile = bids.internal.get_metadata(file_list{i}, '^.*%s\\.bvec$');
-      if isfield(bvalfile, 'filename')
-        subject.dwi(end).bvec = bids.util.tsvread(bvecfile.filename); % ?
       end
 
     end
   end
 end
 
-function subject = parse_pet(subject)
+function subject = parse_perf(subject, schema)
+
   % --------------------------------------------------------------------------
-  % -Positron Emission Tomography imaging data
+  % ASL perfusion imaging data
   % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'pet');
+
+  modality = 'perf';
+  pth = fullfile(subject.path, 'perf');
 
   if exist(pth, 'dir')
 
-    entities = return_entities('pet');
+    subject = bids.internal.add_missing_field(subject, modality);
 
-    file_list = return_file_list('pet', subject);
+    file_list = return_file_list(modality, subject, schema);
 
     for i = 1:numel(file_list)
 
-      subject = append_to_structure(file_list{i}, entities, subject, 'pet');
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
+
+      switch subject.perf(i).suffix
+
+        case 'asl'
+
+          subject.perf(i).meta = [];
+          subject.perf(i).dependencies = [];
+
+          subject.perf(i).meta = bids.internal.get_metadata( ...
+                                                            fullfile( ...
+                                                                     subject.path, ...
+                                                                     modality, ...
+                                                                     file_list{i}));
+
+          aslcontext_file = strrep(subject.perf(i).filename, ...
+                                   ['_asl' subject.perf(i).ext], ...
+                                   '_aslcontext.tsv');
+          subject.perf(i).dependencies.context = manage_tsv( ...
+                                                            struct('content', [], 'meta', []), ...
+                                                            pth, ...
+                                                            aslcontext_file);
+
+          subject.perf(i) = manage_asllabeling(subject.perf(i), pth);
+
+          subject.perf(i) = manage_M0(subject.perf(i), pth);
+
+      end
 
     end
+
   end
+
 end
 
-function subject = parse_ieeg(subject)
-  % --------------------------------------------------------------------------
-  % -Human intracranial electrophysiology
-  % --------------------------------------------------------------------------
-  pth = fullfile(subject.path, 'ieeg');
+function subject = parse_fmap(subject, schema)
+
+  modality = 'fmap';
+  pth = fullfile(subject.path, modality);
 
   if exist(pth, 'dir')
 
-    entities = return_entities('ieeg');
+    subject = bids.internal.add_missing_field(subject, modality);
 
-    file_list = return_file_list('ieeg', subject);
+    file_list = return_file_list(modality, subject, schema);
 
     for i = 1:numel(file_list)
 
-      % European Data Format (.edf)
-      % BrainVision Core Data Format (.vhdr, .eeg, .vmrk) by Brain Products GmbH
-      % The format used by the MATLAB toolbox EEGLAB (.set and .fdt files)
-      % Neurodata Without Borders (.nwb)
-      % MEF3 (.mef)
+      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
 
-      p = bids.internal.parse_filename(file_list{i}, entities);
-      switch p.ext
-        case {'.edf', '.vhdr', '.set', '.nwb', '.mef'}
-          % each recording is described with a single file,
-          % even though the data can consist of multiple
-          subject.ieeg = [subject.ieeg p];
-          subject.ieeg(end).meta = struct([]); % ?
-        case {'.vmrk', '.eeg', '.fdt'}
-          % skip the additional files that come with certain data formats
-        otherwise
-          % skip unknown files
+      switch subject.fmap(i).suffix
+
+        % -A single, real fieldmap image
+        case {'fieldmap', 'magnitude'}
+          subject.fmap(i).dependencies.magnitude = strrep(file_list{idx(i)}, ...
+                                                          '_fieldmap.nii', ...
+                                                          '_magnitude.nii');
+
+          % Phase difference image and at least one magnitude image
+        case {'phasediff'}
+          subject.fmap(i).dependencies.magnitude = { ...
+                                                    strrep(file_list{i}, ...
+                                                           '_phasediff.nii', ...
+                                                           '_magnitude1.nii'), ...
+                                                    strrep(file_list{i}, ...
+                                                           '_phasediff.nii', ...
+                                                           '_magnitude2.nii')}; % optional
+
+          % Two phase images and two magnitude images
+        case {'phase1', 'phase2'}
+          subject.fmap(i).dependencies.magnitude = { ...
+                                                    strrep(file_list{i}, ...
+                                                           '_phase1.nii', ...
+                                                           '_magnitude1.nii'), ...
+                                                    strrep(file_list{i}, ...
+                                                           '_phase1.nii', ...
+                                                           '_magnitude2.nii')};
+
       end
 
     end
@@ -663,19 +344,46 @@ end
 %                            HELPER FUNCTIONS
 % --------------------------------------------------------------------------
 
-function subject = append_to_structure(file, entities, subject, modality)
+function BIDS = validate_description(BIDS, use_schema)
 
-  p = bids.internal.parse_filename(file, entities);
-  subject.(modality) = [subject.(modality) p];
+  if ~exist(fullfile(BIDS.dir, 'dataset_description.json'), 'file')
+
+    msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
+                  BIDS.dir);
+
+    tolerant_message(use_schema, msg);
+
+  end
+  try
+    BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
+  catch err
+    msg = sprintf('BIDS dataset description could not be read: %s', err.message);
+    tolerant_message(use_schema, msg);
+  end
+
+  fields_to_check = {'BIDSVersion', 'Name'};
+  for iField = 1:numel(fields_to_check)
+
+    if ~isfield(BIDS.description, fields_to_check{iField})
+      msg = sprintf( ...
+                    'BIDS dataset description not valid: missing %s field.', ...
+                    fields_to_check{iField});
+      tolerant_message(use_schema, msg);
+    end
+
+    % TODO
+    % Add warning if bids version does not match schema version
+
+  end
 
 end
 
-function subject = append_common_fmap_fields_to_structure(subject, labels, idx)
-
-  subject.fmap(idx).ses = regexprep(labels.ses, '^_[a-zA-Z0-9]+-', '');
-  subject.fmap(idx).acq = regexprep(labels.acq, '^_[a-zA-Z0-9]+-', '');
-  subject.fmap(idx).run = regexprep(labels.run, '^_[a-zA-Z0-9]+-', '');
-
+function tolerant_message(use_schema, msg)
+  if use_schema
+    error(msg);
+  else
+    warning(msg);
+  end
 end
 
 function f = convert_to_cell(f)
@@ -686,140 +394,21 @@ function f = convert_to_cell(f)
   end
 end
 
-function entities = return_entities(modality)
+function file_list = return_file_list(modality, subject, schema)
 
-  switch modality
+  % We list anything but json files
 
-    case 'anat'
-      entities = {'sub', 'ses', 'acq', 'ce', 'rec', 'fa', 'echo', 'inv', 'run'};
+  % TODO
+  % it should be possible to create some of those patterns for the regexp
+  % based on some of the required entities written down in the schema
 
-    case 'func'
-      entities = {'sub', ...
-                  'ses', ...
-                  'task', ...
-                  'acq', ...
-                  'rec', ...
-                  'fa', ...
-                  'echo', ...
-                  'dir', ...
-                  'inv', ...
-                  'run', ...
-                  'recording', ...
-                  'meta'};
+  % TODO
+  % this does not cover coordsystem.json
+  % jn to omit json but not .pos file for headshape.pos
 
-    case {'eeg', 'ieeg'}
-      entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
-
-    case 'meg'
-      entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
-
-    case 'beh'
-      entities = {'sub', 'ses', 'task'};
-
-    case 'dwi'
-      entities = {'sub', 'ses', 'acq', 'run', 'bval', 'bvec'};
-
-    case 'pet'
-      entities = {'sub', 'ses', 'task', 'acq', 'rec', 'run'};
-
-  end
-end
-
-function labels = return_labels_fieldmap(file_list, fiefmap_type)
-
-  direction_pattern = '';
-
-  switch fiefmap_type
-
-    case 'phase_difference_image'
-      suffix = 'phasediff';
-
-    case 'two_phase_image'
-      suffix = 'phase1';
-
-    case 'fieldmap_image'
-      suffix = 'fieldmap';
-
-    case 'phase_encoded_direction_image'
-      suffix = 'epi';
-
-      direction_pattern = '_dir-(?<dir>[a-zA-Z0-9]+)?';
-
-  end
-
-  labels = regexp(file_list, [ ...
-                              '^sub-[a-zA-Z0-9]+', ...          % sub-<participant_label>
-                              '(?<ses>_ses-[a-zA-Z0-9]+)?', ... % ses-<label>
-                              '(?<acq>_acq-[a-zA-Z0-9]+)?', ... % acq-<label>
-                              direction_pattern, ...            % dir-<index>
-                              '(?<run>_run-[a-zA-Z0-9]+)?', ... % run-<index>
-                              '_' suffix '\.nii(\.gz)?$'], 'names');   % NIfTI file extension
-
-end
-
-% TODO
-%
-% more refactoring can be done across the several 'return_X_file_list' functions
-%
-
-function file_list = return_file_list(modality, subject)
-
-  switch modality
-
-    case 'anat'
-      pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
-
-    case 'func'
-      pattern = '_task-.*_bold\\.nii(\\.gz)?';
-
-    case 'fmap'
-      pattern = '\\.nii(\\.gz)?';
-
-    case 'eeg'
-      pattern = '_task-.*_eeg\\..*[^json]';
-
-    case 'meg'
-      pattern = '_task-.*_meg\\..*[^json]';
-
-    case 'beh'
-      pattern = '_(events\\.tsv|beh\\.json|physio\\.tsv\\.gz|stim\\.tsv\\.gz)';
-
-    case 'dwi'
-      pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
-
-    case 'pet'
-      pattern = '_task-.*_pet\\.nii(\\.gz)?';
-
-    case 'ieeg'
-      pattern = '_task-.*_ieeg\\..*[^json]';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
-
-  if strcmp(modality, 'meg') && isempty(file_list)
-    file_list = d;
-  end
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function file_list = return_event_file_list(modality, subject)
-  %
-  % TODO: events file can also be stored at higher levels (inheritance principle)
-  %
-
-  switch modality
-
-    case {'func', 'eeg', 'meg'}
-      pattern = '_task-.*_events\\.tsv';
-
+  pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
+  if isempty(schema)
+    pattern = '_([a-zA-Z0-9]+){1}\\..*';
   end
 
   pth = fullfile(subject.path, modality);
@@ -831,92 +420,271 @@ function file_list = return_event_file_list(modality, subject)
 
   file_list = convert_to_cell(file_list);
 
-end
-
-function file_list = return_physio_stim_file_list(modality, subject)
-  %
-  % Physiological and other continuous recordings file
-  %
-  % TODO: stim files can also be stored at higher levels (inheritance principle)
-  %
-
-  switch modality
-
-    case {'func'}
-      pattern = '_task-.*_(physio|stim)\\.tsv\\.gz';
-
-  end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
-
-  file_list = convert_to_cell(file_list);
-
-end
-
-function metafile = return_fmap_metadata_file(subject, fmap_file)
-
-  pth = fullfile(subject.path, 'fmap');
-
-  fb = bids.internal.file_utils(bids.internal.file_utils( ...
-                                                         fmap_file, ...
-                                                         'basename'), ...
-                                'basename');
-  metafile = fullfile(pth, bids.internal.file_utils(fb, 'ext', 'json'));
-
-  if ~exist(metafile, 'file')
-    metafile = [];
+  if strcmp(modality, 'meg') && ~isempty(d)
+    for i = 1:size(d, 1)
+      file_list{end + 1, 1} = d(i, :);
+    end
   end
 
 end
 
-function file_list = return_channel_description_file_list(modality, subject)
-  %
-  % Channel description table
-  %
-  % TODO: those files can also be stored at higher levels (inheritance principle)
-  %
+function structure = manage_tsv(structure, pth, filename)
 
-  switch modality
+  ext = bids.internal.file_utils(filename, 'ext');
+  tsv_file = bids.internal.file_utils('FPList', ...
+                                      pth,  ...
+                                      ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
-    case {'eeg', 'meg'}
-      pattern = '_task-.*_channels\\.tsv';
+  if isempty(tsv_file)
+    warning('Missing: %s', fullfile(pth, filename));
+
+  else
+    structure.content = bids.util.tsvread(tsv_file);
+
+    tsv_file = bids.internal.file_utils('FPList', ...
+                                        pth,  ...
+                                        ['^' strrep(filename, ['.' ext], '\.json') '$']);
+    if ~isempty(tsv_file)
+      structure.meta = bids.util.jsondecode(tsv_file);
+    end
 
   end
-
-  pth = fullfile(subject.path, modality);
-
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s.*' pattern '$'], ...
-                                                    subject.name));
-
-  file_list = convert_to_cell(file_list);
 
 end
 
-function file_list = return_session_specific_file_list(modality, subject)
+function BIDS = manage_intended_for(BIDS)
 
-  switch modality
+  % Loops through all the files with potential ``intentedFor`` metadata
+  % and creates an ``intended_for`` field with the fullpath list of all the target files
+  % it is intended for that exist.
+  %
+  % Also update the structure of each target file with an ``informed_by`` field
 
-    case {'eeg', 'meg'}
-      pattern = [ ...
-                 '(_ses-[a-zA-Z0-9]+)?.*_', ...
-                 '(electrodes\\.tsv|photo\\.jpg|coordsystem\\.json|headshape\\..*)'];
+  suffix_with_intended_for = { ...
+                              'phasediff'; ...
+                              'phase1'; ...
+                              'phase2'; ...
+                              'fieldmap'; ...
+                              'epi'; ...
+                              'm0scan'; ...
+                              'coordsystem'};
+
+  for iSuffix = 1:numel(suffix_with_intended_for)
+    file_list = bids.query(BIDS, 'data', 'suffix', suffix_with_intended_for(iSuffix));
+
+    for iFile = 1:size(file_list, 1)
+
+      info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
+
+      [metadata, intended_for] = check_intended_for_exist(BIDS.subjects(info_src.sub_idx), ...
+                                                          fullfile( ...
+                                                                   info_src.path, ...
+                                                                   info_src.modality, ...
+                                                                   info_src.filename));
+
+      BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx).meta = metadata;
+      BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx).intended_for = ...
+          intended_for;
+
+      % update "dependency" field of target file
+      informed_by = [];
+      for iTargetFile = 1:size(intended_for, 1)
+
+        info_tgt = bids.internal.return_file_info(BIDS, intended_for{iTargetFile});
+
+        % TODO: this should probably check that the informed_by field does not
+        % already exist in the structure
+        % TODO: This assumes that a file will only be informed by a single file from
+        % this moodality
+        informed_by.(info_src.modality) = file_list{iFile};
+        BIDS.subjects(info_tgt.sub_idx).(info_tgt.modality)(info_tgt.file_idx).informed_by = ...
+            informed_by;
+      end
+
+    end
 
   end
 
-  pth = fullfile(subject.path, modality);
+end
 
-  [file_list, d] = bids.internal.file_utils('List', ...
-                                            pth, ...
-                                            sprintf(['^%s' pattern '$'], ...
-                                                    subject.name));
+function [metadata, intended_for] = check_intended_for_exist(subject, filename)
 
-  file_list = convert_to_cell(file_list);
+  metadata =  bids.internal.get_metadata(filename);
+
+  intended_for = {};
+
+  if isempty(metadata) || ~isfield(metadata, 'IntendedFor')
+    warning('Missing field IntendedFor for %s', filename);
+    return
+
+  else
+
+    path_intended_for = {};
+
+    if ischar(metadata.IntendedFor)
+      path_intended_for{1, 1} = metadata.IntendedFor;
+
+    elseif isstruct(metadata.IntendedFor)
+      for iPath = 1:length(metadata.IntendedFor)
+        path_intended_for{iPath, 1} = metadata.IntendedFor(iPath); %#ok<*AGROW>
+      end
+
+    end
+  end
+
+  % get "subject path" without the session folder (if it exists)
+  subject_path = subject.path;
+  tmp = bids.internal.file_utils(subject_path, 'filename');
+  if strcmp(tmp(1:3), 'ses')
+    subject_path = bids.internal.file_utils(subject_path, 'path');
+  end
+
+  for iPath = 1:size(path_intended_for, 1)
+
+    % create a fullname path for current operating system
+    fullpath_filename = fullfile(subject_path, ...
+                                 strrep(path_intended_for{iPath}, '/', filesep));
+
+    % check if this file is missing
+    if ~exist(fullpath_filename, 'file')
+      warning(['Missing: ' fullpath_filename]);
+
+    else
+      intended_for{end + 1, 1} = fullpath_filename;
+
+    end
+  end
+
+end
+
+function perf = manage_asllabeling(perf, pth)
+  % labeling image metadata (OPTIONAL)
+  % ---------------------------
+  metafile = fullfile(pth, strrep(perf.filename, ...
+                                  ['_asl' perf.ext], ...
+                                  '_asllabeling.jpg'));
+
+  if exist(metafile, 'file')
+    [~, Ffile] = fileparts(metafile);
+    perf.dependencies.labeling_image.filename = [Ffile '.jpg'];
+
+  end
+
+end
+
+function perf = manage_M0(perf, pth)
+
+  % M0 field is flexible:
+
+  if ~isfield(perf.meta, 'M0Type')
+    warning('M0Type field missing for %s', perf.filename);
+
+  else
+
+    m0_type = [];
+    m0_explanation = [];
+    m0_volume_index = [];
+    m0_value = [];
+    m0_filename = [];
+    m0_sidecar = [];
+
+    switch perf.meta.M0Type
+
+      case 'Separate'
+        % the M0 was obtained as a separate scan
+        m0_type = 'separate_scan';
+        m0_explanation = 'M0 was obtained as a separate scan';
+
+        % M0scan.nii filename
+        % assuming the (.nii|.nii.gz) extension choice is the same throughout
+        m0_filename = strrep(perf.filename, ...
+                             ['_asl' perf.ext], ...
+                             ['_m0scan' perf.ext]);
+
+        if ~exist(fullfile(pth, m0_filename), 'file')
+          warning(['Missing: ' m0_filename]);
+        else
+          % subject.perf(j).m0_filename = m0_filename;
+          % -> this is included in the same structure for the m0scan.nii
+        end
+
+        % M0 sidecar filename
+        m0_sidecar = strrep(perf.filename, ...
+                            ['_asl' perf.ext], ...
+                            '_m0scan.json');
+
+        if ~exist(fullfile(pth, m0_sidecar), 'file')
+          warning(['Missing: ' m0_sidecar]);
+
+        else
+          % subject.perf(j).m0_json_sidecar_filename = m0_json_sidecar_filename;
+          % -> this is included in the same structure for the m0scan.nii
+        end
+
+      case 'Included'
+        % M0 is one or more image(s) in the *asl.nii[.gz] timeseries
+        if ~isfield(perf.dependencies, 'context') || ...
+                ~isfield(perf.dependencies.context.content, 'volume_type')
+          warning('Cannot find M0 volume in aslcontext, context-information missing');
+
+        else
+          m0indices = find(cellfun(@(x) strcmp(x, 'm0scan'), ...
+                                   perf.dependencies.context.content.volume_type) == true);
+
+          if isempty(m0indices)
+            warning('No M0 volume found in aslcontext');
+
+          else
+            m0_type = 'within_timeseries';
+            m0_explanation = 'M0 is one or more image(s) in the *asl.nii[.gz] timeseries';
+            m0_volume_index = m0indices;
+
+          end
+        end
+
+      case 'Estimate'
+        m0_type = 'single_value';
+        m0_explanation = [ ...
+                          'this is a single estimated M0 value, ', ...
+                          'e.g. when the M0 is obtained from an external scan and/or study'];
+        m0_value = perf.meta.M0Estimate;
+
+      case 'Absent'
+        m0_type = 'use_control_as_m0';
+        m0_explanation = [ ...
+                          'M0 is absent, so we can use the (average) control volume ', ...
+                          'as pseudo-M0 (if no background suppression was used)'];
+
+        if perf.meta.BackgroundSuppression == true
+          warning('Caution when using control as M0, background suppression was applied');
+        end
+
+      otherwise
+        warning(['Unknown M0Type:', perf.meta.M0Type]);
+
+    end
+
+    if ~isempty(m0_type)
+      perf.dependencies.m0.type = m0_type;
+      perf.dependencies.m0.explanation = m0_explanation;
+    end
+
+    if ~isempty(m0_volume_index)
+      perf.dependencies.m0.volume_index = m0_volume_index;
+    end
+
+    if ~isempty(m0_value)
+      perf.dependencies.m0.value = m0_value;
+    end
+
+    if ~isempty(m0_filename)
+      perf.dependencies.m0.filename = m0_filename;
+    end
+
+    if ~isempty(m0_sidecar)
+      perf.dependencies.m0.sidecar = m0_sidecar;
+    end
+
+  end
 
 end

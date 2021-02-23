@@ -14,8 +14,6 @@ function test_suite = test_tsvwrite %#ok<*STOUT>
 
 end
 
-
-
 function test_tsvwrite_basic()
 
   pth = fileparts(mfilename('fullpath'));

@@ -44,7 +44,7 @@
   "run": {
     "name": "Run",
     "entity": "run",
-    "description": "If several scans of the same modality are acquired they MUST be indexed\nwith a key-value pair: `_run-1`, `_run-2`, ..., `_run-<index>`\n(only nonnegative integers are allowed for the `<index>`).\nWhen there is only one scan of a given type the run key MAY be omitted.\n",
+    "description": "If several scans with the same acquisition parameters are acquired in the same session,\nthey MUST be indexed with the [`run-<index>`](../99-appendices/09-entities.md#run) entity:\n`_run-1`, `_run-2`, `_run-3`, and so on (only nonnegative integers are allowed as\nrun labels).\n\nIf different entities apply,\nsuch as a different session indicated by [`ses-<label>`](../99-appendices/09-entities.md#ses),\nor different acquisition parameters indicated by\n[`acq-<label>`](../99-appendices/09-entities.md#acq),\nthen `run` is not needed to distinguish the scans and MAY be omitted.\n",
     "format": "index"
   },
   "modality": {
@@ -65,13 +65,13 @@
     "description": "If files belonging to an entity-linked file collection are acquired at different\nflip angles, the `_flip-<index>` key/value pair MUST be used to distinguish\nindividual files.\nThis entity represents the `FlipAngle` metadata field. Please note that the `<index>`\ndenotes the number/index (in the form of a nonnegative integer), not the `FlipAngle`\nvalue which needs to be stored in the field `FlipAngle` of the separate JSON file.\n",
     "format": "index"
   },
-  "inv": {
+  "inversion": {
     "name": "Inversion Time",
     "entity": "inv",
     "description": "If files belonging to an entity-linked file collection are acquired at different\ninversion times, the `_inv-<index>` key/value pair MUST be used to distinguish\nindividual files.\nThis entity represents the `InversionTime` metadata field. Please note that the `<index>`\ndenotes the number/index (in the form of a nonnegative integer), not the `InversionTime`\nvalue which needs to be stored in the field `InversionTime` of the separate JSON file.\n",
     "format": "index"
   },
-  "mt": {
+  "mtransfer": {
     "name": "Magnetization Transfer",
     "entity": "mt",
     "description": "If files belonging to an entity-linked file collection are acquired at different\nmagnetization transfer (MT) states, the `_mt-<label>` key/value pair MUST be used to\ndistinguish individual files.\nThis entity represents the `MTState` metadata field. Allowed label values for this\nentity are `on` and `off`, for images acquired in presence and absence of an MT pulse,\nrespectively.\n",
@@ -104,16 +104,16 @@
   "split": {
     "name": "Split",
     "entity": "split",
-    "description": "In the case of long data recordings that exceed a file size of 2Gb, the\n.fif files are conventionally split into multiple parts.\nEach of these files has an internal pointer to the next file.\nThis is important when renaming these split recordings to the BIDS\nconvention.\n\nInstead of a simple renaming, files should be read in and saved under their\nnew names with dedicated tools like MNE, which will ensure that not only\nthe file names, but also the internal file pointers will be updated.\nIt is RECOMMENDED that .fif files with multiple parts use the\n`split-<index>` entity to indicate each part.\n",
+    "description": "In the case of long data recordings that exceed a file size of 2Gb, the\n.fif files are conventionally split into multiple parts.\nEach of these files has an internal pointer to the next file.\nThis is important when renaming these split recordings to the BIDS\nconvention.\n\nInstead of a simple renaming, files should be read in and saved under their\nnew names with dedicated tools like [MNE-Python](https://mne.tools/),\nwhich will ensure that not only the file names, but also the internal file\npointers will be updated.\nIt is RECOMMENDED that .fif files with multiple parts use the\n`split-<index>` entity to indicate each part.\n",
     "format": "index"
   },
-  "res": {
+  "resolution": {
     "name": "Resolution",
     "entity": "res",
     "description": "Resolution of regularly sampled N-dimensional data.\nMUST have a corresponding `Resolution` metadata field to provide\ninterpretation.\n\nThis entity is only applicable to derivative data.\n",
     "format": "label"
   },
-  "den": {
+  "density": {
     "name": "Density",
     "entity": "den",
     "description": "Density of non-parametric surfaces.\nMUST have a corresponding `Density` metadata field to provide\ninterpretation.\n\nThis entity is only applicable to derivative data.\n",
@@ -125,7 +125,7 @@
     "description": "Tissue-type label, following a prescribed vocabulary.\nApplies to binary masks and probabilistic/partial volume segmentations\nthat describe a single tissue type.\n\nThis entity is only applicable to derivative data.\n",
     "format": "label"
   },
-  "desc": {
+  "description": {
     "name": "Description",
     "entity": "desc",
     "description": "When necessary to distinguish two files that do not otherwise have a\ndistinguishing entity, the `_desc-<label>` keyword-value SHOULD be used.\n\nThis entity is only applicable to derivative data.\n",

@@ -39,20 +39,35 @@ function test_get_metadata_basic()
   BIDS = bids.layout(pth);
 
   %% test func metadata base directory
-  metadata = bids.query(BIDS, 'metadata', 'type', 'bold');
+  metadata = bids.query(BIDS, 'metadata', 'suffix', 'bold');
   % assert(metadata.RepetitionTime == func.RepetitionTime);
 
   %% test func metadata subject 01
-  metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'type', 'bold');
+  metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'suffix', 'bold');
   % assert(metadata.RepetitionTime == func_sub_01.RepetitionTime);
 
   %% test anat metadata base directory
-  metadata = bids.query(BIDS, 'metadata', 'type', 'T1w');
+  metadata = bids.query(BIDS, 'metadata', 'suffix', 'T1w');
   % assert(metadata.FlipAngle == anat.FlipAngle);
 
   %% test anat metadata subject 01
-  metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'type', 'T1w');
-  assert(metadata.FlipAngle == anat_sub_01.FlipAngle);
-  assert(strcmp(metadata.Manufacturer, anat_sub_01.Manufacturer));
+  metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'suffix', 'T1w');
+  assertEqual(metadata.FlipAngle, anat_sub_01.FlipAngle);
+  assertEqual(metadata.Manufacturer, anat_sub_01.Manufacturer);
+
+end
+
+function test_get_metadata_internal()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'));
+
+  bids.internal.get_metadata( ...
+                             fullfile( ...
+                                      BIDS(1).subjects(2).path, ...
+                                      'anat', ...
+                                      BIDS(1).subjects(2).anat(1).filename), ...
+                             '%s');
 
 end
