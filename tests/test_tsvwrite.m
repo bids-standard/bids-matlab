@@ -14,48 +14,7 @@ function test_suite = test_tsvwrite %#ok<*STOUT>
 
 end
 
-function test_tsvwrite_row_wise_structure()
 
-  pth = fileparts(mfilename('fullpath'));
-
-  tsv_file = fullfile(pth, 'sub-01_task-STRUCTURE_events.tsv');
-
-  logFile(1, 1).onset = 2;
-  logFile(1, 1).trial_type = 'motion_up';
-  logFile(1, 1).duration = 1;
-  logFile(1, 1).speed = [];
-  logFile(1, 1).is_fixation = true;
-
-  logFile(2, 1).onset = NaN;
-  logFile(2, 1).trial_type = 'static';
-  logFile(2, 1).duration = 4;
-  logFile(2, 1).speed = 4;
-  logFile(2, 1).is_fixation = 3;
-
-  bids.util.tsvwrite(tsv_file, logFile);
-
-  % read the file &
-  % check the extra columns of the header and some of the content
-
-  FID = fopen(tsv_file, 'r');
-  C = textscan(FID, '%s%s%s%s%s', 'Delimiter', '\t', 'EndOfLine', '\n');
-
-  % check header
-  assertEqual(C{4}{1}, 'speed');
-
-  % check that empty values are entered as NaN: logFile.speed(1)
-  assertEqual(C{4}{2}, 'n/a');
-
-  % check that missing fields are entered as NaN: logFile.speed(2)
-  assertEqual(C{4}{3}, '4');
-
-  % check that NaN are written as : logFile.onset(2)
-  assertEqual(C{1}{3}, 'n/a'); %
-
-  % check values entered properly: logFile.is_fixation(2)
-  assertEqual(C{5}{3}, '3');
-
-end
 
 function test_tsvwrite_basic()
 
@@ -135,3 +94,51 @@ function test_read_write
   assertEqual(output, new_output);
 
 end
+
+%% TODO
+
+% The following test is silenced until we decide to support a "row wise structure"
+% as a possible data shape for the input opf TSV write
+
+% function test_tsvwrite_row_wise_structure()
+% 
+%   pth = fileparts(mfilename('fullpath'));
+% 
+%   tsv_file = fullfile(pth, 'sub-01_task-STRUCTURE_events.tsv');
+% 
+%   logFile(1, 1).onset = 2;
+%   logFile(1, 1).trial_type = 'motion_up';
+%   logFile(1, 1).duration = 1;
+%   logFile(1, 1).speed = [];
+%   logFile(1, 1).is_fixation = true;
+% 
+%   logFile(2, 1).onset = NaN;
+%   logFile(2, 1).trial_type = 'static';
+%   logFile(2, 1).duration = 4;
+%   logFile(2, 1).speed = 4;
+%   logFile(2, 1).is_fixation = 3;
+% 
+%   bids.util.tsvwrite(tsv_file, logFile);
+% 
+%   % read the file &
+%   % check the extra columns of the header and some of the content
+% 
+%   FID = fopen(tsv_file, 'r');
+%   C = textscan(FID, '%s%s%s%s%s', 'Delimiter', '\t', 'EndOfLine', '\n');
+% 
+%   % check header
+%   assertEqual(C{4}{1}, 'speed');
+% 
+%   % check that empty values are entered as NaN: logFile.speed(1)
+%   assertEqual(C{4}{2}, 'n/a');
+% 
+%   % check that missing fields are entered as NaN: logFile.speed(2)
+%   assertEqual(C{4}{3}, '4');
+% 
+%   % check that NaN are written as : logFile.onset(2)
+%   assertEqual(C{1}{3}, 'n/a'); %
+% 
+%   % check values entered properly: logFile.is_fixation(2)
+%   assertEqual(C{5}{3}, '3');
+% 
+% end
