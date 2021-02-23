@@ -13,11 +13,15 @@ function status = keep_file_for_query(file_struct, options)
       status = false;
       return
     end
+    if strcmp(options{l, 1}, 'prefix') && ~ismember(file_struct.prefix, options{l, 2})
+      status = false;
+      return
+    end
   end
 
   for l = 1:size(options, 1)
 
-    if ~any(strcmp(options{l, 1}, {'suffix', 'extension'}))
+    if ~any(strcmp(options{l, 1}, {'suffix', 'extension', 'prefix'}))
 
       if ~ismember(options{l, 1}, fieldnames(file_struct.entities))
         status = false;

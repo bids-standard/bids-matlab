@@ -6,6 +6,30 @@ function test_suite = test_layout_derivatives %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_prefix()
+
+  pth_bids_example = get_test_data_dir();
+
+  use_schema = false();
+
+  copyfile(fullfile(pth_bids_example, 'ds001', 'sub-01', 'func', ...
+                    'sub-01_task-balloonanalogrisktask_run-01_bold.nii.gz'), ...
+           fullfile(pth_bids_example, 'ds001', 'sub-01', 'func', ...
+                    'swuasub-01_task-balloonanalogrisktask_run-01_bold.nii'));
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'), use_schema);
+
+  data = bids.query(BIDS, 'data', ...
+                    'sub', '01', ...
+                    'run', '01', ...
+                    'prefix', 'swua');
+  basename = bids.internal.file_utils(data, 'basename');
+  assertEqual(basename, {'swuasub-01_task-balloonanalogrisktask_run-01_bold'});
+  
+  assertEqual(bids.query(BIDS, 'prefixes'), {'swua'});
+
+end
+
 function test_layout_parse_json()
 
   pth_bids_example = get_test_data_dir();

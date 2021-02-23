@@ -35,6 +35,8 @@ function p = parse_filename(filename, fields)
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2018--, BIDS-MATLAB developers
 
+  fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
+
   filename = bids.internal.file_utils(filename, 'filename');
 
   % -Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
@@ -50,13 +52,17 @@ function p = parse_filename(filename, fields)
     p.entities.(d{1}) = d{2};
   end
 
+  % identidy an eventual prefix to the file
+  tmp = regexp(parts{1}, '(sub)', 'split');
+  p.prefix = tmp{1};
+
   % -Extra fields can be added to the structure and ordered specifically.
   if nargin == 2
     for i = 1:numel(fields)
       p.entities = bids.internal.add_missing_field(p.entities, fields{i});
     end
     try
-      p = orderfields(p, {'filename', 'ext', 'suffix', 'entities'});
+      p = orderfields(p, fields_order);
       p.entities = orderfields(p.entities, fields);
     catch
       warning('bidsMatlab:noMatchingTemplate', ...
