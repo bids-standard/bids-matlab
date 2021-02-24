@@ -44,6 +44,7 @@ function result = query(BIDS, query, varargin)
                    'suffixes', ...
                    'data', ...
                    'metadata', ...
+                   'metafiles',...
                    'dependencies', ...
                    'extensions'};
 
@@ -79,12 +80,14 @@ function result = query(BIDS, query, varargin)
       result = regexprep(result, '^[a-zA-Z0-9]+-', '');
       result(cellfun('isempty', result)) = [];
 
-    case {'modalities', 'data'}
+    case {'modalities', 'data', 'metafiles'}
       result = result';
 
     case {'metadata', 'dependencies'}
       if numel(result) == 1
         result = result{1};
+      else
+        result = result';
       end
 
     case {'tasks', 'runs', 'suffixes', 'extensions'}
@@ -216,11 +219,16 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
                 result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
               end
 
+            case 'metafiles'
+              if isfield(d(k), 'filename')
+                fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
+                result = [result; fmeta];
+              end
+
             case 'metadata'
               if isfield(d(k), 'filename')
-
-                f = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
-                result{end + 1, 1} = bids.internal.get_metadata(f);
+                fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
+                result{end + 1, 1} = bids.internal.get_metadata(fmeta);
                 if ~isempty(target)
                   try
                     result{end} = subsref(result{end}, target);
