@@ -1,20 +1,36 @@
 function varargout = jsonencode(varargin)
+  %
   % Encode data to JSON-formatted file
-  % FORMAT bids.util.jsonencode(filename,json)
-  % filename - JSON filename
-  % json     - JSON structure
   %
-  % FORMAT S = bids.util.jsonencode(json)
-  % json     - JSON structure
-  % S        - serialized JSON structure (string)
+  % USAGE::
   %
-  % FORMAT [...] = bids.util.jsonencode(...,opts)
-  % opts     - structure of optional parameters:
-  %              Indent: string to use for indentation [Default: '']
-  %              ReplacementStyle: string to control how non-alphanumeric
-  %                characters are replaced [Default: 'underscore']
-  %              ConvertInfAndNaN: encode NaN, Inf and -Inf as "null"
-  %                [Default: true]
+  %   bids.util.jsonencode(filename, json, opts)
+  %
+  % :param filename: JSON filename
+  % :type filename: string
+  % :param json: JSON structure
+  % :type json: structure
+  %
+  %
+  % USAGE::
+  %
+  %   S = bids.util.jsonencode(json, opts)
+  %
+  % :param json: JSON structure
+  % :type json: structure
+  %
+  % :returns: - :S: (string) serialized JSON structure
+  %
+  % ---
+  %
+  % :param opts: structure of optional parameters:
+  %                 - Indent: string to use for indentation; [Default: ``''``]
+  %                 - ReplacementStyle: string to control how non-alphanumeric
+  %                    characters are replaced; [Default: ``'underscore'``]
+  %                 - ConvertInfAndNaN: encode ``NaN``, ``Inf`` and ``-Inf`` as ``"null"``;
+  %                    [Default: ``true``]
+  % :type opts: structure  -
+  %
 
   % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2018--, BIDS-MATLAB developers
