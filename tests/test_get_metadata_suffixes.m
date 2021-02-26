@@ -7,39 +7,39 @@ function test_suite = test_get_metadata_suffixes %#ok<*STOUT>
 end
 
 function test_get_metadata_suffixes_basic()
-    % ensures that "similar" suffixes are distinguished
+  % ensures that "similar" suffixes are distinguished
 
-    data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'SurfaceData');
-    
-    file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.shape.gii');
-    side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.json');
-    metadata = bids.internal.get_metadata(file);
-    expected_metadata = bids.util.jsondecode(side_car);
-    assertEqual(metadata, expected_metadata)
-    
-    file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.surf.gii');
-    side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.json');
-    metadata = bids.internal.get_metadata(file);
-    expected_metadata = bids.util.jsondecode(side_car);
-    assertEqual(metadata, expected_metadata)    
-    
-    file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
-    side_car = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.json');
-    metadata = bids.internal.get_metadata(file);
-    expected_metadata = bids.util.jsondecode(side_car);
-    assertEqual(metadata, expected_metadata)       
-    
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'SurfaceData');
+
+  file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.shape.gii');
+  side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.json');
+  metadata = bids.internal.get_metadata(file);
+  expected_metadata = bids.util.jsondecode(side_car);
+  assertEqual(metadata, expected_metadata);
+
+  file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.surf.gii');
+  side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.json');
+  metadata = bids.internal.get_metadata(file);
+  expected_metadata = bids.util.jsondecode(side_car);
+  assertEqual(metadata, expected_metadata);
+
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  side_car = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.json');
+  metadata = bids.internal.get_metadata(file);
+  expected_metadata = bids.util.jsondecode(side_car);
+  assertEqual(metadata, expected_metadata);
+
 end
 
 function test_get_metadata_particiants()
-    % ensures that "similar" suffixes are distinguished
+  % test files with no underscore in name.
 
-    pth_bids_example = get_test_data_dir();
-    
-    file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
-    side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
-    metadata = bids.internal.get_metadata(file, '^.*%s\\.json$');
-    expected_metadata = bids.util.jsondecode(side_car);
-    assertEqual(metadata, expected_metadata)   
-    
+  pth_bids_example = get_test_data_dir();
+
+  file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
+  side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
+  metadata = bids.internal.get_metadata(file);
+  expected_metadata = bids.util.jsondecode(side_car);
+  assertEqual(metadata, expected_metadata);
+
 end
