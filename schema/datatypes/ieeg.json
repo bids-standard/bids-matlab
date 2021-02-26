@@ -48,6 +48,7 @@
     "entities": {
       "subject": "required",
       "session": "optional",
+      "acquisition": "optional",
       "space": "optional"
     }
   },
@@ -56,13 +57,14 @@
       "electrodes"
     ],
     "extensions": [
+      ".json",
       ".tsv"
     ],
     "entities": {
       "subject": "required",
       "session": "optional",
-      "space": "optional",
-      "acquisition": "optional"
+      "acquisition": "optional",
+      "space": "optional"
     }
   },
   {
