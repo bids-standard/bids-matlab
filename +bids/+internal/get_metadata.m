@@ -20,7 +20,7 @@ function meta = get_metadata(filename, pattern)
   % Copyright (C) 2018--, BIDS-MATLAB developers
 
   if nargin == 1
-    pattern = '^.*%s\\.json$';
+    pattern = '^.*_%s\\.json$';
   end
 
   pth = fileparts(filename);
