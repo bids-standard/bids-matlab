@@ -47,7 +47,8 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "acquisition": "optional"
+      "acquisition": "optional",
+      "space": "optional"
     }
   },
   {
