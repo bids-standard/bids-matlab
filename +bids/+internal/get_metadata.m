@@ -19,8 +19,13 @@ function meta = get_metadata(filename, pattern)
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2018--, BIDS-MATLAB developers
 
+  % assume most files are of the form *_suffix.json
+  % add an exception for files with no suffix, like participants.tsv
   if nargin == 1
     pattern = '^.*_%s\\.json$';
+    if ~ismember('_', filename)
+        pattern = '^.*%s\\.json$';
+    end
   end
 
   pth = fileparts(filename);
