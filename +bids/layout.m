@@ -124,7 +124,8 @@ function BIDS = layout(root, use_schema)
   %% Dependencies
   % ==========================================================================
 
-  BIDS = manage_intended_for(BIDS);
+  % BIDS = manage_intended_for(BIDS);
+  BIDS = manage_dependencies(BIDS);
 
 end
 
@@ -152,12 +153,8 @@ function subject = parse_subject(pth, subjname, sesname, schema)
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
-        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet'}
+        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi'}
           subject = parse_using_schema(subject, modalities{iModality}, schema);
-        case 'dwi'
-          subject = parse_dwi(subject, schema);
-        case 'fmap'
-          subject = parse_fmap(subject, schema);
         case 'perf'
           subject = parse_perf(subject, schema);
         otherwise
@@ -184,57 +181,36 @@ function subject = parse_using_schema(subject, modality, schema)
 
     for i = 1:numel(file_list)
 
+      fullpath_filename = fullfile(pth, file_list{i});
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
+      subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+      subject.(modality)(end).dependencies.explicit = {};
+      subject.(modality)(end).dependencies.data = {};
+      subject.(modality)(end).dependencies.group = {};
 
-    end
-
-  end
-
-end
-
-function subject = parse_dwi(subject, schema)
-
-  % --------------------------------------------------------------------------
-  %  Diffusion imaging data
-  % --------------------------------------------------------------------------
-
-  modality = 'dwi';
-  pth = fullfile(subject.path, modality);
-
-  if exist(pth, 'dir')
-
-    subject = bids.internal.add_missing_field(subject, modality);
-
-    file_list = return_file_list(modality, subject, schema);
-
-    for i = 1:numel(file_list)
-
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-
-      % if this file is a nifti image we add the bval and bvec as dependencies
-      if ~isempty(subject.(modality)) && ...
-              any(strcmp(subject.(modality)(end).ext, {'.nii', '.nii.gz'}))
-
-        fullpath_filename = fullfile(subject.path, modality, file_list{i});
-
-        % bval & bvec file
-        % ------------------------------------------------------------------
-        % TODO: they can also be stored at higher levels (inheritance principle)
-        % TODO: refactor and deal with all this after file indexing
-        bvalfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bval$');
-        if isfield(bvalfile, 'filename')
-          subject.dwi(end).dependencies.bval = bids.util.tsvread(bvalfile.filename);
+      ext = subject.(modality)(end).ext;
+      suffix = subject.(modality)(end).suffix;
+      search = strrep(file_list{i}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
+      candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
+      candidates = cellstr(candidates);
+      for ii = 1:numel(candidates)
+        if strcmp(candidates{ii}, file_list{i})
+          continue;
         end
-
-        bvecfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bvec$');
-        if isfield(bvalfile, 'filename')
-          subject.dwi(end).dependencies.bvec = bids.util.tsvread(bvecfile.filename);
+        if bids.internal.endsWith(candidates{ii}, '.json')
+          continue
         end
-
+        match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
+        if isempty(match) % different suffix
+          subject.(modality)(end).dependencies.group{end+1} = fullfile(pth, candidates{ii});
+        else  % same suffix
+          subject.(modality)(end).dependencies.data{end+1} = fullfile(pth, candidates{ii});
+        end
       end
-
     end
+
   end
+
 end
 
 function subject = parse_perf(subject, schema)
@@ -254,7 +230,32 @@ function subject = parse_perf(subject, schema)
 
     for i = 1:numel(file_list)
 
+      fullpath_filename = fullfile(pth, file_list{i});
       subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
+      subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+      subject.(modality)(end).dependencies.explicit = {};
+      subject.(modality)(end).dependencies.data = {};
+      subject.(modality)(end).dependencies.group = {};
+
+      ext = subject.(modality)(end).ext;
+      suffix = subject.(modality)(end).suffix;
+      search = strrep(file_list{i}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
+      candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
+      candidates = cellstr(candidates);
+      for ii = 1:numel(candidates)
+        if strcmp(candidates{ii}, file_list{i})
+          continue;
+        end
+        if bids.internal.endsWith(candidates{ii}, '.json')
+          continue
+        end
+        match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
+        if isempty(match) % different suffix
+          subject.(modality)(end).dependencies.group{end+1} = fullfile(pth, candidates{ii});
+        else  % same suffix
+          subject.(modality)(end).dependencies.data{end+1} = fullfile(pth, candidates{ii});
+        end
+      end
 
       switch subject.perf(i).suffix
 
@@ -280,57 +281,6 @@ function subject = parse_perf(subject, schema)
           subject.perf(i) = manage_asllabeling(subject.perf(i), pth);
 
           subject.perf(i) = manage_M0(subject.perf(i), pth);
-
-      end
-
-    end
-
-  end
-
-end
-
-function subject = parse_fmap(subject, schema)
-
-  modality = 'fmap';
-  pth = fullfile(subject.path, modality);
-
-  if exist(pth, 'dir')
-
-    subject = bids.internal.add_missing_field(subject, modality);
-
-    file_list = return_file_list(modality, subject, schema);
-
-    for i = 1:numel(file_list)
-
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-
-      switch subject.fmap(i).suffix
-
-        % -A single, real fieldmap image
-        case {'fieldmap', 'magnitude'}
-          subject.fmap(i).dependencies.magnitude = strrep(file_list{idx(i)}, ...
-                                                          '_fieldmap.nii', ...
-                                                          '_magnitude.nii');
-
-          % Phase difference image and at least one magnitude image
-        case {'phasediff'}
-          subject.fmap(i).dependencies.magnitude = { ...
-                                                    strrep(file_list{i}, ...
-                                                           '_phasediff.nii', ...
-                                                           '_magnitude1.nii'), ...
-                                                    strrep(file_list{i}, ...
-                                                           '_phasediff.nii', ...
-                                                           '_magnitude2.nii')}; % optional
-
-          % Two phase images and two magnitude images
-        case {'phase1', 'phase2'}
-          subject.fmap(i).dependencies.magnitude = { ...
-                                                    strrep(file_list{i}, ...
-                                                           '_phase1.nii', ...
-                                                           '_magnitude1.nii'), ...
-                                                    strrep(file_list{i}, ...
-                                                           '_phase1.nii', ...
-                                                           '_magnitude2.nii')};
 
       end
 
@@ -450,6 +400,34 @@ function structure = manage_tsv(structure, pth, filename)
 
   end
 
+end
+
+function BIDS = manage_dependencies(BIDS)
+  % Loops over all files and retrieve all files that current file depends on
+  file_list = bids.query(BIDS, 'data');
+  for iFile = 1:size(file_list, 1)
+    info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
+    file = BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx);
+    metadata = bids.internal.get_metadata(file.metafile);
+
+    intended = {};
+    if isfield(metadata, 'IntendedFor')
+      intended = cellstr(metadata.IntendedFor);
+    end
+
+    for iIntended = 1:numel(intended)
+      dest = fullfile(BIDS.dir, BIDS.subjects(info_src.sub_idx).name, ...
+                      intended{iIntended});
+      if ~exist(dest, 'file')
+        warning(['IntendedFor file ' dest ' from ' file.filename ' not found']);
+        continue;
+      end
+      info_dest = bids.internal.return_file_info(BIDS, dest);
+      BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx)...
+          .dependencies.explicit{end+1} = file_list{iFile};
+    end
+
+  end
 end
 
 function BIDS = manage_intended_for(BIDS)
