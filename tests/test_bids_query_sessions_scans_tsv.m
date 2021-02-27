@@ -17,6 +17,8 @@ function test_query_sessions_tsv()
   BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
 
   assert(~isempty(BIDS.subjects(1).sess));
+  assert(~isempty(BIDS.subjects(1).scans));
+
 
 end
 
