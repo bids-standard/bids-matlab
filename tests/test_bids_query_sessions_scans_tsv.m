@@ -19,3 +19,13 @@ function test_query_sessions_tsv()
   assert(~isempty(BIDS.subjects(1).sess));
 
 end
+
+function test_query_scans_tsv()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds009'));
+
+  assert(~isempty(BIDS.subjects(1).scans));
+
+end

@@ -108,7 +108,7 @@ function BIDS = layout(root, use_schema)
     for iSess = 1:numel(sessions)
       if isempty(BIDS.subjects)
         BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
-        
+
       else
         new_subject = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
         [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
@@ -117,9 +117,7 @@ function BIDS = layout(root, use_schema)
         BIDS.subjects(end + 1) = new_subject;
 
       end
-      
 
-      
     end
 
   end
@@ -139,16 +137,24 @@ function subject = parse_subject(pth, subjname, sesname, schema)
   % corresponding directory are listed and their filenames parsed with
   % BIDS valid entities as listed in the schema (if the schema is not empty).
 
-  subject.name    = subjname;   % subject name ('sub-<participant_label>')
+  subject.name    = subjname;   % subject name ('sub-<label>')
   subject.path    = fullfile(pth, subjname, sesname); % full path to subject directory
   subject.session = sesname;    % session name ('' or 'ses-<label>')
-  subject.scans   = struct([]); % for sub-<participant_label>_scans.tsv
 
-  % for sub-<participants_label>_sessions.tsv
+  % for sub-<label>_sessions.tsv
+  % NOTE: this will end up being the same file when subject
+  %       has several sessions
   subject.sess = bids.internal.file_utils('FPList', ...
-                                      return_subject_path(subject),  ...
-                                      ['^' subjname, '_sessions.tsv' '$']);
-  
+                                          return_subject_path(subject),  ...
+                                          ['^' subjname, '_sessions.tsv' '$']);
+
+  % for sub-<label>[_ses-<label>]_scans.tsv
+  % NOTE: *_scans.json files can stored at the root level
+  %       and this should implemented when querying scans.tsv content + metadata
+  subject.scans{1} = bids.internal.file_utils('FPList', ...
+                                              subject.path,  ...
+                                              ['^' subjname, '.*_scans.tsv' '$']);
+
   modality_groups = bids.schema.return_modality_groups(schema);
 
   for iGroup = 1:numel(modality_groups)
@@ -438,6 +444,12 @@ function file_list = return_file_list(modality, subject, schema)
 end
 
 function structure = manage_tsv(structure, pth, filename)
+  % Retunrs the content and metadata of a TSV file (if they exist)
+  %
+  % NOTE: inheritance principle not implemented.
+  % Does NOT look for the metadata of a file at higher levels
+  %
+  %
 
   ext = bids.internal.file_utils(filename, 'ext');
   tsv_file = bids.internal.file_utils('FPList', ...
@@ -562,12 +574,12 @@ function [metadata, intended_for] = check_intended_for_exist(subject, filename)
 end
 
 function subject_path = return_subject_path(subject)
-    % get "subject path" without the session folder (if it exists)
-    subject_path = subject.path;
-    tmp = bids.internal.file_utils(subject_path, 'filename');
-    if strcmp(tmp(1:3), 'ses')
-        subject_path = bids.internal.file_utils(subject_path, 'path');
-    end
+  % get "subject path" without the session folder (if it exists)
+  subject_path = subject.path;
+  tmp = bids.internal.file_utils(subject_path, 'filename');
+  if strcmp(tmp(1:3), 'ses')
+    subject_path = bids.internal.file_utils(subject_path, 'path');
+  end
 end
 
 function perf = manage_asllabeling(perf, pth)
