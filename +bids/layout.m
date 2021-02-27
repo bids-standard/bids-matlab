@@ -403,7 +403,7 @@ function file_list = return_file_list(modality, subject, schema)
 
   if strcmp(modality, 'meg') && ~isempty(d)
     for i = 1:size(d, 1)
-      file_list{end + 1, 1} = d(i, :);
+      file_list{end + 1, 1} = d(i, :); %#ok<*AGROW>
     end
   end
 
@@ -464,115 +464,6 @@ function BIDS = manage_dependencies(BIDS)
           .dependencies.explicit{end + 1, 1} = file_list{iFile};
     end
 
-  end
-end
-
-function BIDS = manage_intended_for(BIDS)
-
-  % Loops through all the files with potential ``intentedFor`` metadata
-  % and creates an ``intended_for`` field with the fullpath list of all the target files
-  % it is intended for that exist.
-  %
-  % Also update the structure of each target file with an ``informed_by`` field
-
-  suffix_with_intended_for = { ...
-                              'phasediff'; ...
-                              'phase1'; ...
-                              'phase2'; ...
-                              'fieldmap'; ...
-                              'epi'; ...
-                              'm0scan'; ...
-                              'coordsystem'};
-
-  for iSuffix = 1:numel(suffix_with_intended_for)
-    file_list = bids.query(BIDS, 'data', 'suffix', suffix_with_intended_for(iSuffix));
-
-    for iFile = 1:size(file_list, 1)
-
-      info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
-
-      [metadata, intended_for] = check_intended_for_exist(BIDS.subjects(info_src.sub_idx), ...
-                                                          fullfile( ...
-                                                                   info_src.path, ...
-                                                                   info_src.modality, ...
-                                                                   info_src.filename));
-
-      BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx).meta = metadata;
-      BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx).intended_for = ...
-          intended_for;
-
-      % update "dependency" field of target file
-      informed_by = [];
-      for iTargetFile = 1:size(intended_for, 1)
-
-        info_tgt = bids.internal.return_file_info(BIDS, intended_for{iTargetFile});
-
-        % TODO: this should probably check that the informed_by field does not
-        % already exist in the structure
-        % TODO: This assumes that a file will only be informed by a single file from
-        % this moodality
-        informed_by.(info_src.modality) = file_list{iFile};
-        BIDS.subjects(info_tgt.sub_idx).(info_tgt.modality)(info_tgt.file_idx).informed_by = ...
-            informed_by;
-      end
-
-    end
-
-  end
-
-end
-
-function [metadata, intended_for] = check_intended_for_exist(subject, filename)
-
-  metadata =  bids.internal.get_metadata(filename);
-
-  intended_for = {};
-
-  if isempty(metadata) || ~isfield(metadata, 'IntendedFor')
-    warning('Missing field IntendedFor for %s', filename);
-    return
-
-  else
-
-    path_intended_for = {};
-
-    if ischar(metadata.IntendedFor)
-      path_intended_for{1, 1} = metadata.IntendedFor;
-
-    elseif isstruct(metadata.IntendedFor)
-      for iPath = 1:length(metadata.IntendedFor)
-        path_intended_for{iPath, 1} = metadata.IntendedFor(iPath); %#ok<*AGROW>
-      end
-
-    end
-  end
-
-  subject_path = return_subject_path(subject);
-
-  for iPath = 1:size(path_intended_for, 1)
-
-    % create a fullname path for current operating system
-    fullpath_filename = fullfile(subject_path, ...
-                                 strrep(path_intended_for{iPath}, '/', filesep));
-
-    % check if this file is missing
-    if ~exist(fullpath_filename, 'file')
-      warning(['Missing: ' fullpath_filename]);
-
-    else
-      intended_for{end + 1, 1} = fullpath_filename;
-
-    end
-  end
-
-end
-
-function subject_path = return_subject_path(subject)
-  % get "subject path" without the session folder (if it exists)
-  subject_path = subject.path;
-  tmp = bids.internal.file_utils(subject_path, 'filename');
-  if strcmp(tmp(1:3), 'ses')
-    subject_path = bids.internal.file_utils(subject_path, 'path');
   end
 end
 
