@@ -179,34 +179,45 @@ function subject = parse_using_schema(subject, modality, schema)
 
     file_list = return_file_list(modality, subject, schema);
 
-    for i = 1:numel(file_list)
+    for iFile = 1:size(file_list, 1)
 
-      fullpath_filename = fullfile(pth, file_list{i});
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-      subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
-      subject.(modality)(end).dependencies.explicit = {};
-      subject.(modality)(end).dependencies.data = {};
-      subject.(modality)(end).dependencies.group = {};
+      fullpath_filename = fullfile(pth, file_list{iFile});
+      [subject, parsing] = bids.internal.append_to_layout(file_list{iFile}, subject, modality, schema);
 
-      ext = subject.(modality)(end).ext;
-      suffix = subject.(modality)(end).suffix;
-      search = strrep(file_list{i}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
-      candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
-      candidates = cellstr(candidates);
-      for ii = 1:numel(candidates)
-        if strcmp(candidates{ii}, file_list{i})
-          continue;
+      if ~isempty(parsing)
+
+        subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+        subject.(modality)(end).dependencies.explicit = {};
+        subject.(modality)(end).dependencies.data = {};
+        subject.(modality)(end).dependencies.group = {};
+
+        ext = subject.(modality)(end).ext;
+        suffix = subject.(modality)(end).suffix;
+        search = strrep(file_list{iFile}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
+        candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
+        candidates = cellstr(candidates);
+
+        for ii = 1:numel(candidates)
+
+          if strcmp(candidates{ii}, file_list{iFile})
+            continue
+          end
+
+          if bids.internal.endsWith(candidates{ii}, '.json')
+            continue
+          end
+
+          match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
+          if isempty(match) % different suffix
+            subject.(modality)(end).dependencies.group{end + 1, 1} = fullfile(pth, candidates{ii});
+          else  % same suffix
+            subject.(modality)(end).dependencies.data{end + 1, 1} = fullfile(pth, candidates{ii});
+          end
+
         end
-        if bids.internal.endsWith(candidates{ii}, '.json')
-          continue
-        end
-        match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
-        if isempty(match) % different suffix
-          subject.(modality)(end).dependencies.group{end+1} = fullfile(pth, candidates{ii});
-        else  % same suffix
-          subject.(modality)(end).dependencies.data{end+1} = fullfile(pth, candidates{ii});
-        end
+
       end
+
     end
 
   end
@@ -228,59 +239,64 @@ function subject = parse_perf(subject, schema)
 
     file_list = return_file_list(modality, subject, schema);
 
-    for i = 1:numel(file_list)
+    for iFile = 1:numel(file_list)
 
-      fullpath_filename = fullfile(pth, file_list{i});
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-      subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
-      subject.(modality)(end).dependencies.explicit = {};
-      subject.(modality)(end).dependencies.data = {};
-      subject.(modality)(end).dependencies.group = {};
+      fullpath_filename = fullfile(pth, file_list{iFile});
+      [subject, parsing] = bids.internal.append_to_layout(file_list{iFile}, subject, modality, schema);
 
-      ext = subject.(modality)(end).ext;
-      suffix = subject.(modality)(end).suffix;
-      search = strrep(file_list{i}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
-      candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
-      candidates = cellstr(candidates);
-      for ii = 1:numel(candidates)
-        if strcmp(candidates{ii}, file_list{i})
-          continue;
+      if ~isempty(parsing)
+
+        subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+        subject.(modality)(end).dependencies.explicit = {};
+        subject.(modality)(end).dependencies.data = {};
+        subject.(modality)(end).dependencies.group = {};
+
+        ext = subject.(modality)(end).ext;
+        suffix = subject.(modality)(end).suffix;
+        search = strrep(file_list{iFile}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
+        candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
+        candidates = cellstr(candidates);
+
+        for ii = 1:numel(candidates)
+
+          if strcmp(candidates{ii}, file_list{iFile})
+            continue
+          end
+
+          if bids.internal.endsWith(candidates{ii}, '.json')
+            continue
+          end
+
+          match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
+          if isempty(match) % different suffix
+            subject.(modality)(end).dependencies.group{end + 1, 1} = fullfile(pth, candidates{ii});
+          else  % same suffix
+            subject.(modality)(end).dependencies.data{end + 1, 1} = fullfile(pth, candidates{ii});
+          end
+
         end
-        if bids.internal.endsWith(candidates{ii}, '.json')
-          continue
+
+        switch subject.(modality)(end).suffix
+
+          case 'asl'
+
+            subject.(modality)(end).meta = [];
+
+            subject.(modality)(end).meta = bids.internal.get_metadata(subject.(modality)(iFile).metafile);
+
+            aslcontext_file = strrep(subject.perf(end).filename, ...
+                                     ['_asl' subject.perf(end).ext], ...
+                                     '_aslcontext.tsv');
+            subject.(modality)(end).dependencies.context = manage_tsv( ...
+                                                                      struct('content', [], 'meta', []), ...
+                                                                      pth, ...
+                                                                      aslcontext_file);
+
+            subject.(modality)(end) = manage_asllabeling(subject.perf(end), pth);
+
+            subject.(modality)(end) = manage_M0(subject.perf(end), pth);
+
         end
-        match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
-        if isempty(match) % different suffix
-          subject.(modality)(end).dependencies.group{end+1} = fullfile(pth, candidates{ii});
-        else  % same suffix
-          subject.(modality)(end).dependencies.data{end+1} = fullfile(pth, candidates{ii});
-        end
-      end
-
-      switch subject.perf(i).suffix
-
-        case 'asl'
-
-          subject.perf(i).meta = [];
-          subject.perf(i).dependencies = [];
-
-          subject.perf(i).meta = bids.internal.get_metadata( ...
-                                                            fullfile( ...
-                                                                     subject.path, ...
-                                                                     modality, ...
-                                                                     file_list{i}));
-
-          aslcontext_file = strrep(subject.perf(i).filename, ...
-                                   ['_asl' subject.perf(i).ext], ...
-                                   '_aslcontext.tsv');
-          subject.perf(i).dependencies.context = manage_tsv( ...
-                                                            struct('content', [], 'meta', []), ...
-                                                            pth, ...
-                                                            aslcontext_file);
-
-          subject.perf(i) = manage_asllabeling(subject.perf(i), pth);
-
-          subject.perf(i) = manage_M0(subject.perf(i), pth);
 
       end
 
@@ -420,11 +436,11 @@ function BIDS = manage_dependencies(BIDS)
                       intended{iIntended});
       if ~exist(dest, 'file')
         warning(['IntendedFor file ' dest ' from ' file.filename ' not found']);
-        continue;
+        continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);
-      BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx)...
-          .dependencies.explicit{end+1} = file_list{iFile};
+      BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx) ...
+          .dependencies.explicit{end + 1, 1} = file_list{iFile};
     end
 
   end

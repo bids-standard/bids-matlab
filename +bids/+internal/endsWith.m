@@ -16,8 +16,8 @@ function res = endsWith(str, pat)
   res = false;
   l_pat = length(pat);
   if l_pat > length(str)
-    return;
+    return
   end
-  res = strcmp(str(end - l_pat +1 : end), pat);
+  res = strcmp(str(end - l_pat + 1:end), pat);
 
 end

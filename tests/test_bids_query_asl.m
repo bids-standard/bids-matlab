@@ -6,14 +6,30 @@ function test_suite = test_bids_query_asl %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_bids_query_asl_basic()
-  %
-  %   asl queries
-  %
+function test_bids_query_asl_basic_asl002()
 
   pth_bids_example = get_test_data_dir();
 
-  %% 'asl001'
+  BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));
+
+  modalities = {'anat', 'perf'};
+  assertEqual(bids.query(BIDS, 'modalities'), modalities);
+
+  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+
+  filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'm0scan');
+  basename = bids.internal.file_utils(filename, 'basename');
+  assertEqual(basename, {'sub-Sub103_m0scan.nii'});
+
+  assert(~isempty(BIDS.subjects.perf(1).dependencies.explicit));
+
+end
+
+function test_bids_query_asl_basic_asl001()
+
+  pth_bids_example = get_test_data_dir();
+
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl001'));
 
   modalities = {'anat', 'perf'};
@@ -35,22 +51,12 @@ function test_bids_query_asl_basic()
   dependencies.context;
   dependencies.m0;
 
-  %% 'asl002'
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));
+end
 
-  modalities = {'anat', 'perf'};
-  assertEqual(bids.query(BIDS, 'modalities'), modalities);
+function test_bids_query_asl_basic_asl003()
 
-  suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
-  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+  pth_bids_example = get_test_data_dir();
 
-  filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'm0scan');
-  basename = bids.internal.file_utils(filename, 'basename');
-  assertEqual(basename, {'sub-Sub103_m0scan.nii'});
-
-  assert(isfield(BIDS.subjects.perf(4), 'intended_for'));
-
-  %% 'asl003'
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl003'));
 
   modalities = {'anat', 'perf'};
@@ -59,7 +65,12 @@ function test_bids_query_asl_basic()
   suffixes = {'T1w', 'asl', 'aslcontext', 'asllabeling', 'm0scan'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
-  %% 'asl004'
+end
+
+function test_bids_query_asl_basic_asl004()
+
+  pth_bids_example = get_test_data_dir();
+
   BIDS = bids.layout(fullfile(pth_bids_example, 'asl004'));
 
   modalities = {'anat', 'fmap', 'perf'};
@@ -72,7 +83,7 @@ function test_bids_query_asl_basic()
   basename = bids.internal.file_utils(filename, 'basename');
   assertEqual(basename, {'sub-Sub1_dir-pa_m0scan.nii'});
 
-  assert(isfield(BIDS.subjects.fmap, 'intended_for'));
-  assert(isfield(BIDS.subjects.perf(4), 'intended_for'));
+  assert(~isempty(BIDS.subjects.perf(1).dependencies.explicit));
+  assert(~isempty(BIDS.subjects.perf(4).dependencies));
 
 end

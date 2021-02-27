@@ -16,8 +16,8 @@ function res = startsWith(str, pat)
   res = false;
   l_pat = length(pat);
   if l_pat > length(str)
-    return;
+    return
   end
-  res = strcmp(str(1 : l_pat), pat);
+  res = strcmp(str(1:l_pat), pat);
 
 end
