@@ -108,15 +108,18 @@ function BIDS = layout(root, use_schema)
     for iSess = 1:numel(sessions)
       if isempty(BIDS.subjects)
         BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
+        
       else
         new_subject = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
-
         [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
                                                                             new_subject);
         % TODO: this can be added to "match_structure_fields"
         BIDS.subjects(end + 1) = new_subject;
 
       end
+      
+
+      
     end
 
   end
@@ -140,8 +143,12 @@ function subject = parse_subject(pth, subjname, sesname, schema)
   subject.path    = fullfile(pth, subjname, sesname); % full path to subject directory
   subject.session = sesname;    % session name ('' or 'ses-<label>')
   subject.scans   = struct([]); % for sub-<participant_label>_scans.tsv
-  subject.sess    = struct([]); % for sub-<participants_label>_sessions.tsv
 
+  % for sub-<participants_label>_sessions.tsv
+  subject.sess = bids.internal.file_utils('FPList', ...
+                                      return_subject_path(subject),  ...
+                                      ['^' subjname, '_sessions.tsv' '$']);
+  
   modality_groups = bids.schema.return_modality_groups(schema);
 
   for iGroup = 1:numel(modality_groups)
@@ -534,12 +541,7 @@ function [metadata, intended_for] = check_intended_for_exist(subject, filename)
     end
   end
 
-  % get "subject path" without the session folder (if it exists)
-  subject_path = subject.path;
-  tmp = bids.internal.file_utils(subject_path, 'filename');
-  if strcmp(tmp(1:3), 'ses')
-    subject_path = bids.internal.file_utils(subject_path, 'path');
-  end
+  subject_path = return_subject_path(subject);
 
   for iPath = 1:size(path_intended_for, 1)
 
@@ -557,6 +559,15 @@ function [metadata, intended_for] = check_intended_for_exist(subject, filename)
     end
   end
 
+end
+
+function subject_path = return_subject_path(subject)
+    % get "subject path" without the session folder (if it exists)
+    subject_path = subject.path;
+    tmp = bids.internal.file_utils(subject_path, 'filename');
+    if strcmp(tmp(1:3), 'ses')
+        subject_path = bids.internal.file_utils(subject_path, 'path');
+    end
 end
 
 function perf = manage_asllabeling(perf, pth)
