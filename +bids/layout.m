@@ -181,40 +181,11 @@ function subject = parse_using_schema(subject, modality, schema)
 
     for iFile = 1:size(file_list, 1)
 
-      fullpath_filename = fullfile(pth, file_list{iFile});
       [subject, parsing] = bids.internal.append_to_layout(file_list{iFile}, subject, modality, schema);
 
       if ~isempty(parsing)
 
-        subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
-        subject.(modality)(end).dependencies.explicit = {};
-        subject.(modality)(end).dependencies.data = {};
-        subject.(modality)(end).dependencies.group = {};
-
-        ext = subject.(modality)(end).ext;
-        suffix = subject.(modality)(end).suffix;
-        search = strrep(file_list{iFile}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
-        candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
-        candidates = cellstr(candidates);
-
-        for ii = 1:numel(candidates)
-
-          if strcmp(candidates{ii}, file_list{iFile})
-            continue
-          end
-
-          if bids.internal.ends_with(candidates{ii}, '.json')
-            continue
-          end
-
-          match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
-          if isempty(match) % different suffix
-            subject.(modality)(end).dependencies.group{end + 1, 1} = fullfile(pth, candidates{ii});
-          else  % same suffix
-            subject.(modality)(end).dependencies.data{end + 1, 1} = fullfile(pth, candidates{ii});
-          end
-
-        end
+        subject = index_dependencies(subject, modality, file_list{iFile});
 
       end
 
@@ -390,6 +361,45 @@ function file_list = return_file_list(modality, subject, schema)
     for i = 1:size(d, 1)
       file_list{end + 1, 1} = d(i, :); %#ok<*AGROW>
     end
+  end
+
+end
+
+function subject = index_dependencies(subject, modality, file)
+
+  pth = fullfile(subject.path, modality);
+  fullpath_filename = fullfile(pth, file);
+
+  subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+  subject.(modality)(end).dependencies.explicit = {};
+  subject.(modality)(end).dependencies.data = {};
+  subject.(modality)(end).dependencies.group = {};
+
+  ext = subject.(modality)(end).ext;
+  suffix = subject.(modality)(end).suffix;
+  pattern = strrep(file, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
+  candidates = bids.internal.file_utils('List', pth, ['^' pattern '$']);
+  candidates = cellstr(candidates);
+
+  for ii = 1:numel(candidates)
+
+    if strcmp(candidates{ii}, file)
+      continue
+    end
+
+    if bids.internal.ends_with(candidates{ii}, '.json')
+      continue
+    end
+
+    match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
+    % different suffix
+    if isempty(match)
+      subject.(modality)(end).dependencies.group{end + 1, 1} = fullfile(pth, candidates{ii});
+      % same suffix
+    else
+      subject.(modality)(end).dependencies.data{end + 1, 1} = fullfile(pth, candidates{ii});
+    end
+
   end
 
 end
