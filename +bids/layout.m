@@ -203,7 +203,7 @@ function subject = parse_using_schema(subject, modality, schema)
             continue
           end
 
-          if bids.internal.endsWith(candidates{ii}, '.json')
+          if bids.internal.ends_with(candidates{ii}, '.json')
             continue
           end
 
@@ -263,7 +263,7 @@ function subject = parse_perf(subject, schema)
             continue
           end
 
-          if bids.internal.endsWith(candidates{ii}, '.json')
+          if bids.internal.ends_with(candidates{ii}, '.json')
             continue
           end
 
