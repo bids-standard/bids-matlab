@@ -278,8 +278,8 @@ function file_list = return_file_list(modality, subject, schema)
 
   % TODO
   % this does not cover coordsystem.json
-  % jn to omit json but not .pos file for headshape.pos
 
+  % jn to omit json but not .pos file for headshape.pos
   pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
   if isempty(schema)
     pattern = '_([a-zA-Z0-9]+){1}\\..*';
@@ -303,6 +303,20 @@ function file_list = return_file_list(modality, subject, schema)
 end
 
 function subject = index_dependencies(subject, modality, file)
+  %
+  % Each file structure contains dependencies sub-structure with guaranteed fields:
+  %
+  % - explicit: list of data files containing "IntendedFor" referencing current file.
+  %              see the manage_dependencies function
+  %
+  % - data:     list of files with same name but different extension.
+  %              This combines files that are split in header and data
+  %              (like in Brainvision), also takes care of bval/bvec files
+  %
+  % - group:    list of files that have same name except extension and suffix.
+  %              This groups file that logically need each other,
+  %              like functional mri and events tabular file.
+  %              It also takes care of fmap magnitude1/2 and phasediff.
 
   pth = fullfile(subject.path, modality);
   fullpath_filename = fullfile(pth, file);
@@ -342,6 +356,9 @@ function subject = index_dependencies(subject, modality, file)
 end
 
 function structure = manage_tsv(structure, pth, filename)
+  %
+  % appends the content and metadata of a TSV file to a structure
+  %
 
   ext = bids.internal.file_utils(filename, 'ext');
   tsv_file = bids.internal.file_utils('FPList', ...
@@ -366,13 +383,24 @@ function structure = manage_tsv(structure, pth, filename)
 end
 
 function BIDS = manage_dependencies(BIDS)
+  %
   % Loops over all files and retrieve all files that current file depends on
+  %
+
   file_list = bids.query(BIDS, 'data');
+
   for iFile = 1:size(file_list, 1)
+
     info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
     file = BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx);
     metadata = bids.internal.get_metadata(file.metafile);
 
+    % If the file A is intended for file B
+    %   then we update the dependencies.explicit field structrure of file B
+    %   so it contains the fullpath to file A
+    %
+    % This way when one queries info about B, then it is easy to know what
+    % other is present to help with analysis.
     intended = {};
     if isfield(metadata, 'IntendedFor')
       intended = cellstr(metadata.IntendedFor);
@@ -391,11 +419,12 @@ function BIDS = manage_dependencies(BIDS)
     end
 
   end
+
 end
 
 function perf = manage_asllabeling(perf, pth)
   % labeling image metadata (OPTIONAL)
-  % ---------------------------
+
   metafile = fullfile(pth, strrep(perf.filename, ...
                                   ['_asl' perf.ext], ...
                                   '_asllabeling.jpg'));
@@ -409,7 +438,6 @@ function perf = manage_asllabeling(perf, pth)
 end
 
 function perf = manage_M0(perf, pth)
-
   % M0 field is flexible:
 
   if ~isfield(perf.meta, 'M0Type')
