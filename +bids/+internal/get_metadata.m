@@ -23,7 +23,7 @@ function meta = get_metadata(metafile)
   metafile = cellstr(metafile);
 
   for i = 1:numel(metafile)
-    if bids.internal.endsWith(metafile{i}, '.json')
+    if bids.internal.ends_with(metafile{i}, '.json')
       meta = update_metadata(meta, bids.util.jsondecode(metafile{i}), metafile{i});
     else
       meta.filename = metafile{i};
