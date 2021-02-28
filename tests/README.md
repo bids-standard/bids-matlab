@@ -52,6 +52,14 @@ cd tests
 git clone git://github.com/bids-standard/bids-examples.git --depth 1
 ```
 
+## Add helper functions to the path
+
+There are a some help functions you need to add to the Matlab / Octave path to run the tests:
+
+```
+addpath(fullfile('tests', 'utils'))
+```
+
 ### Run the tests
 
 From the root folder of the bids-matlab folder, you can run the test with one
