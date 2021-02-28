@@ -6,11 +6,14 @@ function meta = get_metadata(metafile)
   %
   %    meta = bids.internal.get_metadata(metafile)
   %
-  % :param metafile: list of fullpath names of metafiles
+  % :param metafile: list of fullpath names of metafiles.
   % :type  metafile: string or array of strings
   %
+  % :returns: - :meta: metadata structure
   %
-  % meta        - metadata structure
+  % .. todo
+  %
+  %    add explanation on how the inheritance principle is implemented.
   % __________________________________________________________________________
 
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging

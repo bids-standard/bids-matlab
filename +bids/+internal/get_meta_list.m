@@ -71,7 +71,7 @@ function metalist = get_meta_list(filename, pattern)
 
       % append path to list
       if ismeta
-        metalist{end + 1} = metafile{i};
+        metalist{end + 1, 1} = metafile{i}; %#ok<AGROW>
       end
 
     end
