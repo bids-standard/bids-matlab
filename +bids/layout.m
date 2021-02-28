@@ -125,7 +125,6 @@ function BIDS = layout(root, use_schema)
   %% Dependencies
   % ==========================================================================
 
-  % BIDS = manage_intended_for(BIDS);
   BIDS = manage_dependencies(BIDS);
 
 end
