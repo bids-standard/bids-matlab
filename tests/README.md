@@ -1,24 +1,68 @@
 # Tests for bids-matlab
 
+We use a series of unit and integration tests to make sure the code behaves as
+expected and to also help in development.
+
+If you are not sure what unit and integration tests are, check the excellent
+chapter about that in the
+[Turing way](https://the-turing-way.netlify.app/reproducible-research/testing.html).
+
 ## How to run the tests
 
-- Install [MOxUnit for matlab and octave](https://github.com/MOxUnit/MOxUnit)
-  to run the tests
+### Install MoxUnit
 
-- Install [MOcov for matlab and octave](https://github.com/MOcov/MOcov) to get
-  the code coverage
+You need to install
+[MOxUnit for matlab and octave](https://github.com/MOxUnit/MOxUnit) to run the
+tests.
 
-- Make sure that you have clone the bids-examples repo in the `tests` folder:
+Note the install procedure will require you to have
+[git](https://git-scm.com/downloads) installed on your computer. If you don't,
+you can always download the MoxUnit code with this
+[link](https://github.com/MOxUnit/MOxUnit/archive/master.zip).
+
+Run the following from a terminal in the folder where you want to install
+MOxUnit. The `make install` command will find Matlab / Octave on your system and
+make sure it plays nice with MoxUnit.
+
+NOTE: only type in the terminal what is after the `$` sign:
+
+```bash
+# get the code for MOxUnit with git
+git clone https://github.com/MOxUnit/MOxUnit.git
+# enter the newly created folder and set up MoxUnit
+cd MOxUnit
+make install
+```
+
+If you want to check the code coverage on your computer, you can also install
+[MOcov for matlab and octave](https://github.com/MOcov/MOcov). Note that this is
+also part of the continuous integration of the bids-matlab, so you don't need to
+do this.
+
+### Install the test data
+
+To run the tests we used the examples data sets from the
+[bids-examples repository](https://github.com/bids-standard/bids-examples).
+
+The tests won't run unless you have a copy of that repository in the `tests`
+folder:
 
 ```bash
 cd tests
 git clone git://github.com/bids-standard/bids-examples.git --depth 1
 ```
 
-- From the root folder, run `moxunit_runtests tests` or
-  `moxunit_runtests tests -verbose` to run the tests.
+### Run the tests
 
-This should tell you which tests pass or fail.
+From the root folder of the bids-matlab folder, you can run the test with one
+the following commands.
+
+```bash
+moxunit_runtests tests
+
+# Or if you want more feedback
+moxunit_runtests tests -verbose
+```
 
 ## Adding more tests
 
