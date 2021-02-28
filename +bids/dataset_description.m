@@ -2,15 +2,22 @@ classdef dataset_description
 
   properties
     content
-    is_derivative
+    is_derivative = false
+    pipeline = ''
+    source_description = struct([]);
   end
 
   methods
 
-    function obj = generate(obj, is_derivative)
+    function obj = generate(obj, pipeline, BIDS)
 
-      if nargin < 2 || isempty(is_derivative)
-        is_derivative = false;
+      if nargin > 1 && ~isempty(pipeline)
+          obj.is_derivative = true;
+          obj.pipeline = pipeline;
+      end
+      
+      if nargin > 2 && ~isempty(BIDS)
+        obj.source_description = BIDS.description;
       end
 
       obj.content = struct( ...
@@ -19,14 +26,12 @@ classdef dataset_description
                            'DatasetType', 'raw', ...
                            'License', '', ...
                            'Authors', '', ...
-                           'Acknowledgement', '', ...
+                           'Acknowledgements', '', ...
                            'HowToAcknowledge', '', ...
                            'Funding', '', ...
                            'ReferencesAndLinks', '', ...
                            'DatasetDOI', '', ...
                            'HEDVersion', '');
-
-      obj.is_derivative = is_derivative;
 
       obj = set_derivative(obj);
 
@@ -39,12 +44,19 @@ classdef dataset_description
         obj = set_field(obj, 'DatasetType', 'derivative');
 
         obj = set_field(obj, 'GeneratedBy',  struct( ...
-                                                    'Name', '', ...
+                                                    'Name', obj.pipeline, ...
                                                     'Version', '', ...
+                                                    'Description', '', ...
+                                                    'CodeURL', '', ...
                                                     'Container', struct('Type', '', 'Tag', '')));
 
+        doi_source_data = '';
+        if isfield(obj.source_description, 'DatasetDOI')
+            doi_source_data = obj.source_description.DatasetDOI;
+        end
+                                                
         obj = set_field(obj, 'SourceDatasets', struct( ...
-                                                      'DOI', '', ...
+                                                      'DOI', doi_source_data, ...
                                                       'URL', '', ...
                                                       'Version', ''));
 
@@ -52,12 +64,41 @@ classdef dataset_description
 
     end
 
-    function obj = set_field(obj, key, value)
-      obj.content(1).(key) = value;
+    function obj = set_field(obj, varargin)
+        
+        if numel(varargin)==2
+            key = varargin{1};
+            value = varargin{2};
+            obj.content(1).(key) = value;
+            
+        elseif numel(varargin)==1 && isstruct(varargin{1})
+            fields = fieldnames(varargin{1});
+            for iField = 1:numel(fields)
+                key = fields{iField};
+                value = varargin{1}.(key);
+                obj = set_field(obj, key, value);
+            end
+        
+        end
     end
     
     function obj = append(obj, key, value)
-      obj.content(1).(key) = value;
+        
+        if ~isfield(obj.content, key)
+            new_value = value;
+            
+        else
+            old_value = obj.content(1).(key);
+            if ischar(old_value)
+                new_value = {old_value};
+            else
+                new_value = old_value;
+            end
+            new_value{end+1, 1} = value;
+            
+        end
+        
+        obj = set_field(obj, key, new_value);
     end
     
     function obj = unset_field(obj, key)
