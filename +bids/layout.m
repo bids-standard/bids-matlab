@@ -153,10 +153,8 @@ function subject = parse_subject(pth, subjname, sesname, schema)
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
-        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi'}
+        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf'}
           subject = parse_using_schema(subject, modalities{iModality}, schema);
-        case 'perf'
-          subject = parse_perf(subject, schema);
         otherwise
           % in case we are going schemaless
           % and the modality is not one of the usual suspect
@@ -186,66 +184,6 @@ function subject = parse_using_schema(subject, modality, schema)
       if ~isempty(parsing)
 
         subject = index_dependencies(subject, modality, file_list{iFile});
-
-      end
-
-    end
-
-  end
-
-end
-
-function subject = parse_perf(subject, schema)
-
-  % --------------------------------------------------------------------------
-  % ASL perfusion imaging data
-  % --------------------------------------------------------------------------
-
-  modality = 'perf';
-  pth = fullfile(subject.path, 'perf');
-
-  if exist(pth, 'dir')
-
-    subject = bids.internal.add_missing_field(subject, modality);
-
-    file_list = return_file_list(modality, subject, schema);
-
-    for iFile = 1:numel(file_list)
-
-      fullpath_filename = fullfile(pth, file_list{iFile});
-      [subject, parsing] = bids.internal.append_to_layout(file_list{iFile}, subject, modality, schema);
-
-      if ~isempty(parsing)
-
-        subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
-        subject.(modality)(end).dependencies.explicit = {};
-        subject.(modality)(end).dependencies.data = {};
-        subject.(modality)(end).dependencies.group = {};
-
-        ext = subject.(modality)(end).ext;
-        suffix = subject.(modality)(end).suffix;
-        search = strrep(file_list{iFile}, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
-        candidates = bids.internal.file_utils('List', pth, ['^' search '$']);
-        candidates = cellstr(candidates);
-
-        for ii = 1:numel(candidates)
-
-          if strcmp(candidates{ii}, file_list{iFile})
-            continue
-          end
-
-          if bids.internal.ends_with(candidates{ii}, '.json')
-            continue
-          end
-
-          match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
-          if isempty(match) % different suffix
-            subject.(modality)(end).dependencies.group{end + 1, 1} = fullfile(pth, candidates{ii});
-          else  % same suffix
-            subject.(modality)(end).dependencies.data{end + 1, 1} = fullfile(pth, candidates{ii});
-          end
-
-        end
 
         switch subject.(modality)(end).suffix
 
