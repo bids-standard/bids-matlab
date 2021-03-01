@@ -39,8 +39,18 @@ function p = parse_filename(filename, fields)
 
   filename = bids.internal.file_utils(filename, 'filename');
 
+  % -Identify prefix as string coming before 'sub-'
+  pos = strfind(filename, 'sub-');
+  if numel(pos) ~= 1
+    warning(['File name ' p.filename ' not bids compatible']);
+    p = struct([]);
+    return
+  end
+  p.prefix = filename(1:pos-1);
+  basename = filename(pos:end);
+
   % -Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
-  [parts, dummy] = regexp(filename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
+  [parts, dummy] = regexp(basename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
   p.filename = filename;
 
   % -Identify the suffix and extension of this file
@@ -51,10 +61,6 @@ function p = parse_filename(filename, fields)
     [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match'); %#ok<ASGLU>
     p.entities.(d{1}) = d{2};
   end
-
-  % identidy an eventual prefix to the file
-  tmp = regexp(parts{1}, '(sub)', 'split');
-  p.prefix = tmp{1};
 
   % -Extra fields can be added to the structure and ordered specifically.
   if nargin == 2
