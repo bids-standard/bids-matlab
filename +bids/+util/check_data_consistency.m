@@ -1,4 +1,4 @@
-function check_data_consistency(to_check, varargin)
+function pass = check_data_consistency(to_check, varargin)
   %
   % Given a set of filepaths cellarrays from bids.query, checks that any
   % all paths at same index have consistent bids name and same size
@@ -7,7 +7,7 @@ function check_data_consistency(to_check, varargin)
   % Options:
   %   allow_duplicates  -- if set, will allow duplicated filenames
   %   same_suffix -- if set, files must have same suffix
-  %   same_extention -- if set, files must have same extention
+  %   same_extension -- if set, files must have same extention
   %
   % USAGE::
   %
@@ -28,12 +28,15 @@ function check_data_consistency(to_check, varargin)
   %% Validate input arguments
   % ==========================================================================
 
+  pass = true;
+
   allow_duplicates = false;
   same_suffix = false;
-  same_extention = false;
+  same_extension = false;
 
   if isempty(to_check)
-    error('No data selected');
+    pass = false;
+    error('MATLAB:emptyStructure', 'No data selected');
   end
 
   for ii = 1:size(varargin, 1)
@@ -41,10 +44,11 @@ function check_data_consistency(to_check, varargin)
       allow_duplicates = true;
     elseif strcmp(varargin{ii}, 'same_suffix')
       same_suffix = true;
-    elseif strcmp(varargin{ii}, 'same_extention')
-      same_extention = true;
+    elseif strcmp(varargin{ii}, 'same_extension')
+      same_extension = true;
     else 
-      error(['Unrecognised option ' varargin{ii}]);
+      pass = false;
+      error('MATLAB:invalidArgument', ['Unrecognised option ' varargin{ii}]);
     end
   end
 
@@ -64,32 +68,36 @@ function check_data_consistency(to_check, varargin)
 
       if ~allow_duplicates
         if strcmp(f1, f2) && strcmp(ext1, ext2)
+          pass = false;
           msg = sprintf('File %s (%d, %d) duplicates file %s (%d, %d)',...
                         f1, iFile, 1,...
                         f2, iFile, iData);
-          error(msg);
+          error('BIDS:duplicatedFile', msg);
         end
       end
 
       if ~strcmp(base1, base2)
+        pass = false;
         msg = sprintf('File %s (%d, %d) mismatch file %s (%d, %d)',...
                       f1, iFile, 1,...
                       f2, iFile, iData);
-        error(msg);
+        error('BIDS:invalidEntity', msg);
       end
 
       if same_suffix && ~strcmp(suffix1, suffix2)
+        pass = false;
         msg = sprintf('File %s (%d, %d) mismatch suffix file %s (%d, %d)',...
                       f1, iFile, 1,...
                       f2, iFile, iData);
-        error(msg);
+        error('BIDS:invalidSuffix', msg);
       end
 
-      if same_extention && ~strcmp(ext1, ext2)
-        msg = sprintf('File %s (%d, %d) mismatch extention file %s (%d, %d)',...
+      if same_extension && ~strcmp(ext1, ext2)
+        pass = false;
+        msg = sprintf('File %s (%d, %d) mismatch extension file %s (%d, %d)',...
                       f1, iFile, 1,...
                       f2, iFile, iData);
-        error(msg);
+        error('BIDS:invalidExtension', msg);
       end
     end
   end
