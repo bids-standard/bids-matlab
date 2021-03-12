@@ -31,7 +31,7 @@ function test_get_metadata_suffixes_basic()
 
 end
 
-function test_get_metadata_particiants()
+function test_get_metadata_participants()
   % test files with no underscore in name.
 
   pth_bids_example = get_test_data_dir();

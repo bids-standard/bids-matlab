@@ -36,7 +36,7 @@ function meta = get_metadata(filename, pattern)
   N = 3;
 
   % -There is a session level in the hierarchy
-  if isfield(p.entities, 'ses') && ~isempty(p.entities.ses)
+  if isfield(p, 'entities') && isfield(p.entities, 'ses') && ~isempty(p.entities.ses)
     N = N + 1;
   end
 
