@@ -19,8 +19,13 @@ function meta = get_metadata(filename, pattern)
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % Copyright (C) 2018--, BIDS-MATLAB developers
 
+  % assume most files are of the form *_suffix.json
+  % add an exception for files with no suffix, like participants.tsv
   if nargin == 1
-    pattern = '^.*%s\\.json$';
+    pattern = '^.*_%s\\.json$';
+    if ~ismember('_', filename)
+        pattern = '^.*%s\\.json$';
+    end
   end
 
   pth = fileparts(filename);
@@ -31,7 +36,7 @@ function meta = get_metadata(filename, pattern)
   N = 3;
 
   % -There is a session level in the hierarchy
-  if isfield(p.entities, 'ses') && ~isempty(p.entities.ses)
+  if isfield(p, 'entities') && isfield(p.entities, 'ses') && ~isempty(p.entities.ses)
     N = N + 1;
   end
 

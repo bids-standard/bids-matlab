@@ -123,6 +123,17 @@
       "profile": "https://github.com/nbeliy",
       "contributions": [
         "code",
+        "ideas",
+        "review"
+      ]
+    },
+    {
+      "login": "mnoergaard",
+      "name": "Martin Norgaard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12412821?v=4",
+      "profile": "https://profiles.stanford.edu/martin-noergaard",
+      "contributions": [
+        "bug",
         "ideas"
       ]
     }
