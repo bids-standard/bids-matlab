@@ -711,7 +711,7 @@ function entities = return_entities(modality)
       entities = {'sub', 'ses', 'task', 'acq', 'run', 'meta'};
 
     case 'meg'
-      entities = {'sub', 'ses', 'task', 'acq', 'run', 'proc', 'meta'};
+      entities = {'sub', 'ses', 'task', 'split', 'acq', 'run', 'proc', 'meta'};
 
     case 'beh'
       entities = {'sub', 'ses', 'task'};
