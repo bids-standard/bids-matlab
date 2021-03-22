@@ -104,7 +104,7 @@
   "split": {
     "name": "Split",
     "entity": "split",
-    "description": "In the case of long data recordings that exceed a file size of 2Gb, the\n.fif files are conventionally split into multiple parts.\nEach of these files has an internal pointer to the next file.\nThis is important when renaming these split recordings to the BIDS\nconvention.\n\nInstead of a simple renaming, files should be read in and saved under their\nnew names with dedicated tools like [MNE-Python](https://mne.tools/),\nwhich will ensure that not only the file names, but also the internal file\npointers will be updated.\nIt is RECOMMENDED that .fif files with multiple parts use the\n`split-<index>` entity to indicate each part.\n",
+    "description": "In the case of long data recordings that exceed a file size of 2Gb, the\n.fif files are conventionally split into multiple parts.\nEach of these files has an internal pointer to the next file.\nThis is important when renaming these split recordings to the BIDS\nconvention.\n\nInstead of a simple renaming, files should be read in and saved under their\nnew names with dedicated tools like [MNE-Python](https://mne.tools/),\nwhich will ensure that not only the file names, but also the internal file\npointers will be updated.\nIt is RECOMMENDED that .fif files with multiple parts use the\n`split-<index>` entity to indicate each part.\nIf there are multiple parts of a recording and the optional `scans.tsv` is provided,\nremember to list all files separately in `scans.tsv` and that the entries for the\n`acq_time` column in `scans.tsv` MUST all be identical, as described in\n[Scans file](../03-modality-agnostic-files.md#scans-file).\n",
     "format": "index"
   },
   "resolution": {
