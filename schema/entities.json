@@ -26,7 +26,13 @@
   "ceagent": {
     "name": "Contrast Enhancing Agent",
     "entity": "ce",
-    "description": "The `ce-<label>` key/value can be used to distinguish\nsequences using different contrast enhanced images.\nThe label is the name of the contrast agent.\nThe key `ContrastBolusIngredient` MAY be also be added in the JSON file,\nwith the same label.\n",
+    "description": "The `ce-<label>` key/value can be used to distinguish\nsequences using different contrast enhanced images.\nThe label is the name of the contrast agent.\nThe key `ContrastBolusIngredient` MAY also be added in the JSON file,\nwith the same label.\n",
+    "format": "label"
+  },
+  "tracer": {
+    "name": "Tracer",
+    "entity": "trc",
+    "description": "The `trc-<label>` key/value can be used to distinguish\nsequences using different tracers.\nThe key `TracerName` MUST also be included in the associated JSON file,\nalthough the label may be different.\n",
     "format": "label"
   },
   "reconstruction": {
