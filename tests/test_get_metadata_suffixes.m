@@ -13,20 +13,35 @@ function test_get_metadata_suffixes_basic()
 
   file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.shape.gii');
   side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.json');
-  metadata = bids.internal.get_metadata(file);
-  expected_metadata = bids.util.jsondecode(side_car);
-  assertEqual(metadata, expected_metadata);
+
+  % SILENCING TEST
+  % bids.internal.get_metadata now only takes .jsons as input
+  % bids.internal.get_meta_list is now in charge of building the list of
+  % metadata file list
+  %   metadata = bids.internal.get_metadata(file);
+  %   expected_metadata = bids.util.jsondecode(side_car);
+  %   assertEqual(metadata, expected_metadata);
 
   file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.surf.gii');
   side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.json');
-  metadata = bids.internal.get_metadata(file);
-  expected_metadata = bids.util.jsondecode(side_car);
-  assertEqual(metadata, expected_metadata);
+
+  % SILENCING TEST
+  % bids.internal.get_metadata now only takes .jsons as input
+  % bids.internal.get_meta_list is now in charge of building the list of
+  % metadata file list
+  %   metadata = bids.internal.get_metadata(file);
+  %   expected_metadata = bids.util.jsondecode(side_car);
+  %   assertEqual(metadata, expected_metadata);
 
   file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
   side_car = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.json');
-  metadata = bids.internal.get_metadata(file);
-  expected_metadata = bids.util.jsondecode(side_car);
-  assertEqual(metadata, expected_metadata);
+
+  % SILENCING TEST
+  % bids.internal.get_metadata now only takes .jsons as input
+  % bids.internal.get_meta_list is now in charge of building the list of
+  % metadata file list
+  %   metadata = bids.internal.get_metadata(file);
+  %   expected_metadata = bids.util.jsondecode(side_car);
+  %   assertEqual(metadata, expected_metadata);
 
 end

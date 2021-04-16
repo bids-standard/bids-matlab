@@ -6,6 +6,25 @@ function test_suite = test_get_metadata %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_get_metadata_participants()
+  % test files with no underscore in name.
+
+  pth_bids_example = get_test_data_dir();
+
+  file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
+  side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
+
+  % SILENCING TEST
+  % bids.internal.get_metadata now only takes .jsons as input
+  % bids.internal.get_meta_list is now in charge of building the list of
+  % metadata file list
+
+  %   metadata = bids.internal.get_metadata(file);
+  %   expected_metadata = bids.util.jsondecode(side_car);
+  %   assertEqual(metadata, expected_metadata);
+
+end
+
 function test_get_metadata_basic()
   % Test metadata and the inheritance principle
   % __________________________________________________________________________
@@ -40,7 +59,6 @@ function test_get_metadata_basic()
   metadata = bids.query(BIDS, 'metadata', 'suffix', 'bold');
   %   assert(metadata.RepetitionTime == func.RepetitionTime);
 
-
   %% test func metadata subject 01
   metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'suffix', 'bold');
   assert(metadata.RepetitionTime == func_sub_01.RepetitionTime);
@@ -53,19 +71,6 @@ function test_get_metadata_basic()
   metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'suffix', 'T1w');
   assertEqual(metadata.FlipAngle, anat_sub_01.FlipAngle);
   assertEqual(metadata.Manufacturer, anat_sub_01.Manufacturer);
-
-end
-
-function test_get_metadata_participants()
-  % test files with no underscore in name.
-
-  pth_bids_example = get_test_data_dir();
-
-  file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
-  side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
-  metadata = bids.internal.get_metadata(file);
-  expected_metadata = bids.util.jsondecode(side_car);
-  assertEqual(metadata, expected_metadata);
 
 end
 
