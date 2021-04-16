@@ -1,4 +1,4 @@
-name: tests
+name: tests_octave
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
       - dev
   pull_request:
     branches: '*'
-
 
 jobs:
   build:
@@ -78,4 +77,3 @@ jobs:
        flags: unittests # optional
        name: codecov-umbrella # optional
        fail_ci_if_error: true # optional (default = false)        
-
