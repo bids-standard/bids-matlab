@@ -1,11 +1,11 @@
-function derivatives = derivate(BIDS, out_path, name, varargin)
+function derivatives = copy_to_derivative(BIDS, out_path, name, varargin)
   %
   % Copy selected data from BIDS layout to given derivatives folder,
   % returning layout of new derivatives folder
   %
   % USAGE::
   %
-  %   derivatives = derivate(BIDS, out_path, ...)
+  %   derivatives = copy_to_derivative(BIDS, out_path, ...)
   %
   % :param BIDS:     BIDS directory name or BIDS structure (from bids.layout)
   % :type  BIDS:     (strcuture or string)
