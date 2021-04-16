@@ -34,9 +34,12 @@ jobs:
     - name: Install Moxunit and MOcov
       run: |
         git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
-        make -C MOxUnit install
-        git clone https://github.com/MOcov/MOcov.git --depth 1
-        make -C MOcov install   
+        git clone https://github.com/MOcov/MOcov.git --depth 1  
+
+    - name: Run commands
+      uses: matlab-actions/run-command@v0
+      with:
+        command: addpath(genpath(fullfile(pwd, 'MOxUnit'))); addpath(genpath(fullfile(pwd, 'MOcov'))); savepath;
 
     - name: Run commands
       uses: matlab-actions/run-command@v0
