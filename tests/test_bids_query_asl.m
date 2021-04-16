@@ -47,7 +47,9 @@ function test_bids_query_asl_basic_asl001()
   meta = bids.query(BIDS, 'metadata', 'sub', 'Sub103', 'suffix', 'asl');
 
   dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl');
-  assertEqual(dependencies.labeling_image.filename, 'sub-Sub103_asllabeling.jpg');
+  assert(any(ismember( ...
+                      bids.internal.file_utils(dependencies.group, 'filename'), ...
+                      'sub-Sub103_asllabeling.jpg')));
   dependencies.context;
   dependencies.m0;
 

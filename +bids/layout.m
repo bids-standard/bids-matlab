@@ -213,8 +213,6 @@ function subject = parse_using_schema(subject, modality, schema)
                                                                       pth, ...
                                                                       aslcontext_file);
 
-            subject.(modality)(end) = manage_asllabeling(subject.perf(end), pth);
-
             subject.(modality)(end) = manage_M0(subject.perf(end), pth);
 
         end
@@ -434,21 +432,6 @@ function BIDS = manage_dependencies(BIDS)
       BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx) ...
           .dependencies.explicit{end + 1, 1} = file_list{iFile};
     end
-
-  end
-
-end
-
-function perf = manage_asllabeling(perf, pth)
-  % labeling image metadata (OPTIONAL)
-
-  metafile = fullfile(pth, strrep(perf.filename, ...
-                                  ['_asl' perf.ext], ...
-                                  '_asllabeling.jpg'));
-
-  if exist(metafile, 'file')
-    [~, Ffile] = fileparts(metafile);
-    perf.dependencies.labeling_image.filename = [Ffile '.jpg'];
 
   end
 
