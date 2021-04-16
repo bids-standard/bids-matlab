@@ -44,10 +44,7 @@ jobs:
     - name: Run commands
       uses: matlab-actions/run-command@v0
       with:
-        command: success = moxunit_runtests(fullfile(pwd, 'tests'), ...
-                                            '-verbose', '-recursive', '-with_coverage', ...
-                                            '-cover', fullfile(pwd, '+bids'), ...
-                                            '-cover_xml_file', 'coverage.xml'); assert(success); 
+        command: succes = runtests(); assert(success); 
 
     - name: MOxUnit Action
       uses: joergbrech/moxunit-action@master
