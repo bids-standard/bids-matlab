@@ -22,10 +22,7 @@ function meta = get_metadata(filename, pattern)
   % assume most files are of the form *_suffix.json
   % add an exception for files with no suffix, like participants.tsv
   if nargin == 1
-    pattern = '^.*_%s\\.json$';
-    if ~ismember('_', filename)
-        pattern = '^.*%s\\.json$';
-    end
+    pattern = '^.*_?%s\\.json$';
   end
 
   pth = fileparts(filename);
@@ -64,9 +61,14 @@ function meta = get_metadata(filename, pattern)
         entities = fieldnames(p2.entities);
       end
 
-      % -Check if this metadata file contains the same entity-label pairs as its
-      % data file counterpart
+      % Check if this metadata file contains 
+      %   - the same entity-label pairs 
+      %   - same prefix
+      % as its data file counterpart
       ismeta = true;
+      if ~strcmp(p.suffix, p2.suffix)
+          ismeta = false;
+      end
       for j = 1:numel(entities)
         if ~isfield(p.entities, entities{j}) || ...
                 ~strcmp(p.entities.(entities{j}), p2.entities.(entities{j}))

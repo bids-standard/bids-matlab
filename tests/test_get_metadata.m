@@ -40,20 +40,33 @@ function test_get_metadata_basic()
 
   %% test func metadata base directory
   metadata = bids.query(BIDS, 'metadata', 'suffix', 'bold');
-  % assert(metadata.RepetitionTime == func.RepetitionTime);
+%   assert(metadata.RepetitionTime == func.RepetitionTime);
 
   %% test func metadata subject 01
   metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'suffix', 'bold');
-  % assert(metadata.RepetitionTime == func_sub_01.RepetitionTime);
+  assert(metadata.RepetitionTime == func_sub_01.RepetitionTime);
 
   %% test anat metadata base directory
   metadata = bids.query(BIDS, 'metadata', 'suffix', 'T1w');
-  % assert(metadata.FlipAngle == anat.FlipAngle);
+%   assert(metadata.FlipAngle == anat.FlipAngle);
 
   %% test anat metadata subject 01
   metadata = bids.query(BIDS, 'metadata', 'sub', '01', 'suffix', 'T1w');
   assertEqual(metadata.FlipAngle, anat_sub_01.FlipAngle);
   assertEqual(metadata.Manufacturer, anat_sub_01.Manufacturer);
+
+end
+
+function test_get_metadata_participants()
+  % test files with no underscore in name.
+
+  pth_bids_example = get_test_data_dir();
+
+  file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
+  side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
+  metadata = bids.internal.get_metadata(file);
+  expected_metadata = bids.util.jsondecode(side_car);
+  assertEqual(metadata, expected_metadata);
 
 end
 
