@@ -9,8 +9,6 @@ on:
   pull_request:
     branches: '*'
 
-env:
-  OCTFLAGS: --no-gui --no-window-system --silent
 
 jobs:
   build:
@@ -23,17 +21,12 @@ jobs:
       run: |
         sudo apt-get -y -qq update
         sudo apt-get -y install octave liboctave-dev
-        sudo apt-get -y install nodejs npm
 
     - name: Clone bids-matlab         
       uses: actions/checkout@v2
       with:
         submodules: true
         fetch-depth: 2
-
-    - name: Install BIDS validator
-      run: |        
-        npm install `cat npm-requirements.txt`
 
     - name: Install JSONio
       run: |
