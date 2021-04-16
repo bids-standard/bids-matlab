@@ -12,17 +12,17 @@ If you have any questions that aren't discussed below, please let us know by
 Been here before? Already know what you're looking for in this guide? Jump to
 the following sections:
 
-- [Joining the community](#joining-the-community)
-- [Contributing through GitHub](#contributing-through-github)
-- [Understanding issues](#understanding-issues)
-- [Style guide](#style-guide)
-  - [Writing in markdown](#writing-in-markdown)
-  - [Matlab code style guide and quality](#matlab-code-style-guide-and-quality)
-- [Making a change with a pull request](#making-a-change-with-a-pull-request)
-- [Example pull request](#example-pull-request)
-- [Commenting on a pull request](#commenting-on-a-pull-request)
-- [Accepting suggestion from a review](#accepting-suggestion-from-a-review)
-- [Recognizing contributions](#recognizing-contributions)
+-   [Joining the community](#joining-the-community)
+-   [Contributing through GitHub](#contributing-through-github)
+-   [Understanding issues](#understanding-issues)
+-   [Style guide](#style-guide)
+    -   [Writing in markdown](#writing-in-markdown)
+    -   [Matlab code style guide and quality](#matlab-code-style-guide-and-quality)
+-   [Making a change with a pull request](#making-a-change-with-a-pull-request)
+-   [Example pull request](#example-pull-request)
+-   [Commenting on a pull request](#commenting-on-a-pull-request)
+-   [Accepting suggestion from a review](#accepting-suggestion-from-a-review)
+-   [Recognizing contributions](#recognizing-contributions)
 
 <!--
 TODO: sections to add
@@ -87,12 +87,12 @@ overall project's goals and immediate next steps.
 The current list of labels are
 [here](https://github.com/bids-standard/bids-matlab/labels) and include:
 
-- [![Opinions wanted](https://img.shields.io/badge/-opinions%20wanted-84b6eb.svg)](https://github.com/bids-standard/bids-matlab/labels/opinions%20wanted)
-  _These issues hold discussions where we're especially eager for feedback._
+-   [![Opinions wanted](https://img.shields.io/badge/-opinions%20wanted-84b6eb.svg)](https://github.com/bids-standard/bids-matlab/labels/opinions%20wanted)
+    _These issues hold discussions where we're especially eager for feedback._
 
-  Ongoing discussions benefit from broad feedback. This label is used to
-  highlight issues where decisions are being considered, so please join the
-  conversation!
+    Ongoing discussions benefit from broad feedback. This label is used to
+    highlight issues where decisions are being considered, so please join the
+    conversation!
 
 <!-- TODO:
 - add more issue labels description -->
@@ -114,7 +114,8 @@ an example with visual-studio code
 ### Matlab code style guide and quality
 
 We use the [MISS_HIT linter](https://github.com/florianschanda/miss_hit/) to
-automatically enforce / fix some code style issues and check for [code quality](https://the-turing-way.netlify.app/reproducible-research/code-quality.html).
+automatically enforce / fix some code style issues and check for
+[code quality](https://the-turing-way.netlify.app/reproducible-research/code-quality.html).
 
 The linter is a Python package that can be installed with:
 
@@ -165,14 +166,32 @@ The code style and quality is also checked during the
 For more information about MISS_HIT see its
 [documentation](https://florianschanda.github.io/miss_hit/).
 
+#### pre-commit hook: reformating your code when committing
+
+There is a [pre-commit hook](https://pre-commit.com/) that you can use to
+reformat files as you commit them.
+
+Install pre-commit by using our `requirements.txt` file 
+```bash
+pip install -r requirements.txt
+```
+
+Install the hook
+```bash
+pre-commit install
+```
+
+You're done. `mh_style --fix` will now be run every time you commit.
+
 ### Running tests on the code
 
 The unit and integration tests we have are in the [`tests` folder]'(./tests/)
 and should be run with MoxUnit. For more information on the set up for the test,
 see the [README in the tests folder](./tests/README.md).
 
-If you are not sure what unit and integration tests are, check the chapter about that
-in the [Turing way](https://the-turing-way.netlify.app/reproducible-research/testing.html).
+If you are not sure what unit and integration tests are, check the chapter about
+that in the
+[Turing way](https://the-turing-way.netlify.app/reproducible-research/testing.html).
 
 ## Making a change with a pull request
 
@@ -214,12 +233,13 @@ stable version of the toolbox in the `main` branch and the latest version in the
 
 Use one of the following prefixes in the title of your pull request:
 
-- `[ENH]` - enhancement of the software that adds a new feature or support for a
-  new data type
-- `[FIX]` - fix of a bug or documentation error
-- `[INFRA]` - changes to the infrastructure automating the project release (for
-  example, testing in continuous integration, building HTML docs)
-- `[MISC]` - everything else including changes to the file listing contributors
+-   `[ENH]` - enhancement of the software that adds a new feature or support for
+    a new data type
+-   `[FIX]` - fix of a bug or documentation error
+-   `[INFRA]` - changes to the infrastructure automating the project release
+    (for example, testing in continuous integration, building HTML docs)
+-   `[MISC]` - everything else including changes to the file listing
+    contributors
 
 If you are opening a pull request to obtain early feedback, but the changes are
 not ready to be merged (also known as a "work in progress" pull request,
@@ -228,8 +248,8 @@ sometimes abbreviated by `WIP`), please use a
 
 If your pull request include:
 
-- some new features in the code base
-- or if it changes the expected behavior of the code that is already in place,
+-   some new features in the code base
+-   or if it changes the expected behavior of the code that is already in place,
 
 you may be asked to provide tests to describe the new expected behavior of the
 code.
