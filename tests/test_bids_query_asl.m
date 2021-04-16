@@ -24,6 +24,11 @@ function test_bids_query_asl_basic_asl002()
 
   assert(~isempty(BIDS.subjects.perf(1).dependencies.explicit));
 
+  dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl');
+  assert(any(ismember( ...
+                      bids.internal.file_utils(dependencies.group, 'filename'), ...
+                      'sub-Sub103_aslcontext.tsv')));
+
 end
 
 function test_bids_query_asl_basic_asl001()
