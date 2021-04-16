@@ -1,0 +1,72 @@
+name: tests_matlab
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - dev
+  pull_request:
+    branches: '*'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+
+    - name: Install MATLAB
+      uses: matlab-actions/setup-matlab@v0        
+
+    - name: Clone bids-matlab         
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 2
+
+    - name: Install bids example
+      run: |
+         cd tests
+         git clone git://github.com/bids-standard/bids-examples.git --depth 1 
+         cd ..
+        
+    - name: Install Moxunit and MOcov
+      run: |
+        git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
+        make -C MOxUnit install
+        git clone https://github.com/MOcov/MOcov.git --depth 1
+        make -C MOcov install   
+
+    - name: Run commands
+      uses: matlab-actions/run-command@v0
+      with:
+        command: success = moxunit_runtests(fullfile(pwd, 'tests'), ...
+                                            '-verbose', '-recursive', '-with_coverage', ...
+                                            '-cover', fullfile(pwd, '+bids'), ...
+                                            '-cover_xml_file', 'coverage.xml'); assert(success); 
+
+    - name: MOxUnit Action
+      uses: joergbrech/moxunit-action@master
+      with:
+        tests: tests # files or directories containing the MOxUnit test cases
+        src: +bids # directories to be added to the Octave search path before running the tests. 
+        ext: tests/utils # External resources to add to the search put (excluded from coverage)
+        # data: # Directory for test data  
+        with_coverage: true
+        cover_xml_file: coverage.xml
+
+    - name: Upload coverage
+      uses: actions/upload-artifact@v1 
+      with: 
+        name: coverage_file 
+        path: coverage.xml         
+
+    - name: Code coverage
+      uses: codecov/codecov-action@v1
+      with:
+       file:  coverage.xml # optional
+       flags: unittests # optional
+       name: codecov-umbrella # optional
+       fail_ci_if_error: true # optional (default = false)        
+
