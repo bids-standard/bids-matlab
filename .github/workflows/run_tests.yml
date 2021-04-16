@@ -9,8 +9,6 @@ on:
   pull_request:
     branches: '*'
 
-env:
-  OCTFLAGS: --no-gui --no-window-system --silent
 
 jobs:
   build:
