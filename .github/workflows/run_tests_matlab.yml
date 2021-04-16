@@ -39,7 +39,7 @@ jobs:
     - name: Run commands
       uses: matlab-actions/run-command@v0
       with:
-        command: addpath(genpath(fullfile(pwd, 'MOxUnit'))); addpath(genpath(fullfile(pwd, 'MOcov'))); savepath;
+        command: MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); savepath;
 
     - name: Run commands
       uses: matlab-actions/run-command@v0
