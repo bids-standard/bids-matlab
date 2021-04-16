@@ -15,6 +15,40 @@ Join our chat on the [BIDS-MATLAB channel](https://mattermost.brainhack.org/brai
 See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the [BIDS Starter Kit](https://github.com/bids-standard/bids-starter-kit).
 
 
+## Installation
+
+Download, unzip this repository and add its content to the MATLAB/Octave path.
+
+```Matlab
+unzip('https://github.com/bids-standard/bids-matlab/archive/master.zip');
+addpath('bids-matlab-master');
+```
+
+---
+
+Or clone it with git: 
+```bash
+git clone https://github.com/bids-standard/bids-matlab.git
+```
+and then add it to your MATLAB/Octave path.
+```Matlab
+addpath('bids-matlab');
+```
+
+If your version of MATLAB/Octave does not support JSON natively, please also install [SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/) or [JSONio](https://github.com/gllmflndn/JSONio).
+### Get the latest features
+
+The latest features of bids-matlab that are in development are in our `dev` "branch". 
+
+To acces them you can either download the `dev` branch from there: https://github.com/bids-standard/bids-matlab/tree/dev
+
+Or you can check it out the `dev` branch after the adding this official bids-matlab repository as a remote.
+
+```
+git add remote upstream https://github.com/bids-standard/bids-matlab.git
+git checkout upstream/dev
+```
+
 ## Features
 
 ### What this toolbox can do
@@ -40,15 +74,7 @@ The behavior of this toolbox assumes that it is interacting with a valid BIDS da
 We are trying to centralize the requests for new features in this [issue](https://github.com/bids-standard/bids-matlab/issues/60): have a browse to see what could be coming soon or if we have missed something obvious.
 
 
-## Installation
 
-Download this repository and add it to your MATLAB/Octave path.
-
-```Matlab
-unzip('https://github.com/bids-standard/bids-matlab/archive/master.zip');
-addpath('bids-matlab-master');
-```
-If your version of MATLAB/Octave does not support JSON natively, please also install [SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/) or [JSONio](https://github.com/gllmflndn/JSONio).
 
 ## Usage
 
