@@ -215,30 +215,24 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
               result = union(result, allmods(hasmod));
 
             case 'data'
-              if isfield(d(k), 'filename')
-                result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
-              end
+              result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
 
             case 'metafiles'
-              if isfield(d(k), 'filename')
-                fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
-                result = [result; fmeta];
-              end
+              fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
+              result = [result; fmeta];
 
             case 'metadata'
-              if isfield(d(k), 'filename')
-                fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
-                result{end + 1, 1} = bids.internal.get_metadata(fmeta);
-                if ~isempty(target)
-                  try
-                    result{end} = subsref(result{end}, target);
-                  catch
-                    warning('Non-existent field for metadata.');
-                    result{end} = [];
-                  end
+              fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
+              result{end + 1, 1} = bids.internal.get_metadata(fmeta);
+              if ~isempty(target)
+                try
+                  result{end} = subsref(result{end}, target);
+                catch
+                  warning('Non-existent field for metadata.');
+                  result{end} = [];
                 end
-
               end
+
               % if status && isfield(d(k),'meta')
               %   result{end+1} = d(k).meta;
               % end
@@ -254,14 +248,10 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
               end
 
             case 'suffixes'
-              if isfield(d(k), 'suffix')
-                result{end + 1} = d(k).suffix;
-              end
+              result{end + 1} = d(k).suffix;
 
             case 'extensions'
-              if isfield(d(k), 'ext')
-                result{end + 1} = d(k).ext;
-              end
+              result{end + 1} = d(k).ext;
 
             case 'dependencies'
               if isfield(d(k), 'dependencies')
