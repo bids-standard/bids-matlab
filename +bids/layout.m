@@ -152,8 +152,8 @@ function subject = parse_subject(pth, subjname, sesname, schema)
   % NOTE: *_scans.json files can stored at the root level
   %       and this should implemented when querying scans.tsv content + metadata
   subject.scans = bids.internal.file_utils('FPList', ...
-                                              subject.path,  ...
-                                              ['^' subjname, '.*_scans.tsv' '$']);
+                                           subject.path,  ...
+                                           ['^' subjname, '.*_scans.tsv' '$']);
 
   modality_groups = bids.schema.return_modality_groups(schema);
 
@@ -276,6 +276,15 @@ function f = convert_to_cell(f)
     f = {};
   else
     f = cellstr(f);
+  end
+end
+
+function subject_path = return_subject_path(subject)
+  % get "subject path" without the session folder (if it exists)
+  subject_path = subject.path;
+  tmp = bids.internal.file_utils(subject_path, 'filename');
+  if strcmp(tmp(1:3), 'ses')
+    subject_path = bids.internal.file_utils(subject_path, 'path');
   end
 end
 
