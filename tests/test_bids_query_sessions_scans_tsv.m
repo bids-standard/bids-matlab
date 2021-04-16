@@ -19,7 +19,6 @@ function test_query_sessions_tsv()
   assert(~isempty(BIDS.subjects(1).sess));
   assert(~isempty(BIDS.subjects(1).scans));
 
-
 end
 
 function test_query_scans_tsv()

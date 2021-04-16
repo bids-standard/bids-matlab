@@ -25,7 +25,7 @@ function test_layout_prefix()
                     'prefix', 'swua');
   basename = bids.internal.file_utils(data, 'basename');
   assertEqual(basename, {'swuasub-01_task-balloonanalogrisktask_run-01_bold'});
-  
+
   assertEqual(bids.query(BIDS, 'prefixes'), {'swua'});
 
 end

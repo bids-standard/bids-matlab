@@ -40,13 +40,13 @@ function derivatives = derivate(BIDS, out_path, name, varargin)
 
   if isempty(data_list)
     warning(['No data found for this query']);
-    return;
+    return
   else
     fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
   end
 
   pth_BIDSderiv = fullfile(out_path, name);
-  if ~exist(pth_BIDSderiv,'dir')
+  if ~exist(pth_BIDSderiv, 'dir')
     mkdir(pth_BIDSderiv);
   end
 
@@ -86,15 +86,15 @@ function status = copy_file(BIDS, derivatives_folder, data_file)
   info = bids.internal.return_file_info(BIDS, data_file);
   file = BIDS.subjects(info.sub_idx).(info.modality)(info.file_idx);
   basename = file.filename(1:end - length(file.ext));
-  out_dir = fullfile(derivatives_folder,...
-                     BIDS.subjects(info.sub_idx).name,...
-                     BIDS.subjects(info.sub_idx).session,...
+  out_dir = fullfile(derivatives_folder, ...
+                     BIDS.subjects(info.sub_idx).name, ...
+                     BIDS.subjects(info.sub_idx).session, ...
                      info.modality);
   out_path = fullfile(out_dir, basename);
   meta_file = [out_path '.json'];
 
   % ignore already existing files; avoid circular references
-  if exist(meta_file) 
+  if exist(meta_file)
     return
   end
   if ~exist(out_dir, 'dir')
@@ -104,11 +104,11 @@ function status = copy_file(BIDS, derivatives_folder, data_file)
   if endsWith(file.ext, '.gz')
     gunzip(data_file, out_dir);
   else
-    [status,message,messageId] = copyfile(data_file, [out_path file.ext]);
+    [status, message, messageId] = copyfile(data_file, [out_path file.ext]);
   end
   if ~status
     warning([messageId ': ' message]);
-    return;
+    return
   end
   % export metadata
   if ~strcmpi(file.ext, '.json') % skip if data file is json
@@ -124,7 +124,7 @@ function status = copy_file(BIDS, derivatives_folder, data_file)
   if ~isempty(file.dependencies)
     dependencies = fieldnames(file.dependencies);
     for dep = 1:numel(dependencies)
-      for idep = 1: numel(file.dependencies.(dependencies{dep}))
+      for idep = 1:numel(file.dependencies.(dependencies{dep}))
         dep_file = file.dependencies.(dependencies{dep}){idep};
         if exist(dep_file, 'file')
           copy_file(BIDS, derivatives_folder, dep_file);
