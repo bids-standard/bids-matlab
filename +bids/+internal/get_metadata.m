@@ -61,13 +61,13 @@ function meta = get_metadata(filename, pattern)
         entities = fieldnames(p2.entities);
       end
 
-      % Check if this metadata file contains 
-      %   - the same entity-label pairs 
+      % Check if this metadata file contains
+      %   - the same entity-label pairs
       %   - same prefix
       % as its data file counterpart
       ismeta = true;
       if ~strcmp(p.suffix, p2.suffix)
-          ismeta = false;
+        ismeta = false;
       end
       for j = 1:numel(entities)
         if ~isfield(p.entities, entities{j}) || ...

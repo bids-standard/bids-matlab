@@ -152,8 +152,8 @@ function subject = parse_subject(pth, subjname, sesname, schema)
   % NOTE: *_scans.json files can stored at the root level
   %       and this should implemented when querying scans.tsv content + metadata
   subject.scans = bids.internal.file_utils('FPList', ...
-                                              subject.path,  ...
-                                              ['^' subjname, '.*_scans.tsv' '$']);
+                                           subject.path,  ...
+                                           ['^' subjname, '.*_scans.tsv' '$']);
 
   modality_groups = bids.schema.return_modality_groups(schema);
 
