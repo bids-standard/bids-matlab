@@ -9,7 +9,7 @@ end
 function test_copy_to_derivative_MoAE()
 
   input_dir = download_moae_ds(true());
-  out_path = fullfile(input_dir, 'MoAEpilot', 'derivatives');
+  out_path = [];
 
   BIDS = fullfile(input_dir, 'MoAEpilot');
 
@@ -19,49 +19,17 @@ function test_copy_to_derivative_MoAE()
 
 end
 
-function test_copy_to_derivative_ds000001()
-
-  input_dir = fullfile('..', 'data', 'ds000001');
-  out_path = fullfile('..', 'data', 'derivatives');
-
-  if exist(out_path, 'dir')
-    rmdir(out_path, 's');
-  end
-
-  BIDS = fullfile(input_dir);
-
-  filters = struct('sub', '01', ...
-                   'modality', 'func', ...
-                   'suffix', 'bold');
-  filters.run = {'01'; '03'};
-
-  output_dir = [];
-  pipeline_name = [];
-  unzip = false;
-  force = false;
-  skip_dependencies = true;
-  use_schema = true;
-  verbose = true;
-
-  derivatives = bids.copy_to_derivative(BIDS, ...
-                                        output_dir, ...
-                                        pipeline_name, ...
-                                        filters, ...
-                                        unzip, ...
-                                        force, ...
-                                        skip_dependencies, ...
-                                        use_schema, ...
-                                        verbose);
-
-  copied_files = bids.query(derivatives, 'data');
-  assertEqual(size(copied_files, 1), 2);
-
-end
-
 function test_copy_to_derivative_ds000117()
 
-  input_dir = fullfile('..', 'data', 'ds000117');
-  out_path = fullfile('..', 'data', 'derivatives');
+  pth_bids_example = get_test_data_dir();    
+  input_dir = fullfile(pth_bids_example, 'ds000117');    
+    
+  % to test on real data uncomment the following line
+  % see tests/README.md to see how to install the data
+  %
+  %   input_dir = fullfile('..', 'data', 'ds000117');
+  
+  out_path = fullfile(pwd, 'data', 'derivatives');
 
   if exist(out_path, 'dir')
     rmdir(out_path, 's');
@@ -74,7 +42,7 @@ function test_copy_to_derivative_ds000117()
                    'suffix', 'bold');
   filters.run = {'01'; '03'};
 
-  output_dir = [];
+  %%
   pipeline_name = [];
   unzip = false;
   force = false;
@@ -83,7 +51,7 @@ function test_copy_to_derivative_ds000117()
   verbose = true;
 
   derivatives = bids.copy_to_derivative(BIDS, ...
-                                        output_dir, ...
+                                        out_path, ...
                                         pipeline_name, ...
                                         filters, ...
                                         unzip, ...
@@ -94,5 +62,26 @@ function test_copy_to_derivative_ds000117()
 
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 13);
+  
+  %% same but we skip dependencies
+  if exist(out_path, 'dir')
+    rmdir(out_path, 's');
+  end
+  skip_dependencies = true;
+
+  derivatives = bids.copy_to_derivative(BIDS, ...
+                                        out_path, ...
+                                        pipeline_name, ...
+                                        filters, ...
+                                        unzip, ...
+                                        force, ...
+                                        skip_dependencies, ...
+                                        use_schema, ...
+                                        verbose);
+
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 4);  
+  
+  %% add test to check that only files that conform to schema are copied
 
 end

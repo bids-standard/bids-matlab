@@ -63,6 +63,12 @@ To get more complex data sets, to test things you can use datalad.
 mkdir data
 datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
 datalad get ds000001/sub-01/
+
+datalad clone https://github.com/OpenNeuroDatasets/ds000117.git
+datalad get ds000117/sub-01/ses-mri/func
+datalad get ds000117/sub-01/ses-mri/fmap
+
+
 ```
 
 ## Add helper functions to the path

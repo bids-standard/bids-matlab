@@ -49,13 +49,15 @@ jobs:
          git clone git://github.com/bids-standard/bids-examples.git --depth 1 
          octave $OCTFLAGS --eval "download_moae_ds"
          cd ..
-         mkdir data; cd data
-         datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
-         datalad get ds000001/sub-01/func
-         datalad clone https://github.com/OpenNeuroDatasets/ds000117.git
-         datalad get ds000117/sub-01/ses-mri/func/*run-0[13]*
-         datalad get ds000117/sub-01/ses-mri/fmap/  
-         cd ..
+
+        # if tests on real data are needed         
+        #  mkdir data; cd data
+        #  datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
+        #  datalad get ds000001/sub-01/func
+        #  datalad clone https://github.com/OpenNeuroDatasets/ds000117.git
+        #  datalad get ds000117/sub-01/ses-mri/func/*run-0[13]*
+        #  datalad get ds000117/sub-01/ses-mri/fmap/  
+        #  cd ..
         
     - name: MOxUnit Action
       uses: joergbrech/moxunit-action@master
