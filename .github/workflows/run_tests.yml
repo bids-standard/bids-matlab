@@ -42,10 +42,11 @@ jobs:
          mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
          cd ..
 
-    - name: Install bids example
+    - name: Install bids-example and data
       run: |
          cd tests
          git clone git://github.com/bids-standard/bids-examples.git --depth 1 
+         octave $OCTFLAGS --eval "download_moae_ds"
          cd ..
         
     - name: MOxUnit Action
