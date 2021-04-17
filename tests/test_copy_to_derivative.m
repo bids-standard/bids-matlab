@@ -6,6 +6,19 @@ function test_suite = test_copy_to_derivative %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_copy_to_derivative_MoAE()
+
+  input_dir = download_moae_ds(true());
+  out_path = fullfile(input_dir, 'MoAEpilot', 'derivatives');
+
+  BIDS = fullfile(input_dir, 'MoAEpilot');
+
+  pipeline_name = 'bids-matlab';
+
+  derivatives = bids.copy_to_derivative(BIDS, out_path, pipeline_name);
+
+end
+
 function test_copy_to_derivative_ds000001()
 
   input_dir = fullfile(pwd, 'data', 'ds000001');
@@ -17,26 +30,23 @@ function test_copy_to_derivative_ds000001()
 
   BIDS = fullfile(input_dir);
 
-  what_to_copy = struct('sub', '01', ...
-                        'modality', 'func', ...
-                        'suffix', 'bold');
-  what_to_copy.run = {'01'; '03'};
+  filters = struct('sub', '01', ...
+                   'modality', 'func', ...
+                   'suffix', 'bold');
+  filters.run = {'01'; '03'};
 
-  pipeline_name = 'bids-matlab';
+  output_dir = [];
+  pipeline_name = [];
+  unzip = false;
+  force = false;
+  verbose = true;
 
-  derivatives = bids.copy_to_derivative(BIDS, out_path, pipeline_name, what_to_copy);
+  derivatives = bids.copy_to_derivative(BIDS, ...
+                                        output_dir, ...
+                                        pipeline_name, ...
+                                        filters, ...
+                                        unzip, ...
+                                        force, ...
+                                        verbose);
 
 end
-
-% function test_copy_to_derivative_MoAE()
-%
-%   input_dir = download_moae_ds(true());
-%   out_path = fullfile(input_dir, 'MoAEpilot', 'derivatives');
-%
-%   BIDS = fullfile(input_dir, 'MoAEpilot');
-%
-%   pipeline_name = 'bids-matlab';
-%
-%   derivatives = bids.copy_to_derivative(BIDS, out_path, pipeline_name);
-%
-% end

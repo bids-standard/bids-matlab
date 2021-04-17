@@ -1,4 +1,4 @@
-function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, query)
+function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force, verbose)
   %
   % Copy selected data from BIDS layout to given derivatives folder,
   % returning layout of new derivatives folder
@@ -13,8 +13,17 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, query)
   % :type  out_path:      string
   % :param pipeline_name: name of pipeline to use
   % :type  pipeline_name: string
-  % :param pipeline_name: list of filters to choose what files to copy (see bids.query)
-  % :type  pipeline_name: structure or cell
+  % :param query:         list of filters to choose what files to copy (see bids.query)
+  % :type  query:         structure or cell
+  % :param unzip:         If ``true`` (default) then all ``.gz`` files will be unzipped
+  %                       after being copied.
+  % :type  unzip:         boolean
+  %
+  % All the metadata of each file is read through the whole hierarchy
+  % and dumped into one side-car json file for each file copied.
+  % In practice this "unravels" the inheritance principle.
+  % The presence of this metadata file is also used to prevent the file from
+  % being copied again on a successive run.
   %
   %
   % __________________________________________________________________________
@@ -26,19 +35,35 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, query)
   % __________________________________________________________________________
 
   % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  % Copyright (C) 2021--, BIDS-MATLAB developers
 
-  narginchk(3, Inf);
+  narginchk(2, Inf);
+
+  if nargin < 3
+    pipeline_name = 'bids-matlab';
+  end
+
+  if nargin < 4
+    filter = [];
+  end
+
+  if nargin < 5 || isempty(unzip)
+    unzip = true;
+  end
+
+  if nargin < 6 || isempty(force)
+    force = false;
+  end
+
+  if nargin < 7 || isempty(verbose)
+    verbose = false;
+  end
 
   BIDS = bids.layout(BIDS);
 
-  if ~exist(out_path, 'dir')
-    mkdir(out_path);
-  end
-
-  derivatives = [];
-  data_list = bids.query(BIDS, 'data', query);
-  subjects_list = bids.query(BIDS, 'subjects', query);
+  % Check that we actually have to copy something
+  data_list = bids.query(BIDS, 'data', filter);
+  subjects_list = bids.query(BIDS, 'subjects', filter);
 
   if isempty(data_list)
     warning('No data found for this query');
@@ -47,12 +72,19 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, query)
     fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
   end
 
+  % Determine and create output directory
+  if nargin < 2 || isempty(out_path)
+    out_path = fullfile(BIDS.dir, '..', 'derivatives');
+  end
+  if ~exist(out_path, 'dir')
+    mkdir(out_path);
+  end
   derivatives_folder = fullfile(out_path, pipeline_name);
   if ~exist(derivatives_folder, 'dir')
     mkdir(derivatives_folder);
   end
 
-  % creating / loading description
+  % Creating / loading description
   descr_file = fullfile(derivatives_folder, 'dataset_description.json');
   if exist(descr_file, 'file')
     description = bids.util.jsondecode(descr_file);
@@ -65,7 +97,7 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, query)
   pipeline.Version = '';
   pipeline.Container = '';
   if isfield(description, 'GeneratedBy')
-    description.GeneratedBy = [description.GeneratedBy pipeline];
+    description.GeneratedBy = [description.GeneratedBy; pipeline];
   else
     description.GeneratedBy = pipeline;
   end
@@ -76,12 +108,14 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, query)
 
   % looping over selected files
   for iFile = 1:numel(data_list)
-    copy_file(BIDS, derivatives_folder, data_list{iFile});
+    copy_file(BIDS, derivatives_folder, data_list{iFile}, unzip, force, verbose);
   end
 
+  %%
+  derivatives = [];
 end
 
-function copy_file(BIDS, derivatives_folder, data_file)
+function copy_file(BIDS, derivatives_folder, data_file, unzip, force, verbose)
 
   info = bids.internal.return_file_info(BIDS, data_file);
   file = BIDS.subjects(info.sub_idx).(info.modality)(info.file_idx);
@@ -96,9 +130,15 @@ function copy_file(BIDS, derivatives_folder, data_file)
 
   %% ignore already existing files
   % avoid circular references
-  if exist(output_metadata_file, 'file')
+  if ~force && exist(output_metadata_file, 'file')
+    if verbose
+      fprintf(1, '\n skipping: %s', file.filename);
+    end
     return
   else
+    if verbose
+      fprintf(1, '\n copying: %s', file.filename);
+    end
     file.meta = bids.internal.get_metadata(file.metafile);
   end
 
@@ -110,7 +150,7 @@ function copy_file(BIDS, derivatives_folder, data_file)
   % we follow any eventual symlink
   % and then unzip the data if necessary
   copy_with_symlink(data_file, fullfile(out_dir, file.filename));
-  unzip_data(file, out_dir);
+  unzip_data(file, out_dir, unzip);
 
   %% export metadata
   % All the metadata of each file is read through the whole hierarchy
@@ -131,7 +171,7 @@ function copy_file(BIDS, derivatives_folder, data_file)
       for ifile = 1:numel(file.dependencies.(dependencies{dep}))
         dep_file = file.dependencies.(dependencies{dep}){ifile};
         if exist(dep_file, 'file')
-          copy_file(BIDS, derivatives_folder, dep_file);
+          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, verbose);
         else
           warning(['Dependency file ' dep_file ' not found']);
         end
@@ -145,6 +185,12 @@ function copy_with_symlink(src, target)
   %
   % Follows symbolic link to copy data:
   % Might be necessary for datasets curated with datalad
+  %
+  % Comment from Guillaume:
+  %   I think we should make a system() call only out of necessity.
+  %   We could test for symlinks within a isunix condition and only use cp -L for these?
+  %
+  % Though datalad should run on windows too
   %
 
   command = 'cp -R -L -f';
@@ -179,7 +225,10 @@ function copy_with_symlink(src, target)
 
 end
 
-function unzip_data(file, out_dir)
+function unzip_data(file, out_dir, unzip)
+  if ~unzip
+    return
+  end
   % to ensure a consistent behavior with matlab and octave
   if bids.internal.ends_with(file.ext, '.gz')
     gunzip(fullfile(out_dir, file.filename));

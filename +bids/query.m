@@ -126,6 +126,10 @@ function options = parse_query(options)
 
     elseif iscell(options{1})
       options = options{1};
+
+    elseif isempty(options{1})
+      options = cell(0, 2);
+      return
     end
 
   else
