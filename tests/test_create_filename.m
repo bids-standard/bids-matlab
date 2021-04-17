@@ -42,3 +42,21 @@ function test_create_filename_basic()
     assertEqual(filename, 'sub-02_task-newTask_run-02_bold.nii');
     
 end
+
+function test_create_filename_order()
+    
+    %% Create filename
+    p.suffix = 'bold';
+    p.ext = '.nii';
+    p.entities = struct(...
+                        'sub', '01', ...
+                        'ses', 'test', ...
+                        'task', 'face recognition', ...
+                        'run', '02');
+    p.entity_order = {'sub', 'run'};
+    
+    filename = bids.util.create_filename(p);
+    
+    assertEqual(filename, 'sub-01_run-02_ses-test_task-faceRecognition_bold.nii');
+
+end

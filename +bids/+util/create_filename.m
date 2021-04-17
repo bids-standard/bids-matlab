@@ -5,6 +5,15 @@ function filename = create_filename(p, file)
   end
 
   entities = fieldnames(p.entities);
+  
+  % reorder entities if necessary
+  if isfield(p, 'entity_order')
+      if size(p.entity_order, 2)>1 
+          p.entity_order = p.entity_order';
+      end
+      idx = ismember(entities, p.entity_order);
+      entities = cat(1, p.entity_order, entities(~idx));
+  end
 
   filename = '';
   for iEntity = 1:numel(entities)
@@ -21,9 +30,7 @@ function filename = create_filename(p, file)
   % remove lead '_'
   filename(1) = [];
 
-  ext = p.ext;
-  suffix = p.suffix;
-  filename = [filename '_', suffix ext];
+  filename = [filename '_', p.suffix p.ext];
 
 end
 
