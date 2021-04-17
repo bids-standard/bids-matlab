@@ -48,10 +48,11 @@ jobs:
          cd tests
          git clone git://github.com/bids-standard/bids-examples.git --depth 1 
          octave $OCTFLAGS --eval "download_moae_ds"
-         cd data
+         cd ..
+         mkdir data; cd data
          datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
          datalad get ds000001/sub-01/func
-         cd ../..
+         cd ..
         
     - name: MOxUnit Action
       uses: joergbrech/moxunit-action@master

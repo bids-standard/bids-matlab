@@ -60,7 +60,7 @@ SPM website.
 To get more complex data sets, to test things you can use datalad.
 
 ```bash
-cd tests/data
+mkdir data
 datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
 datalad get ds000001/sub-01/
 ```

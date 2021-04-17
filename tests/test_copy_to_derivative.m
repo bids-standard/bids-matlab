@@ -21,8 +21,8 @@ end
 
 function test_copy_to_derivative_ds000001()
 
-  input_dir = fullfile(pwd, 'data', 'ds000001');
-  out_path = fullfile(pwd, 'data', 'derivatives');
+  input_dir = fullfile('..', 'data', 'ds000001');
+  out_path = fullfile('..', 'data', 'derivatives');
 
   if exist(out_path, 'dir')
     rmdir(out_path, 's');
