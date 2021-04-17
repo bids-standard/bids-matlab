@@ -1,4 +1,4 @@
-function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force, verbose)
+function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force, skip_dep, use_schema, verbose)
   %
   % Copy selected data from BIDS layout to given derivatives folder,
   % returning layout of new derivatives folder
@@ -55,11 +55,21 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter,
     force = false;
   end
 
-  if nargin < 7 || isempty(verbose)
+  if nargin < 7 || isempty(skip_dep)
+    skip_dep = false;
+  end
+
+  if nargin < 8 || isempty(use_schema)
+    use_schema = true;
+  end
+
+  if nargin < 9 || isempty(verbose)
     verbose = false;
   end
 
-  BIDS = bids.layout(BIDS);
+  derivatives = [];
+
+  BIDS = bids.layout(BIDS, use_schema);
 
   % Check that we actually have to copy something
   data_list = bids.query(BIDS, 'data', filter);
@@ -108,14 +118,14 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter,
 
   % looping over selected files
   for iFile = 1:numel(data_list)
-    copy_file(BIDS, derivatives_folder, data_list{iFile}, unzip, force, verbose);
+    copy_file(BIDS, derivatives_folder, data_list{iFile}, unzip, force, skip_dep, verbose);
   end
 
   %%
-  derivatives = [];
+  derivatives = bids.layout(derivatives_folder, use_schema);
 end
 
-function copy_file(BIDS, derivatives_folder, data_file, unzip, force, verbose)
+function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, verbose)
 
   info = bids.internal.return_file_info(BIDS, data_file);
   file = BIDS.subjects(info.sub_idx).(info.modality)(info.file_idx);
@@ -165,18 +175,23 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, verbose)
   end
 
   %% dealing with dependencies
-  if ~isempty(file.dependencies)
+  if ~skip_dep
+
     dependencies = fieldnames(file.dependencies);
+
     for dep = 1:numel(dependencies)
       for ifile = 1:numel(file.dependencies.(dependencies{dep}))
+
         dep_file = file.dependencies.(dependencies{dep}){ifile};
         if exist(dep_file, 'file')
-          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, verbose);
+          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, skip_dep, verbose);
         else
           warning(['Dependency file ' dep_file ' not found']);
         end
+
       end
     end
+
   end
 
 end

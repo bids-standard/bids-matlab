@@ -39,6 +39,8 @@ function test_copy_to_derivative_ds000001()
   pipeline_name = [];
   unzip = false;
   force = false;
+  skip_dependencies = true;
+  use_schema = true;
   verbose = true;
 
   derivatives = bids.copy_to_derivative(BIDS, ...
@@ -47,6 +49,50 @@ function test_copy_to_derivative_ds000001()
                                         filters, ...
                                         unzip, ...
                                         force, ...
+                                        skip_dependencies, ...
+                                        use_schema, ...
                                         verbose);
+
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 2);
+
+end
+
+function test_copy_to_derivative_ds000117()
+
+  input_dir = fullfile('..', 'data', 'ds000117');
+  out_path = fullfile('..', 'data', 'derivatives');
+
+  if exist(out_path, 'dir')
+    rmdir(out_path, 's');
+  end
+
+  BIDS = fullfile(input_dir);
+
+  filters = struct('sub', '01', ...
+                   'modality', 'func', ...
+                   'suffix', 'bold');
+  filters.run = {'01'; '03'};
+
+  output_dir = [];
+  pipeline_name = [];
+  unzip = false;
+  force = false;
+  skip_dependencies = false;
+  use_schema = false;
+  verbose = true;
+
+  derivatives = bids.copy_to_derivative(BIDS, ...
+                                        output_dir, ...
+                                        pipeline_name, ...
+                                        filters, ...
+                                        unzip, ...
+                                        force, ...
+                                        skip_dependencies, ...
+                                        use_schema, ...
+                                        verbose);
+
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 13);
 
 end

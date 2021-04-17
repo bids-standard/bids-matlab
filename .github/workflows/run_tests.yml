@@ -52,6 +52,9 @@ jobs:
          mkdir data; cd data
          datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
          datalad get ds000001/sub-01/func
+         datalad clone https://github.com/OpenNeuroDatasets/ds000117.git
+         datalad get ds000117/sub-01/ses-mri/func/*run-0[13]*
+         datalad get ds000117/sub-01/ses-mri/fmap/  
          cd ..
         
     - name: MOxUnit Action
