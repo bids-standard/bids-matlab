@@ -6,25 +6,6 @@ function test_suite = test_get_metadata %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_get_metadata_participants()
-  % test files with no underscore in name.
-
-  pth_bids_example = get_test_data_dir();
-
-  file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
-  side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
-
-  % SILENCING TEST
-  % bids.internal.get_metadata now only takes .jsons as input
-  % bids.internal.get_meta_list is now in charge of building the list of
-  % metadata file list
-
-  %   metadata = bids.internal.get_metadata(file);
-  %   expected_metadata = bids.util.jsondecode(side_car);
-  %   assertEqual(metadata, expected_metadata);
-
-end
-
 function test_get_metadata_basic()
   % Test metadata and the inheritance principle
   % __________________________________________________________________________
@@ -81,5 +62,21 @@ function test_get_metadata_internal()
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'));
 
   bids.internal.get_metadata(BIDS(1).subjects(2).anat(1).metafile);
+
+end
+
+function test_get_metadata_participants()
+  % test files with no underscore in name.
+
+  pth_bids_example = get_test_data_dir();
+
+  file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
+  side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
+
+  metalist = bids.internal.get_meta_list(file);
+  metadata = bids.internal.get_metadata(metalist);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+  assertEqual(metadata, expected_metadata);
 
 end

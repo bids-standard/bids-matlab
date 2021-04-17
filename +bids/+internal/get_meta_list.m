@@ -27,18 +27,23 @@ function metalist = get_meta_list(filename, pattern)
   p = bids.internal.parse_filename(filename);
   metalist = {};
 
-  N = 3;
-
-  % -There is a session level in the hierarchy
-  if isfield(p.entities, 'ses') && ~isempty(p.entities.ses)
-    N = N + 1;
+  % Default assumes we are dealing with a file in the root directory
+  % like "participants.tsv"
+  % If the file has underscore separated entities ("sub-01_T1w.nii")
+  % then we look through the hierarchy for potential metadata file associated
+  % with queried file.
+  N = 1;
+  if isfield(p, 'entities')
+    N = 3;
+    % -There is a session level in the hierarchy
+    if isfield(p.entities, 'ses') && ~isempty(p.entities.ses)
+      N = N + 1;
+    end
   end
 
-  % -Loop from the directory where the file of interest is back to the
-  % top level of the BIDS hierarchy
   for n = 1:N
 
-    % -List the potential metadata files associated with this file suffix type
+    % List the potential metadata files associated with this file suffix type
     % Default is to assume it is a JSON file
     metafile = bids.internal.file_utils('FPList', pth, sprintf(pattern, p.suffix));
 
@@ -48,7 +53,7 @@ function metalist = get_meta_list(filename, pattern)
       metafile = cellstr(metafile);
     end
 
-    % -For all those files we find which one is potentially associated with
+    % For all those files we find which one is potentially associated with
     % the file of interest
     for i = 1:numel(metafile)
 
@@ -81,7 +86,7 @@ function metalist = get_meta_list(filename, pattern)
 
     end
 
-    % -Go up to the parent folder
+    % Go up to the parent folder
     pth = fullfile(pth, '..');
   end
 end
