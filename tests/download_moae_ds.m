@@ -1,5 +1,8 @@
 function output_dir = download_moae_ds(downloadData)
   %
+  % Will download the lightweight "Mother of all experiment" dataset from the
+  %  SPM website.
+  %
   % Copyright (C) 2021--, BIDS-MATLAB developers
 
   if nargin < 1

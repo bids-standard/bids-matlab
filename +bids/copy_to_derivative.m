@@ -1,18 +1,20 @@
-function derivatives = copy_to_derivative(BIDS, out_path, name, varargin)
+function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, query)
   %
   % Copy selected data from BIDS layout to given derivatives folder,
   % returning layout of new derivatives folder
   %
   % USAGE::
   %
-  %   derivatives = copy_to_derivative(BIDS, out_path, ...)
+  %   derivatives = copy_to_derivative(BIDS, out_path, query)
   %
-  % :param BIDS:     BIDS directory name or BIDS structure (from bids.layout)
-  % :type  BIDS:     (strcuture or string)
-  % :param out_path: path to directory containing the derivatives
-  % :type  out_path: string
-  % :param name:     name of pipeline to use
-  % :type  name:     string
+  % :param BIDS:          BIDS directory name or BIDS structure (from bids.layout)
+  % :type  BIDS:          structure or string
+  % :param out_path:      path to directory containing the derivatives
+  % :type  out_path:      string
+  % :param pipeline_name: name of pipeline to use
+  % :type  pipeline_name: string
+  % :param pipeline_name: list of filters to choose what files to copy (see bids.query)
+  % :type  pipeline_name: structure or cell
   %
   %
   % __________________________________________________________________________
@@ -35,8 +37,8 @@ function derivatives = copy_to_derivative(BIDS, out_path, name, varargin)
   end
 
   derivatives = [];
-  data_list = bids.query(BIDS, 'data', varargin{:});
-  subjects_list = bids.query(BIDS, 'subjects', varargin{:});
+  data_list = bids.query(BIDS, 'data', query);
+  subjects_list = bids.query(BIDS, 'subjects', query);
 
   if isempty(data_list)
     warning('No data found for this query');
@@ -45,13 +47,13 @@ function derivatives = copy_to_derivative(BIDS, out_path, name, varargin)
     fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
   end
 
-  pth_BIDSderiv = fullfile(out_path, name);
-  if ~exist(pth_BIDSderiv, 'dir')
-    mkdir(pth_BIDSderiv);
+  derivatives_folder = fullfile(out_path, pipeline_name);
+  if ~exist(derivatives_folder, 'dir')
+    mkdir(derivatives_folder);
   end
 
   % creating / loading description
-  descr_file = fullfile(pth_BIDSderiv, 'dataset_description.json');
+  descr_file = fullfile(derivatives_folder, 'dataset_description.json');
   if exist(descr_file, 'file')
     description = bids.util.jsondecode(descr_file);
   else
@@ -61,7 +63,7 @@ function derivatives = copy_to_derivative(BIDS, out_path, name, varargin)
   % Create / update GeneratedBy
   pipeline.Name = mfilename;
   pipeline.Version = '';
-  pipeline.Container = varargin;
+  pipeline.Container = '';
   if isfield(description, 'GeneratedBy')
     description.GeneratedBy = [description.GeneratedBy pipeline];
   else
@@ -74,14 +76,12 @@ function derivatives = copy_to_derivative(BIDS, out_path, name, varargin)
 
   % looping over selected files
   for iFile = 1:numel(data_list)
-    copy_file(BIDS, pth_BIDSderiv, data_list{iFile});
+    copy_file(BIDS, derivatives_folder, data_list{iFile});
   end
 
 end
 
-function status = copy_file(BIDS, derivatives_folder, data_file)
-
-  status = true;
+function copy_file(BIDS, derivatives_folder, data_file)
 
   info = bids.internal.return_file_info(BIDS, data_file);
   file = BIDS.subjects(info.sub_idx).(info.modality)(info.file_idx);
@@ -91,11 +91,12 @@ function status = copy_file(BIDS, derivatives_folder, data_file)
                      BIDS.subjects(info.sub_idx).session, ...
                      info.modality);
 
-  meta_file = fullfile(out_dir, [bids.internal.file_utils(file.filename, 'basename') '.json']);
+  output_metadata_file = fullfile(out_dir, ...
+                                  strrep(file.filename, file.ext, '.json'));
 
   %% ignore already existing files
   % avoid circular references
-  if exist(meta_file, 'file')
+  if exist(output_metadata_file, 'file')
     return
   else
     file.meta = bids.internal.get_metadata(file.metafile);
@@ -106,32 +107,29 @@ function status = copy_file(BIDS, derivatives_folder, data_file)
   end
 
   %% copy data file
-  if endsWith(file.ext, '.gz')
-    % might be an issue with octave that removes original file
-    gunzip(data_file, out_dir);
-  else
-    [status, message, messageId] = copyfile(data_file, fullfile(out_dir, file.filename));
-  end
-  if ~status
-    warning([messageId ': ' message]);
-    return
-  end
+  % we follow any eventual symlink
+  % and then unzip the data if necessary
+  copy_with_symlink(data_file, fullfile(out_dir, file.filename));
+  unzip_data(file, out_dir);
 
   %% export metadata
+  % All the metadata of each file is read through the whole hierarchy
+  % and dumped into one side-car json file for each file copied
+  % In practice this "unravels" the inheritance principle
   if ~strcmpi(file.ext, '.json') % skip if data file is json
-    bids.util.jsonencode(meta_file, file.meta);
+    bids.util.jsonencode(output_metadata_file, file.meta);
   end
   % checking that json is created
-  if ~exist(meta_file, 'file')
-    error('Failed to create sidecar json file: %s', meta_file);
+  if ~exist(output_metadata_file, 'file')
+    error('Failed to create sidecar json file: %s', output_metadata_file);
   end
 
   %% dealing with dependencies
   if ~isempty(file.dependencies)
     dependencies = fieldnames(file.dependencies);
     for dep = 1:numel(dependencies)
-      for idep = 1:numel(file.dependencies.(dependencies{dep}))
-        dep_file = file.dependencies.(dependencies{dep}){idep};
+      for ifile = 1:numel(file.dependencies.(dependencies{dep}))
+        dep_file = file.dependencies.(dependencies{dep}){ifile};
         if exist(dep_file, 'file')
           copy_file(BIDS, derivatives_folder, dep_file);
         else
@@ -141,4 +139,52 @@ function status = copy_file(BIDS, derivatives_folder, data_file)
     end
   end
 
+end
+
+function copy_with_symlink(src, target)
+  %
+  % Follows symbolic link to copy data:
+  % Might be necessary for datasets curated with datalad
+  %
+
+  command = 'cp -R -L -f';
+
+  try
+    status = system( ...
+                    sprintf('%s %s %s', ...
+                            command, ...
+                            src, ...
+                            target));
+
+    if status > 0
+      message = [ ...
+                 'Copying data with system command failed: ' ...
+                 'Are you running Windows?\n', ...
+                 'Will use matlab/octave copyfile command instead.\n', ...
+                 'May be an issue if your data set contains symbolic links' ...
+                 '(e.g. if you use datalad or git-annex.)'];
+      error(message);
+    end
+
+  catch
+
+    fprintf(1, 'Using octave/matlab to copy files.');
+    [status, message, messageId] = copyfile(src, target);
+    if ~status
+      warning([messageId ': ' message]);
+      return
+    end
+
+  end
+
+end
+
+function unzip_data(file, out_dir)
+  % to ensure a consistent behavior with matlab and octave
+  if bids.internal.ends_with(file.ext, '.gz')
+    gunzip(fullfile(out_dir, file.filename));
+    if exist(fullfile(out_dir, file.filename), 'file')
+      delete(fullfile(out_dir, file.filename));
+    end
+  end
 end

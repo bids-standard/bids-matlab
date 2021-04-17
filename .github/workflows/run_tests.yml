@@ -24,6 +24,7 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install octave liboctave-dev
         sudo apt-get -y install nodejs npm
+        sudo apt-get -y install datalad
 
     - name: Clone bids-matlab         
       uses: actions/checkout@v2
@@ -47,7 +48,10 @@ jobs:
          cd tests
          git clone git://github.com/bids-standard/bids-examples.git --depth 1 
          octave $OCTFLAGS --eval "download_moae_ds"
-         cd ..
+         cd data
+         datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
+         datalad get ds000001/sub-01/func
+         cd ../..
         
     - name: MOxUnit Action
       uses: joergbrech/moxunit-action@master
