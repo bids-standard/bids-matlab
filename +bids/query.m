@@ -19,8 +19,27 @@ function result = query(BIDS, query, varargin)
   %                          - 'modalities'
   % :type  query: string
   %
+  % Queries can "filtered" by passing more arguments key-value pairs as a list of
+  % strings or as a cell or a structure
   %
-
+  % Example 1::
+  %
+  %    data = bids.query(BIDS, 'data', ...
+  %                            'sub', '01', ...
+  %                            'task', 'stopsignalwithpseudowordnaming', ...
+  %                            'extension', '.nii.gz', ...
+  %                            'suffix', 'bold');
+  %
+  %
+  % Example 2::
+  %
+  %     filters = struct('sub', '01', ...
+  %                     'task', 'stopsignalwithpseudowordnaming', ...
+  %                     'extension', '.nii.gz', ...
+  %                     'suffix', 'bold');
+  %
+  %     data = bids.query(BIDS, 'data', filters);
+  %
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -100,8 +119,14 @@ end
 
 function options = parse_query(options)
 
-  if numel(options) == 1 && isstruct(options{1})
-    options = [fieldnames(options{1}), struct2cell(options{1})];
+  if numel(options) == 1
+
+    if isstruct(options{1})
+      options = [fieldnames(options{1}), struct2cell(options{1})];
+
+    elseif iscell(options{1})
+      options = options{1};
+    end
 
   else
     if mod(numel(options), 2)
