@@ -42,7 +42,7 @@ function test_get_metadata_basic()
   % also tests inheritance principle: metadata are passed on to lower levels
   % unless they are overriden by metadate already present at lower levels
 
-  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
+  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'synthetic');
 
   % define the expected output from bids query metadata
   func.RepetitionTime = 7;

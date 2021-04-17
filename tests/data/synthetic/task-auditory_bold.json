@@ -1,0 +1,10 @@
+{
+  "RepetitionTime": 7,
+  "NumberOfVolumesDiscardedByScanner": 0,
+  "NumberOfVolumesDiscardedByUser": 12,
+  "TaskName": "Auditory",
+  "TaskDescription": "The condition for successive blocks alternated between rest and auditory stimulation, starting with rest. Auditory stimulation was with bi-syllabic words presented binaurally at a rate of 60 per minute.",
+  "Manufacturer": "Siemens",
+  "ManufacturersModelName": "MAGNETOM Vision",
+  "MagneticFieldStrength": 2
+}

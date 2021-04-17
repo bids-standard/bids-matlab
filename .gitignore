@@ -2,9 +2,6 @@
 *.*~
 *.swp
 
-/tests/bids-examples
-/tests/*.tsv
-
 # ignore virtual env
 env/*
 
