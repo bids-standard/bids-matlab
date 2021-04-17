@@ -21,14 +21,14 @@ end
 
 function test_copy_to_derivative_ds000117()
 
-  pth_bids_example = get_test_data_dir();    
-  input_dir = fullfile(pth_bids_example, 'ds000117');    
-    
+  pth_bids_example = get_test_data_dir();
+  input_dir = fullfile(pth_bids_example, 'ds000117');
+
   % to test on real data uncomment the following line
   % see tests/README.md to see how to install the data
   %
   %   input_dir = fullfile('..', 'data', 'ds000117');
-  
+
   out_path = fullfile(pwd, 'data', 'derivatives');
 
   if exist(out_path, 'dir')
@@ -62,7 +62,7 @@ function test_copy_to_derivative_ds000117()
 
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 13);
-  
+
   %% same but we skip dependencies
   if exist(out_path, 'dir')
     rmdir(out_path, 's');
@@ -80,8 +80,8 @@ function test_copy_to_derivative_ds000117()
                                         verbose);
 
   copied_files = bids.query(derivatives, 'data');
-  assertEqual(size(copied_files, 1), 4);  
-  
+  assertEqual(size(copied_files, 1), 4);
+
   %% add test to check that only files that conform to schema are copied
 
 end
