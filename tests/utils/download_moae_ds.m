@@ -9,7 +9,7 @@ function output_dir = download_moae_ds(downloadData)
     downloadData = true();
   end
 
-  output_dir = fullfile(fileparts(mfilename('fullpath')), 'data');
+  output_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'data');
 
   if downloadData
 
