@@ -14,12 +14,21 @@ function filename = create_filename(p, file)
 
   entities = fieldnames(p.entities);
 
-  [p, entities] = reorder_entities(p, entities);
+  [p, entities, is_required] = reorder_entities(p, entities);
 
   filename = '';
   for iEntity = 1:numel(entities)
 
     thisEntity = entities{iEntity};
+
+    if is_required(iEntity) && ...
+            (~isfield(p.entities, thisEntity) || isempty(p.entities.(thisEntity)))
+      errorStruct.identifier = 'bidsMatlab:requiredEntity';
+      errorStruct.message = sprintf('The entity %s cannot not be empty for the suffix %s', ...
+                                    thisEntity, ...
+                                    p.suffix);
+      error(errorStruct);
+    end
 
     if isfield(p.entities, thisEntity) && ~isempty(p.entities.(thisEntity))
       thisLabel = bids.internal.camel_case(p.entities.(thisEntity));
@@ -48,6 +57,12 @@ function parsed_file = rename_file(p, file)
 end
 
 function [p, entities, is_required] = reorder_entities(p, entities)
+  %
+  % reorder entities by one of the following ways
+  %   - user defined: p.entity_order
+  %   - schema based: p.use_schema
+  %   - order defined by entities order in p.entities
+  %
 
   if isfield(p, 'entity_order')
     if size(p.entity_order, 2) > 1

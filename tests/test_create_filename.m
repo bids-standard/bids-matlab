@@ -76,3 +76,18 @@ function test_create_filename_schema_based()
   assertEqual(filename, 'sub-01_task-faceRecognition_run-02_bold.nii');
 
 end
+
+function test_create_filename_schema_error()
+
+  p.suffix = 'bold';
+  p.ext = '.nii';
+  p.entities = struct( ...
+                      'run', '02', ...
+                      'sub', '01');
+  p.use_schema = true;
+
+  assertExceptionThrown( ...
+                        @()bids.util.create_filename(p), ...
+                        'bidsMatlab:requiredEntity');
+
+end
