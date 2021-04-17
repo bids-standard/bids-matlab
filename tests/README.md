@@ -52,6 +52,25 @@ cd tests
 git clone git://github.com/bids-standard/bids-examples.git --depth 1
 ```
 
+#### Datasets with content
+
+The function `download_moae_ds.m` will download a lightweight dataset from the
+SPM website.
+
+To get more complex data sets, to test things you can use datalad.
+
+```bash
+mkdir data
+datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
+datalad get ds000001/sub-01/
+
+datalad clone https://github.com/OpenNeuroDatasets/ds000117.git
+datalad get ds000117/sub-01/ses-mri/func
+datalad get ds000117/sub-01/ses-mri/fmap
+
+
+```
+
 ## Add helper functions to the path
 
 There are a some help functions you need to add to the Matlab / Octave path to

@@ -28,6 +28,7 @@ function test_bids_query_dwi_basic()
                             'suffix', 'dwi', ...
                             'extension', '.nii.gz');
 
-  assertEqual(dependencies.bval(1:11), [0 repmat(2400, 1, 10)]);
+  bval = bids.util.tsvread(dependencies.data{1});
+  assertEqual(bval(1:11), [0 repmat(2400, 1, 10)]);
 
 end

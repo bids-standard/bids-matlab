@@ -1,4 +1,4 @@
-function subject = append_to_layout(file, subject, modality, schema)
+function [subject, p] = append_to_layout(file, subject, modality, schema)
   %
   % appends a file to the BIDS layout by parsing it according to the provided schema
   %
@@ -40,7 +40,7 @@ function subject = append_to_layout(file, subject, modality, schema)
     p = bids.internal.parse_filename(file, entities);
 
     % do not index json files when using the schema
-    if ~isempty(p) && strcmp(p.ext, '.json')
+    if isempty(p) || (~isempty(p) && strcmp(p.ext, '.json'))
       return
     end
 

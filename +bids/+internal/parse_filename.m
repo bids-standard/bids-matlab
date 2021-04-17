@@ -53,8 +53,16 @@ function p = parse_filename(filename, fields)
   end
 
   % identidy an eventual prefix to the file
-  tmp = regexp(parts{1}, '(sub)', 'split');
-  p.prefix = tmp{1};
+  % and amends the sub entity accordingly
+  p.prefix = '';
+  if strfind(parts{1}, 'sub-')
+    tmp = regexp(parts{1}, '(sub-)', 'split');
+    p.prefix = tmp{1};
+    if ~isempty(p.prefix)
+      p.entities.sub = p.entities.([p.prefix 'sub']);
+      p.entities = rmfield(p.entities, [p.prefix 'sub']);
+    end
+  end
 
   % -Extra fields can be added to the structure and ordered specifically.
   if nargin == 2
