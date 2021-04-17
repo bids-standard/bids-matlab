@@ -125,7 +125,7 @@ function BIDS = layout(root, use_schema)
   %% Dependencies
   % ==========================================================================
 
-  BIDS = manage_intended_for(BIDS);
+  BIDS = manage_dependencies(BIDS);
 
 end
 
@@ -165,14 +165,8 @@ function subject = parse_subject(pth, subjname, sesname, schema)
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
-        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet'}
+        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf'}
           subject = parse_using_schema(subject, modalities{iModality}, schema);
-        case 'dwi'
-          subject = parse_dwi(subject, schema);
-        case 'fmap'
-          subject = parse_fmap(subject, schema);
-        case 'perf'
-          subject = parse_perf(subject, schema);
         otherwise
           % in case we are going schemaless
           % and the modality is not one of the usual suspect
@@ -195,155 +189,37 @@ function subject = parse_using_schema(subject, modality, schema)
 
     file_list = return_file_list(modality, subject, schema);
 
-    for i = 1:numel(file_list)
+    for iFile = 1:size(file_list, 1)
 
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
+      [subject, parsing] = bids.internal.append_to_layout(file_list{iFile}, ...
+                                                          subject, ...
+                                                          modality, ...
+                                                          schema);
 
-    end
+      if ~isempty(parsing)
 
-  end
+        subject = index_dependencies(subject, modality, file_list{iFile});
 
-end
+        switch subject.(modality)(end).suffix
 
-function subject = parse_dwi(subject, schema)
+          case 'asl'
 
-  % --------------------------------------------------------------------------
-  %  Diffusion imaging data
-  % --------------------------------------------------------------------------
+            subject.(modality)(end).meta = [];
 
-  modality = 'dwi';
-  pth = fullfile(subject.path, modality);
+            subject.(modality)(end).meta = bids.internal.get_metadata(subject.(modality)(iFile).metafile);
 
-  if exist(pth, 'dir')
+            aslcontext_file = strrep(subject.perf(end).filename, ...
+                                     ['_asl' subject.perf(end).ext], ...
+                                     '_aslcontext.tsv');
+            subject.(modality)(end).dependencies.context = manage_tsv( ...
+                                                                      struct('content', [], ...
+                                                                             'meta', []), ...
+                                                                      pth, ...
+                                                                      aslcontext_file);
 
-    subject = bids.internal.add_missing_field(subject, modality);
+            subject.(modality)(end) = manage_M0(subject.perf(end), pth);
 
-    file_list = return_file_list(modality, subject, schema);
-
-    for i = 1:numel(file_list)
-
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-
-      % if this file is a nifti image we add the bval and bvec as dependencies
-      if ~isempty(subject.(modality)) && ...
-              any(strcmp(subject.(modality)(end).ext, {'.nii', '.nii.gz'}))
-
-        fullpath_filename = fullfile(subject.path, modality, file_list{i});
-
-        % bval & bvec file
-        % ------------------------------------------------------------------
-        % TODO: they can also be stored at higher levels (inheritance principle)
-        % TODO: refactor and deal with all this after file indexing
-        bvalfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bval$');
-        if isfield(bvalfile, 'filename')
-          subject.dwi(end).dependencies.bval = bids.util.tsvread(bvalfile.filename);
         end
-
-        bvecfile = bids.internal.get_metadata(fullpath_filename, '^.*%s\\.bvec$');
-        if isfield(bvalfile, 'filename')
-          subject.dwi(end).dependencies.bvec = bids.util.tsvread(bvecfile.filename);
-        end
-
-      end
-
-    end
-  end
-end
-
-function subject = parse_perf(subject, schema)
-
-  % --------------------------------------------------------------------------
-  % ASL perfusion imaging data
-  % --------------------------------------------------------------------------
-
-  modality = 'perf';
-  pth = fullfile(subject.path, 'perf');
-
-  if exist(pth, 'dir')
-
-    subject = bids.internal.add_missing_field(subject, modality);
-
-    file_list = return_file_list(modality, subject, schema);
-
-    for i = 1:numel(file_list)
-
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-
-      switch subject.perf(i).suffix
-
-        case 'asl'
-
-          subject.perf(i).meta = [];
-          subject.perf(i).dependencies = [];
-
-          subject.perf(i).meta = bids.internal.get_metadata( ...
-                                                            fullfile( ...
-                                                                     subject.path, ...
-                                                                     modality, ...
-                                                                     file_list{i}));
-
-          aslcontext_file = strrep(subject.perf(i).filename, ...
-                                   ['_asl' subject.perf(i).ext], ...
-                                   '_aslcontext.tsv');
-          subject.perf(i).dependencies.context = manage_tsv( ...
-                                                            struct('content', [], 'meta', []), ...
-                                                            pth, ...
-                                                            aslcontext_file);
-
-          subject.perf(i) = manage_asllabeling(subject.perf(i), pth);
-
-          subject.perf(i) = manage_M0(subject.perf(i), pth);
-
-      end
-
-    end
-
-  end
-
-end
-
-function subject = parse_fmap(subject, schema)
-
-  modality = 'fmap';
-  pth = fullfile(subject.path, modality);
-
-  if exist(pth, 'dir')
-
-    subject = bids.internal.add_missing_field(subject, modality);
-
-    file_list = return_file_list(modality, subject, schema);
-
-    for i = 1:numel(file_list)
-
-      subject = bids.internal.append_to_layout(file_list{i}, subject, modality, schema);
-
-      switch subject.fmap(i).suffix
-
-        % -A single, real fieldmap image
-        case {'fieldmap', 'magnitude'}
-          subject.fmap(i).dependencies.magnitude = strrep(file_list{idx(i)}, ...
-                                                          '_fieldmap.nii', ...
-                                                          '_magnitude.nii');
-
-          % Phase difference image and at least one magnitude image
-        case {'phasediff'}
-          subject.fmap(i).dependencies.magnitude = { ...
-                                                    strrep(file_list{i}, ...
-                                                           '_phasediff.nii', ...
-                                                           '_magnitude1.nii'), ...
-                                                    strrep(file_list{i}, ...
-                                                           '_phasediff.nii', ...
-                                                           '_magnitude2.nii')}; % optional
-
-          % Two phase images and two magnitude images
-        case {'phase1', 'phase2'}
-          subject.fmap(i).dependencies.magnitude = { ...
-                                                    strrep(file_list{i}, ...
-                                                           '_phase1.nii', ...
-                                                           '_magnitude1.nii'), ...
-                                                    strrep(file_list{i}, ...
-                                                           '_phase1.nii', ...
-                                                           '_magnitude2.nii')};
 
       end
 
@@ -407,6 +283,15 @@ function f = convert_to_cell(f)
   end
 end
 
+function subject_path = return_subject_path(subject)
+  % get "subject path" without the session folder (if it exists)
+  subject_path = subject.path;
+  tmp = bids.internal.file_utils(subject_path, 'filename');
+  if strcmp(tmp(1:3), 'ses')
+    subject_path = bids.internal.file_utils(subject_path, 'path');
+  end
+end
+
 function file_list = return_file_list(modality, subject, schema)
 
   % We list anything but json files
@@ -417,8 +302,8 @@ function file_list = return_file_list(modality, subject, schema)
 
   % TODO
   % this does not cover coordsystem.json
-  % jn to omit json but not .pos file for headshape.pos
 
+  % jn to omit json but not .pos file for headshape.pos
   pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
   prefix = '';
   if isempty(schema)
@@ -437,18 +322,70 @@ function file_list = return_file_list(modality, subject, schema)
 
   if strcmp(modality, 'meg') && ~isempty(d)
     for i = 1:size(d, 1)
-      file_list{end + 1, 1} = d(i, :);
+      file_list{end + 1, 1} = d(i, :); %#ok<*AGROW>
     end
   end
 
 end
 
+function subject = index_dependencies(subject, modality, file)
+  %
+  % Each file structure contains dependencies sub-structure with guaranteed fields:
+  %
+  % - explicit: list of data files containing "IntendedFor" referencing current file.
+  %              see the manage_dependencies function
+  %
+  % - data:     list of files with same name but different extension.
+  %              This combines files that are split in header and data
+  %              (like in Brainvision), also takes care of bval/bvec files
+  %
+  % - group:    list of files that have same name except extension and suffix.
+  %              This groups file that logically need each other,
+  %              like functional mri and events tabular file.
+  %              It also takes care of fmap magnitude1/2 and phasediff.
+
+  pth = fullfile(subject.path, modality);
+  fullpath_filename = fullfile(pth, file);
+
+  subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+  subject.(modality)(end).dependencies.explicit = {};
+  subject.(modality)(end).dependencies.data = {};
+  subject.(modality)(end).dependencies.group = {};
+
+  ext = subject.(modality)(end).ext;
+  suffix = subject.(modality)(end).suffix;
+  pattern = strrep(file, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
+  candidates = bids.internal.file_utils('List', pth, ['^' pattern '$']);
+  candidates = cellstr(candidates);
+
+  for ii = 1:numel(candidates)
+
+    if strcmp(candidates{ii}, file)
+      continue
+    end
+
+    if bids.internal.ends_with(candidates{ii}, '.json')
+      continue
+    end
+
+    match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
+    % different suffix
+    if isempty(match)
+      subject.(modality)(end).dependencies.group{end + 1, 1} = fullfile(pth, candidates{ii});
+      % same suffix
+    else
+      subject.(modality)(end).dependencies.data{end + 1, 1} = fullfile(pth, candidates{ii});
+    end
+
+  end
+
+end
+
 function structure = manage_tsv(structure, pth, filename)
-  % Retunrs the content and metadata of a TSV file (if they exist)
+  % Returns the content and metadata of a TSV file (if they exist)
   %
   % NOTE: inheritance principle not implemented.
   % Does NOT look for the metadata of a file at higher levels
-  %
   %
 
   ext = bids.internal.file_utils(filename, 'ext');
@@ -473,132 +410,47 @@ function structure = manage_tsv(structure, pth, filename)
 
 end
 
-function BIDS = manage_intended_for(BIDS)
-
-  % Loops through all the files with potential ``intentedFor`` metadata
-  % and creates an ``intended_for`` field with the fullpath list of all the target files
-  % it is intended for that exist.
+function BIDS = manage_dependencies(BIDS)
   %
-  % Also update the structure of each target file with an ``informed_by`` field
+  % Loops over all files and retrieve all files that current file depends on
+  %
 
-  suffix_with_intended_for = { ...
-                              'phasediff'; ...
-                              'phase1'; ...
-                              'phase2'; ...
-                              'fieldmap'; ...
-                              'epi'; ...
-                              'm0scan'; ...
-                              'coordsystem'};
+  file_list = bids.query(BIDS, 'data');
 
-  for iSuffix = 1:numel(suffix_with_intended_for)
-    file_list = bids.query(BIDS, 'data', 'suffix', suffix_with_intended_for(iSuffix));
+  for iFile = 1:size(file_list, 1)
 
-    for iFile = 1:size(file_list, 1)
+    info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
+    file = BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx);
+    metadata = bids.internal.get_metadata(file.metafile);
 
-      info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
+    % If the file A is intended for file B
+    %   then we update the dependencies.explicit field structrure of file B
+    %   so it contains the fullpath to file A
+    %
+    % This way when one queries info about B, then it is easy to know what
+    % other is present to help with analysis.
+    intended = {};
+    if isfield(metadata, 'IntendedFor')
+      intended = cellstr(metadata.IntendedFor);
+    end
 
-      [metadata, intended_for] = check_intended_for_exist(BIDS.subjects(info_src.sub_idx), ...
-                                                          fullfile( ...
-                                                                   info_src.path, ...
-                                                                   info_src.modality, ...
-                                                                   info_src.filename));
-
-      BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx).meta = metadata;
-      BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx).intended_for = ...
-          intended_for;
-
-      % update "dependency" field of target file
-      informed_by = [];
-      for iTargetFile = 1:size(intended_for, 1)
-
-        info_tgt = bids.internal.return_file_info(BIDS, intended_for{iTargetFile});
-
-        % TODO: this should probably check that the informed_by field does not
-        % already exist in the structure
-        % TODO: This assumes that a file will only be informed by a single file from
-        % this moodality
-        informed_by.(info_src.modality) = file_list{iFile};
-        BIDS.subjects(info_tgt.sub_idx).(info_tgt.modality)(info_tgt.file_idx).informed_by = ...
-            informed_by;
+    for iIntended = 1:numel(intended)
+      dest = fullfile(BIDS.dir, BIDS.subjects(info_src.sub_idx).name, ...
+                      intended{iIntended});
+      if ~exist(dest, 'file')
+        warning(['IntendedFor file ' dest ' from ' file.filename ' not found']);
+        continue
       end
-
+      info_dest = bids.internal.return_file_info(BIDS, dest);
+      BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx) ...
+          .dependencies.explicit{end + 1, 1} = file_list{iFile};
     end
-
-  end
-
-end
-
-function [metadata, intended_for] = check_intended_for_exist(subject, filename)
-
-  metadata =  bids.internal.get_metadata(filename);
-
-  intended_for = {};
-
-  if isempty(metadata) || ~isfield(metadata, 'IntendedFor')
-    warning('Missing field IntendedFor for %s', filename);
-    return
-
-  else
-
-    path_intended_for = {};
-
-    if ischar(metadata.IntendedFor)
-      path_intended_for{1, 1} = metadata.IntendedFor;
-
-    elseif isstruct(metadata.IntendedFor)
-      for iPath = 1:length(metadata.IntendedFor)
-        path_intended_for{iPath, 1} = metadata.IntendedFor(iPath); %#ok<*AGROW>
-      end
-
-    end
-  end
-
-  subject_path = return_subject_path(subject);
-
-  for iPath = 1:size(path_intended_for, 1)
-
-    % create a fullname path for current operating system
-    fullpath_filename = fullfile(subject_path, ...
-                                 strrep(path_intended_for{iPath}, '/', filesep));
-
-    % check if this file is missing
-    if ~exist(fullpath_filename, 'file')
-      warning(['Missing: ' fullpath_filename]);
-
-    else
-      intended_for{end + 1, 1} = fullpath_filename;
-
-    end
-  end
-
-end
-
-function subject_path = return_subject_path(subject)
-  % get "subject path" without the session folder (if it exists)
-  subject_path = subject.path;
-  tmp = bids.internal.file_utils(subject_path, 'filename');
-  if strcmp(tmp(1:3), 'ses')
-    subject_path = bids.internal.file_utils(subject_path, 'path');
-  end
-end
-
-function perf = manage_asllabeling(perf, pth)
-  % labeling image metadata (OPTIONAL)
-  % ---------------------------
-  metafile = fullfile(pth, strrep(perf.filename, ...
-                                  ['_asl' perf.ext], ...
-                                  '_asllabeling.jpg'));
-
-  if exist(metafile, 'file')
-    [~, Ffile] = fileparts(metafile);
-    perf.dependencies.labeling_image.filename = [Ffile '.jpg'];
 
   end
 
 end
 
 function perf = manage_M0(perf, pth)
-
   % M0 field is flexible:
 
   if ~isfield(perf.meta, 'M0Type')

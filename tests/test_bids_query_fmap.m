@@ -13,11 +13,10 @@ function test_query_extension()
 
   BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
 
-  BIDS.subjects(1).fmap(3).intended_for;
-  BIDS.subjects(1).func(1).informed_by;
+  BIDS.subjects(1).func(1).dependencies.explicit;
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'hcp_example_bids')); % sub-100307
 
-  BIDS.subjects(1).fmap(3).intended_for{1};
+  BIDS.subjects(1).anat(1).dependencies.explicit;
 
 end

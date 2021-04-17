@@ -19,8 +19,27 @@ function result = query(BIDS, query, varargin)
   %                          - 'modalities'
   % :type  query: string
   %
+  % Queries can "filtered" by passing more arguments key-value pairs as a list of
+  % strings or as a cell or a structure
   %
-
+  % Example 1::
+  %
+  %    data = bids.query(BIDS, 'data', ...
+  %                            'sub', '01', ...
+  %                            'task', 'stopsignalwithpseudowordnaming', ...
+  %                            'extension', '.nii.gz', ...
+  %                            'suffix', 'bold');
+  %
+  %
+  % Example 2::
+  %
+  %     filters = struct('sub', '01', ...
+  %                     'task', 'stopsignalwithpseudowordnaming', ...
+  %                     'extension', '.nii.gz', ...
+  %                     'suffix', 'bold');
+  %
+  %     data = bids.query(BIDS, 'data', filters);
+  %
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -44,6 +63,7 @@ function result = query(BIDS, query, varargin)
                    'suffixes', ...
                    'data', ...
                    'metadata', ...
+                   'metafiles', ...
                    'dependencies', ...
                    'extensions', ...
                    'prefixes'};
@@ -80,12 +100,14 @@ function result = query(BIDS, query, varargin)
       result = regexprep(result, '^[a-zA-Z0-9]+-', '');
       result(cellfun('isempty', result)) = [];
 
-    case {'modalities', 'data'}
+    case {'modalities', 'data', 'metafiles'}
       result = result';
 
     case {'metadata', 'dependencies'}
       if numel(result) == 1
         result = result{1};
+      else
+        result = result';
       end
 
     case {'tasks', 'runs', 'suffixes', 'extensions', 'prefixes'}
@@ -97,8 +119,18 @@ end
 
 function options = parse_query(options)
 
-  if numel(options) == 1 && isstruct(options{1})
-    options = [fieldnames(options{1}), struct2cell(options{1})];
+  if numel(options) == 1
+
+    if isstruct(options{1})
+      options = [fieldnames(options{1}), struct2cell(options{1})];
+
+    elseif iscell(options{1})
+      options = options{1};
+
+    elseif isempty(options{1})
+      options = cell(0, 2);
+      return
+    end
 
   else
     if mod(numel(options), 2)
@@ -213,25 +245,24 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
               result = union(result, allmods(hasmod));
 
             case 'data'
-              if isfield(d(k), 'filename')
-                result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
-              end
+              result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
+
+            case 'metafiles'
+              fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
+              result = [result; fmeta];
 
             case 'metadata'
-              if isfield(d(k), 'filename')
-
-                f = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
-                result{end + 1, 1} = bids.internal.get_metadata(f);
-                if ~isempty(target)
-                  try
-                    result{end} = subsref(result{end}, target);
-                  catch
-                    warning('Non-existent field for metadata.');
-                    result{end} = [];
-                  end
+              fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
+              result{end + 1, 1} = bids.internal.get_metadata(fmeta);
+              if ~isempty(target)
+                try
+                  result{end} = subsref(result{end}, target);
+                catch
+                  warning('Non-existent field for metadata.');
+                  result{end} = [];
                 end
-
               end
+
               % if status && isfield(d(k),'meta')
               %   result{end+1} = d(k).meta;
               % end
@@ -247,9 +278,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
               end
 
             case 'suffixes'
-              if isfield(d(k), 'suffix')
-                result{end + 1} = d(k).suffix;
-              end
+              result{end + 1} = d(k).suffix;
 
             case 'prefixes'
               if isfield(d(k), 'prefix')
@@ -257,9 +286,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
               end
 
             case 'extensions'
-              if isfield(d(k), 'ext')
-                result{end + 1} = d(k).ext;
-              end
+              result{end + 1} = d(k).ext;
 
             case 'dependencies'
               if isfield(d(k), 'dependencies')

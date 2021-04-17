@@ -20,7 +20,7 @@ function test_return_modality_regular_expression_basic
 
   assertEqual(regular_expression, expected_expression);
 
-  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot', 'sub-01', 'anat');
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'synthetic', 'sub-01', 'anat');
   subject_name = 'sub-01';
   file = bids.internal.file_utils('List', data_dir, sprintf(expected_expression, subject_name));
 

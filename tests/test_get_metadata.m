@@ -23,15 +23,13 @@ function test_get_metadata_basic()
   % also tests inheritance principle: metadata are passed on to lower levels
   % unless they are overriden by metadate already present at lower levels
 
-  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
+  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'synthetic');
 
   % define the expected output from bids query metadata
   func.RepetitionTime = 7;
-
-  func_sub_01.RepetitionTime = 10;
-
   anat.FlipAngle = 5;
 
+  func_sub_01.RepetitionTime = 10;
   anat_sub_01.FlipAngle = 10;
   anat_sub_01.Manufacturer = 'Siemens';
 
@@ -57,6 +55,16 @@ function test_get_metadata_basic()
 
 end
 
+function test_get_metadata_internal()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'));
+
+  bids.internal.get_metadata(BIDS(1).subjects(2).anat(1).metafile);
+
+end
+
 function test_get_metadata_participants()
   % test files with no underscore in name.
 
@@ -64,23 +72,11 @@ function test_get_metadata_participants()
 
   file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
   side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
-  metadata = bids.internal.get_metadata(file);
+
+  metalist = bids.internal.get_meta_list(file);
+  metadata = bids.internal.get_metadata(metalist);
+
   expected_metadata = bids.util.jsondecode(side_car);
   assertEqual(metadata, expected_metadata);
-
-end
-
-function test_get_metadata_internal()
-
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'));
-
-  bids.internal.get_metadata( ...
-                             fullfile( ...
-                                      BIDS(1).subjects(2).path, ...
-                                      'anat', ...
-                                      BIDS(1).subjects(2).anat(1).filename), ...
-                             '%s');
 
 end
