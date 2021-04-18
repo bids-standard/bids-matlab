@@ -34,7 +34,7 @@ function BIDS = layout(root, use_schema)
   if ~nargin
     root = pwd;
 
-  elseif nargin == 1
+  elseif nargin > 0
 
     if ischar(root)
       root = bids.internal.file_utils(root, 'CPath');
