@@ -180,7 +180,9 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
 
         dep_file = file.dependencies.(dependencies{dep}){ifile};
         if exist(dep_file, 'file')
-          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, skip_dep, verbose);
+          % recursive call but by skipping dependencies of the dependencies
+          % to avoid infinite loop when using "force = true"
+          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, ~skip_dep, verbose);
         else
           warning(['Dependency file ' dep_file ' not found']);
         end
