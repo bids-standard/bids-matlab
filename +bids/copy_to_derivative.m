@@ -1,4 +1,4 @@
-function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force, skip_dep, use_schema, verbose)
+function copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force, skip_dep, use_schema, verbose)
   %
   % Copy selected data from BIDS layout to given derivatives folder,
   % returning layout of new derivatives folder
@@ -67,8 +67,6 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter,
     verbose = false;
   end
 
-  derivatives = [];
-
   BIDS = bids.layout(BIDS, use_schema);
 
   % Check that we actually have to copy something
@@ -121,8 +119,6 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter,
     copy_file(BIDS, derivatives_folder, data_list{iFile}, unzip, force, skip_dep, verbose);
   end
 
-  %%
-  derivatives = bids.layout(derivatives_folder, use_schema);
 end
 
 function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, verbose)

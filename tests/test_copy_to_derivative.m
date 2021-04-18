@@ -15,7 +15,7 @@ function test_copy_to_derivative_MoAE()
 
   pipeline_name = 'bids-matlab';
 
-  derivatives = bids.copy_to_derivative(BIDS, out_path, pipeline_name);
+  bids.copy_to_derivative(BIDS, out_path, pipeline_name);
 
 end
 
@@ -50,7 +50,7 @@ function test_copy_to_derivative_ds000117()
   use_schema = false;
   verbose = true;
 
-  derivatives = bids.copy_to_derivative(BIDS, ...
+  bids.copy_to_derivative(BIDS, ...
                                         out_path, ...
                                         pipeline_name, ...
                                         filters, ...
@@ -60,6 +60,7 @@ function test_copy_to_derivative_ds000117()
                                         use_schema, ...
                                         verbose);
 
+  derivatives = bids.layout(out_path);
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 13);
 
@@ -69,7 +70,7 @@ function test_copy_to_derivative_ds000117()
   end
   skip_dependencies = true;
 
-  derivatives = bids.copy_to_derivative(BIDS, ...
+  bids.copy_to_derivative(BIDS, ...
                                         out_path, ...
                                         pipeline_name, ...
                                         filters, ...
@@ -79,6 +80,7 @@ function test_copy_to_derivative_ds000117()
                                         use_schema, ...
                                         verbose);
 
+  derivatives = bids.layout(out_path);                                    
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 4);
 
