@@ -31,7 +31,6 @@ function [content, filename] = create_default_model(BIDS, task_name)
   %
   % (C) Copyright 2020 CPP_SPM developers
 
-
   trialTypeList = list_all_trial_types(BIDS, task_name);
 
   content = bids.model.return_empty_model();
@@ -42,21 +41,20 @@ function [content, filename] = create_default_model(BIDS, task_name)
   content.Description = ['default model for ' task_name];
   content.Input.task = task_name;
 
-  filename = fullfile(pwd, 'models', ...
-                      ['model-default' task_name '_smdl.json']);
+  filename = ['model-default' task_name '_smdl.json'];
 
 end
 
 function trial_type_list = list_all_trial_types(BIDS, task_name)
   %
-  % list all the *events.tsv files for that task 
+  % list all the *events.tsv files for that task
   % and make a list of all the trial_types
   %
-  
+
   event_files = bids.query(BIDS, 'data', ...
-                          'suffix', 'events', ...
-                          'extension', '.tsv', ...
-                          'task', task_name);
+                           'suffix', 'events', ...
+                           'extension', '.tsv', ...
+                           'task', task_name);
 
   trial_type_list = {};
 
@@ -94,6 +92,5 @@ function content = design_matrix_and_contrasts(content, trialTypeList)
     end
 
   end
-
 
 end
