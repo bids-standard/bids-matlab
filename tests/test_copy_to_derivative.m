@@ -19,8 +19,90 @@ function test_copy_to_derivative_MoAE()
 
 end
 
+% function test_copy_to_derivative_MoAE_force()
+% 
+%   input_dir = download_moae_ds(true());
+%   out_path = [];
+% 
+%   BIDS = fullfile(input_dir, 'MoAEpilot');
+% 
+%   pipeline_name = 'bids-matlab';
+%   
+%   filters = [];
+%   unzip = false;
+%   force = true;
+%   skip_dependencies = false;
+%   use_schema = true;
+%   verbose = true;
+% 
+%   bids.copy_to_derivative(BIDS, ...
+%                                         out_path, ...
+%                                         pipeline_name, ...
+%                                         filters, ...
+%                                         unzip, ...
+%                                         force, ...
+%                                         skip_dependencies);
+% 
+% end
+
 function test_copy_to_derivative_ds000117()
 
+  [BIDS, out_path, filters] = fixture();
+
+  pipeline_name = [];
+  unzip = false;
+  force = false;
+  skip_dependencies = false;
+  use_schema = true;
+  verbose = true;
+
+  bids.copy_to_derivative(BIDS, ...
+                                        out_path, ...
+                                        pipeline_name, ...
+                                        filters, ...
+                                        unzip, ...
+                                        force, ...
+                                        skip_dependencies, ...
+                                        use_schema, ...
+                                        verbose);
+
+  derivatives = bids.layout(out_path, false());
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 14);
+
+end
+
+function test_copy_to_derivative_ds000117_skip_dependencies
+  
+  [BIDS, out_path, filters] = fixture();
+
+  pipeline_name = [];
+  unzip = false;
+  force = false;
+  use_schema = true;
+  verbose = true;
+
+  skip_dependencies = true;
+
+  bids.copy_to_derivative(BIDS, ...
+                                        out_path, ...
+                                        pipeline_name, ...
+                                        filters, ...
+                                        unzip, ...
+                                        force, ...
+                                        skip_dependencies, ...
+                                        use_schema, ...
+                                        verbose);
+
+  derivatives = bids.layout(out_path, false());                                    
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 4);
+
+end
+
+function [BIDS, out_path, filters] = fixture()
+    
+    
   pth_bids_example = get_test_data_dir();
   input_dir = fullfile(pth_bids_example, 'ds000117');
 
@@ -41,49 +123,5 @@ function test_copy_to_derivative_ds000117()
                    'modality', 'func', ...
                    'suffix', 'bold');
   filters.run = {'01'; '03'};
-
-  %%
-  pipeline_name = [];
-  unzip = false;
-  force = false;
-  skip_dependencies = false;
-  use_schema = false;
-  verbose = true;
-
-  bids.copy_to_derivative(BIDS, ...
-                                        out_path, ...
-                                        pipeline_name, ...
-                                        filters, ...
-                                        unzip, ...
-                                        force, ...
-                                        skip_dependencies, ...
-                                        use_schema, ...
-                                        verbose);
-
-  derivatives = bids.layout(out_path);
-  copied_files = bids.query(derivatives, 'data');
-  assertEqual(size(copied_files, 1), 13);
-
-  %% same but we skip dependencies
-  if exist(out_path, 'dir')
-    rmdir(out_path, 's');
-  end
-  skip_dependencies = true;
-
-  bids.copy_to_derivative(BIDS, ...
-                                        out_path, ...
-                                        pipeline_name, ...
-                                        filters, ...
-                                        unzip, ...
-                                        force, ...
-                                        skip_dependencies, ...
-                                        use_schema, ...
-                                        verbose);
-
-  derivatives = bids.layout(out_path);                                    
-  copied_files = bids.query(derivatives, 'data');
-  assertEqual(size(copied_files, 1), 4);
-
-  %% add test to check that only files that conform to schema are copied
-
+    
 end
