@@ -134,7 +134,6 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
 
   %% ignore already existing files
   % avoid circular references
-  disp(file.filename)
   if ~force && exist(fullfile(out_dir, file.filename), 'file')
     if verbose
       fprintf(1, '\n skipping: %s', file.filename);
@@ -169,27 +168,7 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
     error('Failed to create sidecar json file: %s', output_metadata_file);
   end
 
-  %% dealing with dependencies
-  if ~skip_dep
-
-    dependencies = fieldnames(file.dependencies);
-
-    for dep = 1:numel(dependencies)
-      for ifile = 1:numel(file.dependencies.(dependencies{dep}))
-
-        dep_file = file.dependencies.(dependencies{dep}){ifile};
-        if exist(dep_file, 'file')
-          % recursive call but by skipping dependencies of the dependencies
-          % to avoid infinite loop when using "force = true"
-          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, ~skip_dep, verbose);
-        else
-          warning(['Dependency file ' dep_file ' not found']);
-        end
-
-      end
-    end
-
-  end
+  copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_dep, verbose);
 
 end
 
@@ -235,6 +214,31 @@ function copy_with_symlink(src, target)
 
   end
 
+end
+
+function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_dep, verbose)
+    
+  if ~skip_dep
+
+    dependencies = fieldnames(file.dependencies);
+
+    for dep = 1:numel(dependencies)
+      for ifile = 1:numel(file.dependencies.(dependencies{dep}))
+
+        dep_file = file.dependencies.(dependencies{dep}){ifile};
+        if exist(dep_file, 'file')
+          % recursive call but by skipping dependencies of the dependencies
+          % to avoid infinite loop when using "force = true"
+          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, ~skip_dep, verbose);
+        else
+          warning(['Dependency file ' dep_file ' not found']);
+        end
+
+      end
+    end
+
+  end
+  
 end
 
 function unzip_data(file, out_dir, unzip)
