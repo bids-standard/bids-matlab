@@ -1,4 +1,4 @@
-function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force, skip_dep, use_schema, verbose)
+function copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force, skip_dep, use_schema, verbose)
   %
   % Copy selected data from BIDS layout to given derivatives folder,
   % returning layout of new derivatives folder
@@ -22,8 +22,6 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter,
   % All the metadata of each file is read through the whole hierarchy
   % and dumped into one side-car json file for each file copied.
   % In practice this "unravels" the inheritance principle.
-  % The presence of this metadata file is also used to prevent the file from
-  % being copied again on a successive run.
   %
   %
   % __________________________________________________________________________
@@ -66,8 +64,6 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter,
   if nargin < 9 || isempty(verbose)
     verbose = false;
   end
-
-  derivatives = [];
 
   BIDS = bids.layout(BIDS, use_schema);
 
@@ -121,8 +117,6 @@ function derivatives = copy_to_derivative(BIDS, out_path, pipeline_name, filter,
     copy_file(BIDS, derivatives_folder, data_list{iFile}, unzip, force, skip_dep, verbose);
   end
 
-  %%
-  derivatives = bids.layout(derivatives_folder, use_schema);
 end
 
 function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, verbose)
@@ -140,7 +134,7 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
 
   %% ignore already existing files
   % avoid circular references
-  if ~force && exist(output_metadata_file, 'file')
+  if ~force && exist(fullfile(out_dir, file.filename), 'file')
     if verbose
       fprintf(1, '\n skipping: %s', file.filename);
     end
@@ -174,25 +168,7 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
     error('Failed to create sidecar json file: %s', output_metadata_file);
   end
 
-  %% dealing with dependencies
-  if ~skip_dep
-
-    dependencies = fieldnames(file.dependencies);
-
-    for dep = 1:numel(dependencies)
-      for ifile = 1:numel(file.dependencies.(dependencies{dep}))
-
-        dep_file = file.dependencies.(dependencies{dep}){ifile};
-        if exist(dep_file, 'file')
-          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, skip_dep, verbose);
-        else
-          warning(['Dependency file ' dep_file ' not found']);
-        end
-
-      end
-    end
-
-  end
+  copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_dep, verbose);
 
 end
 
@@ -238,6 +214,31 @@ function copy_with_symlink(src, target)
 
   end
 
+end
+
+function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_dep, verbose)
+    
+  if ~skip_dep
+
+    dependencies = fieldnames(file.dependencies);
+
+    for dep = 1:numel(dependencies)
+      for ifile = 1:numel(file.dependencies.(dependencies{dep}))
+
+        dep_file = file.dependencies.(dependencies{dep}){ifile};
+        if exist(dep_file, 'file')
+          % recursive call but by skipping dependencies of the dependencies
+          % to avoid infinite loop when using "force = true"
+          copy_file(BIDS, derivatives_folder, dep_file, unzip, force, ~skip_dep, verbose);
+        else
+          warning(['Dependency file ' dep_file ' not found']);
+        end
+
+      end
+    end
+
+  end
+  
 end
 
 function unzip_data(file, out_dir, unzip)
