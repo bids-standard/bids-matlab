@@ -7,11 +7,11 @@ function test_suite = test_report %#ok<*STOUT>
 end
 
 function test_report_basic()
-    
+
   pth_bids_example = get_test_data_dir();
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
 
-  bids.report(BIDS)
+  bids.report(BIDS);
 
 end
