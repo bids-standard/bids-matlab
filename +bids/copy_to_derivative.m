@@ -217,7 +217,7 @@ function copy_with_symlink(src, target)
 end
 
 function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_dep, verbose)
-    
+
   if ~skip_dep
 
     dependencies = fieldnames(file.dependencies);
@@ -238,7 +238,7 @@ function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_de
     end
 
   end
-  
+
 end
 
 function unzip_data(file, out_dir, unzip)

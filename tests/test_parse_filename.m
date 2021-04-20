@@ -21,10 +21,10 @@ function test_parse_filename_prefix()
                                        'run', '1'));
 
   assertEqual(output, expected);
-  
+
   expectedEntities = fieldnames(expected.entities);
   entities = fieldnames(output.entities);
-  assertEqual(entities, expectedEntities)    
+  assertEqual(entities, expectedEntities);
 
 end
 
@@ -44,10 +44,10 @@ function test_parse_filename_basic()
                     'prefix', '');
 
   assertEqual(output, expected);
-  
+
   expectedEntities = fieldnames(expected.entities);
   entities = fieldnames(output.entities);
-  assertEqual(entities, expectedEntities)  
+  assertEqual(entities, expectedEntities);
 
 end
 
@@ -69,10 +69,10 @@ function test_parse_filename_fields()
                     'prefix', '');
 
   assertEqual(output, expected);
-  
+
   expectedEntities = fieldnames(expected.entities);
   entities = fieldnames(output.entities);
-  assertEqual(entities, expectedEntities)
+  assertEqual(entities, expectedEntities);
 
 end
 
