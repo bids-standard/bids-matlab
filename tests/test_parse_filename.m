@@ -8,19 +8,23 @@ end
 
 function test_parse_filename_prefix()
 
-  filename = '../sub-16/anat/swuasub-16_run-1_task-rest_bold.nii';
+  filename = '../sub-16/anat/asub-16_task-rest_run-1_bold.nii';
   output = bids.internal.parse_filename(filename);
 
   expected = struct( ...
-                    'filename', 'swuasub-16_run-1_task-rest_bold.nii', ...
+                    'filename', 'asub-16_task-rest_run-1_bold.nii', ...
                     'suffix', 'bold', ...
-                    'prefix', 'swua', ...
+                    'prefix', 'a', ...
                     'ext', '.nii', ...
                     'entities', struct('sub', '16', ...
-                                       'run', '1', ...
-                                       'task', 'rest'));
+                                       'task', 'rest', ...
+                                       'run', '1'));
 
   assertEqual(output, expected);
+  
+  expectedEntities = fieldnames(expected.entities);
+  entities = fieldnames(output.entities);
+  assertEqual(entities, expectedEntities)    
 
 end
 
@@ -40,14 +44,18 @@ function test_parse_filename_basic()
                     'prefix', '');
 
   assertEqual(output, expected);
+  
+  expectedEntities = fieldnames(expected.entities);
+  entities = fieldnames(output.entities);
+  assertEqual(entities, expectedEntities)  
 
 end
 
 function test_parse_filename_fields()
 
   filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
-  fields = {'sub', 'ses', 'run', 'acq', 'ce', 'rec', 'part'};
-  output = bids.internal.parse_filename(filename);
+  fields = {'sub', 'ses', 'run', 'acq', 'ce'};
+  output = bids.internal.parse_filename(filename, fields);
 
   expected = struct( ...
                     'filename', 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz', ...
@@ -56,10 +64,15 @@ function test_parse_filename_fields()
                     'entities', struct('sub', '16', ...
                                        'ses', 'mri', ...
                                        'run', '1', ...
-                                       'acq', 'hd'), ...
+                                       'acq', 'hd', ...
+                                       'ce', ''), ...
                     'prefix', '');
 
   assertEqual(output, expected);
+  
+  expectedEntities = fieldnames(expected.entities);
+  entities = fieldnames(output.entities);
+  assertEqual(entities, expectedEntities)
 
 end
 

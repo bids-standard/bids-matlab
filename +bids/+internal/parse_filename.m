@@ -59,8 +59,12 @@ function p = parse_filename(filename, fields)
     tmp = regexp(parts{1}, '(sub-)', 'split');
     p.prefix = tmp{1};
     if ~isempty(p.prefix)
+      entities = fieldnames(p.entities);
       p.entities.sub = p.entities.([p.prefix 'sub']);
       p.entities = rmfield(p.entities, [p.prefix 'sub']);
+      % reorder entities to make sure that sub is the first one
+      entities{1} = 'sub';
+      p.entities = orderfields(p.entities, entities);
     end
   end
 
