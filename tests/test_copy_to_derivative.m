@@ -19,31 +19,32 @@ function test_copy_to_derivative_MoAE()
 
 end
 
-% function test_copy_to_derivative_MoAE_force()
-%
-%   input_dir = download_moae_ds(true());
-%   out_path = [];
-%
-%   BIDS = fullfile(input_dir, 'MoAEpilot');
-%
-%   pipeline_name = 'bids-matlab';
-%
-%   filters = [];
-%   unzip = false;
-%   force = true;
-%   skip_dependencies = false;
-%   use_schema = true;
-%   verbose = true;
-%
-%   bids.copy_to_derivative(BIDS, ...
-%                                         out_path, ...
-%                                         pipeline_name, ...
-%                                         filters, ...
-%                                         unzip, ...
-%                                         force, ...
-%                                         skip_dependencies);
-%
-% end
+function test_copy_to_derivative_MoAE_force()
+
+  input_dir = download_moae_ds(true());
+  out_path = [];
+
+  BIDS = fullfile(input_dir, 'MoAEpilot');
+
+  pipeline_name = 'bids-matlab';
+
+  filters = [];
+  unzip = false;
+  force = true;
+  skip_dependencies = false;
+  use_schema = true;
+  verbose = true;
+
+  bids.copy_to_derivative(BIDS, ...
+                                        out_path, ...
+                                        pipeline_name, ...
+                                        filters, ...
+                                        unzip, ...
+                                        force, ...
+                                        skip_dependencies, ...
+                                        verbose);
+
+end
 
 function test_copy_to_derivative_ds000117()
 

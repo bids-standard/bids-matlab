@@ -22,8 +22,6 @@ function copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force,
   % All the metadata of each file is read through the whole hierarchy
   % and dumped into one side-car json file for each file copied.
   % In practice this "unravels" the inheritance principle.
-  % The presence of this metadata file is also used to prevent the file from
-  % being copied again on a successive run.
   %
   %
   % __________________________________________________________________________
@@ -136,7 +134,8 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
 
   %% ignore already existing files
   % avoid circular references
-  if ~force && exist(output_metadata_file, 'file')
+  disp(file.filename)
+  if ~force && exist(fullfile(out_dir, file.filename), 'file')
     if verbose
       fprintf(1, '\n skipping: %s', file.filename);
     end
