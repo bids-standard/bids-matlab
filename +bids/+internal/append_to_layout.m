@@ -33,6 +33,7 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
     if isempty(idx)
       warning('append_to_structure:noMatchingSuffix', ...
               'Skipping file with no valid suffix in schema: %s', file);
+      p = [];
       return
     end
 
