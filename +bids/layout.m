@@ -286,6 +286,7 @@ function subject = parse_perf(subject)
             '(?<ses>_ses-[a-zA-Z0-9]+)?' ...     % ses-<label>
             '(?<acq>_acq-[a-zA-Z0-9]+)?' ...     % acq-<label>
             '(?<rec>_rec-[a-zA-Z0-9]+)?' ...     % rec-<label>
+            '(?<dir>_dir-[a-zA-Z0-9]+)?' ...     % dir-<label>
             '(?<run>_run-[a-zA-Z0-9]+)?' ...     % run-<index>
             '_asl\.nii(\.gz)?$'], 'names'); % NIfTI file suffix/extension
         
@@ -295,7 +296,7 @@ function subject = parse_perf(subject)
                 % Parse filename
                 % ---------------------------
                 fb = bids.internal.file_utils(bids.internal.file_utils(fileList{idx(i)}, 'basename'), 'basename');
-                p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'acq', 'dir', 'rec', 'run'});
+                p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'acq', 'rec', 'dir', 'run'});
                 
                 if j==1
                     subject.perf = p;
@@ -353,9 +354,13 @@ function subject = parse_perf(subject)
                             subject.perf(j).m0type = 'separate_scan';
                             subject.perf(j).m0explanation = 'M0 was obtained as a separate scan';
                             
-                            % M0scan.nii filename
-                            m0_filename = [subject.perf(j).filename(1:end-10) 'm0scan' subject.perf(j).ext]; % assuming the (.nii|.nii.gz) extension choice is the same throughout
-                            if ~exist(fullfile(pth, m0_filename), 'file')
+                            % Check if M0scan.nii exists
+                            m0_filebase = bids.internal.file_utils(bids.internal.file_utils(subject.perf(j).filename, 'basename'), 'basename'); % remove the extension
+                            m0_filebase = m0_filebase(1:end-4); % to remove the _asl suffix
+                            m0_filename = bids.internal.file_utils('List', pth, sprintf('^%s.*_m0scan\\.nii(\\.gz)?$', m0_filebase)); % find the file
+                            m0_basename = bids.internal.file_utils(bids.internal.file_utils(m0_filename, 'basename'), 'basename'); % remove the extension
+                            
+                            if isempty(m0_filename)
                                 warning(['Missing: ' m0_filename]);
                             else
                                 % subject.perf(j).m0_filename = m0_filename;
@@ -363,7 +368,7 @@ function subject = parse_perf(subject)
                             end
                             
                             % M0 sidecar filename
-                            m0_json_sidecar_filename = [subject.perf(j).filename(1:end-10) 'm0scan.json'];
+                            m0_json_sidecar_filename = [m0_basename '.json'];
                             if ~exist(fullfile(pth, m0_json_sidecar_filename), 'file')
                                 warning(['Missing: ' m0_json_sidecar_filename]);
                             else
@@ -391,7 +396,7 @@ function subject = parse_perf(subject)
                             % obtained from an external scan and/or study
                             subject.perf(j).m0type = 'single_value';
                             subject.perf(j).m0explanation = 'this is a single estimated M0 value, e.g. when the M0 is obtained from an external scan and/or study';
-                            subject.perf(j).m0_value = subject.perf(j).meta.M0;                            
+                            subject.perf(j).m0_value = subject.perf(j).meta.M0Estimate;                            
                             
                         case 'Absent'
                             % this shows that there is no M0, so this
@@ -434,6 +439,7 @@ function subject = parse_perf(subject)
             '(?<ses>_ses-[a-zA-Z0-9]+)?' ...     % ses-<label>
             '(?<acq>_acq-[a-zA-Z0-9]+)?' ...     % acq-<label>
             '(?<rec>_rec-[a-zA-Z0-9]+)?' ...     % rec-<label>
+            '(?<dir>_dir-[a-zA-Z0-9]+)?' ...     % dir-<label>
             '(?<run>_run-[a-zA-Z0-9]+)?' ...     % run-<index>
             '_m0scan\.nii(\.gz)?$'], 'names'); % NIfTI file suffix/extension
         
@@ -443,7 +449,7 @@ function subject = parse_perf(subject)
                 % Parse filename
                 % ---------------------------
                 fb = bids.internal.file_utils(bids.internal.file_utils(fileList{idx(i)}, 'basename'), 'basename');
-                p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'acq', 'dir', 'rec', 'run'});
+                p = bids.internal.parse_filename(fileList{i}, {'sub', 'ses', 'acq', 'rec', 'dir', 'run'});
 
                 if j==1
                     subject.perf = p;
