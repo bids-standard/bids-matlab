@@ -11,5 +11,6 @@ bids-specification/*
 # ignore input and output data involved in tests
 data/*
 derivatives/*
+tests/*.tsv
 
 .prettierrc
