@@ -31,9 +31,9 @@ function varargout = jsonencode(varargin)
   %                    [Default: ``true``]
   % :type opts: structure  -
   %
-
-  % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   if ~nargin
     error('Not enough input arguments.');

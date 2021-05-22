@@ -17,7 +17,6 @@ function BIDS = layout(root, use_schema)
   % :type  use_schema: boolean
   %
   %
-
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -26,8 +25,8 @@ function BIDS = layout(root, use_schema)
   %   K. J. Gorgolewski et al, Scientific Data, 2016.
   % __________________________________________________________________________
   %
-  % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   %% Validate input arguments
   % ==========================================================================

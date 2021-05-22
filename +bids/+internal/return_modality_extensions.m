@@ -1,4 +1,6 @@
 function extensions = return_modality_extensions(modality)
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   extensions = '(';
 

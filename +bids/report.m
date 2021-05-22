@@ -1,6 +1,9 @@
 function report(BIDS, Subj, Ses, Run, ReadNII)
   % Create a short summary of the acquisition parameters of a BIDS dataset
-  % FORMAT bids.report(BIDS, Subj, Ses, Run, ReadNII)
+  %
+  % USAGE::
+  %
+  %   bids.report(BIDS, Subj, Ses, Run, ReadNII)
   %
   % INPUTS:
   % - BIDS: directory formatted according to BIDS [Default: pwd]
@@ -19,7 +22,8 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
   %
   % See also:
   % bids
-
+  %
+  %
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -27,9 +31,9 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
   %   describing outputs of neuroimaging experiments.
   %   K. J. Gorgolewski et al, Scientific Data, 2016.
   % __________________________________________________________________________
-
-  % Copyright (C) 2018, Remi Gau
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2018 Remi Gau
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   % TODO
   % --------------------------------------------------------------------------
