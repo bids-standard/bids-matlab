@@ -10,11 +10,19 @@ end
 
 function test_create_filename_derivatives()
 
-  filename = 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
 
-  %% Create filename
+  % Create filename
   p.entities = struct('desc', 'preproc');
   p.use_schema = false;
+
+  filename = bids.util.create_filename(p, filename);
+
+  assertEqual(filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii');
+
+  % Same but remove prefix
+
+  p.prefix = '';
 
   filename = bids.util.create_filename(p, filename);
 

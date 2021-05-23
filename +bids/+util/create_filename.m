@@ -3,8 +3,6 @@ function filename = create_filename(p, file)
   default.use_schema = true;
   default.entity_order = {};
   default.ext = '';
-  default.prefix = '';
-
   p = bids.internal.match_structure_fields(p, default);
 
   if nargin > 1
@@ -14,6 +12,9 @@ function filename = create_filename(p, file)
   if ~isfield(p, 'suffix')
     error('We need at least a suffix to create a filename.');
   end
+
+  default.prefix = '';
+  p = bids.internal.match_structure_fields(p, default);
 
   entities = fieldnames(p.entities);
 
@@ -53,6 +54,9 @@ function parsed_file = rename_file(p, file)
 
   parsed_file.entity_order = p.entity_order;
   parsed_file.use_schema = p.use_schema;
+  if isfield(p, 'prefix')
+    parsed_file.prefix = p.prefix;
+  end
 
   entities_to_change = fieldnames(p.entities);
 

@@ -10,7 +10,9 @@ function test_return_entities_for_suffix_basic
 
   schema = bids.schema.load_schema();
 
-  entities = bids.schema.return_entities_for_suffix('bold', schema);
+  quiet = true;
+
+  entities = bids.schema.return_entities_for_suffix('bold', schema, quiet);
 
   expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
 

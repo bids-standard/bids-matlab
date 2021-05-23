@@ -55,16 +55,27 @@ function p = parse_filename(filename, fields)
   % identidy an eventual prefix to the file
   % and amends the sub entity accordingly
   p.prefix = '';
+
   if strfind(parts{1}, 'sub-')
+
     tmp = regexp(parts{1}, '(sub-)', 'split');
     p.prefix = tmp{1};
+
     if ~isempty(p.prefix)
+
       p.entities.sub = p.entities.([p.prefix 'sub']);
       p.entities = rmfield(p.entities, [p.prefix 'sub']);
+
+      % reorder entities so that the 'sub' entity stays on top
+      entity_order = fieldnames(p.entities);
+      entity_order = entity_order([end, 1:end - 1]);
+      p.entities = orderfields(p.entities, entity_order);
+
     end
+
   end
 
-  % -Extra fields can be added to the structure and ordered specifically.
+  % Extra fields can be added to the structure and ordered specifically.
   if nargin == 2
     for i = 1:numel(fields)
       p.entities = bids.internal.add_missing_field(p.entities, fields{i});
