@@ -86,7 +86,7 @@
   "part": {
     "name": "Part",
     "entity": "part",
-    "description": "This entity is used to indicate which component of the complex\nrepresentation of the MRI signal is represented in voxel data.\nThe `part-<label>` key/value pair is associated with the DICOM tag\n`0008,9208`.\nAllowed label values for this entity are `phase`, `mag`, `real` and `imag`,\nwhich are typically used in `part-mag`/`part-phase` or\n`part-real`/`part-imag` pairs of files.\n\nPhase images MAY be in radians or in arbitrary units.\nThe sidecar JSON file MUST include the units of the `phase` image.\nThe possible options are `rad` or `arbitrary`.\n\nWhen there is only a magnitude image of a given type, the `part` key MAY be\nomitted.\n",
+    "description": "This entity is used to indicate which component of the complex\nrepresentation of the MRI signal is represented in voxel data.\nThe `part-<label>` key/value pair is associated with the DICOM Tag\n`0008, 9208`.\nAllowed label values for this entity are `phase`, `mag`, `real` and `imag`,\nwhich are typically used in `part-mag`/`part-phase` or\n`part-real`/`part-imag` pairs of files.\n\nPhase images MAY be in radians or in arbitrary units.\nThe sidecar JSON file MUST include the units of the `phase` image.\nThe possible options are `rad` or `arbitrary`.\n\nWhen there is only a magnitude image of a given type, the `part` key MAY be\nomitted.\n",
     "format": "label"
   },
   "recording": {
