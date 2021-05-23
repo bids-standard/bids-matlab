@@ -6,13 +6,37 @@ function test_suite = test_copy_to_derivative %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_copy_to_derivative_sessions_scans_tsv
+
+  [BIDS, out_path, filters] = fixture('7t_trt');
+
+  pipeline_name = 'bids-matlab';
+  unzip = false;
+  force = false;
+  use_schema = true;
+  verbose = true;
+  skip_dependencies = true;
+
+  bids.copy_to_derivative(BIDS, ...
+                          fullfile(out_path, '7t_trt'), ...
+                          pipeline_name, ...
+                          filters, ...
+                          'use_schema', use_schema, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
+
+  derivatives = bids.layout(fullfile(out_path, '7t_trt', pipeline_name), false());
+  assert(~isempty(derivatives.subjects(1).scans));
+  assertEqual(derivatives.subjects(1).sess, derivatives.subjects(2).sess);
+
+end
+
 function test_copy_to_derivative_MoAE()
 
-  input_dir = download_moae_ds(true());
-
-  out_path = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot', 'derivatives');
-
-  BIDS = fullfile(input_dir, 'MoAEpilot');
+  BIDS = download_moae_ds(true());
+  out_path = fullfile(pwd, 'data', 'MoAEpilot', 'derivatives');
 
   pipeline_name = 'bids-matlab';
 
@@ -22,11 +46,8 @@ end
  
 function test_copy_to_derivative_MoAE_force()
 
-  input_dir = download_moae_ds(true());
-
-  out_path = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot', 'derivatives');
-
-  BIDS = fullfile(input_dir, 'MoAEpilot');
+  BIDS = download_moae_ds(true());
+  out_path = fullfile(pwd, 'data', 'MoAEpilot', 'derivatives');
 
   pipeline_name = 'bids-matlab';
 
@@ -50,7 +71,7 @@ end
 
 function test_copy_to_derivative_ds000117()
 
-  [BIDS, out_path, filters] = fixture();
+  [BIDS, out_path, filters] = fixture('ds000117');
 
   pipeline_name = '';
   unzip = false;
@@ -77,7 +98,7 @@ end
 
 function test_copy_to_derivative_ds000117_skip_dependencies
 
-  [BIDS, out_path, filters] = fixture();
+  [BIDS, out_path, filters] = fixture('ds000117');
 
   pipeline_name = 'bids-matlab';
   unzip = false;
@@ -103,28 +124,40 @@ function test_copy_to_derivative_ds000117_skip_dependencies
 
 end
 
-function [BIDS, out_path, filters] = fixture()
+function [BIDS, out_path, filters] = fixture(dataset)
 
   pth_bids_example = get_test_data_dir();
-  input_dir = fullfile(pth_bids_example, 'ds000117');
+  BIDS = fullfile(pth_bids_example, dataset);
 
   % to test on real data uncomment the following line
   % see tests/README.md to see how to install the data
   %
   %   input_dir = fullfile('..', 'data', 'ds000117');
 
-  
-  out_path = fullfile(pwd, 'data', 'ds000117', 'derivatives');
+  out_path = fullfile(pwd, 'data', dataset, 'derivatives');
+
 
   if exist(out_path, 'dir')
     rmdir(out_path, 's');
   end
 
-  BIDS = fullfile(input_dir);
+  switch dataset
 
-  filters = struct('sub', '01', ...
-                   'modality', 'func', ...
-                   'suffix', 'bold');
-  filters.run = {'01'; '03'};
+    case 'ds000117'
+
+      filters = struct('sub', '01', ...
+                       'modality', 'func', ...
+                       'suffix', 'bold');
+      filters.run = {'01'; '03'};
+
+    case '7t_trt'
+
+      filters.sub = {'01'; '02'; '03'; '04'};
+
+    case 'MoAEpilot'
+
+      filters = struct();
+
+  end
 
 end

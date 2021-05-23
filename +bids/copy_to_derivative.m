@@ -128,7 +128,7 @@ function copy_to_derivative(varargin)
 
   ds_desc.write(derivatives_folder);
 
-  % extracting participants.tsv file?
+  copy_participants_tsv(BIDS, derivatives_folder, p);
 
   % looping over selected files
   for iFile = 1:numel(data_list)
@@ -137,6 +137,90 @@ function copy_to_derivative(varargin)
               p.Results.force, ...
               p.Results.skip_dep, ...
               p.Results.verbose);
+  end
+
+  copy_session_scan_tsv(BIDS, derivatives_folder, p);
+
+end
+
+function copy_participants_tsv(BIDS, derivatives_folder, p)
+  %
+  % Very "brutal" approach wehere we copy the whole file
+  %
+  % TODO:
+  %   -  if only certain subjects are copied only copy those entries from the TSV
+  %
+
+  if ~isempty(BIDS.participants)
+
+    src = fullfile(BIDS.dir, 'participants.tsv');
+    target = fullfile(derivatives_folder, 'participants.tsv');
+
+    copy_tsv(src, target, p);
+
+  end
+end
+
+function copy_tsv(src, target, p)
+
+  flag = false;
+  if p.Results.force
+    flag = true;
+  else
+    if exist(target, 'file') == 0
+      flag = true;
+    end
+  end
+
+  if flag
+    copy_with_symlink(src, target, p.Results.verbose);
+    if exist(bids.internal.file_utils(src, 'ext', '.json'), 'file')
+      copy_with_symlink(bids.internal.file_utils(src, 'ext', '.json'), ...
+                        bids.internal.file_utils(target, 'ext', '.json'));
+    end
+  end
+
+end
+
+function copy_session_scan_tsv(BIDS, derivatives_folder, p)
+  %
+  % Very "brutal" approach wehere we copy the whole file
+  %
+  % TODO:
+  %   -  only copy the entries of the sessions / files that are copied
+  %
+
+  % identify in the BIDS layout the subjects / sessions combination that we
+  % need to keep to copy
+  subjects_list = bids.query(BIDS, 'subjects', p.Results.filter);
+  sessions_list = bids.query(BIDS, 'sessions', p.Results.filter);
+
+  subjects = {BIDS.subjects.name}';
+  subjects = cellfun(@(x) x(5:end), subjects, 'UniformOutput', false);
+  sessions = {BIDS.subjects.session}';
+  sessions = cellfun(@(x) x(5:end), sessions, 'UniformOutput', false);
+
+  keep = find(all([ismember(subjects, subjects_list) ismember(sessions, sessions_list)], 2));
+
+  for i = 1:numel(keep)
+
+    if ~isempty(BIDS.subjects(keep(i)).sess)
+      src = BIDS.subjects(keep(i)).sess;
+      target = fullfile(derivatives_folder, ...
+                        BIDS.subjects(keep(i)).name, ...
+                        bids.internal.file_utils(src, 'filename'));
+      copy_tsv(src, target, p);
+    end
+
+    if ~isempty(BIDS.subjects(keep(i)).scans)
+      src = BIDS.subjects(keep(i)).scans;
+      target = fullfile(derivatives_folder, ...
+                        BIDS.subjects(keep(i)).name, ...
+                        BIDS.subjects(keep(i)).session, ...
+                        bids.internal.file_utils(src, 'filename'));
+      copy_tsv(src, target, p);
+    end
+
   end
 
 end
@@ -162,9 +246,6 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
     end
     return
   else
-    if verbose
-      fprintf(1, '\n copying: %s', file.filename);
-    end
     file.meta = bids.internal.get_metadata(file.metafile);
   end
 
@@ -175,7 +256,7 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
   %% copy data file
   % we follow any eventual symlink
   % and then unzip the data if necessary
-  copy_with_symlink(data_file, fullfile(out_dir, file.filename));
+  copy_with_symlink(data_file, fullfile(out_dir, file.filename), verbose);
   unzip_data(file, out_dir, unzip);
 
   %% export metadata
@@ -194,7 +275,7 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
 
 end
 
-function copy_with_symlink(src, target)
+function copy_with_symlink(src, target, verbose)
   %
   % Follows symbolic link to copy data:
   % Might be necessary for datasets curated with datalad
@@ -207,6 +288,10 @@ function copy_with_symlink(src, target)
   %
 
   command = 'cp -R -L -f';
+
+  if verbose
+    fprintf(1, '\n copying %s --> %s', src, target);
+  end
 
   try
     status = system( ...

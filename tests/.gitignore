@@ -4,6 +4,7 @@
 
 bids-examples
 
-data/MoAEpilot/*
-data/ds*/*
+data/MoAEpilot/
+data/ds*/
+data/7t_trt/
 data/derivatives*/*
