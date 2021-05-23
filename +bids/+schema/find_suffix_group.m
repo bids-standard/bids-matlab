@@ -1,4 +1,8 @@
 function idx = find_suffix_group(modality, suffix, schema, quiet)
+  %
+  % For a given sufffix and modality, this returns the "suffix group" this
+  % suffix belongs to
+  %
 
   idx = [];
 

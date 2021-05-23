@@ -41,9 +41,10 @@ function test_create_filename_basic()
                       'task', 'face recognition', ...
                       'run', '02');
 
-  filename = bids.util.create_filename(p);
+  [filename, pth] = bids.util.create_filename(p);
 
   assertEqual(filename, 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii');
+  assertEqual(pth, fullfile('sub-01', 'ses-test', 'func'));
 
   %% Modify existing filename
   p.entities = struct( ...
