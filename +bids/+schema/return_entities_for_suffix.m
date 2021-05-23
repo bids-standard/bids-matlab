@@ -31,6 +31,11 @@ end
 
 function is_required = check_if_required(this_suffix_group)
 
+  % for CI
+  if iscell(this_suffix_group)
+    this_suffix_group = this_suffix_group{1};
+  end
+
   entities = fieldnames(this_suffix_group.entities);
   nb_entities = numel(entities);
 
