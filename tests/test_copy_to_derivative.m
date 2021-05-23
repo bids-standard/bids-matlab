@@ -9,7 +9,7 @@ end
 function test_copy_to_derivative_MoAE()
 
   input_dir = download_moae_ds(true());
-  out_path = [];
+  out_path = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot', 'derivatives');
 
   BIDS = fullfile(input_dir, 'MoAEpilot');
 
@@ -18,11 +18,11 @@ function test_copy_to_derivative_MoAE()
   bids.copy_to_derivative(BIDS, out_path, pipeline_name);
 
 end
-
+ 
 function test_copy_to_derivative_MoAE_force()
 
   input_dir = download_moae_ds(true());
-  out_path = [];
+  out_path = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot', 'derivatives');
 
   BIDS = fullfile(input_dir, 'MoAEpilot');
 
@@ -77,7 +77,7 @@ function test_copy_to_derivative_ds000117_skip_dependencies
 
   [BIDS, out_path, filters] = fixture();
 
-  pipeline_name = [];
+  pipeline_name = 'bids-matlab';
   unzip = false;
   force = false;
   use_schema = true;
@@ -95,7 +95,7 @@ function test_copy_to_derivative_ds000117_skip_dependencies
                           use_schema, ...
                           verbose);
 
-  derivatives = bids.layout(out_path, false());
+  derivatives = bids.layout(fullfile(out_path, pipeline_name), false());
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 4);
 
@@ -111,7 +111,8 @@ function [BIDS, out_path, filters] = fixture()
   %
   %   input_dir = fullfile('..', 'data', 'ds000117');
 
-  out_path = fullfile(pwd, 'data', 'derivatives');
+  
+  out_path = fullfile(pwd, 'data', 'ds000117', 'derivatives');
 
   if exist(out_path, 'dir')
     rmdir(out_path, 's');
