@@ -34,4 +34,6 @@ function output_dir = download_moae_ds(downloadData)
 
   end
 
+  output_dir = fullfile(output_dir, 'MoAEpilot');
+
 end
