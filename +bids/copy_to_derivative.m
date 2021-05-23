@@ -119,10 +119,10 @@ function copy_to_derivative(varargin)
   if exist(descr_file, 'file')
     content = bids.util.jsondecode(descr_file);
     ds_desc = ds_desc.set_field(content);
-    ds_desc = ds_desc.append('GeneratedBy', struct('Name', pipeline_name));
+    ds_desc = ds_desc.append('GeneratedBy', struct('Name', p.Results.pipeline_name));
 
   else
-    ds_desc = ds_desc.generate(pipeline_name, BIDS);
+    ds_desc = ds_desc.generate(p.Results.pipeline_name, BIDS);
 
   end
 
