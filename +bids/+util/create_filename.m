@@ -1,4 +1,37 @@
 function [filename, pth] = create_filename(p, file)
+  %
+  % Creates a BIDS compatible filename and can be used to create new names to rename files
+  %
+  % USAGE::
+  %
+  %   [filename, pth] = create_filename(p)
+  %
+  % :param p:  specification of the filename to create, very similar to the output of
+  %                   ``bids.internal.parse_filename``
+  % :type  p:  structure
+  %
+  % Content of ``p``:
+  %
+  %   - ``p.suffix``        - required
+  %   - ``p.ext``           - extension (default: ``p.ext = ''``)
+  %   - ``p.entities``      - structure listing the entity-label pairs to compose the filename
+  %   - ``p.prefix``        - prefex to prepend (default: ``p.prefix = ''``)
+  %   - ``p.use_schema``    - bollean to check required entities for a given suffix,
+  %                           and reorder entities according to the BIDS schema.
+  %   - ``p.entity_order``  - user specified order in which to arranges the entities
+  %                           in the filename. Overrides ``p.use_schema``.
+  %
+  %   If no entity order is specified and the filename creation is not based on the BIDS
+  %   schema, then the filename will be created by concatenating the entity-label pairs
+  %   found in the content of ``p.entities``.
+  %
+  %   USAGE::
+  %
+  %   [filename, pth] = create_filename(p, file)
+  %
+  %   :param file: file whose name has to be modified by the content of ``p``.
+  %   :type file:  string
+  %
 
   default.use_schema = true;
   default.entity_order = {};
@@ -46,7 +79,7 @@ function [filename, pth] = create_filename(p, file)
 
   filename = [p.prefix, filename '_', p.suffix, p.ext];
 
-  pth = create_path();
+  pth = create_path(p);
 
 end
 
