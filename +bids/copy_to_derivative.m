@@ -110,24 +110,23 @@ function copy_to_derivative(varargin)
   end
 
   % Creating / loading description
+  ds_desc = bids.dataset_description;
+
+  % Incase we are copying again to the output folder, we append that info to the
+  % description otherwise we create a bran new dataset description for
+  % derivatives
   descr_file = fullfile(derivatives_folder, 'dataset_description.json');
   if exist(descr_file, 'file')
-    description = bids.util.jsondecode(descr_file);
+    content = bids.util.jsondecode(descr_file);
+    ds_desc = ds_desc.set_field(content);
+    ds_desc = ds_desc.append('GeneratedBy', struct('Name', p.Results.pipeline_name));
+
   else
-    description = BIDS.description;
+    ds_desc = ds_desc.generate(p.Results.pipeline_name, BIDS);
+
   end
 
-  % Create / update GeneratedBy
-  pipeline.Name = p.Results.pipeline_name;
-  pipeline.Version = '';
-  pipeline.Container = '';
-  if isfield(description, 'GeneratedBy')
-    description.GeneratedBy = [description.GeneratedBy; pipeline];
-  else
-    description.GeneratedBy = pipeline;
-  end
-
-  bids.util.jsonencode(descr_file, description, struct('Indent', '  '));
+  ds_desc.write(derivatives_folder);
 
   copy_participants_tsv(BIDS, derivatives_folder, p);
 

@@ -15,7 +15,6 @@ function test_copy_to_derivative_sessions_scans_tsv
   force = false;
   use_schema = true;
   verbose = true;
-
   skip_dependencies = true;
 
   bids.copy_to_derivative(BIDS, ...
@@ -44,7 +43,7 @@ function test_copy_to_derivative_MoAE()
   bids.copy_to_derivative(BIDS, out_path, pipeline_name);
 
 end
-
+ 
 function test_copy_to_derivative_MoAE_force()
 
   BIDS = download_moae_ds(true());
@@ -101,7 +100,7 @@ function test_copy_to_derivative_ds000117_skip_dependencies
 
   [BIDS, out_path, filters] = fixture('ds000117');
 
-  pipeline_name = '';
+  pipeline_name = 'bids-matlab';
   unzip = false;
   force = false;
   use_schema = true;
@@ -119,7 +118,7 @@ function test_copy_to_derivative_ds000117_skip_dependencies
                           'skip_dep', skip_dependencies, ...
                           'verbose', verbose);
 
-  derivatives = bids.layout(out_path, false());
+  derivatives = bids.layout(fullfile(out_path, pipeline_name), false());
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 4);
 
@@ -136,6 +135,7 @@ function [BIDS, out_path, filters] = fixture(dataset)
   %   input_dir = fullfile('..', 'data', 'ds000117');
 
   out_path = fullfile(pwd, 'data', dataset, 'derivatives');
+
 
   if exist(out_path, 'dir')
     rmdir(out_path, 's');
