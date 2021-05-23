@@ -1,4 +1,7 @@
 classdef dataset_description
+    %
+    %
+    % (C) Copyright 2021 BIDS-MATLAB developers
 
   properties
     content
@@ -43,12 +46,13 @@ classdef dataset_description
 
         obj = set_field(obj, 'DatasetType', 'derivative');
 
-        obj = set_field(obj, 'GeneratedBy',  struct( ...
+        obj = set_field(obj, 'GeneratedBy',  {struct( ...
                                                     'Name', obj.pipeline, ...
                                                     'Version', '', ...
                                                     'Description', '', ...
                                                     'CodeURL', '', ...
-                                                    'Container', struct('Type', '', 'Tag', '')));
+                                                    'Container', struct('Type', '', 'Tag', ''))
+                                              });
 
         doi_source_data = '';
         if isfield(obj.source_description, 'DatasetDOI')
