@@ -1,12 +1,24 @@
 function test_suite = test_create_filename %#ok<*STOUT>
-  %
-  % Copyright (C) 2021 BIDS-MATLAB developers
 
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine
   end
   initTestSuite;
+
+end
+
+function test_create_filename_derivatives()
+
+  filename = 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+
+  %% Create filename
+  p.entities = struct('desc', 'preproc');
+  p.use_schema = false;
+
+  filename = bids.util.create_filename(p, filename);
+
+  assertEqual(filename, 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii');
 
 end
 

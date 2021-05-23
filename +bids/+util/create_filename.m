@@ -1,15 +1,18 @@
 function filename = create_filename(p, file)
 
-  if ~isfield(p, 'suffix')
-    error('We need at least a suffix to create a filename.');
-  end
+  default.use_schema = true;
+  default.entity_order = {};
+  default.ext = '';
+  default.prefix = '';
 
-  if ~isfield(p, 'ext')
-    p.ext = '';
-  end
-  
+  p = bids.internal.match_structure_fields(p, default);
+
   if nargin > 1
     p = rename_file(p, file);
+  end
+
+  if ~isfield(p, 'suffix')
+    error('We need at least a suffix to create a filename.');
   end
 
   entities = fieldnames(p.entities);
@@ -40,13 +43,16 @@ function filename = create_filename(p, file)
   % remove lead '_'
   filename(1) = [];
 
-  filename = [filename '_', p.suffix, p.ext];
+  filename = [p.prefix, filename '_', p.suffix, p.ext];
 
 end
 
 function parsed_file = rename_file(p, file)
 
   parsed_file = bids.internal.parse_filename(file);
+
+  parsed_file.entity_order = p.entity_order;
+  parsed_file.use_schema = p.use_schema;
 
   entities_to_change = fieldnames(p.entities);
 
@@ -63,25 +69,21 @@ function [p, entities, is_required] = reorder_entities(p, entities)
   %   - schema based: p.use_schema
   %   - order defined by entities order in p.entities
   %
-  
-  if ~isfield(p, 'use_schema')
-    p.use_schema = true;
-  end
-  
-  if isfield(p, 'entity_order') && ~isempty(p.entity_order)
+
+  if ~isempty(p.entity_order)
 
     if size(p.entity_order, 2) > 1
       p.entity_order = p.entity_order';
     end
-    idx = ismember(entities, p.entity_order);
 
+    idx = ismember(entities, p.entity_order);
     entities = cat(1, p.entity_order, entities(~idx));
     is_required = false(size(entities));
 
   elseif p.use_schema
-      
+
     quiet = true;
-      
+
     [p, is_required] = get_entity_order_from_schema(p, quiet);
 
     idx = ismember(entities, p.entity_order);
@@ -89,6 +91,8 @@ function [p, entities, is_required] = reorder_entities(p, entities)
 
   else
 
+    idx = ismember(entities, p.entity_order);
+    entities = cat(1, p.entity_order, entities(~idx));
     is_required = false(size(entities));
 
   end

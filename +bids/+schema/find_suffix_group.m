@@ -1,9 +1,9 @@
 function idx = find_suffix_group(modality, suffix, schema, quiet)
 
   idx = [];
-  
-  if nargin<4 || isempty(quiet)
-      quiet = true;
+
+  if nargin < 4 || isempty(quiet)
+    quiet = true;
   end
 
   if isempty(schema)
