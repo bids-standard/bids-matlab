@@ -1,23 +1,46 @@
-function copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force, skip_dep, use_schema, verbose)
+function copy_to_derivative(varargin)
   %
   % Copy selected data from BIDS layout to given derivatives folder,
   % returning layout of new derivatives folder
   %
   % USAGE::
   %
-  %   derivatives = copy_to_derivative(BIDS, out_path, query)
+  %   bids.copy_to_derivative(BIDS, ...
+  %                               out_path, ...
+  %                               pipeline_name, ...
+  %                               filters, ...
+  %                               'unzip', true, ...
+  %                               'force', false...
+  %                               'skip_dep', false ...
+  %                               'verbose', true);
   %
-  % :param BIDS:          BIDS directory name or BIDS structure (from bids.layout)
-  % :type  BIDS:          structure or string
-  % :param out_path:      path to directory containing the derivatives
-  % :type  out_path:      string
-  % :param pipeline_name: name of pipeline to use
-  % :type  pipeline_name: string
-  % :param query:         list of filters to choose what files to copy (see bids.query)
-  % :type  query:         structure or cell
-  % :param unzip:         If ``true`` (default) then all ``.gz`` files will be unzipped
-  %                       after being copied.
-  % :type  unzip:         boolean
+  %
+  % :param BIDS:            BIDS directory name or BIDS structure (from bids.layout)
+  % :type  BIDS:            structure or string
+  %
+  % :param out_path:        path to directory containing the derivatives
+  % :type  out_path:        string
+  % :param pipeline_name:   name of pipeline to use
+  % :type  pipeline_name:   string
+  % :param filter:          list of filters to choose what files to copy (see bids.query)
+  % :type  filter:          structure or cell
+  %
+  % PARAMETERS:
+  %
+  % :param unzip:           If ``true`` (default) then all ``.gz`` files will be unzipped
+  %                         after being copied.
+  % :type  unzip:           boolean
+  % :param force:           If set to ``false`` (default) it will not overwrite any file already
+  %                         present in the destination.
+  % :type  force:           boolean
+  % :param skip_dep:        If set to ``false`` (default) it will copy all the
+  %                         dependencies of each file.
+  % :type  skip_dep:        boolean
+  % :param use_schema:      If set to ``true`` (default) it will only copy files
+  %                         that are BIDS valid.
+  % :type  use_schema:      boolean
+  % :param  verbose:
+  % :type  verbose:         boolean
   %
   % All the metadata of each file is read through the whole hierarchy
   % and dumped into one side-car json file for each file copied.
@@ -34,41 +57,37 @@ function copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force,
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
-  narginchk(2, Inf);
+  default_out_path = fullfile(pwd, 'derivatives');
+  default_pipeline_name = 'bids-matlab';
+  default_filter = struct();
 
-  if nargin < 3
-    pipeline_name = 'bids-matlab';
-  end
+  default_unzip = true;
+  default_force = false;
+  default_skip_dep = false;
+  default_schema = true;
+  default_verbose = false;
 
-  if nargin < 4
-    filter = [];
-  end
+  p = inputParser;
 
-  if nargin < 5 || isempty(unzip)
-    unzip = true;
-  end
+  addRequired(p, 'BIDS');
 
-  if nargin < 6 || isempty(force)
-    force = false;
-  end
+  addOptional(p, 'out_path', default_out_path, @ischar);
+  addOptional(p, 'pipeline_name', default_pipeline_name, @ischar);
+  addOptional(p, 'filter', default_filter, @isstruct);
 
-  if nargin < 7 || isempty(skip_dep)
-    skip_dep = false;
-  end
+  addParameter(p, 'unzip', default_unzip);
+  addParameter(p, 'force', default_force);
+  addParameter(p, 'skip_dep', default_skip_dep);
+  addParameter(p, 'use_schema', default_schema);
+  addParameter(p, 'verbose', default_verbose);
 
-  if nargin < 8 || isempty(use_schema)
-    use_schema = true;
-  end
+  parse(p, varargin{:});
 
-  if nargin < 9 || isempty(verbose)
-    verbose = false;
-  end
-
-  BIDS = bids.layout(BIDS, use_schema);
+  BIDS = bids.layout(p.Results.BIDS, p.Results.use_schema);
 
   % Check that we actually have to copy something
-  data_list = bids.query(BIDS, 'data', filter);
-  subjects_list = bids.query(BIDS, 'subjects', filter);
+  data_list = bids.query(BIDS, 'data', p.Results.filter);
+  subjects_list = bids.query(BIDS, 'subjects', p.Results.filter);
 
   if isempty(data_list)
     warning('No data found for this query');
@@ -78,13 +97,14 @@ function copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force,
   end
 
   % Determine and create output directory
-  if nargin < 2 || isempty(out_path)
+  out_path = p.Results.out_path;
+  if isempty(out_path)
     out_path = fullfile(BIDS.dir, '..', 'derivatives');
   end
   if ~exist(out_path, 'dir')
     mkdir(out_path);
   end
-  derivatives_folder = fullfile(out_path, pipeline_name);
+  derivatives_folder = fullfile(out_path, p.Results.pipeline_name);
   if ~exist(derivatives_folder, 'dir')
     mkdir(derivatives_folder);
   end
@@ -112,7 +132,11 @@ function copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force,
 
   % looping over selected files
   for iFile = 1:numel(data_list)
-    copy_file(BIDS, derivatives_folder, data_list{iFile}, unzip, force, skip_dep, verbose);
+    copy_file(BIDS, derivatives_folder, data_list{iFile}, ...
+              p.Results.unzip, ...
+              p.Results.force, ...
+              p.Results.skip_dep, ...
+              p.Results.verbose);
   end
 
 end
