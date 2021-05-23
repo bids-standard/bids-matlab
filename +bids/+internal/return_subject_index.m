@@ -4,8 +4,7 @@ function sub_idx = return_subject_index(BIDS, filename)
   % that: ``BIDS.subjects(sub_idx)``
   %
   %
-
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   parsed_file = bids.internal.parse_filename(filename);
   sub = parsed_file.entities.sub;

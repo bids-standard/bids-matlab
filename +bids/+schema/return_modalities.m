@@ -1,4 +1,6 @@
 function modalities = return_modalities(subject, schema, modality_group)
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   % if we go schema-less we list directories in the subject/session folder
   % as proxy of the modalities that we have to parse

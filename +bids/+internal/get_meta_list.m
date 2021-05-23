@@ -14,10 +14,10 @@ function metalist = get_meta_list(filename, pattern)
   %
   %
   % metalist    - list of paths to metafiles
-  % __________________________________________________________________________
-
-  % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  %
+  % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   if nargin == 1
     pattern = '^.*%s\\.json$';

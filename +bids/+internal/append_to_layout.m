@@ -16,7 +16,7 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
   % :type  schema: strcture
   %
   %
-  % Copyright (C) 2021--, BIDS-MATLAB developers
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   if ~exist('schema', 'var')
     schema = [];

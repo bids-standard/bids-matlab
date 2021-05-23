@@ -40,6 +40,7 @@ function result = query(BIDS, query, varargin)
   %
   %     data = bids.query(BIDS, 'data', filters);
   %
+  %
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -47,9 +48,9 @@ function result = query(BIDS, query, varargin)
   %   describing outputs of neuroimaging experiments.
   %   K. J. Gorgolewski et al, Scientific Data, 2016.
   % __________________________________________________________________________
-
-  % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   %#ok<*AGROW>
   narginchk(2, Inf);

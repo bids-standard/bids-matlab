@@ -31,9 +31,8 @@ function copy_to_derivative(BIDS, out_path, pipeline_name, filter, unzip, force,
   %   describing outputs of neuroimaging experiments.
   %   K. J. Gorgolewski et al, Scientific Data, 2016.
   % __________________________________________________________________________
-
-  % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2021--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   narginchk(2, Inf);
 
