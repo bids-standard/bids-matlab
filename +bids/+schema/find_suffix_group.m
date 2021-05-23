@@ -1,6 +1,10 @@
-function idx = find_suffix_group(modality, suffix, schema)
+function idx = find_suffix_group(modality, suffix, schema, quiet)
 
   idx = [];
+  
+  if nargin<4 || isempty(quiet)
+      quiet = true;
+  end
 
   if isempty(schema)
     return
@@ -24,7 +28,7 @@ function idx = find_suffix_group(modality, suffix, schema)
 
   end
 
-  if isempty(idx)
+  if isempty(idx) && ~quiet
     warning('findSuffix:noMatchingSuffix', ...
             'No corresponding suffix in schema for %s for datatype %s', suffix, modality);
   end

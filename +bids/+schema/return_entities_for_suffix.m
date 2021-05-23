@@ -1,4 +1,4 @@
-function [entities, is_required] = return_entities_for_suffix(suffix, schema)
+function [entities, is_required] = return_entities_for_suffix(suffix, schema, quiet)
   %
   % returns the list of entities for a given suffix
 
@@ -10,7 +10,7 @@ function [entities, is_required] = return_entities_for_suffix(suffix, schema)
 
     for iDatatype = 1:numel(datatypes)
 
-      idx = bids.schema.find_suffix_group(datatypes{iDatatype}, suffix, schema);
+      idx = bids.schema.find_suffix_group(datatypes{iDatatype}, suffix, schema, quiet);
       if ~isempty(idx)
         this_datatype = datatypes{iDatatype};
         this_suffix_group = schema.datatypes.(this_datatype)(idx);

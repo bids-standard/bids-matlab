@@ -7,7 +7,7 @@ function filename = create_filename(p, file)
   if ~isfield(p, 'ext')
     p.ext = '';
   end
-
+  
   if nargin > 1
     p = rename_file(p, file);
   end
@@ -40,7 +40,7 @@ function filename = create_filename(p, file)
   % remove lead '_'
   filename(1) = [];
 
-  filename = [filename '_', p.suffix p.ext];
+  filename = [filename '_', p.suffix, p.ext];
 
 end
 
@@ -63,8 +63,13 @@ function [p, entities, is_required] = reorder_entities(p, entities)
   %   - schema based: p.use_schema
   %   - order defined by entities order in p.entities
   %
+  
+  if ~isfield(p, 'use_schema')
+    p.use_schema = true;
+  end
+  
+  if isfield(p, 'entity_order') && ~isempty(p.entity_order)
 
-  if isfield(p, 'entity_order')
     if size(p.entity_order, 2) > 1
       p.entity_order = p.entity_order';
     end
@@ -73,8 +78,11 @@ function [p, entities, is_required] = reorder_entities(p, entities)
     entities = cat(1, p.entity_order, entities(~idx));
     is_required = false(size(entities));
 
-  elseif isfield(p, 'use_schema')
-    [p, is_required] = get_entity_order_from_schema(p);
+  elseif p.use_schema
+      
+    quiet = true;
+      
+    [p, is_required] = get_entity_order_from_schema(p, quiet);
 
     idx = ismember(entities, p.entity_order);
     entities = cat(1, p.entity_order, entities(~idx));
@@ -87,10 +95,10 @@ function [p, entities, is_required] = reorder_entities(p, entities)
 
 end
 
-function [p, is_required] = get_entity_order_from_schema(p)
+function [p, is_required] = get_entity_order_from_schema(p, quiet)
 
   schema = bids.schema.load_schema(p.use_schema);
-  [schema_entities, is_required] = bids.schema.return_entities_for_suffix(p.suffix, schema);
+  [schema_entities, is_required] = bids.schema.return_entities_for_suffix(p.suffix, schema, quiet);
   for i = 1:numel(schema_entities)
     p.entity_order{i, 1} = schema_entities{i};
   end
