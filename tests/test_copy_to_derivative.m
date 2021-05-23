@@ -27,138 +27,136 @@ function test_copy_to_derivative_sessions_scans_tsv
                           'force', force, ...
                           'skip_dep', skip_dependencies, ...
                           'verbose', verbose);
-                      
+
   derivatives = bids.layout(fullfile(out_path, '7t_trt', pipeline_name), false());
   assert(~isempty(derivatives.subjects(1).scans));
   assertEqual(derivatives.subjects(1).sess, derivatives.subjects(2).sess);
 
 end
 
-% function test_copy_to_derivative_MoAE()
+function test_copy_to_derivative_MoAE()
 
-%   input_dir = download_moae_ds(true());
-%   out_path = '';
+  BIDS = download_moae_ds(true());
+  out_path = fullfile(pwd, 'data', 'MoAEpilot', 'derivatives');
 
-%   BIDS = fullfile(input_dir, 'MoAEpilot');
+  pipeline_name = 'bids-matlab';
 
-%   pipeline_name = 'bids-matlab';
+  bids.copy_to_derivative(BIDS, out_path, pipeline_name);
 
-%   bids.copy_to_derivative(BIDS, out_path, pipeline_name);
+end
 
-% end
+function test_copy_to_derivative_MoAE_force()
 
-% function test_copy_to_derivative_MoAE_force()
+  BIDS = download_moae_ds(true());
+  out_path = fullfile(pwd, 'data', 'MoAEpilot', 'derivatives');
 
-%   input_dir = download_moae_ds(true());
-%   out_path = '';
+  pipeline_name = 'bids-matlab';
 
-%   BIDS = fullfile(input_dir, 'MoAEpilot');
+  filters = struct();
+  unzip = false;
+  force = true;
+  skip_dependencies = false;
+  use_schema = true;
+  verbose = true;
 
-%   pipeline_name = 'bids-matlab';
+  bids.copy_to_derivative(BIDS, ...
+                          out_path, ...
+                          pipeline_name, ...
+                          filters, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
 
-%   filters = struct();
-%   unzip = false;
-%   force = true;
-%   skip_dependencies = false;
-%   use_schema = true;
-%   verbose = true;
+end
 
-%   bids.copy_to_derivative(BIDS, ...
-%                           out_path, ...
-%                           pipeline_name, ...
-%                           filters, ...
-%                           'unzip', unzip, ...
-%                           'force', force, ...
-%                           'skip_dep', skip_dependencies, ...
-%                           'verbose', verbose);
+function test_copy_to_derivative_ds000117()
 
-% end
+  [BIDS, out_path, filters] = fixture('ds000117');
 
-% function test_copy_to_derivative_ds000117()
+  pipeline_name = '';
+  unzip = false;
+  force = false;
+  skip_dependencies = false;
+  use_schema = true;
+  verbose = true;
 
-%   [BIDS, out_path, filters] = fixture('ds000117');
+  bids.copy_to_derivative(BIDS, ...
+                          out_path, ...
+                          pipeline_name, ...
+                          filters, ...
+                          'use_schema', use_schema, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
 
-%   pipeline_name = '';
-%   unzip = false;
-%   force = false;
-%   skip_dependencies = false;
-%   use_schema = true;
-%   verbose = true;
+  derivatives = bids.layout(out_path, false());
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 10);
 
-%   bids.copy_to_derivative(BIDS, ...
-%                           out_path, ...
-%                           pipeline_name, ...
-%                           filters, ...
-%                           'use_schema', use_schema, ...
-%                           'unzip', unzip, ...
-%                           'force', force, ...
-%                           'skip_dep', skip_dependencies, ...
-%                           'verbose', verbose);
+end
 
-%   derivatives = bids.layout(out_path, false());
-%   copied_files = bids.query(derivatives, 'data');
-%   assertEqual(size(copied_files, 1), 10);
+function test_copy_to_derivative_ds000117_skip_dependencies
 
-% end
+  [BIDS, out_path, filters] = fixture('ds000117');
 
-% function test_copy_to_derivative_ds000117_skip_dependencies
+  pipeline_name = '';
+  unzip = false;
+  force = false;
+  use_schema = true;
+  verbose = true;
 
-%   [BIDS, out_path, filters] = fixture('ds000117');
+  skip_dependencies = true;
 
-%   pipeline_name = '';
-%   unzip = false;
-%   force = false;
-%   use_schema = true;
-%   verbose = true;
+  bids.copy_to_derivative(BIDS, ...
+                          out_path, ...
+                          pipeline_name, ...
+                          filters, ...
+                          'use_schema', use_schema, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
 
-%   skip_dependencies = true;
+  derivatives = bids.layout(out_path, false());
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 4);
 
-%   bids.copy_to_derivative(BIDS, ...
-%                           out_path, ...
-%                           pipeline_name, ...
-%                           filters, ...
-%                           'use_schema', use_schema, ...
-%                           'unzip', unzip, ...
-%                           'force', force, ...
-%                           'skip_dep', skip_dependencies, ...
-%                           'verbose', verbose);
-
-%   derivatives = bids.layout(out_path, false());
-%   copied_files = bids.query(derivatives, 'data');
-%   assertEqual(size(copied_files, 1), 4);
-
-% end
+end
 
 function [BIDS, out_path, filters] = fixture(dataset)
 
   pth_bids_example = get_test_data_dir();
-  input_dir = fullfile(pth_bids_example, dataset);
+  BIDS = fullfile(pth_bids_example, dataset);
 
   % to test on real data uncomment the following line
   % see tests/README.md to see how to install the data
   %
   %   input_dir = fullfile('..', 'data', 'ds000117');
 
-  out_path = fullfile(pwd, 'data', 'derivatives');
+  out_path = fullfile(pwd, 'data', dataset, 'derivatives');
 
   if exist(out_path, 'dir')
     rmdir(out_path, 's');
   end
 
-  BIDS = fullfile(input_dir);
-
   switch dataset
-      
+
     case 'ds000117'
 
-    filters = struct('sub', '01', ...
-                    'modality', 'func', ...
-                    'suffix', 'bold');
-    filters.run = {'01'; '03'};
+      filters = struct('sub', '01', ...
+                       'modality', 'func', ...
+                       'suffix', 'bold');
+      filters.run = {'01'; '03'};
 
     case '7t_trt'
-        
+
       filters.sub = {'01'; '02'; '03'; '04'};
+
+    case 'MoAEpilot'
+
+      filters = struct();
 
   end
 
