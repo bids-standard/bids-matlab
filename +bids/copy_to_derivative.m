@@ -129,7 +129,7 @@ function copy_to_derivative(varargin)
 
   bids.util.jsonencode(descr_file, description, struct('Indent', '  '));
 
-  % extracting participants.tsv file?
+  copy_participants_tsv(BIDS, derivatives_folder, p);
 
   % looping over selected files
   for iFile = 1:numel(data_list)
@@ -140,6 +140,36 @@ function copy_to_derivative(varargin)
               p.Results.verbose);
   end
 
+end
+
+function copy_participants_tsv(BIDS, derivatives_folder, p)
+  % extracting participants.tsv file
+  % Very "brutal approach wehere we copy the whole file
+  % TODO:
+  %   -  if only certain subjects are copied only copy those entries from the TSV
+  if ~isempty(BIDS.participants)
+
+    src = fullfile(BIDS.dir, 'participants.tsv');
+    target = fullfile(derivatives_folder, 'participants.tsv');
+
+    flag = false;
+    if p.Results.force
+      flag = true;
+    else
+      if exist(target, 'file') == 0
+        flag = true;
+      end
+    end
+
+    if flag
+      copy_with_symlink(src, target, p.Results.verbose);
+      if exist(bids.internal.file_utils(src, 'ext', '.json'), 'file')
+        copy_with_symlink(bids.internal.file_utils(src, 'ext', '.json'), ...
+                          bids.internal.file_utils(target, 'ext', '.json'));
+      end
+    end
+
+  end
 end
 
 function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, verbose)
@@ -163,9 +193,6 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
     end
     return
   else
-    if verbose
-      fprintf(1, '\n copying: %s', file.filename);
-    end
     file.meta = bids.internal.get_metadata(file.metafile);
   end
 
@@ -176,7 +203,7 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
   %% copy data file
   % we follow any eventual symlink
   % and then unzip the data if necessary
-  copy_with_symlink(data_file, fullfile(out_dir, file.filename));
+  copy_with_symlink(data_file, fullfile(out_dir, file.filename), verbose);
   unzip_data(file, out_dir, unzip);
 
   %% export metadata
@@ -195,7 +222,7 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
 
 end
 
-function copy_with_symlink(src, target)
+function copy_with_symlink(src, target, verbose)
   %
   % Follows symbolic link to copy data:
   % Might be necessary for datasets curated with datalad
@@ -208,6 +235,10 @@ function copy_with_symlink(src, target)
   %
 
   command = 'cp -R -L -f';
+
+  if verbose
+    fprintf(1, '\n copying %s --> %s', src, target);
+  end
 
   try
     status = system( ...
