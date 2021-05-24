@@ -1,4 +1,4 @@
-function [filename, pth] = create_filename(p, file)
+function [filename, pth, json] = create_filename(p, file)
   %
   % Creates a BIDS compatible filename and can be used to create new names to rename files
   %
@@ -79,7 +79,9 @@ function [filename, pth] = create_filename(p, file)
 
   filename = [p.prefix, filename '_', p.suffix, p.ext];
 
-  pth = create_path(p);
+  pth = bids.create_path(filename);
+
+  json = bids.derivatives_json(filename);
 
 end
 
@@ -144,32 +146,6 @@ function [p, is_required] = get_entity_order_from_schema(p, quiet)
   [schema_entities, is_required] = bids.schema.return_entities_for_suffix(p.suffix, schema, quiet);
   for i = 1:numel(schema_entities)
     p.entity_order{i, 1} = schema_entities{i};
-  end
-
-end
-
-function pth = create_path(p)
-  %
-  % Creates a relative path based on the content of the filename created
-  %
-  % If there is none, or more than one possibility for the datatype, the path will only
-  % be based on the sub and ses entitiy.
-  %
-
-  pth = '';
-
-  if isfield(p.entities, 'sub')
-    pth = ['sub-' p.entities.sub];
-  end
-
-  if isfield(p.entities, 'ses')
-    pth = [pth, filesep, 'ses-', p.entities.ses];
-  end
-
-  schema = bids.schema.load_schema();
-  datatypes = bids.schema.find_suffix_datatypes(p.suffix, schema);
-  if numel(datatypes) == 1
-    pth = [pth, filesep, datatypes{1}];
   end
 
 end
