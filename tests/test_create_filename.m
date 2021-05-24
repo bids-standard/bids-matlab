@@ -16,7 +16,7 @@ function test_create_filename_derivatives()
   p.entities = struct('desc', 'preproc');
   p.use_schema = false;
 
-  filename = bids.util.create_filename(p, filename);
+  filename = bids.create_filename(p, filename);
 
   assertEqual(filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii');
 
@@ -24,7 +24,7 @@ function test_create_filename_derivatives()
 
   p.prefix = '';
 
-  filename = bids.util.create_filename(p, filename);
+  filename = bids.create_filename(p, filename);
 
   assertEqual(filename, 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii');
 
@@ -41,7 +41,7 @@ function test_create_filename_basic()
                       'task', 'face recognition', ...
                       'run', '02');
 
-  [filename, pth] = bids.util.create_filename(p);
+  [filename, pth] = bids.create_filename(p);
 
   assertEqual(filename, 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii');
   assertEqual(pth, fullfile('sub-01', 'ses-test', 'func'));
@@ -51,14 +51,14 @@ function test_create_filename_basic()
                       'sub', '02', ...
                       'task', 'new task');
 
-  filename = bids.util.create_filename(p, fullfile(pwd, filename));
+  filename = bids.create_filename(p, fullfile(pwd, filename));
 
   assertEqual(filename, 'sub-02_ses-test_task-newTask_run-02_bold.nii');
 
   %% Remove entity from filename
   p.entities = struct('ses', '');
 
-  filename = bids.util.create_filename(p, filename);
+  filename = bids.create_filename(p, filename);
 
   assertEqual(filename, 'sub-02_task-newTask_run-02_bold.nii');
 
@@ -76,7 +76,7 @@ function test_create_filename_order()
                       'run', '02');
   p.entity_order = {'sub', 'run'};
 
-  filename = bids.util.create_filename(p);
+  filename = bids.create_filename(p);
 
   assertEqual(filename, 'sub-01_run-02_ses-test_task-faceRecognition_bold.nii');
 
@@ -92,7 +92,7 @@ function test_create_filename_schema_based()
                       'task', 'face recognition');
   p.use_schema = true;
 
-  filename = bids.util.create_filename(p);
+  filename = bids.create_filename(p);
 
   assertEqual(filename, 'sub-01_task-faceRecognition_run-02_bold.nii');
 
@@ -108,7 +108,7 @@ function test_create_filename_schema_error()
   p.use_schema = true;
 
   assertExceptionThrown( ...
-                        @()bids.util.create_filename(p), ...
+                        @()bids.create_filename(p), ...
                         'bidsMatlab:requiredEntity');
 
 end
