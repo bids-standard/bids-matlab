@@ -5,16 +5,17 @@ name: code quality
 
 on:
   push:
-    branches: [master, main, dev]
+    branches:
+      - master
+      - main
+      - dev
   pull_request:
-    branches: [master, main]
+    branches: '*'
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
-    if: github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'main'
 
     steps:
 
