@@ -184,36 +184,17 @@ classdef schema
 
     % ----------------------------------------------------------------------- %
     %% REGEX GENERATION
-    function suffixes_regex = return_modality_suffixes_regex(obj, modality)
-      modality = obj.ci_check(modality);
-
-      suffixes_regex = '_(';
-      for iExt = 1:numel(modality(:).suffixes)
-        suffixes_regex = [suffixes_regex,  modality.suffixes{iExt}, '|']; %#ok<AGROW>
-      end
-
-      % Replace final "|" by a "){1}"
-      suffixes_regex(end:end + 3) = '){1}';
+    function regex = return_modality_suffixes_regex(obj, modality)
+      regex = obj.return_regex(modality, 'suffixes');
     end
 
-    function extensions_regex = return_modality_extensions_regex(obj, modality)
-      modality = obj.ci_check(modality);
-
-      extensions_regex = '(';
-      for iExt = 1:numel(modality.extensions)
-        if ~strcmp(modality.extensions{iExt}, '.json')
-          extensions_regex = [extensions_regex,  modality.extensions{iExt}, '|']; %#ok<AGROW>
-        end
-      end
-
-      % Replace final "|" by a "){1}"
-      extensions_regex(end:end + 3) = '){1}';
+    function regex = return_modality_extensions_regex(obj, modality)
+      regex = obj.return_regex(modality, 'extensions');
     end
 
     function modality_regex = return_modality_regex(obj, modality)
       suffixes = obj.return_modality_suffixes_regex(modality);
       extensions = obj.return_modality_extensions_regex(modality);
-
       modality_regex = ['^%s.*' suffixes extensions '$'];
     end
 
@@ -223,6 +204,7 @@ classdef schema
   %% STATIC
   methods (Static)
 
+    %% Loading related methods
     function structure = append_json_to_schema(structure, json_file_list)
       %
       % Reads a json file and appends its content to the bids schema
@@ -260,6 +242,7 @@ classdef schema
       end
     end
 
+    %% Other
     function is_required = check_if_required(obj, this_suffix_group)
       %
       %  Returns a logical vector to track which entities of a suffix group
@@ -285,6 +268,28 @@ classdef schema
       if iscell(variable_to_check)
         variable_to_check = variable_to_check{1};
       end
+    end
+
+  end
+
+  methods (Access = private)
+
+    function regex = return_regex(obj, modality, level)
+      modality = obj.ci_check(modality);
+
+      regex = '(';
+      if strcmp(level, 'suffixes')
+        regex = ['_' regex];
+      end
+
+      for i = 1:numel(modality(:).(level))
+        if ~strcmp(modality.(level){i}, '.json')
+          regex = [regex,  modality.(level){i}, '|']; %#ok<AGROW>
+        end
+      end
+
+      % Replace final "|" by a "){1}"
+      regex(end:end + 3) = '){1}';
     end
 
   end
