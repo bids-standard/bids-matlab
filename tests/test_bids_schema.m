@@ -31,7 +31,7 @@ function test_schemaless()
   schema = bids.schema;
   schema = schema.load(use_schema);
 
-  assertEqual(schema.content, struct());
+  assertEqual(schema.content, struct([]));
 
 end
 
@@ -96,9 +96,7 @@ function test_return_entities_for_suffix
   schema = bids.schema();
   schema = schema.load();
 
-  quiet = true;
-
-  entities = schema.return_entities_for_suffix('bold', quiet);
+  entities = schema.return_entities_for_suffix('bold');
 
   expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
 

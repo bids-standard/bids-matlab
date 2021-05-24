@@ -14,7 +14,7 @@ function test_copy_to_derivative_sessions_scans_tsv
   unzip = false;
   force = false;
   use_schema = true;
-  verbose = true;
+  verbose = false;
   skip_dependencies = true;
 
   bids.copy_to_derivative(BIDS, ...
@@ -43,7 +43,7 @@ function test_copy_to_derivative_MoAE()
   bids.copy_to_derivative(BIDS, out_path, pipeline_name);
 
 end
- 
+
 function test_copy_to_derivative_MoAE_force()
 
   BIDS = download_moae_ds(true());
@@ -78,7 +78,7 @@ function test_copy_to_derivative_ds000117()
   force = false;
   skip_dependencies = false;
   use_schema = true;
-  verbose = true;
+  verbose = false;
 
   bids.copy_to_derivative(BIDS, ...
                           out_path, ...
@@ -104,7 +104,7 @@ function test_copy_to_derivative_ds000117_skip_dependencies
   unzip = false;
   force = false;
   use_schema = true;
-  verbose = true;
+  verbose = false;
 
   skip_dependencies = true;
 
@@ -135,7 +135,6 @@ function [BIDS, out_path, filters] = fixture(dataset)
   %   input_dir = fullfile('..', 'data', 'ds000117');
 
   out_path = fullfile(pwd, 'data', dataset, 'derivatives');
-
 
   if exist(out_path, 'dir')
     rmdir(out_path, 's');

@@ -5,6 +5,7 @@ classdef schema
 
   properties
     content
+    quiet = true
   end
 
   %% PUBLIC
@@ -33,11 +34,12 @@ classdef schema
         use_schema = true();
       end
 
-      obj.content = struct();
-
       if ~use_schema
+        obj.content = struct([]);
         return
       end
+
+      obj.content = [];
 
       if ischar(use_schema)
         schema_dir = use_schema;
@@ -119,7 +121,7 @@ classdef schema
       end
     end
 
-    function [entities, is_required] = return_entities_for_suffix(obj, suffix, quiet)
+    function [entities, is_required] = return_entities_for_suffix(obj, suffix)
       %
       % returns the list of entities for a given suffix
       %
@@ -131,7 +133,7 @@ classdef schema
         datatypes = obj.content.modalities.(modalities{iModality}).datatypes;
 
         for iDatatype = 1:numel(datatypes)
-          idx = obj.find_suffix_group(datatypes{iDatatype}, suffix, quiet);
+          idx = obj.find_suffix_group(datatypes{iDatatype}, suffix);
           if ~isempty(idx)
             this_datatype = datatypes{iDatatype};
             this_suffix_group = obj.content.datatypes.(this_datatype)(idx);
@@ -149,17 +151,13 @@ classdef schema
 
     end
 
-    function idx = find_suffix_group(obj, modality, suffix, quiet)
+    function idx = find_suffix_group(obj, modality, suffix)
       %
       % For a given sufffix and modality, this returns the "suffix group" this
       % suffix belongs to
       %
 
       idx = [];
-
-      if nargin < 4 || isempty(quiet)
-        quiet = true;
-      end
 
       if isempty(obj.content)
         return
@@ -176,7 +174,7 @@ classdef schema
         end
       end
 
-      if isempty(idx) && ~quiet
+      if isempty(idx) && ~obj.quiet
         warning('findSuffix:noMatchingSuffix', ...
                 'No corresponding suffix in schema for %s for datatype %s', suffix, modality);
       end
@@ -272,6 +270,8 @@ classdef schema
 
   end
 
+  % ----------------------------------------------------------------------- %
+  %% PRIVATE
   methods (Access = private)
 
     function regex = return_regex(obj, modality, level)
