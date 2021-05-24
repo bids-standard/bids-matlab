@@ -1,4 +1,6 @@
 function entities = return_modality_entities(suffix_group, schema)
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   % for CI
   if iscell(suffix_group)

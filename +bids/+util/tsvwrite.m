@@ -4,10 +4,12 @@ function tsvwrite(f, var)
   % f     - filename
   % var   - data array or structure
   %
-  % Adapted from spm_save.m
   % __________________________________________________________________________
-  % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % Based on spm_save.m from SPM12.
+  % __________________________________________________________________________
+  % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   delim = sprintf('\t');
 

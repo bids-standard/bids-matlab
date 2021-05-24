@@ -2,19 +2,19 @@ function varargout = file_utils(str, varargin)
   %
   % Character array (or cell array of strings) handling facility
   %
+  % USAGE:
   %
-  % To list files or directories (with fullpath if necessary)
+  % To list files or directories (with fullpath if necessary)::
   %
-  % FORMAT [files, dirs] = bids.internal.file_utils('List',   directory,        regexp)
-  % FORMAT [files, dirs] = bids.internal.file_utils('FPList', directory,        regexp)
-  % FORMAT [dirs]        = bids.internal.file_utils('List',   directory, 'dir', regexp)
-  % FORMAT [dirs]        = bids.internal.file_utils('FPList', directory, 'dir', regexp)
+  %   [files, dirs] = bids.internal.file_utils('List',   directory,        regexp)
+  %   [files, dirs] = bids.internal.file_utils('FPList', directory,        regexp)
+  %   [dirs]        = bids.internal.file_utils('List',   directory, 'dir', regexp)
+  %   [dirs]        = bids.internal.file_utils('FPList', directory, 'dir', regexp)
   %
   %
+  % To get a certain piece of information from a file::
   %
-  % To get a certain piece of information from a file.
-  %
-  % FORMAT str = bids.internal.file_utils(str, option)
+  %   str = bids.internal.file_utils(str, option)
   %
   % str        - character array, or cell array of strings
   %
@@ -22,10 +22,9 @@ function varargout = file_utils(str, varargin)
   %              {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}
   %
   %
+  % To set a certain piece of information from a file::
   %
-  % To set a certain piece of information from a file.
-  %
-  % FORMAT str = bids.internal.file_utils(str, opt_key, opt_val,...)
+  %   str = bids.internal.file_utils(str, opt_key, opt_val, ...)
   %
   % str        - character array, or cell array of strings
   %
@@ -38,8 +37,8 @@ function varargout = file_utils(str, varargin)
   %
   % Based on spm_file.m and spm_select.m from SPM12.
   % __________________________________________________________________________
-
-  % Copyright (C) 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   %#ok<*AGROW>
 

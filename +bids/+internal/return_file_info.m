@@ -1,4 +1,6 @@
 function file_info = return_file_info(BIDS, fullpath_filename)
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   file_info.path = bids.internal.file_utils(fullpath_filename, 'path');
   file_info.modality = bids.internal.file_utils(file_info.path, 'filename');

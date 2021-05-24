@@ -1,6 +1,9 @@
 function report(BIDS, Subj, Ses, Run, ReadNII)
   % Create a short summary of the acquisition parameters of a BIDS dataset
-  % FORMAT bids.report(BIDS, Subj, Ses, Run, ReadNII)
+  %
+  % USAGE::
+  %
+  %   bids.report(BIDS, Subj, Ses, Run, ReadNII)
   %
   % INPUTS:
   % - BIDS: directory formatted according to BIDS [Default: pwd]
@@ -19,7 +22,8 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
   %
   % See also:
   % bids
-
+  %
+  %
   % __________________________________________________________________________
   %
   % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
@@ -27,9 +31,9 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
   %   describing outputs of neuroimaging experiments.
   %   K. J. Gorgolewski et al, Scientific Data, 2016.
   % __________________________________________________________________________
-
-  % Copyright (C) 2018, Remi Gau
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2018 Remi Gau
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   % TODO
   % --------------------------------------------------------------------------
@@ -97,13 +101,22 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
       fprintf('\n-------------------------\n');
     end
 
-    types_ls = bids.query(BIDS, 'types', 'sub', subjs_ls(Subj), 'ses', sess_ls(iSess));
-    tasks_ls = bids.query(BIDS, 'tasks', 'sub', subjs_ls(Subj), 'ses', sess_ls(iSess));
+    entity_filter.sub = subjs_ls(Subj);
+    entity_filter.ses = sess_ls(iSess);
+
+    suffixes_ls = bids.query(BIDS, 'suffixes', entity_filter);
+    tasks_ls = bids.query(BIDS, 'tasks', entity_filter);
     % mods_ls = bids.query(BIDS,'modalities');
 
-    for iType = 1:numel(types_ls)
+    for iSuffix = 1:numel(suffixes_ls)
 
-      switch types_ls{iType}
+      clear entity_filter;
+
+      entity_filter.sub = subjs_ls(Subj);
+      entity_filter.ses = sess_ls(iSess);
+      entity_filter.suffix = suffixes_ls{iSuffix};
+
+      switch suffixes_ls{iSuffix}
 
         case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
 
@@ -118,13 +131,12 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
                           'field of view, FOV= %s mm; matrix size= %s; voxel size= %s mm) \n\n');
 
           % get the parameters
-          acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                                    types_ls{iType}, '', '', ReadNII);
+          acq_param = get_acq_param(BIDS, entity_filter, ReadNII);
 
           % print output
           fprintf('\n ANAT REPORT \n');
           fprintf(anat_text, ...
-                  acq_param.type, acq_param.variants, acq_param.seqs, ...
+                  acq_param.suffix, acq_param.variants, acq_param.seqs, ...
                   acq_param.n_slices, acq_param.tr, ...
                   acq_param.te, acq_param.fa, ...
                   acq_param.fov, acq_param.ms, acq_param.vs);
@@ -145,28 +157,29 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
           % loop through the tasks
           for iTask = 1:numel(tasks_ls)
 
-            runs_ls = bids.query(BIDS, 'runs', 'sub', subjs_ls{Subj}, 'ses', sess_ls{iSess}, ...
-                                 'type', 'bold', 'task', tasks_ls{iTask});
+            entity_filter.task = tasks_ls{iTask};
+            runs_ls = bids.query(BIDS, 'runs', entity_filter);
 
             if isempty(runs_ls)
               % get the parameters for that task
-              acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                                        'bold', tasks_ls{iTask}, '', ReadNII);
+              acq_param = get_acq_param(BIDS, entity_filter, ReadNII);
 
               % compute the number of BOLD run for that task
               acq_param.run_str = '1';
 
             else % if there is more than 1 run
               % get the parameters for that task
-              acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                                        'bold', tasks_ls{iTask}, runs_ls{Run}, ReadNII);
+              entity_filter.run = runs_ls{Run};
+              acq_param = get_acq_param(BIDS, entity_filter, ReadNII);
               % compute the number of BOLD run for that task
               acq_param.run_str = num2str(numel(runs_ls));
+
             end
 
             % set run duration
             if ~strcmp(acq_param.tr, '[XXXX]') && ~strcmp(acq_param.n_vols, '[XXXX]')
-              acq_param.length = num2str(str2double(acq_param.tr) / 1000 * str2double(acq_param.n_vols) / 60);
+              acq_param.length = num2str(str2double(acq_param.tr) / 1000 * ...
+                                         str2double(acq_param.n_vols) / 60);
             end
 
             % print output
@@ -196,18 +209,13 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
           % loop through the tasks
           for iTask = 1:numel(tasks_ls)
 
-            runs_ls = bids.query(BIDS, 'runs', 'sub', subjs_ls{Subj}, 'ses', sess_ls{iSess}, ...
-                                 'type', 'phasediff');
+            runs_ls = bids.query(BIDS, 'runs', entity_filter);
 
-            if isempty(runs_ls)
-              % get the parameters for that task
-              acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                                        'phasediff', '', '', ReadNII);
-            else
-              % get the parameters for that task
-              acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                                        'phasediff', '', runs_ls{Run}, ReadNII);
+            if ~isempty(runs_ls)
+              entity_filter.run = runs_ls{Run};
             end
+
+            acq_param = get_acq_param(BIDS, entity_filter, ReadNII);
 
             % goes through task list to check which fieldmap is for which
             % run
@@ -223,7 +231,8 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
             % print output
             fprintf('\n FMAP REPORT \n');
             fprintf(fmap_text, ...
-                    acq_param.variants, acq_param.seqs, acq_param.phs_enc_dir, acq_param.n_slices, acq_param.tr, ...
+                    acq_param.variants, acq_param.seqs, acq_param.phs_enc_dir, ...
+                    acq_param.n_slices, acq_param.tr, ...
                     acq_param.te, acq_param.fa, acq_param.fov, acq_param.ms, ...
                     acq_param.vs, acq_param.for);
             fprintf('\n\n');
@@ -242,8 +251,7 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
                           'b-values of %s acquired; %s diffusion directions; multiband factor= %s ). \n\n');
 
           % get the parameters
-          acq_param = get_acq_param(BIDS, subjs_ls{Subj}, sess_ls{iSess}, ...
-                                    'dwi', '', '', ReadNII);
+          acq_param = get_acq_param(BIDS, entity_filter, ReadNII);
 
           % dirty hack to try to look into the BIDS structure as bids.query does not
           % support querying directly for bval and bvec
@@ -257,7 +265,8 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
           % print output
           fprintf('\n DWI REPORT \n');
           fprintf(fmap_text, ...
-                  acq_param.variants, acq_param.seqs, acq_param.n_slices, acq_param.so_str, acq_param.tr, ...
+                  acq_param.variants, acq_param.seqs, acq_param.n_slices, ...
+                  acq_param.so_str, acq_param.tr, ...
                   acq_param.te, acq_param.fa, acq_param.fov, acq_param.ms, acq_param.vs, ...
                   acq_param.bval_str, acq_param.n_vecs, acq_param.mb_str);
           fprintf('\n\n');
@@ -283,12 +292,12 @@ function report(BIDS, Subj, Ses, Run, ReadNII)
   end
 
   % ==========================================================================
-function acq_param = get_acq_param(BIDS, subj, sess, type, task, run, ReadGZ)
+function acq_param = get_acq_param(BIDS, entity_filter, ReadGZ)
   % Will get info from acquisition parameters from the BIDS structure or from
   % the NIfTI files
 
   % to return dummy values in case nothing was specified
-  acq_param.type = type;
+  acq_param.suffix = entity_filter.suffix;
   acq_param.variants = '[XXXX]';
   acq_param.seqs = '[XXXX]';
 
@@ -296,7 +305,9 @@ function acq_param = get_acq_param(BIDS, subj, sess, type, task, run, ReadGZ)
   acq_param.te = '[XXXX]';
   acq_param.fa = '[XXXX]';
 
-  acq_param.task  = task;
+  if isfield(entity_filter, 'task')
+    acq_param.task  = entity_filter.task;
+  end
 
   acq_param.run_str  = '[XXXX]'; % number of runs (dealt with outside this function but initialized here)
   acq_param.so_str  = '[XXXX]'; % slice order string
@@ -318,22 +329,20 @@ function acq_param = get_acq_param(BIDS, subj, sess, type, task, run, ReadGZ)
 
   % -Look into the metadata sub-structure for BOLD data
   % --------------------------------------------------------------------------
-  if ismember(type, {'T1w' 'inplaneT2' 'T1map' 'FLASH' 'dwi'})
+  if ismember(entity_filter.suffix, {'T1w' 'inplaneT2' 'T1map' 'FLASH' 'dwi'})
 
-    filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type);
-    metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type);
+    filename = bids.query(BIDS, 'data', entity_filter);
+    metadata = bids.query(BIDS, 'metadata', entity_filter);
 
-  elseif strcmp(type, 'bold')
+  elseif strcmp(entity_filter.suffix, 'bold')
 
-    filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type, ...
-                          'task', task, 'run', run);
-    metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type, ...
-                          'task', task, 'run', run);
+    filename = bids.query(BIDS, 'data', entity_filter);
+    metadata = bids.query(BIDS, 'metadata', entity_filter);
 
-  elseif strcmp(type, 'phasediff')
+  elseif strcmp(entity_filter.suffix, 'phasediff')
 
-    filename = bids.query(BIDS, 'data', 'sub', subj, 'ses', sess, 'type', type, 'run', run);
-    metadata = bids.query(BIDS, 'metadata', 'sub', subj, 'ses', sess, 'type', type, 'run', run);
+    filename = bids.query(BIDS, 'data', entity_filter);
+    metadata = bids.query(BIDS, 'metadata', entity_filter);
 
   end
 

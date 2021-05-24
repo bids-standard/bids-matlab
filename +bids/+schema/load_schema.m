@@ -5,7 +5,7 @@ function schema = load_schema(use_schema)
   % any eventual nesting within each json.
   %
   %
-  % Copyright (C) 2021--, BIDS-MATLAB developers
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   % TODO:
   %  - folders that do not contain json files themselves but contain

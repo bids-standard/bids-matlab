@@ -30,10 +30,9 @@ function p = parse_filename(filename, fields)
   %                        'run', '1', ...
   %                        'acq', 'hd');
   %
-  % __________________________________________________________________________
-
-  % Copyright (C) 2016-2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
 

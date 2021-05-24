@@ -1,6 +1,10 @@
 function [sts, msg] = validate(root)
   % BIDS Validator
-  % FORMAT [sts, msg] = bids.validate(root)
+  %
+  % USAGE::
+  %
+  %         [sts, msg] = bids.validate(root)
+  %
   % root    - directory formatted according to BIDS [Default: pwd]
   % sts     - 0 if successful
   % msg     - warning and error messages
@@ -15,9 +19,18 @@ function [sts, msg] = validate(root)
   %
   % See also:
   % bids
-
-  % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  %
+  % __________________________________________________________________________
+  %
+  % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
+  %   The brain imaging data structure, a format for organizing and
+  %   describing outputs of neuroimaging experiments.
+  %   K. J. Gorgolewski et al, Scientific Data, 2016.
+  % __________________________________________________________________________
+  %
+  % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   [sts, ~] = system('bids-validator --version');
   if sts

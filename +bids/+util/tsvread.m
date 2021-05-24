@@ -7,14 +7,13 @@ function fileContent = tsvread(filename, fieldToReturn, hdr)
   % hdr - detect the presence of a header row for csv/tsv [default: true]
   %
   % x - corresponding data array or structure
-
+  %
   % __________________________________________________________________________
   %
   % Based on spm_load.m from SPM12.
   % __________________________________________________________________________
-
-  % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   % -Check input arguments
   % --------------------------------------------------------------------------

@@ -1,4 +1,6 @@
 function suffixes = return_modality_suffixes(modality)
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   suffixes = '_(';
 

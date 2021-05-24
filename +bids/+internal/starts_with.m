@@ -2,17 +2,20 @@ function res = starts_with(str, pattern)
   %
   % Checks id character array 'str' starts with 'pat'
   %
-  % USAGE  res = bids.internal.startsWith(str, pat)
+  % USAGE::
+  %
+  %   res = bids.internal.startsWith(str, pat)
   %
   % str        - character array
   % pat        - character array
   %
   % __________________________________________________________________________
   %
-  % Based on spm_file.m and spm_select.m from SPM12.
+  % Based on the equivalent function from SPM12.
   % __________________________________________________________________________
+  % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
-  % Copyright (C) 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   res = false;
   l_pat = length(pattern);
   if l_pat > length(str)

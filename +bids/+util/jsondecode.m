@@ -19,9 +19,9 @@ function value = jsondecode(file, varargin)
   %
   % :returns: - :json: JSON structure
   %
-
-  % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   persistent has_jsondecode
   if isempty(has_jsondecode)

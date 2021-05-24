@@ -1,4 +1,13 @@
 function [s1, s2] = match_structure_fields(s1, s2)
+  %
+  % Update field content of a structure so it matches that of another.
+  %
+  % USAGE::
+  %
+  %   [s1, s2] = match_structure_fields(s1, s2)
+  %
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   missing_fields = setxor(fieldnames(s1), fieldnames(s2));
 
