@@ -25,7 +25,7 @@ function sts = mkdir(varargin)
 
     for i = 1:numel(d1)
 
-      if ~exist(bids.internal.file_utils('cpath', d1{i}), 'dir')
+      if ~exist(bids.internal.file_utils(d1{i}, 'cpath'), 'dir')
         status = mkdir(d1{i});
         sts = sts & status;
       end
