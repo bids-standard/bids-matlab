@@ -1,6 +1,8 @@
 function [entities, is_required] = return_entities_for_suffix(suffix, schema, quiet)
   %
   % returns the list of entities for a given suffix
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   modalities = bids.schema.return_modality_groups(schema);
 

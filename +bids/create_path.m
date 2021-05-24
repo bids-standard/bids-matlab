@@ -5,6 +5,7 @@ function pth = create_path(filename)
   % If there is none, or more than one possibility for the datatype, the path will only
   % be based on the sub and ses entitiy.
   %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   pth = '';
 

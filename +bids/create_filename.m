@@ -4,7 +4,7 @@ function [filename, pth, json] = create_filename(p, file)
   %
   % USAGE::
   %
-  %   [filename, pth] = create_filename(p)
+  %   [filename, pth, json] = bids.create_filename(p)
   %
   % :param p:  specification of the filename to create, very similar to the output of
   %                   ``bids.internal.parse_filename``
@@ -27,11 +27,13 @@ function [filename, pth, json] = create_filename(p, file)
   %
   %   USAGE::
   %
-  %   [filename, pth] = create_filename(p, file)
+  %   [filename, pth, json] = bids.create_filename(p, file)
   %
   %   :param file: file whose name has to be modified by the content of ``p``.
   %   :type file:  string
   %
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   default.use_schema = true;
   default.entity_order = {};
