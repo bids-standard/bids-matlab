@@ -8,8 +8,8 @@ end
 
 function test_report_basic()
 
-  ReadNII = false;
-  output_path = ''; % fullfile(fileparts(mfilename('fullpath')), 'output');
+  read_nifti = false;
+  output_path = fullfile(fileparts(mfilename('fullpath')), 'output');
   verbose = true;
 
   sub = '';
@@ -19,6 +19,6 @@ function test_report_basic()
 
   BIDS = fullfile(pth_bids_example, 'synthetic'); % ds001
 
-  bids.report(BIDS, sub, ses, ReadNII, output_path, verbose);
+  bids.report(BIDS, sub, ses, output_path, 'read_nifti', read_nifti, 'verbose', verbose);
 
 end

@@ -1,10 +1,10 @@
-function report(BIDS, sub, ses, read_nii, output_path, verbose)
+function report(varargin)
   %
   % Create a short summary of the acquisition parameters of a BIDS dataset
   %
   % USAGE::
   %
-  %     bids.report(BIDS, sub, ses, read_nii, output_path, verbose)
+  %     bids.report(BIDS, sub, ses, output_path, 'read_nifti', true, 'verbose', true)
   %
   % INPUTS:
   % - BIDS: path to BIDS dataset or output of bids.layout [Default: pwd]
@@ -40,51 +40,41 @@ function report(BIDS, sub, ses, read_nii, output_path, verbose)
   % - take care of other recommended metafield in BIDS specs or COBIDAS?
   % - add a dataset description (ethics, grant, institution, scanner details...)
 
-  % Check inputs
-  % --------------------------------------------------------------------------
-  if ~nargin
-    BIDS = pwd;
-  end
+  default_BIDS = pwd;
+  default_sub = false;
+  default_ses = false;
+  default_output_path = '';
+  default_read_nifti = true;
+  default_verbose = false;
+
+  p = inputParser;
+
+  addOptional(p, 'BIDS', default_BIDS, @ischar);
+  addOptional(p, 'sub', default_sub, @ischar);
+  addOptional(p, 'ses', default_ses, @ischar);
+  addOptional(p, 'output_path', default_output_path, @ischar);
+
+  %   addOptional(p, 'filter', default_filter, @isstruct);
+
+  addParameter(p, 'read_nifti', default_read_nifti);
+  addParameter(p, 'verbose', default_verbose);
+
+  parse(p, varargin{:});
 
   % -Parse the BIDS dataset directory
   % --------------------------------------------------------------------------
-  if ~isstruct(BIDS)
-    if verbose
-      fprintf(1, 'Reading BIDS: %s\n', BIDS);
-    end
-    BIDS = bids.layout(BIDS);
+  BIDS = p.Results.BIDS;
+  if ~isstruct(p.Results.BIDS)
+    BIDS = bids.layout(p.Results.BIDS);
   end
 
-  if nargin < 2 || isempty(sub) || ~ischar(sub)
-    subjects = bids.query(BIDS, 'subjects');
-    sub = subjects{1};
-  end
+  sub = select_subject(BIDS, p);
 
-  sessions = bids.query(BIDS, 'sessions', 'sub', sub);
-  if isempty(sessions)
-    sessions = {''};
-  end
-  if nargin < 3 || isempty(ses) || ~ischar(ses) || ~ismember(ses, sessions)
-    ses = sessions;
-  end
-  if ischar(ses)
-    ses = {ses};
-  end
+  ses = select_session(BIDS, p, sub);
 
-  if nargin < 5 || isempty(read_nii)
-    read_nii = true;
-  end
-  read_nii = read_nii & exist('spm_vol', 'file') == 2;
+  read_nii = p.Results.read_nifti & exist('spm_vol', 'file') == 2;
 
-  if nargin < 6
-    output_path = '';
-  end
-
-  file_id = open_output_file(BIDS, output_path, verbose);
-
-  % -Scanner details
-  % --------------------------------------------------------------------------
-  % str = 'MR data were acquired using a {tesla}-Tesla {manu} {model} MRI scanner.';
+  file_id = open_output_file(BIDS, p.Results.output_path, p.Results.verbose);
 
   % -Loop through all the required sessions
   % --------------------------------------------------------------------------
@@ -96,7 +86,7 @@ function report(BIDS, sub, ses, read_nii, output_path, verbose)
     filter.ses = ses{iSess};
 
     if numel(ses) ~= 1 && ~strcmp(ses{iSess}, '')
-      if verbose
+      if p.Results.verbose
         fprintf(1, '\n Working on session: %s\n', ses{iSess});
       end
     end
@@ -119,11 +109,8 @@ function report(BIDS, sub, ses, read_nii, output_path, verbose)
 
           [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
-          [this_task, this_run] = return_task_and_run_labels(suffixes{iType});
-
           % get the parameters
-          acq_param = get_acq_param(BIDS, ...
-                                    filter, this_task, this_run, read_nii, verbose);
+          acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
           fprintf(file_id, boilerplate_text, ...
                   acq_param.type, ...
@@ -144,19 +131,11 @@ function report(BIDS, sub, ses, read_nii, output_path, verbose)
           % loop through the tasks
           for iTask = 1:numel(tasks)
 
-            [this_task, this_run, nb_runs] = return_task_and_run_labels( ...
-                                                                        suffixes{iType}, ...
-                                                                        BIDS, ...
-                                                                        sub, ...
-                                                                        ses{iSess}, ...
-                                                                        tasks{iTask});
             filter.task = tasks{iTask};
             [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
             % get the parameters for that task
-            acq_param = get_acq_param(BIDS, ...
-                                      filter, this_task, ...
-                                      this_run, read_nii, verbose);
+            acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
             acq_param.n_runs = num2str(nb_runs);
 
@@ -196,53 +175,31 @@ function report(BIDS, sub, ses, read_nii, output_path, verbose)
 
           fprintf(file_id, '\nFIELD MAP REPORT\n\n');
 
-          for iTask = 1:numel(tasks)
+          [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
-            [this_task, this_run] = return_task_and_run_labels(suffixes{iType}, ...
-                                                               BIDS, ...
-                                                               sub, ...
-                                                               ses{iSess}, ...
-                                                               tasks{iTask});
+          acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
-            [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
+          acq_param.for = sprintf('for %i runs of %s, ', nb_run, this_task);
 
-            acq_param = get_acq_param(BIDS, ...
-                                      filter, this_task, this_run, read_nii, verbose);
-
-            % goes through task list to check which fieldmap is for which run
-            acq_param.for = [];
-            nb_run = [];
-            tmp = strfind(acq_param.for_str, this_task);
-            if ~iscell(tmp)
-              tmp = {tmp};
-            end
-            nb_run(iTask) = sum(~cellfun('isempty', tmp)); %#ok<AGROW>
-            acq_param.for = sprintf('for %i runs of %s, ', nb_run, this_task);
-
-            fprintf(file_id, boilerplate_text, ...
-                    acq_param.variants, ...
-                    acq_param.seqs, ...
-                    acq_param.phs_enc_dir, ...
-                    acq_param.n_slices, ...
-                    acq_param.tr, ...
-                    acq_param.te, ...
-                    acq_param.fa, ...
-                    acq_param.fov, ...
-                    acq_param.ms, ...
-                    acq_param.vs, ...
-                    acq_param.for);
-
-          end
+          fprintf(file_id, boilerplate_text, ...
+                  acq_param.variants, ...
+                  acq_param.seqs, ...
+                  acq_param.phs_enc_dir, ...
+                  acq_param.n_slices, ...
+                  acq_param.tr, ...
+                  acq_param.te, ...
+                  acq_param.fa, ...
+                  acq_param.fov, ...
+                  acq_param.ms, ...
+                  acq_param.vs, ...
+                  acq_param.for);
 
         case 'dwi'
-
-          [this_task, this_run] = return_task_and_run_labels(suffixes{iType});
 
           fprintf(file_id, '\nDWI REPORT\n\n');
 
           % get the parameters
-          acq_param = get_acq_param(BIDS, ...
-                                    filter, this_task, this_run, read_nii, verbose);
+          acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
           % dirty hack to try to look into the BIDS structure as bids.query does not
           % support querying directly for bval and bvec
@@ -250,7 +207,7 @@ function report(BIDS, sub, ses, read_nii, output_path, verbose)
             acq_param.n_vecs = num2str(size(BIDS.subjects(sub).dwi.bval, 2));
             %             acq_param.bval_str = ???
           catch
-            bids.internal.warning('Could not read the bval & bvec values.', verbose);
+            bids.internal.warning('Could not read the bval & bvec values.', p.Results.verbose);
           end
 
           % print output
@@ -271,23 +228,46 @@ function report(BIDS, sub, ses, read_nii, output_path, verbose)
                   acq_param.mb_str);
 
         case 'physio'
-          bids.internal.warning('physio not supported yet', verbose);
+          bids.internal.warning('physio not supported yet', p.Results.verbose);
 
         case {'headshape' 'meg' 'eeg' 'channels'}
-          bids.internal.warning('MEEG not supported yet', verbose);
+          bids.internal.warning('MEEG not supported yet', p.Results.verbose);
 
         case 'events'
-          bids.internal.warning('events not supported yet', verbose);
+          bids.internal.warning('events not supported yet', p.Results.verbose);
 
       end
 
       fprintf(file_id, '\n');
-      if verbose && file_id ~= 1
+      if p.Results.verbose && file_id ~= 1
         fprintf(file_id, '\n');
       end
 
     end
 
+  end
+
+end
+
+function sub = select_subject(BIDS, p)
+
+  sub = p.Results.sub;
+  if isempty(p.Results.sub)
+    subjects = bids.query(BIDS, 'subjects');
+    sub = subjects{1};
+  end
+
+end
+
+function ses = select_session(BIDS, p, sub)
+
+  ses = p.Results.ses;
+  sessions = bids.query(BIDS, 'sessions', 'sub', sub);
+  if isempty(ses) || ~ismember(ses, sessions)
+    ses = sessions;
+  end
+  if ischar(ses)
+    ses = {ses};
   end
 
 end
@@ -337,46 +317,6 @@ function [filter, nb_runs] = update_filter_with_run_label(BIDS, filter)
     if isfield(filter, 'run')
       filter = rmfield(filter, 'run');
     end
-  end
-
-end
-
-function [task, this_run, nb_runs] = return_task_and_run_labels(suffix, BIDS, sub, ses, task)
-
-  if nargin < 4
-    task = '';
-  end
-
-  this_run = '';
-  nb_runs = '';
-
-  switch suffix
-
-    case 'bold'
-
-      runs_ls = bids.query(BIDS, 'runs', ...
-                           'sub', sub, ...
-                           'ses', ses, ...
-                           'suffix', suffix, ...
-                           'task', task);
-
-    case 'phasediff'
-
-      runs_ls = bids.query(BIDS, 'runs', ...
-                           'sub', sub, ...
-                           'ses', ses, ...
-                           'suffix', suffix);
-  end
-
-  if any(strcmp(suffix, {'bold', 'phasediff'}))
-
-    if ~isempty(runs_ls)
-      this_run = runs_ls{1};
-      if strcmp(suffix, {'bold'})
-        nb_runs = num2str(numel(runs_ls));
-      end
-    end
-
   end
 
 end
@@ -434,17 +374,11 @@ function template = get_boilerplate(type, file_id)
 
 end
 
-function acq_param = get_acq_param(varargin)
+function acq_param = get_acq_param(BIDS, filter, read_gz, verbose)
   % Will get info from acquisition parameters from the BIDS structure or from
   % the NIfTI files
 
-  [BIDS, filter, task, run, read_gz, verbose] = deal(varargin{:});
-
-  acq_param = set_default_acq_param(filter.suffix, task);
-
-  if strcmp(filter.suffix, 'bold')
-    filter.task = task;
-  end
+  acq_param = set_default_acq_param(filter);
 
   [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
 
@@ -517,10 +451,10 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
 
 end
 
-function acq_param = set_default_acq_param(type, task)
+function acq_param = set_default_acq_param(filter)
 
   % to return dummy values in case nothing was specified
-  acq_param.type = type;
+  acq_param.type = filter.suffix;
   acq_param.variants = '[XXvariantsXX]';
   acq_param.seqs = '[XXseqsXX]';
 
@@ -528,7 +462,10 @@ function acq_param = set_default_acq_param(type, task)
   acq_param.te = '[XXteXX]';
   acq_param.fa = '[XXfaXX]';
 
-  acq_param.task  = task;
+  acq_param.task  = '';
+  if isfield(filter, 'task')
+    acq_param.task  = filter.task;
+  end
 
   % number of runs (dealt with outside this function but initialized here)
   acq_param.n_runs  = '[XXn_runsXX]';
