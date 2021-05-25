@@ -93,7 +93,9 @@ function copy_to_derivative(varargin)
     warning('No data found for this query');
     return
   else
-    fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
+    if p.Results.verbose
+      fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
+    end
   end
 
   % Determine and create output directory
@@ -137,6 +139,10 @@ function copy_to_derivative(varargin)
               p.Results.force, ...
               p.Results.skip_dep, ...
               p.Results.verbose);
+  end
+
+  if p.Results.verbose
+    fprintf('\n');
   end
 
   copy_session_scan_tsv(BIDS, derivatives_folder, p);
@@ -330,6 +336,15 @@ function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_de
     dependencies = fieldnames(file.dependencies);
 
     for dep = 1:numel(dependencies)
+
+      %         % TODO
+      %         % Dirty hack to prevent the copy of ASL data to crash here.
+      %         % But this means that dependencies of ASL data will not be copied until
+      %         % this is fixed.
+      %         if ismember(dependencies{dep}, {'context', 'm0'})
+      %             continue
+      %         end
+
       for ifile = 1:numel(file.dependencies.(dependencies{dep}))
 
         dep_file = file.dependencies.(dependencies{dep}){ifile};

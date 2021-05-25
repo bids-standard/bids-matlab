@@ -1,15 +1,24 @@
 % +BIDS - The bids-matlab library
 %
 % Contents
-%   layout   - Parse a directory structure formated according to the BIDS standard
-%   query    - Query a directory structure formated according to the BIDS standard
-%   report   - Create a short summary of the acquisition parameters of a BIDS dataset
-%   validate - BIDS Validator
+%   layout              - Parse a directory structure formated according to the BIDS standard
+%   query               - Queries a directory structure formatted according to the BIDS standard
+%   validate            - BIDS Validator
+%   report              - Create a short summary of the acquisition parameters of a BIDS dataset
+%   copy_to_derivative  - Copy selected data from BIDS layout to given derivatives folder,
+%   create_filename     - Creates a BIDS compatible filename
+%   create_path         - Creates a relative path based on the content of a BIDS filename.
+%   dataset_description - Class to deal with dataset_description files.
+%   init                - Initialize dataset with README, description, folder structure...
+%   derivatives_json    - Creates dummy content for a given BIDS derivative file.
+%   schema              - Class to interact with the BIDS schema
 %
 %   util.jsondecode - Decode JSON-formatted file
-%   util.jsonencode - Encode JSON-formatted file
-%   util.tsvread    - Load text and numeric data from tab-separated-value file
-%   util.tsvwrite   - Save text and numeric data to tab-separated-value file
+%   util.jsonencode - Encode data to JSON-formatted file
+%   util.mkdir      - Make new directory trees
+%   util.tsvread    - Load text and numeric data from tab-separated-value or other file
+%   util.tsvwrite   - Save text and numeric data to .tsv file
+%
 %
 % __________________________________________________________________________
 %

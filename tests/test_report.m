@@ -8,10 +8,17 @@ end
 
 function test_report_basic()
 
+  sub = 1;
+  ses = 1;
+  run = 1;
+  ReadNII = false;
+  output_path = fullfile(fileparts(mfilename('fullpath')), 'output');
+  verbose = false;
+
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
+  BIDS = fullfile(pth_bids_example, 'ds001');
 
-  bids.report(BIDS);
+  bids.report(BIDS, sub, ses, run, ReadNII, output_path, verbose);
 
 end

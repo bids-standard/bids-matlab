@@ -1,5 +1,6 @@
 classdef dataset_description
   %
+  % Class to deal with dataset_description files.
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 

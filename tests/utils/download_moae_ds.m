@@ -22,15 +22,13 @@ function output_dir = download_moae_ds(downloadData)
     end
 
     %% Get data
-    fprintf('%-10s:', 'Downloading dataset...');
+    % Downloading dataset
     urlwrite(URL, 'MoAEpilot.zip');
-    fprintf(1, ' Done\n\n');
 
-    fprintf('%-10s:', 'Unzipping dataset...');
+    % Unzipping dataset
     unzip('MoAEpilot.zip');
     delete('MoAEpilot.zip');
     movefile('MoAEpilot', fullfile(output_dir));
-    fprintf(1, ' Done\n\n');
 
   end
 

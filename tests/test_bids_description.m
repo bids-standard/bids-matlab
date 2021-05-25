@@ -48,6 +48,8 @@ function test_description()
 
   assertEqual(actual, expected);
 
+  delete(fullfile(pwd, 'dataset_description.json'));
+
 end
 
 function test_description_derivative()
@@ -62,5 +64,7 @@ function test_description_derivative()
   ds_desc = ds_desc.append('GeneratedBy', struct('Name', 'Manual'));
 
   ds_desc.write();
+
+  delete(fullfile(pwd, 'dataset_description.json'));
 
 end

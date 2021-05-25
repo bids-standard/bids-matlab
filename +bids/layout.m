@@ -80,7 +80,7 @@ function BIDS = layout(root, use_schema, verbose)
                 'participants', struct([]), ...
                 'subjects', struct([]));
 
-  BIDS = validate_description(BIDS, use_schema);
+  BIDS = validate_description(BIDS, use_schema, verbose);
 
   %% Optional directories
   % ==========================================================================
@@ -91,7 +91,7 @@ function BIDS = layout(root, use_schema, verbose)
   % [phenotype/]
 
   BIDS.participants = [];
-  BIDS.participants = manage_tsv(BIDS.participants, BIDS.dir, 'participants.tsv');
+  BIDS.participants = manage_tsv(BIDS.participants, BIDS.dir, 'participants.tsv', verbose);
 
   %% Subjects
   % ==========================================================================
@@ -112,10 +112,10 @@ function BIDS = layout(root, use_schema, verbose)
 
     for iSess = 1:numel(sessions)
       if isempty(BIDS.subjects)
-        BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
+        BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema, verbose);
 
       else
-        new_subject = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema);
+        new_subject = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema, verbose);
         [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
                                                                             new_subject);
         % TODO: this can be added to "match_structure_fields"
@@ -134,7 +134,7 @@ function BIDS = layout(root, use_schema, verbose)
 
 end
 
-function subject = parse_subject(pth, subjname, sesname, schema)
+function subject = parse_subject(pth, subjname, sesname, schema, verbose)
   %
   % Parse a subject's directory
   %
@@ -171,12 +171,12 @@ function subject = parse_subject(pth, subjname, sesname, schema)
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
         case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf'}
-          subject = parse_using_schema(subject, modalities{iModality}, schema);
+          subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
         otherwise
           % in case we are going schemaless
           % and the modality is not one of the usual suspect
           subject.(modalities{iModality}) = struct([]);
-          subject = parse_using_schema(subject, modalities{iModality}, schema);
+          subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
       end
     end
 
@@ -184,7 +184,7 @@ function subject = parse_subject(pth, subjname, sesname, schema)
 
 end
 
-function subject = parse_using_schema(subject, modality, schema)
+function subject = parse_using_schema(subject, modality, schema, verbose)
 
   pth = fullfile(subject.path, modality);
 
@@ -221,9 +221,10 @@ function subject = parse_using_schema(subject, modality, schema)
                                                                       struct('content', [], ...
                                                                              'meta', []), ...
                                                                       pth, ...
-                                                                      aslcontext_file);
+                                                                      aslcontext_file, ...
+                                                                      verbose);
 
-            subject.(modality)(end) = manage_M0(subject.perf(end), pth);
+            subject.(modality)(end) = manage_M0(subject.perf(end), pth, verbose);
 
         end
 
@@ -239,21 +240,21 @@ end
 %                            HELPER FUNCTIONS
 % --------------------------------------------------------------------------
 
-function BIDS = validate_description(BIDS, use_schema)
+function BIDS = validate_description(BIDS, use_schema, verbose)
 
   if ~exist(fullfile(BIDS.dir, 'dataset_description.json'), 'file')
 
     msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
                   BIDS.dir);
 
-    tolerant_message(use_schema, msg);
+    tolerant_message(use_schema, msg, verbose);
 
   end
   try
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
   catch err
     msg = sprintf('BIDS dataset description could not be read: %s', err.message);
-    tolerant_message(use_schema, msg);
+    tolerant_message(use_schema, msg, verbose);
   end
 
   fields_to_check = {'BIDSVersion', 'Name'};
@@ -263,7 +264,7 @@ function BIDS = validate_description(BIDS, use_schema)
       msg = sprintf( ...
                     'BIDS dataset description not valid: missing %s field.', ...
                     fields_to_check{iField});
-      tolerant_message(use_schema, msg);
+      tolerant_message(use_schema, msg, verbose);
     end
 
     % TODO
@@ -273,11 +274,11 @@ function BIDS = validate_description(BIDS, use_schema)
 
 end
 
-function tolerant_message(use_schema, msg)
+function tolerant_message(use_schema, msg, verbose)
   if use_schema
     error(msg);
-  else
-    warning(msg);
+  elseif ~use_schema
+    bids.internal.warning(msg, verbose);
   end
 end
 
@@ -387,7 +388,7 @@ function subject = index_dependencies(subject, modality, file)
 
 end
 
-function structure = manage_tsv(structure, pth, filename)
+function structure = manage_tsv(structure, pth, filename, verbose)
   % Returns the content and metadata of a TSV file (if they exist)
   %
   % NOTE: inheritance principle not implemented.
@@ -400,7 +401,7 @@ function structure = manage_tsv(structure, pth, filename)
                                       ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
   if isempty(tsv_file)
-    warning('Missing: %s', fullfile(pth, filename));
+    bids.internal.warning(sprintf('Missing: %s', fullfile(pth, filename)), verbose);
 
   else
     structure.content = bids.util.tsvread(tsv_file);
@@ -444,9 +445,8 @@ function BIDS = manage_dependencies(BIDS, verbose)
       dest = fullfile(BIDS.dir, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
       if ~exist(dest, 'file')
-        if verbose
-          warning(['IntendedFor file ' dest ' from ' file.filename ' not found']);
-        end
+        bids.internal.warning(['IntendedFor file ' dest ' from ' file.filename ' not found'], ...
+                              verbose);
         continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);
@@ -458,11 +458,11 @@ function BIDS = manage_dependencies(BIDS, verbose)
 
 end
 
-function perf = manage_M0(perf, pth)
+function perf = manage_M0(perf, pth, verbose)
   % M0 field is flexible:
 
   if ~isfield(perf.meta, 'M0Type')
-    warning('M0Type field missing for %s', perf.filename);
+    bids.internal.warning('M0Type field missing for %s', perf.filename);
 
   else
 
@@ -487,7 +487,8 @@ function perf = manage_M0(perf, pth)
                              ['_m0scan' perf.ext]);
 
         if ~exist(fullfile(pth, m0_filename), 'file')
-          warning(['Missing: ' m0_filename]);
+          bids.internal.warning(['Missing: ' m0_filename], verbose);
+
         else
           % subject.perf(j).m0_filename = m0_filename;
           % -> this is included in the same structure for the m0scan.nii
@@ -499,7 +500,7 @@ function perf = manage_M0(perf, pth)
                             '_m0scan.json');
 
         if ~exist(fullfile(pth, m0_sidecar), 'file')
-          warning(['Missing: ' m0_sidecar]);
+          bids.internal.warning(['Missing: ' m0_sidecar], verbose);
 
         else
           % subject.perf(j).m0_json_sidecar_filename = m0_json_sidecar_filename;
@@ -510,14 +511,16 @@ function perf = manage_M0(perf, pth)
         % M0 is one or more image(s) in the *asl.nii[.gz] timeseries
         if ~isfield(perf.dependencies, 'context') || ...
                 ~isfield(perf.dependencies.context.content, 'volume_type')
-          warning('Cannot find M0 volume in aslcontext, context-information missing');
+          bids.internal.warning(['Cannot find M0 volume in aslcontext,' ...
+                                 'context-information missing'], ...
+                                vserbose);
 
         else
           m0indices = find(cellfun(@(x) strcmp(x, 'm0scan'), ...
                                    perf.dependencies.context.content.volume_type) == true);
 
           if isempty(m0indices)
-            warning('No M0 volume found in aslcontext');
+            bids.internal.warning('No M0 volume found in aslcontext', verbose);
 
           else
             m0_type = 'within_timeseries';
@@ -541,11 +544,13 @@ function perf = manage_M0(perf, pth)
                           'as pseudo-M0 (if no background suppression was used)'];
 
         if perf.meta.BackgroundSuppression == true
-          warning('Caution when using control as M0, background suppression was applied');
+          bids.internal.warning(['Caution when using control as M0,', ...
+                                 ' background suppression was applied'], ...
+                                verbose);
         end
 
       otherwise
-        warning(['Unknown M0Type:', perf.meta.M0Type]);
+        bids.internal.warning(['Unknown M0Type:', perf.meta.M0Type], verbose);
 
     end
 

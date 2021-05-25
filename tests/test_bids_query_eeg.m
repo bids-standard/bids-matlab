@@ -25,15 +25,6 @@ function test_bids_query_eeg_basic()
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_cbm'));
-
-  modalities = {'eeg'};
-  assertEqual(bids.query(BIDS, 'modalities'), modalities);
-
-  suffixes = {'channels', 'eeg', 'events'};
-  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
-
-  %%
   BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_ds000117'));
 
   modalities = {'anat', 'eeg'};
@@ -42,24 +33,6 @@ function test_bids_query_eeg_basic()
   suffixes = {'T1w', 'eeg', 'electrodes', 'events'};
   % Missing: 'coordsystem',
   % Missing: 'channels' in root folder
-  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
-
-  %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_matchingpennies'));
-
-  modalities = {'eeg'};
-  assertEqual(bids.query(BIDS, 'modalities'), modalities);
-
-  suffixes = {'channels', 'eeg', 'events'};
-  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
-
-  %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_rishikesh'));
-
-  modalities = {'eeg'};
-  assertEqual(bids.query(BIDS, 'modalities'), modalities);
-
-  suffixes = {'channels', 'eeg', 'events'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end
