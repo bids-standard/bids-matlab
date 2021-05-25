@@ -12,10 +12,13 @@ function test_report_basic()
   output_path = ''; % fullfile(fileparts(mfilename('fullpath')), 'output');
   verbose = true;
 
+  sub = '';
+  ses = '';
+
   pth_bids_example = get_test_data_dir();
 
-  BIDS = fullfile(pth_bids_example, 'ds001');
+  BIDS = fullfile(pth_bids_example, 'synthetic'); % ds001
 
-  bids.report(BIDS, '', '', '', ReadNII, output_path, verbose);
+  bids.report(BIDS, sub, ses, ReadNII, output_path, verbose);
 
 end
