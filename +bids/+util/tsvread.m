@@ -1,17 +1,27 @@
 function fileContent = tsvread(filename, fieldToReturn, hdr)
-  % Load text and numeric data from tab-separated-value or other file
-  % FORMAT x = tsvread(f,v,hdr)
-  % f - filename (can be gzipped) {txt,mat,csv,tsv,json}
-  % v - name of field to return if data stored in a structure [default: '']
-  % or index of column if data stored as an array
-  % hdr - detect the presence of a header row for csv/tsv [default: true]
+  %
+  % Load text and numeric data from tab-separated-value or other file.
+  %
+  % USAGE::
+  %
+  %   x = tsvread(f,v,hdr)
+  %
+  % :param f: filfilename (can be gzipped) {txt,mat,csv,tsv,json}ename
+  % :type f: string
+  % :param v: name of field to return if data stored in a structure [default: ``''``]
+  %            or index of column if data stored as an array
+  % :type v:
+  % :param hdr: detect the presence of a header row for csv/tsv [default: ``true``]
+  % :type hdr: boolean
+  %
   %
   % x - corresponding data array or structure
   %
-  % __________________________________________________________________________
+  %
   %
   % Based on spm_load.m from SPM12.
-  % __________________________________________________________________________
+  %
+  %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % (C) Copyright 2018 BIDS-MATLAB developers
 

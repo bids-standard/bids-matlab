@@ -2,6 +2,10 @@ function json = derivatives_json(derivative_filename, force)
   %
   %   Creates dummy content for a given BIDS derivative file.
   %
+  %
+  %   (C) Copyright 2018 BIDS-MATLAB developers
+
+  %
   %     %% Common
   %     Description RECOMMENDED
   %     Sources OPTIONAL
@@ -25,8 +29,6 @@ function json = derivatives_json(derivative_filename, force)
   %     Atlas OPTIONAL
   %     Resolution REQUIRED if "res" entity
   %     Density REQUIRED if "den" entity
-  %
-  %    (C) Copyright 2018 BIDS-MATLAB developers
 
   if nargin < 2
     force = false;

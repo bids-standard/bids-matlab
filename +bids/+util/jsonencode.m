@@ -21,18 +21,20 @@ function varargout = jsonencode(varargin)
   %
   % :returns: - :S: (string) serialized JSON structure
   %
-  % ---
   %
-  % :param opts: structure of optional parameters:
-  %                 - Indent: string to use for indentation; [Default: ``''``]
-  %                 - ReplacementStyle: string to control how non-alphanumeric
-  %                    characters are replaced; [Default: ``'underscore'``]
-  %                 - ConvertInfAndNaN: encode ``NaN``, ``Inf`` and ``-Inf`` as ``"null"``;
-  %                    [Default: ``true``]
-  % :type opts: structure  -
+  % :param opts: optional parameters
+  % :type opts: structure
+  %
+  %   - ``Indent``: string to use for indentation; [Default: ``''``]
+  %   - ``ReplacementStyle``: string to control how non-alphanumeric
+  %                       characters are replaced; [Default: ``'underscore'``]
+  %   - ``ConvertInfAndNaN``: encode ``NaN``, ``Inf`` and ``-Inf`` as ``"null"``;
+  %                       [Default: ``true``]
+  %
   %
   %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   if ~nargin

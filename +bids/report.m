@@ -17,7 +17,7 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
   %             spm_vol.m function from SPM.
   %
   % - output_file: filename where the output should be printed. If empty
-  % (default) then the output is send to the prompt.
+  %                (default) then the output is send to the prompt.
   %
   % Unless specified the function will only read the data from the first
   % subject, session, and run (for each task of BOLD). This can be an issue

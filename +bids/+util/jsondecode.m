@@ -9,18 +9,21 @@ function value = jsondecode(file, varargin)
   % :param file: name of a JSON file or JSON string
   % :type filename: string
   % :param opts: structure of optional parameters (only with JSONio):
-  %              - replacementStyle: string to control how non-alphanumeric
-  %                  characters are replaced [Default: ``'underscore'``]:
-  %                     - ``'underscore'``
-  %                     - ``'hex'``
-  %                     - ``'delete'``
-  %                     - ``'nop'``
   % :type opts: structure
+  %
+  % replacementStyle: string to control how non-alphanumeric characters are replaced.
+  %
+  %        - ``'underscore'`` Default
+  %        - ``'hex'``
+  %        - ``'delete'``
+  %        - ``'nop'``
+  %
   %
   % :returns: - :json: JSON structure
   %
   %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   persistent has_jsondecode
