@@ -59,9 +59,9 @@ function test_get_metadata_internal()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
 
-  bids.internal.get_metadata(BIDS(1).subjects(2).anat(1).metafile);
+  bids.internal.get_metadata(BIDS(1).subjects(1).fmap(1).metafile);
 
 end
 
@@ -70,8 +70,8 @@ function test_get_metadata_participants()
 
   pth_bids_example = get_test_data_dir();
 
-  file = fullfile(pth_bids_example, 'ds001', 'participants.tsv');
-  side_car = fullfile(pth_bids_example, 'ds001', 'participants.json');
+  file = fullfile(pth_bids_example, 'pet002', 'participants.tsv');
+  side_car = fullfile(pth_bids_example, 'pet002', 'participants.json');
 
   metalist = bids.internal.get_meta_list(file);
   metadata = bids.internal.get_metadata(metalist);

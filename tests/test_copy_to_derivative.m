@@ -56,7 +56,7 @@ function test_copy_to_derivative_MoAE_force()
   force = true;
   skip_dependencies = false;
   use_schema = true;
-  verbose = true;
+  verbose = false;
 
   bids.copy_to_derivative(BIDS, ...
                           out_path, ...

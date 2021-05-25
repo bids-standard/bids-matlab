@@ -139,3 +139,9 @@ function test_function_to_test_other_usecase()
 end
 
 ```
+
+### Timing
+
+If you need to load a dummy datasets check the `layout_timing` function as it as
+a list of all the bids-matlab datasets and how loing it takes (more or less) to
+run layout on each.

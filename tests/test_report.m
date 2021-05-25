@@ -8,10 +8,16 @@ end
 
 function test_report_basic()
 
+  Subj = 1;
+  Ses = 1;
+  Run = 1;
+  ReadNII = true;
+  verbose = false;
+
   pth_bids_example = get_test_data_dir();
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
 
-  bids.report(BIDS);
+  bids.report(BIDS, Subj, Ses, Run, ReadNII, verbose);
 
 end

@@ -14,40 +14,39 @@ function test_query_basic()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'pet005'));
 
-  tasks = { ...
-           'stopsignalwithletternaming', ...
-           'stopsignalwithmanualresponse', ...
-           'stopsignalwithpseudowordnaming'};
+  tasks = {'eyes'};
   assertEqual(bids.query(BIDS, 'tasks'), tasks);
 
   assert(isempty(bids.query(BIDS, 'runs', 'suffix', 'T1w')));
 
-  runs = {'01', '02'};
-  assertEqual(bids.query(BIDS, 'runs'), runs);
-  assertEqual(bids.query(BIDS, 'runs', 'suffix', 'bold'), runs);
+  sessions = {'baseline', 'intervention'};
+  assertEqual(bids.query(BIDS, 'sessions'), sessions);
+  assertEqual(bids.query(BIDS, 'sessions', 'suffix', 'pet'), sessions);
+
+end
+
+function test_query_data_filter()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'pet005'));
 
   % make sure that query can work with filter
-  filters = {'sub', {'01', '03'}; ...
-             'task', {'stopsignalwithletternaming', ...
-                      'stopsignalwithmanualresponse'}; ...
-             'run', '02'; ...
-             'suffix', 'bold'};
+  filters = {'sub', {'01'}; ...
+             'task', {'eyes'}; ...
+             'ses', 'intervention'};
 
   files_cell_filter = bids.query(BIDS, 'data', filters);
-  assertEqual(size(files_cell_filter, 1), 4);
+  assertEqual(size(files_cell_filter, 1), 2);
 
-  filters = struct('run', '02', ...
-                   'suffix', 'bold');
-  filters.sub = {'01', '03'};
-  filters.task = {'stopsignalwithletternaming', ...
-                  'stopsignalwithmanualresponse'};
+  filters = struct('sub', '01', ...
+                   'suffix', 'pet');
+  filters.ses = {'baseline', 'intervention'};
 
   files_struct_filter = bids.query(BIDS, 'data', filters);
-  assertEqual(size(files_struct_filter, 1), 4);
-
-  assertEqual(files_cell_filter, files_struct_filter);
+  assertEqual(size(files_struct_filter, 1), 2);
 
 end
 
@@ -55,45 +54,20 @@ function test_query_extension()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
 
   extensions = bids.query(BIDS, 'extensions');
 
   data = bids.query(BIDS, 'data', ...
                     'sub', '01', ...
-                    'task', 'stopsignalwithpseudowordnaming', ...
                     'extension', '.nii.gz', ...
-                    'suffix', 'bold');
+                    'suffix', 'TB1TFL');
   assertEqual(size(data, 1), 2);
 
   data = bids.query(BIDS, 'data', ...
                     'sub', '01', ...
-                    'task', 'stopsignalwithpseudowordnaming', ...
-                    'extension', '.tsv');
-  assertEqual(size(data, 1), 2);
-
-end
-
-function test_query_data()
-
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
-
-  t1 = bids.query(BIDS, 'data', 'suffix', 'T1w');
-  assert(iscellstr(t1));
-  assert(numel(t1) == numel(bids.query(BIDS, 'subjects')));
-
-  data = bids.query(BIDS, 'data', 'sub', '01', 'task', 'stopsignalwithpseudowordnaming');
-  assertEqual(size(data, 1), 4);
-
-  bold = bids.query(BIDS, 'data', ...
-                    'sub', '05', ...
-                    'run', '02', ...
-                    'task', 'stopsignalwithmanualresponse', ...
-                    'suffix', 'bold');
-  assert(iscellstr(bold));
-  assert(numel(bold) == 1);
+                    'extension', '.json');
+  assertEqual(size(data, 1), 0);
 
 end
 
@@ -101,16 +75,15 @@ function test_query_metadata()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
 
   md = bids.query(BIDS, 'metadata', ...
-                  'sub', '05', ...
-                  'run', '02', ...
-                  'task', 'stopsignalwithmanualresponse', ...
-                  'suffix', 'bold');
-  assert(isstruct(md) & isfield(md, 'RepetitionTime') & isfield(md, 'TaskName'));
-  assert(md.RepetitionTime == 2);
-  assert(strcmp(md.TaskName, 'stop signal with manual response'));
+                  'sub', '01', ...
+                  'acq', 'anat', ...
+                  'suffix', 'TB1TFL');
+  assert(isstruct(md) & isfield(md, 'RepetitionTime') & isfield(md, 'SequenceName'));
+  assert(strcmp(md.RepetitionTime, '6.8'));
+  assert(strcmp(md.SequenceName, 'tfl_b1_map'));
 
 end
 
@@ -118,19 +91,13 @@ function test_query_modalities()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
 
-  modalities = {'anat', 'func'};
-  assertEqual(bids.query(BIDS, 'modalities'), modalities);
-  assertEqual(bids.query(BIDS, 'modalities', 'sub', '01'), modalities);
-
-  BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
-
-  modalities = {'anat', 'fmap', 'func'};
+  modalities = {'anat', 'pet'};
 
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
   assertEqual(bids.query(BIDS, 'modalities', 'sub', '01'), modalities);
-  assertEqual(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '1'), modalities);
+  assertEqual(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '01'), modalities);
 
   % this now fails on octave 4.2.2 but not on Matlab
   %
@@ -153,9 +120,9 @@ function test_query_subjects()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ieeg_visual'));
 
-  subjs = arrayfun(@(x) sprintf('%02d', x), 1:20, 'UniformOutput', false);
+  subjs = arrayfun(@(x) sprintf('%02d', x), 1:2, 'UniformOutput', false);
   assertEqual(bids.query(BIDS, 'subjects'), subjs);
 
 end
@@ -169,7 +136,7 @@ function test_query_sessions()
   assertEqual(bids.query(BIDS, 'sessions'), sessions);
   assertEqual(bids.query(BIDS, 'sessions', 'sub', '02'), sessions);
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
 
   assert(isempty(bids.query(BIDS, 'sessions')));
 
@@ -179,9 +146,9 @@ function test_query_suffixes()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds007'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
 
-  suffixes = {'T1w', 'bold', 'events', 'inplaneT2'};
+  suffixes = {'T1w'    'pet'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end
