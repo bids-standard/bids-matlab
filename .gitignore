@@ -14,4 +14,8 @@ data/*
 derivatives/*
 tests/*.tsv
 
+# styling
 .prettierrc
+
+# visual studio code config
+.vscode/*
