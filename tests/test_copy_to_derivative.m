@@ -43,7 +43,7 @@ function test_copy_to_derivative_MoAE()
   bids.copy_to_derivative(BIDS, out_path, pipeline_name);
 
 end
- 
+
 function test_copy_to_derivative_MoAE_force()
 
   BIDS = download_moae_ds(true());
@@ -135,7 +135,6 @@ function [BIDS, out_path, filters] = fixture(dataset)
   %   input_dir = fullfile('..', 'data', 'ds000117');
 
   out_path = fullfile(pwd, 'data', dataset, 'derivatives');
-
 
   if exist(out_path, 'dir')
     rmdir(out_path, 's');
