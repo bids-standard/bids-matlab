@@ -1,4 +1,4 @@
-function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
+function report(BIDS, sub, ses, read_nii, output_path, verbose)
   % Create a short summary of the acquisition parameters of a BIDS dataset
   % FORMAT bids.report(BIDS, Subj, Ses, Run, ReadNII)
   %
@@ -71,10 +71,6 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
     ses = {ses};
   end
 
-  if nargin < 4 || isempty(run)
-    run = 1;
-  end
-
   if nargin < 5 || isempty(read_nii)
     read_nii = true;
   end
@@ -145,13 +141,12 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
           % loop through the tasks
           for iTask = 1:numel(tasks)
 
-            [this_task, this_run, n_runs] = return_task_and_run_labels( ...
-                                                                       suffixes{iType}, ...
-                                                                       BIDS, ...
-                                                                       sub, ...
-                                                                       ses{iSess}, ...
-                                                                       tasks{iTask}, ...
-                                                                       run);
+            [this_task, this_run, nb_runs] = return_task_and_run_labels( ...
+                                                                        suffixes{iType}, ...
+                                                                        BIDS, ...
+                                                                        sub, ...
+                                                                        ses{iSess}, ...
+                                                                        tasks{iTask});
 
             % get the parameters for that task
             acq_param = get_acq_param(BIDS, ...
@@ -160,7 +155,7 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
                                       'bold', this_task, ...
                                       this_run, read_nii, verbose);
 
-            acq_param.n_runs = n_runs;
+            acq_param.n_runs = nb_runs;
 
             % set run duration
             if ~strcmp(acq_param.tr, '[XXtrXX]') && ...
@@ -204,8 +199,7 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
                                                                BIDS, ...
                                                                sub, ...
                                                                ses{iSess}, ...
-                                                               tasks{iTask}, ...
-                                                               run);
+                                                               tasks{iTask});
 
             acq_param = get_acq_param(BIDS, ...
                                       sub, ...
@@ -330,7 +324,7 @@ function file_id = open_output_file(BIDS, output_path, verbose)
 
 end
 
-function [task, this_run, n_runs] = return_task_and_run_labels(type, BIDS, sub, ses, task, run)
+function [task, this_run, n_runs] = return_task_and_run_labels(suffix, BIDS, sub, ses, task)
 
   if nargin < 4
     task = '';
@@ -339,14 +333,14 @@ function [task, this_run, n_runs] = return_task_and_run_labels(type, BIDS, sub, 
   this_run = '';
   n_runs = '';
 
-  switch type
+  switch suffix
 
     case 'bold'
 
       runs_ls = bids.query(BIDS, 'runs', ...
                            'sub', sub, ...
                            'ses', ses, ...
-                           'type', type, ...
+                           'suffix', suffix, ...
                            'task', task);
 
     case 'phasediff'
@@ -354,14 +348,14 @@ function [task, this_run, n_runs] = return_task_and_run_labels(type, BIDS, sub, 
       runs_ls = bids.query(BIDS, 'runs', ...
                            'sub', sub, ...
                            'ses', ses, ...
-                           'type', type);
+                           'suffix', suffix);
   end
 
-  if any(strcmp(type, {'bold', 'phasediff'}))
+  if any(strcmp(suffix, {'bold', 'phasediff'}))
 
     if ~isempty(runs_ls)
-      this_run = runs_ls{run};
-      if strcmp(type, {'bold'})
+      this_run = runs_ls{1};
+      if strcmp(suffix, {'bold'})
         n_runs = num2str(numel(runs_ls));
       end
     end
