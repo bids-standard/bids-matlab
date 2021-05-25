@@ -60,8 +60,15 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
     sub = subjects{1};
   end
 
-  if nargin < 3 || isempty(ses) || ~ischar(ses)
-    ses = 1;
+  sessions = bids.query(BIDS, 'sessions', 'sub', sub);
+  if isempty(sessions)
+    sessions = {''};
+  end
+  if nargin < 3 || isempty(ses) || ~ischar(ses) || ~ismember(ses, sessions)
+    ses = sessions;
+  end
+  if ischar(ses)
+    ses = {ses};
   end
 
   if nargin < 4 || isempty(run)
@@ -79,42 +86,26 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
 
   file_id = open_output_file(BIDS, output_path, verbose);
 
-  % -Get sessions and subjects
-  % --------------------------------------------------------------------------
-  if ischar(ses)
-    sessions = ses;
-    ses = 1;
-  else
-    sessions = bids.query(BIDS, 'sessions', 'sub', sub);
-  end
-
-  if isempty(sessions)
-    sessions = {''};
-  end
-  if ses == 0
-    ses = 1:numel(sessions);
-  end
-
   % -Scanner details
   % --------------------------------------------------------------------------
   % str = 'MR data were acquired using a {tesla}-Tesla {manu} {model} MRI scanner.';
 
   % -Loop through all the required sessions
   % --------------------------------------------------------------------------
-  for iSess = ses
+  for iSess = 1:numel(ses)
 
-    if numel(ses) ~= 1 && ~strcmp(sessions{iSess}, '')
+    if numel(ses) ~= 1 && ~strcmp(ses{iSess}, '')
       if verbose
-        fprintf(1, ' Working on session: %s\n', sessions{iSess});
+        fprintf(1, '\n Working on session: %s\n', ses{iSess});
       end
     end
 
     suffixes = bids.query(BIDS, 'suffixes', ...
                           'sub', sub, ...
-                          'ses', sessions(iSess));
+                          'ses', ses(iSess));
     tasks = bids.query(BIDS, 'tasks', ...
                        'sub', sub, ...
-                       'ses', sessions(iSess));
+                       'ses', ses(iSess));
     % mods_ls = bids.query(BIDS,'modalities');
 
     for iType = 1:numel(suffixes)
@@ -132,7 +123,7 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
           % get the parameters
           acq_param = get_acq_param(BIDS, ...
                                     sub, ...
-                                    sessions{iSess}, ...
+                                    ses{iSess}, ...
                                     suffixes{iType}, this_task, this_run, read_nii, verbose);
 
           fprintf(file_id, boilerplate_text, ...
@@ -158,14 +149,14 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
                                                                        suffixes{iType}, ...
                                                                        BIDS, ...
                                                                        sub, ...
-                                                                       sessions{iSess}, ...
+                                                                       ses{iSess}, ...
                                                                        tasks{iTask}, ...
                                                                        run);
 
             % get the parameters for that task
             acq_param = get_acq_param(BIDS, ...
                                       sub, ...
-                                      sessions{iSess}, ...
+                                      ses{iSess}, ...
                                       'bold', this_task, ...
                                       this_run, read_nii, verbose);
 
@@ -212,13 +203,13 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
             [this_task, this_run] = return_task_and_run_labels(suffixes{iType}, ...
                                                                BIDS, ...
                                                                sub, ...
-                                                               sessions{iSess}, ...
+                                                               ses{iSess}, ...
                                                                tasks{iTask}, ...
                                                                run);
 
             acq_param = get_acq_param(BIDS, ...
                                       sub, ...
-                                      sessions{iSess}, ...
+                                      ses{iSess}, ...
                                       'phasediff', this_task, this_run, read_nii, verbose);
 
             % goes through task list to check which fieldmap is for which run
@@ -255,7 +246,7 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
           % get the parameters
           acq_param = get_acq_param(BIDS, ...
                                     sub, ...
-                                    sessions{iSess}, ...
+                                    ses{iSess}, ...
                                     'dwi', this_task, this_run, read_nii, verbose);
 
           % dirty hack to try to look into the BIDS structure as bids.query does not
