@@ -93,7 +93,9 @@ function copy_to_derivative(varargin)
     warning('No data found for this query');
     return
   else
-    fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
+    if p.Results.verbose
+      fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
+    end
   end
 
   % Determine and create output directory
