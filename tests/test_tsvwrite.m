@@ -53,6 +53,8 @@ function test_tsvwrite_basic()
   % check values entered properly: logFile.is_fixation(2)
   assertEqual(C{5}{3}, '3');
 
+  delete(tsv_file);
+
 end
 
 % TODO test tsvread on tsv file using cell input
@@ -72,6 +74,8 @@ function test_tsvwrite_array
   FID = fopen(tsv_file, 'r');
   C = textscan(FID, '%s%s', 'Delimiter', '\t', 'EndOfLine', '\n');
   assertEqual(C{1}{2}, 'n/a'); %
+
+  delete(tsv_file);
 
 end
 
