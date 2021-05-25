@@ -1,6 +1,6 @@
 function init(varargin)
   %
-  % initialize dataset with README, CHANGELOG, dataset_description and folder structure
+  % Initialize dataset with README, description, folder structure...
   %
   % init(pth, folders, is_derivative, is_datalad_ds)
   %

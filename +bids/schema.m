@@ -1,5 +1,6 @@
 classdef schema
   %
+  % Class to interact with the BIDS schema
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
