@@ -1,4 +1,4 @@
-function report(BIDS, sub, ses, run, read_nii, output_path)
+function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
   % Create a short summary of the acquisition parameters of a BIDS dataset
   % FORMAT bids.report(BIDS, Subj, Ses, Run, ReadNII)
   %
@@ -25,34 +25,22 @@ function report(BIDS, sub, ses, run, read_nii, output_path)
   %
   % See also:
   % bids
-
-  % __________________________________________________________________________
   %
-  % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
-  %   The brain imaging data structure, a format for organizing and
-  %   describing outputs of neuroimaging experiments.
-  %   K. J. Gorgolewski et al, Scientific Data, 2016.
-  % __________________________________________________________________________
-
-  % Copyright (C) 2018, Remi Gau
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   % TODO
   % --------------------------------------------------------------------------
   % - deal with DWI bval/bvec values not read by bids.query
-  % - write output to a txt file?
   % - deal with "EEG" / "MEG"
-  % - deal with "events": compute some summary statistics as suggested in
-  % COBIDAS report
+  % - deal with "events": compute some summary statistics as suggested in COBIDAS report
   % - report summary statistics on participants as suggested in COBIDAS report
   % - check if all subjects have the same content?
   % - adapt for several subjects or runs
   % - take care of other recommended metafield in BIDS specs or COBIDAS?
-  % - add a dataset description (ethics, grant, institution, scanner
-  % details...)
-  % - make it work with "modality" and not "type"
+  % - add a dataset description (ethics, grant, institution, scanner details...)
 
-  % -Check inputs
+  % Check inputs
   % --------------------------------------------------------------------------
   if ~nargin
     BIDS = pwd;
@@ -79,39 +67,38 @@ function report(BIDS, sub, ses, run, read_nii, output_path)
     output_path = '';
   end
 
-  file_id = open_output_file(BIDS, output_path);
-
   % -Parse the BIDS dataset directory
   % --------------------------------------------------------------------------
   if ~isstruct(BIDS)
-    fprintf('\n-------------------------\n');
-    fprintf('  Reading BIDS: %s', BIDS);
-    fprintf('\n-------------------------\n');
+    if verbose
+      fprintf(1, 'Reading BIDS: %s\n', BIDS);
+    end
     BIDS = bids.layout(BIDS);
-    fprintf('Done.\n\n');
   end
+
+  file_id = open_output_file(BIDS, output_path, verbose);
 
   % -Get sessions and subjects
   % --------------------------------------------------------------------------
   if ischar(sub)
-    sub_ls = sub;
+    subjects = sub;
     sub = 1;
   else
-    sub_ls = bids.query(BIDS, 'subjects');
+    subjects = bids.query(BIDS, 'subjects');
   end
 
   if ischar(ses)
-    ses_ls = ses;
+    sessions = ses;
     ses = 1;
   else
-    ses_ls = bids.query(BIDS, 'sessions', 'sub', sub_ls(sub));
+    sessions = bids.query(BIDS, 'sessions', 'sub', subjects(sub));
   end
 
-  if isempty(ses_ls)
-    ses_ls = {''};
+  if isempty(sessions)
+    sessions = {''};
   end
   if ses == 0
-    ses = 1:numel(ses_ls);
+    ses = 1:numel(sessions);
   end
 
   % -Scanner details
@@ -122,37 +109,37 @@ function report(BIDS, sub, ses, run, read_nii, output_path)
   % --------------------------------------------------------------------------
   for iSess = ses
 
-    if numel(ses) ~= 1 && ~strcmp(ses_ls{iSess}, '')
-      fprintf('\n-------------------------\n');
-      fprintf('  Working on session: %s', ses_ls{iSess});
-      fprintf('\n-------------------------\n');
+    if numel(ses) ~= 1 && ~strcmp(sessions{iSess}, '')
+      if verbose
+        fprintf(1, ' Working on session: %s\n', sessions{iSess});
+      end
     end
 
-    types_ls = bids.query(BIDS, 'types', ...
-                          'sub', sub_ls(sub), ...
-                          'ses', ses_ls(iSess));
-    tasks_ls = bids.query(BIDS, 'tasks', ...
-                          'sub', sub_ls(sub), ...
-                          'ses', ses_ls(iSess));
+    suffixes = bids.query(BIDS, 'suffixes', ...
+                          'sub', subjects(sub), ...
+                          'ses', sessions(iSess));
+    tasks = bids.query(BIDS, 'tasks', ...
+                       'sub', subjects(sub), ...
+                       'ses', sessions(iSess));
     % mods_ls = bids.query(BIDS,'modalities');
 
-    for iType = 1:numel(types_ls)
+    for iType = 1:numel(suffixes)
 
-      boilerplate_text = get_boilerplate(types_ls{iType}, file_id);
+      boilerplate_text = get_boilerplate(suffixes{iType}, file_id);
 
-      switch types_ls{iType}
+      switch suffixes{iType}
 
         case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
 
           fprintf(file_id, '\nANATOMICAL REPORT\n\n');
 
-          [this_task, this_run] = return_task_and_run_labels(types_ls{iType});
+          [this_task, this_run] = return_task_and_run_labels(suffixes{iType});
 
           % get the parameters
           acq_param = get_acq_param(BIDS, ...
-                                    sub_ls{sub}, ...
-                                    ses_ls{iSess}, ...
-                                    types_ls{iType}, this_task, this_run, read_nii);
+                                    subjects{sub}, ...
+                                    sessions{iSess}, ...
+                                    suffixes{iType}, this_task, this_run, read_nii, verbose);
 
           fprintf(file_id, boilerplate_text, ...
                   acq_param.type, ...
@@ -171,22 +158,22 @@ function report(BIDS, sub, ses, run, read_nii, output_path)
           fprintf(file_id, '\nFUNCTIONAL REPORT\n\n');
 
           % loop through the tasks
-          for iTask = 1:numel(tasks_ls)
+          for iTask = 1:numel(tasks)
 
             [this_task, this_run, n_runs] = return_task_and_run_labels( ...
-                                                                       types_ls{iType}, ...
+                                                                       suffixes{iType}, ...
                                                                        BIDS, ...
-                                                                       sub_ls{sub}, ...
-                                                                       ses_ls{iSess}, ...
-                                                                       tasks_ls{iTask}, ...
+                                                                       subjects{sub}, ...
+                                                                       sessions{iSess}, ...
+                                                                       tasks{iTask}, ...
                                                                        run);
 
             % get the parameters for that task
             acq_param = get_acq_param(BIDS, ...
-                                      sub_ls{sub}, ...
-                                      ses_ls{iSess}, ...
+                                      subjects{sub}, ...
+                                      sessions{iSess}, ...
                                       'bold', this_task, ...
-                                      this_run, read_nii);
+                                      this_run, read_nii, verbose);
 
             acq_param.n_runs = n_runs;
 
@@ -226,19 +213,19 @@ function report(BIDS, sub, ses, run, read_nii, output_path)
 
           fprintf(file_id, '\nFIELD MAP REPORT\n\n');
 
-          for iTask = 1:numel(tasks_ls)
+          for iTask = 1:numel(tasks)
 
-            [this_task, this_run] = return_task_and_run_labels(types_ls{iType}, ...
+            [this_task, this_run] = return_task_and_run_labels(suffixes{iType}, ...
                                                                BIDS, ...
-                                                               sub_ls{sub}, ...
-                                                               ses_ls{iSess}, ...
-                                                               tasks_ls{iTask}, ...
+                                                               subjects{sub}, ...
+                                                               sessions{iSess}, ...
+                                                               tasks{iTask}, ...
                                                                run);
 
             acq_param = get_acq_param(BIDS, ...
-                                      sub_ls{sub}, ...
-                                      ses_ls{iSess}, ...
-                                      'phasediff', this_task, this_run, read_nii);
+                                      subjects{sub}, ...
+                                      sessions{iSess}, ...
+                                      'phasediff', this_task, this_run, read_nii, verbose);
 
             % goes through task list to check which fieldmap is for which run
             acq_param.for = [];
@@ -267,15 +254,15 @@ function report(BIDS, sub, ses, run, read_nii, output_path)
 
         case 'dwi'
 
-          [this_task, this_run] = return_task_and_run_labels(types_ls{iType});
+          [this_task, this_run] = return_task_and_run_labels(suffixes{iType});
 
           fprintf(file_id, '\nDWI REPORT\n\n');
 
           % get the parameters
           acq_param = get_acq_param(BIDS, ...
-                                    sub_ls{sub}, ...
-                                    ses_ls{iSess}, ...
-                                    'dwi', this_task, this_run, read_nii);
+                                    subjects{sub}, ...
+                                    sessions{iSess}, ...
+                                    'dwi', this_task, this_run, read_nii, verbose);
 
           % dirty hack to try to look into the BIDS structure as bids.query does not
           % support querying directly for bval and bvec
@@ -304,20 +291,20 @@ function report(BIDS, sub, ses, run, read_nii, output_path)
                   acq_param.mb_str);
 
         case 'physio'
-
-          warning('physio not supported yet');
+          warning_report('physio not supported yet', verbose);
 
         case {'headshape' 'meg' 'eeg' 'channels'}
-
-          warning('MEEG not supported yet');
+          warning_report('MEEG not supported yet', verbose);
 
         case 'events'
-
-          warning('events not supported yet');
+          warning_report('events not supported yet', verbose);
 
       end
 
       fprintf(file_id, '\n');
+      if verbose && file_id ~= 1
+        fprintf(file_id, '\n');
+      end
 
     end
 
@@ -325,13 +312,21 @@ function report(BIDS, sub, ses, run, read_nii, output_path)
 
 end
 
-function file_id = open_output_file(BIDS, output_path)
+function warning_report(msg, verbose)
+  if verbose
+    warning(msg);
+  end
+end
+
+function file_id = open_output_file(BIDS, output_path, verbose)
 
   file_id = 1;
 
   if ~isempty(output_path)
 
-    [~, folder] = fileparts(BIDS);
+    bids.util.mkdir(output_path);
+
+    [~, folder] = fileparts(BIDS.dir);
 
     filename = fullfile( ...
                         output_path, ...
@@ -341,12 +336,14 @@ function file_id = open_output_file(BIDS, output_path)
 
     if file_id == -1
 
-      warning('Unable to write file %s. Will print to screen.', filename);
+      warning_report('Unable to write file %s. Will print to screen.', verbose);
 
       file_id = 1;
 
     else
-      fprintf('Dataset description saved in:  %s', filename);
+      if verbose
+        fprintf('Dataset description saved in:  %s\n\n', filename);
+      end
 
     end
 
@@ -400,6 +397,11 @@ function template = get_boilerplate(type, file_id)
 
   switch type
 
+    case 'Institution'
+      template = [ ...
+                  'The recordings were performed in the {{InstitutionName}},', ...
+                  '{{InstitutionalDepartmentName}}, {{InstitutionAddress}}.'];
+
     case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
       template = [ ...
                   '%s %s %s structural MRI data were collected (%s slices; \n', ...
@@ -446,13 +448,15 @@ function acq_param = get_acq_param(varargin)
   % Will get info from acquisition parameters from the BIDS structure or from
   % the NIfTI files
 
-  [BIDS, subj, sess, type, task, run, read_gz] = deal(varargin{:});
+  [BIDS, subj, sess, type, task, run, read_gz, verbose] = deal(varargin{:});
 
   acq_param = set_default_acq_param(type, task);
 
   [filename, metadata] = get_filemane_and_metadata(BIDS, subj, sess, type, task, run);
 
-  fprintf('  Getting parameters - %s\n\n', filename{1});
+  if verbose
+    fprintf('  Getting parameters - %s\n\n', filename{1});
+  end
 
   fields_list = { ...
                  'te', 'EchoTime'; ...
@@ -547,50 +551,25 @@ end
 
 function [filename, metadata] = get_filemane_and_metadata(varargin)
 
-  [BIDS, subj, sess, type, task, run] = deal(varargin{:});
+  [BIDS, sub, ses, suffix, task, run] = deal(varargin{:});
 
-  switch type
+  filter = struct('sub', sub, ...
+                  'suffix', suffix);
 
-    case {'T1w' 'inplaneT2' 'T1map' 'FLASH' 'dwi'}
-
-      filename = bids.query(BIDS, 'data', ...
-                            'sub', subj, ...
-                            'ses', sess, ...
-                            'type', type);
-      metadata = bids.query(BIDS, 'metadata', ...
-                            'sub', subj, ...
-                            'ses', sess, ...
-                            'type', type);
-
-    case 'bold'
-
-      filename = bids.query(BIDS, 'data', ...
-                            'sub', subj, ...
-                            'ses', sess, ...
-                            'type', type, ...
-                            'task', task, ...
-                            'run', run);
-      metadata = bids.query(BIDS, 'metadata', ...
-                            'sub', subj, ...
-                            'ses', sess, ...
-                            'type', type, ...
-                            'task', task, ...
-                            'run', run);
-
-    case   'phasediff'
-
-      filename = bids.query(BIDS, 'data', ...
-                            'sub', subj, ...
-                            'ses', sess, ...
-                            'type', type, ...
-                            'run', run);
-      metadata = bids.query(BIDS, 'metadata', ...
-                            'sub', subj, ...
-                            'ses', sess, ...
-                            'type', type, ...
-                            'run', run);
-
+  if ~isempty(ses)
+    filter.ses = ses;
   end
+
+  if ~isempty(run)
+    filter.run = run;
+  end
+
+  if strcmp(suffix, 'bold')
+    filter.task = task;
+  end
+
+  filename = bids.query(BIDS, 'data', filter);
+  metadata = bids.query(BIDS, 'metadata', filter);
 
 end
 
