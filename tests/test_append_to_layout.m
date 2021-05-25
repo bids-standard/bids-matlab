@@ -8,7 +8,8 @@ end
 
 function test_append_to_layout_basic()
 
-  schema = bids.schema.load_schema();
+  schema = bids.schema;
+  schema = schema.load();
 
   subject = struct('anat', struct([]));
 
@@ -36,7 +37,8 @@ end
 
 function test_append_to_structure_basic_test()
 
-  schema = bids.schema.load_schema();
+  schema = bids.schema;
+  schema = schema.load();
 
   subject = struct('anat', struct([]));
   modality = 'anat';
@@ -78,12 +80,16 @@ end
 
 function test_append_to_layout_schemaless()
 
+  use_schema = false;
+  schema = bids.schema;
+  schema = schema.load(use_schema);
+
   subject = struct('newmod', struct([]));
 
   modality = 'newmod';
 
   file = '../sub-16/newmod/sub-16_schema-less_anything-goes_newsuffix.EXT';
-  subject = bids.internal.append_to_layout(file, subject, modality);
+  subject = bids.internal.append_to_layout(file, subject, modality, schema);
 
   expected.newmod = struct( ...
                            'filename', 'sub-16_schema-less_anything-goes_newsuffix.EXT', ...

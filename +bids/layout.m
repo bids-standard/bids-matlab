@@ -1,4 +1,4 @@
-function BIDS = layout(root, use_schema)
+function BIDS = layout(root, use_schema, verbose)
   %
   % Parse a directory structure formated according to the BIDS standard
   %
@@ -47,9 +47,13 @@ function BIDS = layout(root, use_schema)
 
     end
 
-  elseif nargin > 2
+  elseif nargin > 3
     error('Too many input arguments.');
 
+  end
+
+  if ~exist('verbose', 'var')
+    verbose = false;
   end
 
   if ~exist('use_schema', 'var')
@@ -96,7 +100,9 @@ function BIDS = layout(root, use_schema)
     error('No subjects found in BIDS directory.');
   end
 
-  schema = bids.schema.load_schema(use_schema);
+  schema = bids.schema();
+  schema = schema.load(use_schema);
+  schema.quiet = ~verbose;
 
   for iSub = 1:numel(subjects)
     sessions = cellstr(bids.internal.file_utils('List', ...
@@ -124,7 +130,7 @@ function BIDS = layout(root, use_schema)
   %% Dependencies
   % ==========================================================================
 
-  BIDS = manage_dependencies(BIDS);
+  BIDS = manage_dependencies(BIDS, verbose);
 
 end
 
@@ -154,13 +160,13 @@ function subject = parse_subject(pth, subjname, sesname, schema)
                                            subject.path,  ...
                                            ['^' subjname, '.*_scans.tsv' '$']);
 
-  modality_groups = bids.schema.return_modality_groups(schema);
+  modality_groups = schema.return_modality_groups();
 
   for iGroup = 1:numel(modality_groups)
 
-    modalities = bids.schema.return_modalities(subject, schema, modality_groups{iGroup});
+    modalities = schema.return_modalities(subject, modality_groups{iGroup});
 
-    % if we go schema-less, we pass an empty schema to all the parsing functions
+    % if we go schema-less, we pass an empty schema.content to all the parsing functions
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
@@ -170,7 +176,7 @@ function subject = parse_subject(pth, subjname, sesname, schema)
           % in case we are going schemaless
           % and the modality is not one of the usual suspect
           subject.(modalities{iModality}) = struct([]);
-          subject = parse_using_schema(subject, modalities{iModality}, []);
+          subject = parse_using_schema(subject, modalities{iModality}, schema);
       end
     end
 
@@ -205,7 +211,8 @@ function subject = parse_using_schema(subject, modality, schema)
 
             subject.(modality)(end).meta = [];
 
-            subject.(modality)(end).meta = bids.internal.get_metadata(subject.(modality)(iFile).metafile);
+            metafile = subject.(modality)(iFile).metafile;
+            subject.(modality)(end).meta = bids.internal.get_metadata(metafile);
 
             aslcontext_file = strrep(subject.perf(end).filename, ...
                                      ['_asl' subject.perf(end).ext], ...
@@ -305,7 +312,7 @@ function file_list = return_file_list(modality, subject, schema)
   % jn to omit json but not .pos file for headshape.pos
   pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
   prefix = '';
-  if isempty(schema)
+  if isempty(schema.content)
     pattern = '_([a-zA-Z0-9]+){1}\\..*';
     prefix = '([a-zA-Z0-9]*)';
   end
@@ -409,7 +416,7 @@ function structure = manage_tsv(structure, pth, filename)
 
 end
 
-function BIDS = manage_dependencies(BIDS)
+function BIDS = manage_dependencies(BIDS, verbose)
   %
   % Loops over all files and retrieve all files that current file depends on
   %
@@ -437,7 +444,9 @@ function BIDS = manage_dependencies(BIDS)
       dest = fullfile(BIDS.dir, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
       if ~exist(dest, 'file')
-        warning(['IntendedFor file ' dest ' from ' file.filename ' not found']);
+        if verbose
+          warning(['IntendedFor file ' dest ' from ' file.filename ' not found']);
+        end
         continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);

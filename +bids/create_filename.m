@@ -125,9 +125,7 @@ function [p, entities, is_required] = reorder_entities(p, entities)
 
   elseif p.use_schema
 
-    quiet = true;
-
-    [p, is_required] = get_entity_order_from_schema(p, quiet);
+    [p, is_required] = get_entity_order_from_schema(p);
 
     idx = ismember(entities, p.entity_order);
     entities = cat(1, p.entity_order, entities(~idx));
@@ -142,10 +140,11 @@ function [p, entities, is_required] = reorder_entities(p, entities)
 
 end
 
-function [p, is_required] = get_entity_order_from_schema(p, quiet)
+function [p, is_required] = get_entity_order_from_schema(p)
 
-  schema = bids.schema.load_schema(p.use_schema);
-  [schema_entities, is_required] = bids.schema.return_entities_for_suffix(p.suffix, schema, quiet);
+  schema = bids.schema();
+  schema = schema.load(p.use_schema);
+  [schema_entities, is_required] = schema.return_entities_for_suffix(p.suffix);
   for i = 1:numel(schema_entities)
     p.entity_order{i, 1} = schema_entities{i};
   end

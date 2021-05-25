@@ -14,7 +14,7 @@ function test_copy_to_derivative_sessions_scans_tsv
   unzip = false;
   force = false;
   use_schema = true;
-  verbose = true;
+  verbose = false;
   skip_dependencies = true;
 
   bids.copy_to_derivative(BIDS, ...
@@ -78,7 +78,7 @@ function test_copy_to_derivative_ds000117()
   force = false;
   skip_dependencies = false;
   use_schema = true;
-  verbose = true;
+  verbose = false;
 
   bids.copy_to_derivative(BIDS, ...
                           out_path, ...
@@ -104,7 +104,7 @@ function test_copy_to_derivative_ds000117_skip_dependencies
   unzip = false;
   force = false;
   use_schema = true;
-  verbose = true;
+  verbose = false;
 
   skip_dependencies = true;
 

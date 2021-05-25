@@ -1,4 +1,4 @@
-function p = parse_filename(filename, fields)
+function p = parse_filename(filename, fields, verbose)
   %
   % Split a filename into its building constituents
   %
@@ -33,6 +33,10 @@ function p = parse_filename(filename, fields)
   %
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % (C) Copyright 2018 BIDS-MATLAB developers
+
+  if nargin < 3 || isempty(verbose)
+    verbose = false;
+  end
 
   fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
 
@@ -75,7 +79,7 @@ function p = parse_filename(filename, fields)
   end
 
   % Extra fields can be added to the structure and ordered specifically.
-  if nargin == 2
+  if nargin > 1
     for i = 1:numel(fields)
       p.entities = bids.internal.add_missing_field(p.entities, fields{i});
     end
@@ -83,8 +87,10 @@ function p = parse_filename(filename, fields)
       p = orderfields(p, fields_order);
       p.entities = orderfields(p.entities, fields);
     catch
-      warning('bidsMatlab:noMatchingTemplate', ...
-              'Ignoring file %s not matching template.', filename);
+      if verbose
+        warning('bidsMatlab:noMatchingTemplate', ...
+                'Ignoring file %s not matching template.', filename);
+      end
       p = struct([]);
     end
   end

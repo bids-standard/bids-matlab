@@ -18,17 +18,13 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
-  if ~exist('schema', 'var')
-    schema = [];
-  end
-
   % Parse file fist to identify the suffix group in the template.
   % Then reparse the file using the entity-label pairs defined in the schema.
   p = bids.internal.parse_filename(file);
 
-  idx = bids.schema.find_suffix_group(modality, p.suffix, schema);
+  if ~isempty(schema.content)
 
-  if ~isempty(schema)
+    idx = schema.find_suffix_group(modality, p.suffix);
 
     if isempty(idx)
       warning('append_to_structure:noMatchingSuffix', ...
@@ -37,7 +33,7 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
       return
     end
 
-    entities = bids.schema.return_modality_entities(schema.datatypes.(modality)(idx), schema);
+    entities = schema.return_modality_entities(schema.content.datatypes.(modality)(idx));
     p = bids.internal.parse_filename(file, entities);
 
     % do not index json files when using the schema
