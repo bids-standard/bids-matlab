@@ -9,5 +9,7 @@ output
 
 data/MoAEpilot/
 data/ds*/
+data/asl*
+data/qmri*
 data/7t_trt/
 data/derivatives*/*

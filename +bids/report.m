@@ -270,7 +270,7 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
             acq_param.n_vecs = num2str(size(BIDS.subjects(sub).dwi.bval, 2));
             %             acq_param.bval_str = ???
           catch
-            warning('Could not read the bval & bvec values.');
+            bids.internal.warning('Could not read the bval & bvec values.', verbose);
           end
 
           % print output
@@ -291,13 +291,13 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
                   acq_param.mb_str);
 
         case 'physio'
-          warning_report('physio not supported yet', verbose);
+          bids.internal.warning('physio not supported yet', verbose);
 
         case {'headshape' 'meg' 'eeg' 'channels'}
-          warning_report('MEEG not supported yet', verbose);
+          bids.internal.warning('MEEG not supported yet', verbose);
 
         case 'events'
-          warning_report('events not supported yet', verbose);
+          bids.internal.warning('events not supported yet', verbose);
 
       end
 
@@ -310,12 +310,6 @@ function report(BIDS, sub, ses, run, read_nii, output_path, verbose)
 
   end
 
-end
-
-function warning_report(msg, verbose)
-  if verbose
-    warning(msg);
-  end
 end
 
 function file_id = open_output_file(BIDS, output_path, verbose)
@@ -336,7 +330,7 @@ function file_id = open_output_file(BIDS, output_path, verbose)
 
     if file_id == -1
 
-      warning_report('Unable to write file %s. Will print to screen.', verbose);
+      bids.internal.warning('Unable to write file %s. Will print to screen.', verbose);
 
       file_id = 1;
 
@@ -510,7 +504,8 @@ function acq_param = get_acq_param(varargin)
       acq_param.fov = sprintf('%.2f X %.2f', vs(1) * dim(1), vs(2) * dim(2));
 
     catch
-      warning('Could not read the header from file %s.\n', filename{1});
+      bids.internal.warning(sprintf('Could not read the header from file %s.\n', filename{1}), ...
+                            verbose);
     end
   end
 end
@@ -594,6 +589,7 @@ function acq_param = convert_field_to_str(acq_param)
       acq_param.(fields_list{iField}) = num2str(acq_param.(fields_list{iField}));
     end
   end
+
 end
 
 function acq_param = convert_field_to_millisecond(acq_param, fields_list)

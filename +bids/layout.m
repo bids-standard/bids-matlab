@@ -224,7 +224,7 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
                                                                       aslcontext_file, ...
                                                                       verbose);
 
-            subject.(modality)(end) = manage_M0(subject.perf(end), pth);
+            subject.(modality)(end) = manage_M0(subject.perf(end), pth, verbose);
 
         end
 
@@ -277,8 +277,8 @@ end
 function tolerant_message(use_schema, msg, verbose)
   if use_schema
     error(msg);
-  elseif ~use_schema && verbose
-    warning(msg);
+  elseif ~use_schema
+    bids.internal.warning(msg, verbose);
   end
 end
 
@@ -401,9 +401,7 @@ function structure = manage_tsv(structure, pth, filename, verbose)
                                       ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
   if isempty(tsv_file)
-    if verbose
-      warning('Missing: %s', fullfile(pth, filename));
-    end
+    bids.internal.warning(sprintf('Missing: %s', fullfile(pth, filename)), verbose);
 
   else
     structure.content = bids.util.tsvread(tsv_file);
@@ -447,9 +445,8 @@ function BIDS = manage_dependencies(BIDS, verbose)
       dest = fullfile(BIDS.dir, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
       if ~exist(dest, 'file')
-        if verbose
-          warning(['IntendedFor file ' dest ' from ' file.filename ' not found']);
-        end
+        bids.internal.warning(['IntendedFor file ' dest ' from ' file.filename ' not found'], ...
+                              verbose);
         continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);
@@ -461,11 +458,11 @@ function BIDS = manage_dependencies(BIDS, verbose)
 
 end
 
-function perf = manage_M0(perf, pth)
+function perf = manage_M0(perf, pth, verbose)
   % M0 field is flexible:
 
   if ~isfield(perf.meta, 'M0Type')
-    warning('M0Type field missing for %s', perf.filename);
+    bids.internal.warning('M0Type field missing for %s', perf.filename);
 
   else
 
@@ -490,7 +487,8 @@ function perf = manage_M0(perf, pth)
                              ['_m0scan' perf.ext]);
 
         if ~exist(fullfile(pth, m0_filename), 'file')
-          warning(['Missing: ' m0_filename]);
+          bids.internal.warning(['Missing: ' m0_filename], verbose);
+
         else
           % subject.perf(j).m0_filename = m0_filename;
           % -> this is included in the same structure for the m0scan.nii
@@ -502,7 +500,7 @@ function perf = manage_M0(perf, pth)
                             '_m0scan.json');
 
         if ~exist(fullfile(pth, m0_sidecar), 'file')
-          warning(['Missing: ' m0_sidecar]);
+          bids.internal.warning(['Missing: ' m0_sidecar], verbose);
 
         else
           % subject.perf(j).m0_json_sidecar_filename = m0_json_sidecar_filename;
@@ -513,14 +511,16 @@ function perf = manage_M0(perf, pth)
         % M0 is one or more image(s) in the *asl.nii[.gz] timeseries
         if ~isfield(perf.dependencies, 'context') || ...
                 ~isfield(perf.dependencies.context.content, 'volume_type')
-          warning('Cannot find M0 volume in aslcontext, context-information missing');
+          bids.internal.warning(['Cannot find M0 volume in aslcontext,' ...
+                                 'context-information missing'], ...
+                                vserbose);
 
         else
           m0indices = find(cellfun(@(x) strcmp(x, 'm0scan'), ...
                                    perf.dependencies.context.content.volume_type) == true);
 
           if isempty(m0indices)
-            warning('No M0 volume found in aslcontext');
+            bids.internal.warning('No M0 volume found in aslcontext', verbose);
 
           else
             m0_type = 'within_timeseries';
@@ -544,11 +544,13 @@ function perf = manage_M0(perf, pth)
                           'as pseudo-M0 (if no background suppression was used)'];
 
         if perf.meta.BackgroundSuppression == true
-          warning('Caution when using control as M0, background suppression was applied');
+          bids.internal.warning(['Caution when using control as M0,', ...
+                                 ' background suppression was applied'], ...
+                                verbose);
         end
 
       otherwise
-        warning(['Unknown M0Type:', perf.meta.M0Type]);
+        bids.internal.warning(['Unknown M0Type:', perf.meta.M0Type], verbose);
 
     end
 

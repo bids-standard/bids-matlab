@@ -152,3 +152,24 @@ function test_query_suffixes()
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end
+
+function test_query_sessions_tsv()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
+
+  assert(~isempty(BIDS.subjects(1).sess));
+  assert(~isempty(BIDS.subjects(1).scans));
+
+end
+
+function test_query_scans_tsv()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds009'));
+
+  assert(~isempty(BIDS.subjects(1).scans));
+
+end

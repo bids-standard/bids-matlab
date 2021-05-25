@@ -6,6 +6,91 @@ function test_suite = test_copy_to_derivative %#ok<*STOUT>
   initTestSuite;
 end
 
+%% TODO
+%
+% - add test to unzip
+
+function test_copy_to_derivative_basic()
+
+  [BIDS, out_path] = fixture('qmri_tb1tfl');
+
+  pipeline_name = 'bids-matlab';
+  unzip = false;
+  filters = struct();
+
+  bids.copy_to_derivative(BIDS, out_path, pipeline_name, ...
+                          filters, ...
+                          'unzip', unzip);
+
+  % force copy
+  force = true;
+  skip_dependencies = false;
+  use_schema = false;
+  verbose = false;
+
+  bids.copy_to_derivative(BIDS, ...
+                          out_path, ...
+                          pipeline_name, ...
+                          filters, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
+
+  teardown(out_path);
+
+end
+
+function test_copy_to_derivative_dependencies()
+
+  [BIDS, out_path, filters] = fixture('qmri_mp2rageme');
+
+  pipeline_name = 'bids-matlab';
+  unzip = false;
+  force = false;
+  use_schema = true;
+  verbose = false;
+
+  skip_dependencies = true;
+
+  bids.copy_to_derivative(BIDS, ...
+                          out_path, ...
+                          pipeline_name, ...
+                          filters, ...
+                          'use_schema', use_schema, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
+
+  derivatives = bids.layout(fullfile(out_path, pipeline_name), false(), verbose);
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 20);
+
+  teardown(out_path);
+  bids.util.mkdir(out_path);
+
+  %%
+  skip_dependencies = false;
+
+  bids.copy_to_derivative(BIDS, ...
+                          out_path, ...
+                          pipeline_name, ...
+                          filters, ...
+                          'use_schema', use_schema, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
+
+  derivatives = bids.layout(fullfile(out_path, pipeline_name), false(), verbose);
+  copied_files = bids.query(derivatives, 'data');
+  assertEqual(size(copied_files, 1), 22);
+
+  teardown(out_path);
+
+end
+
 function test_copy_to_derivative_sessions_scans_tsv
 
   [BIDS, out_path, filters] = fixture('7t_trt');
@@ -18,7 +103,7 @@ function test_copy_to_derivative_sessions_scans_tsv
   skip_dependencies = true;
 
   bids.copy_to_derivative(BIDS, ...
-                          fullfile(out_path, '7t_trt'), ...
+                          out_path, ...
                           pipeline_name, ...
                           filters, ...
                           'use_schema', use_schema, ...
@@ -27,100 +112,11 @@ function test_copy_to_derivative_sessions_scans_tsv
                           'skip_dep', skip_dependencies, ...
                           'verbose', verbose);
 
-  derivatives = bids.layout(fullfile(out_path, '7t_trt', pipeline_name), false());
+  derivatives = bids.layout(fullfile(out_path, pipeline_name), false(), verbose);
   assert(~isempty(derivatives.subjects(1).scans));
   assertEqual(derivatives.subjects(1).sess, derivatives.subjects(2).sess);
 
-end
-
-function test_copy_to_derivative_MoAE()
-
-  BIDS = download_moae_ds(true());
-  out_path = fullfile(pwd, 'data', 'MoAEpilot', 'derivatives');
-
-  pipeline_name = 'bids-matlab';
-
-  bids.copy_to_derivative(BIDS, out_path, pipeline_name);
-
-end
-
-function test_copy_to_derivative_MoAE_force()
-
-  BIDS = download_moae_ds(true());
-  out_path = fullfile(pwd, 'data', 'MoAEpilot', 'derivatives');
-
-  pipeline_name = 'bids-matlab';
-
-  filters = struct();
-  unzip = false;
-  force = true;
-  skip_dependencies = false;
-  use_schema = true;
-  verbose = false;
-
-  bids.copy_to_derivative(BIDS, ...
-                          out_path, ...
-                          pipeline_name, ...
-                          filters, ...
-                          'unzip', unzip, ...
-                          'force', force, ...
-                          'skip_dep', skip_dependencies, ...
-                          'verbose', verbose);
-
-end
-
-function test_copy_to_derivative_ds000117()
-
-  [BIDS, out_path, filters] = fixture('ds000117');
-
-  pipeline_name = '';
-  unzip = false;
-  force = false;
-  skip_dependencies = false;
-  use_schema = true;
-  verbose = false;
-
-  bids.copy_to_derivative(BIDS, ...
-                          out_path, ...
-                          pipeline_name, ...
-                          filters, ...
-                          'use_schema', use_schema, ...
-                          'unzip', unzip, ...
-                          'force', force, ...
-                          'skip_dep', skip_dependencies, ...
-                          'verbose', verbose);
-
-  derivatives = bids.layout(out_path, false());
-  copied_files = bids.query(derivatives, 'data');
-  assertEqual(size(copied_files, 1), 10);
-
-end
-
-function test_copy_to_derivative_ds000117_skip_dependencies
-
-  [BIDS, out_path, filters] = fixture('ds000117');
-
-  pipeline_name = 'bids-matlab';
-  unzip = false;
-  force = false;
-  use_schema = true;
-  verbose = false;
-
-  skip_dependencies = true;
-
-  bids.copy_to_derivative(BIDS, ...
-                          out_path, ...
-                          pipeline_name, ...
-                          filters, ...
-                          'use_schema', use_schema, ...
-                          'unzip', unzip, ...
-                          'force', force, ...
-                          'skip_dep', skip_dependencies, ...
-                          'verbose', verbose);
-
-  derivatives = bids.layout(fullfile(out_path, pipeline_name), false());
-  copied_files = bids.query(derivatives, 'data');
-  assertEqual(size(copied_files, 1), 4);
+  teardown(out_path);
 
 end
 
@@ -140,23 +136,34 @@ function [BIDS, out_path, filters] = fixture(dataset)
     rmdir(out_path, 's');
   end
 
+  bids.util.mkdir(out_path);
+
   switch dataset
 
-    case 'ds000117'
+    case 'qmri_mp2rageme'
+      filters = struct('suffix', 'MP2RAGE');
 
+    case 'asl004'
+      filters = struct('sub', 'Sub1', ...
+                       'modality', 'perf');
+      filters.suffix =  {'asl', 'm0scan'};
+
+    case 'ds000117'
       filters = struct('sub', '01', ...
                        'modality', 'func', ...
                        'suffix', 'bold');
       filters.run = {'01'; '03'};
 
     case '7t_trt'
-
       filters.sub = {'01'; '02'; '03'; '04'};
 
     case 'MoAEpilot'
-
       filters = struct();
 
   end
 
+end
+
+function teardown(out_path)
+  rmdir(out_path, 's');
 end
