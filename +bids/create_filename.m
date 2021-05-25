@@ -21,16 +21,16 @@ function [filename, pth, json] = create_filename(p, file)
   %   - ``p.entity_order``  - user specified order in which to arranges the entities
   %                           in the filename. Overrides ``p.use_schema``.
   %
-  %   If no entity order is specified and the filename creation is not based on the BIDS
-  %   schema, then the filename will be created by concatenating the entity-label pairs
-  %   found in the content of ``p.entities``.
+  % If no entity order is specified and the filename creation is not based on the BIDS
+  % schema, then the filename will be created by concatenating the entity-label pairs
+  % found in the content of ``p.entities``.
   %
-  %   USAGE::
+  % USAGE::
   %
-  %   [filename, pth, json] = bids.create_filename(p, file)
+  % [filename, pth, json] = bids.create_filename(p, file)
   %
-  %   :param file: file whose name has to be modified by the content of ``p``.
-  %   :type file:  string
+  % :param file: file whose name has to be modified by the content of ``p``.
+  % :type file:  string
   %
   %
   % (C) Copyright 2021 BIDS-MATLAB developers

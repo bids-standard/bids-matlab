@@ -2,19 +2,22 @@ function sts = mkdir(varargin)
   %
   % Make new directory trees
   %
-  % FORMAT
+  % USAGE::
   %
   %   sts = bids.util.mkdir(dir,...)
   %
-  % dir    - character array, or cell array of strings
+  % :param dir:
+  % :type dir: character array, or cell array of strings
+  % :param sts: status is ``true`` if all directories were successfully created or already
+  %          existing, ``false`` otherwise.
+  % :type sts: character array, or cell array of strings
   %
-  % sts    - true if all directories were successfully created or already
-  %          existing, false otherwise.
-  % __________________________________________________________________________
   %
-  % Adapted from spm_mkdir
-  % __________________________________________________________________________
+  % Based on spm_mkdir from SPM12
+  %
+  %
   % (C) Copyright 2017-2021 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   sts = true;

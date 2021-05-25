@@ -1,13 +1,20 @@
 function tsvwrite(f, var)
-  % Save text and numeric data to .tsv file
-  % FORMAT tsvwrite(f, var)
-  % f     - filename
-  % var   - data array or structure
   %
-  % __________________________________________________________________________
+  % Save text and numeric data to .tsv file
+  %
+  % USAGE::
+  %
+  %   tsvwrite(f, var)
+  %
+  % :param f: filename
+  % :type f: string
+  % :param var:
+  % :type var: data array or structure
+  %
   %
   % Based on spm_save.m from SPM12.
-  % __________________________________________________________________________
+  %
+  %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % (C) Copyright 2018 BIDS-MATLAB developers
 

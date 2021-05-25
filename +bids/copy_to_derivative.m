@@ -25,8 +25,6 @@ function copy_to_derivative(varargin)
   % :param filter:          list of filters to choose what files to copy (see bids.query)
   % :type  filter:          structure or cell
   %
-  % PARAMETERS:
-  %
   % :param unzip:           If ``true`` (default) then all ``.gz`` files will be unzipped
   %                         after being copied.
   % :type  unzip:           boolean
@@ -46,14 +44,6 @@ function copy_to_derivative(varargin)
   % and dumped into one side-car json file for each file copied.
   % In practice this "unravels" the inheritance principle.
   %
-  %
-  % __________________________________________________________________________
-  %
-  % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
-  %   The brain imaging data structure, a format for organizing and
-  %   describing outputs of neuroimaging experiments.
-  %   K. J. Gorgolewski et al, Scientific Data, 2016.
-  % __________________________________________________________________________
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 

@@ -29,10 +29,12 @@
 % __________________________________________________________________________
 %
 % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
-%   The brain imaging data structure, a format for organizing and
-%   describing outputs of neuroimaging experiments.
-%   K. J. Gorgolewski et al, Scientific Data, 2016.
+%
+% The brain imaging data structure, a format for organizing and
+% describing outputs of neuroimaging experiments.
+% K. J. Gorgolewski et al, Scientific Data, 2016.
 % __________________________________________________________________________
 %
 % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+%
 % (C) Copyright 2018 BIDS-MATLAB developers
