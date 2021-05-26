@@ -19,7 +19,7 @@ function test_report_basic()
 
   BIDS = fullfile(pth_bids_example, 'ds000117'); % ds000117 ds001 asl001 synthetic
 
-  %   BIDS = bids.layout(BIDS);
+  BIDS = bids.layout(BIDS);
 
   bids.report(BIDS, sub, ses, output_path, 'read_nifti', read_nifti, 'verbose', verbose);
 

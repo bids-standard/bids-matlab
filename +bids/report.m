@@ -1,31 +1,27 @@
 function report(varargin)
   %
-  % Create a short summary of the acquisition parameters of a BIDS dataset
+  % Create a short summary of the acquisition parameters of a BIDS dataset.
+  %
+  % The output can be saved to a markdown file and/or printed to the screen.
   %
   % USAGE::
   %
-  %     bids.report(BIDS, sub, ses, output_path, 'read_nifti', true, 'verbose', true)
+  %     bids.report(BIDS, sub, ses, output_path, 'read_nifti', read_nifti, 'verbose', verbose);
   %
-  % INPUTS:
-  % - BIDS: path to BIDS dataset or output of bids.layout [Default: pwd]
-  %
-  % - sub: Specifies which the subject label to take as template. [Default is the first subject]
-  %
-  % - ses: Specifies which the session label to take as template.
-  %
-  % - read_nii: If set to 1 (default) the function will try to read the
-  %             NIfTI file to get more information. This relies on the
-  %             spm_vol.m function from SPM.
-  %
-  % - output_path: folder where the report should be printed. If empty
-  %                (default) then the output is sent to the prompt.
-  %
-  % Unless specified the function will only read the data from the first
-  % subject, session, and run (for each task of BOLD). This can be an issue
-  % if different subjects/sessions contain very different data.
-  %
-  % See also:
-  % bids
+  % :param BIDS:  Path to BIDS dataset or output of bids.layout [Default: pwd]
+  % :type  BIDS:  string or structure
+  % :param sub:   Specifies which the subject label to take as template.
+  %               [Default is the first subject]
+  % :type  sub:   string
+  % :param ses:   Specifies which the session label to take as template.
+  % :type  ses:   string
+  % :param output_path:  Folder where the report should be printed. If empty
+  %                      (default) then the output is sent to the prompt.
+  % :type  output_path:  string
+  % :param read_nifti:  If set to ``true`` (default) the function will try to read the
+  %                     NIfTI file to get more information. This relies on the
+  %                     ``spm_vol.m`` function from SPM.
+  % :type  read_nifti:  boolean
   %
   %
   % (C) Copyright 2018 BIDS-MATLAB developers
@@ -38,7 +34,7 @@ function report(varargin)
   % - report summary statistics on participants as suggested in COBIDAS report
   % - check if all subjects have the same content?
   % - take care of other recommended metafield in BIDS specs or COBIDAS?
-  % - add a dataset description (ethics, grant, institution, scanner details...)
+  % - add a dataset description (ethics, grant, scanner details...)
 
   default_BIDS = pwd;
   default_sub = false;
@@ -49,7 +45,8 @@ function report(varargin)
 
   p = inputParser;
 
-  addOptional(p, 'BIDS', default_BIDS, @ischar);
+  charOrStruct = @(x) ischar(x) || isstruct(x);
+  addOptional(p, 'BIDS', default_BIDS, charOrStruct);
   addOptional(p, 'sub', default_sub, @ischar);
   addOptional(p, 'ses', default_ses, @ischar);
   addOptional(p, 'output_path', default_output_path, @ischar);
@@ -103,6 +100,8 @@ function report(varargin)
 
       switch suffixes{iType}
 
+        % TODO
+        % use schema to identify suffixes
         case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
 
           fprintf(file_id, '\nANATOMICAL REPORT\n\n');
@@ -124,6 +123,8 @@ function report(varargin)
           print_base_report(file_id, metadata, p.Results.verbose);
           print_to_output(text, file_id, p.Results.verbose);
 
+          % TODO
+          % should cover all functional suffixes
         case 'bold'
 
           fprintf(file_id, '\nFUNCTIONAL REPORT\n\n');
@@ -168,6 +169,8 @@ function report(varargin)
 
           end
 
+          % TODO
+          % should cover all fmap suffixes
         case 'phasediff'
 
           fprintf(file_id, '\nFIELD MAP REPORT\n\n');
