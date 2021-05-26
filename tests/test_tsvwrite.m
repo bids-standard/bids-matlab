@@ -4,14 +4,6 @@ function test_suite = test_tsvwrite %#ok<*STOUT>
   catch % no problem; early Matlab versions can use initTestSuite fine
   end
   initTestSuite;
-
-  %
-  % Small test to ensure that the functionality of the tsvwrite function
-  %
-  % Copyright (C) 2020, Remi Gau
-  % Copyright (C) 2020--, BIDS-MATLAB developers
-  %
-
 end
 
 function test_tsvwrite_basic()
