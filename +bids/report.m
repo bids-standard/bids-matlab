@@ -110,17 +110,13 @@ function report(varargin)
           [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
           [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
+          boilerplate_text = replace_placeholders(boilerplate_text, metadata);
 
           acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
           text = sprintf(boilerplate_text, ...
-                         acq_param.type, ...
-                         acq_param.variants, ...
-                         acq_param.seqs, ...
                          acq_param.n_slices, ...
-                         acq_param.tr, ...
                          acq_param.te, ...
-                         acq_param.fa, ...
                          acq_param.fov, ...
                          acq_param.ms, ...
                          acq_param.vs);
@@ -138,31 +134,27 @@ function report(varargin)
             [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
             [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
+            boilerplate_text = replace_placeholders(boilerplate_text, metadata);
 
             acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
             acq_param.n_runs = num2str(nb_runs);
 
             % set run duration
-            if ~strcmp(acq_param.tr, '[XXtrXX]') && ...
-                    ~strcmp(acq_param.n_vols, '[XXn_volsXX]')
-
-              acq_param.length = ...
-                  num2str(str2double(acq_param.tr) / 1000 * ...
-                          str2double(acq_param.n_vols) / 60);
-
-            end
+            %             if ~strcmp(acq_param.tr, '[XXtrXX]') && ...
+            %                     ~strcmp(acq_param.n_vols, '[XXn_volsXX]')
+            %
+            %               acq_param.length = ...
+            %                   num2str(str2double(acq_param.tr) / 1000 * ...
+            %                           str2double(acq_param.n_vols) / 60);
+            %
+            %             end
 
             text = sprintf(boilerplate_text, ...
                            acq_param.n_runs, ...
-                           acq_param.task, ...
-                           acq_param.variants, ...
-                           acq_param.seqs, ...
                            acq_param.n_slices, ...
                            acq_param.so_str, ...
-                           acq_param.tr, ...
                            acq_param.te, ...
-                           acq_param.fa, ...
                            acq_param.fov, ...
                            acq_param.ms, ...
                            acq_param.vs, ...
@@ -183,6 +175,7 @@ function report(varargin)
           [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
           [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
+          boilerplate_text = replace_placeholders(boilerplate_text, metadata);
 
           acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
@@ -191,13 +184,8 @@ function report(varargin)
           acq_param.for = 'TODO';
 
           text = sprintf(boilerplate_text, ...
-                         acq_param.variants, ...
-                         acq_param.seqs, ...
-                         acq_param.phs_enc_dir, ...
                          acq_param.n_slices, ...
-                         acq_param.tr, ...
                          acq_param.te, ...
-                         acq_param.fa, ...
                          acq_param.fov, ...
                          acq_param.ms, ...
                          acq_param.vs, ...
@@ -213,6 +201,7 @@ function report(varargin)
           [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
           [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
+          boilerplate_text = replace_placeholders(boilerplate_text, metadata);
 
           acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
@@ -226,13 +215,9 @@ function report(varargin)
           end
 
           text = sprintf(boilerplate_text, ...
-                         acq_param.variants, ...
-                         acq_param.seqs, ...
                          acq_param.n_slices, ...
                          acq_param.so_str, ...
-                         acq_param.tr, ...
                          acq_param.te, ...
-                         acq_param.fa, ...
                          acq_param.fov, ...
                          acq_param.ms, ...
                          acq_param.vs, ...
@@ -246,11 +231,25 @@ function report(varargin)
         case 'physio'
           bids.internal.warning('physio not supported yet', p.Results.verbose);
 
-        case {'headshape' 'meg' 'eeg' 'channels'}
-          bids.internal.warning('MEEG not supported yet', p.Results.verbose);
+        case {'meg' 'eeg'}
+
+          for iTask = 1:numel(tasks)
+
+            filter.task = tasks{iTask};
+            [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
+
+            [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
+            boilerplate_text = replace_placeholders(boilerplate_text, metadata);
+
+            print_base_report(file_id, metadata, p.Results.verbose);
+
+          end
 
         case 'events'
           bids.internal.warning('events not supported yet', p.Results.verbose);
+
+        otherwise
+          % 'channels' 'headshape'
 
       end
 
@@ -391,7 +390,7 @@ function acq_param = get_acq_param(BIDS, filter, read_gz, verbose)
   % Will get info from acquisition parameters from the BIDS structure or from
   % the NIfTI files
 
-  acq_param = set_default_acq_param(filter);
+  acq_param = set_default_acq_param();
 
   [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
 
@@ -401,10 +400,7 @@ function acq_param = get_acq_param(BIDS, filter, read_gz, verbose)
 
   fields_list = { ...
                  'te', 'EchoTime'; ...
-                 'tr', 'RepetitionTime'; ...
-                 'fa', 'FlipAngle'; ...
                  'so_str', 'SliceTiming'; ...
-                 'phs_enc_dir', 'PhaseEncodingDirection'; ...
                  'for_str', 'IntendedFor'};
 
   acq_param = get_parameter(acq_param, metadata, fields_list);
@@ -413,7 +409,8 @@ function acq_param = get_acq_param(BIDS, filter, read_gz, verbose)
     acq_param.te = [metadata.EchoTime1 metadata.EchoTime2];
   end
 
-  acq_param = convert_field_to_millisecond(acq_param, {'tr', 'te'});
+  % TODO
+  % acq_param = convert_field_to_millisecond(acq_param, {'tr', 'te'});
 
   if isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
     acq_param.te = sprintf('%0.2f / %0.2f', acq_param.te);
@@ -464,21 +461,9 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
 
 end
 
-function acq_param = set_default_acq_param(filter)
+function acq_param = set_default_acq_param()
 
-  % to return dummy values in case nothing was specified
-  acq_param.type = filter.suffix;
-  acq_param.variants = '[XXvariantsXX]';
-  acq_param.seqs = '[XXseqsXX]';
-
-  acq_param.tr = '[XXtrXX]';
   acq_param.te = '[XXteXX]';
-  acq_param.fa = '[XXfaXX]';
-
-  acq_param.task  = '';
-  if isfield(filter, 'task')
-    acq_param.task  = filter.task;
-  end
 
   % number of runs (dealt with outside this function but initialized here)
   acq_param.n_runs  = '[XXn_runsXX]';
@@ -488,7 +473,6 @@ function acq_param = set_default_acq_param(filter)
   acq_param.length  = '[XXlengthXX]';
 
   acq_param.for_str = '[XXfor_strXX]'; % for fmap: for which run this fmap is for.
-  acq_param.phs_enc_dir = '[XXphs_enc_dirXX]'; % phase encoding direction.
 
   acq_param.bval_str = '[XXbval_strXX]';
   acq_param.n_vecs = '[XXn_vecsXX]';
@@ -502,10 +486,8 @@ function acq_param = set_default_acq_param(filter)
 end
 
 function [filename, metadata] = get_filemane_and_metadata(BIDS, filter)
-
   filename = bids.query(BIDS, 'data', filter);
   metadata = bids.query(BIDS, 'metadata', filter);
-
 end
 
 function acq_param = get_parameter(acq_param, metadata, fields_list)
@@ -576,10 +558,40 @@ function so_str = define_slice_timing(slice_timing)
 end
 
 function print_to_output(text, file_id, verbose)
+
   text = [text '\n'];
+  text = strrep(text, '{{', '');
+  text = strrep(text, '}}', '');
+
+  text = add_word_wrap(text);
+
   fprintf(file_id,  text);
+
+  % Print to screen
   if verbose && file_id ~= 1
     fprintf(1, text);
+  end
+end
+
+function text = add_word_wrap(text)
+
+  linelength = 80;
+
+  space = strfind(text, ' ');
+
+  linebreaks = find(diff(mod(space, linelength)) < 1) + 1;
+
+  for i_linebreaks = 1:numel(linebreaks)
+
+    % the line break shift the string sequence
+    % so the breaks should be offsetted;
+    offset = 2 * (i_linebreaks - 1);
+
+    this_break = space(linebreaks(i_linebreaks)) + offset;
+
+    text = [text(1:this_break), ...
+            '\n', ...
+            text(this_break + 1:end)];
   end
 end
 
@@ -599,6 +611,10 @@ function boilerplate_text = replace_placeholders(boilerplate_text, metadata)
     else
       text_to_insert = ['XXX' placeholders{i}{1} 'XXX'];
 
+    end
+
+    if isnumeric(text_to_insert)
+      text_to_insert = num2str(text_to_insert);
     end
 
     boilerplate_text = strrep(boilerplate_text, ...
