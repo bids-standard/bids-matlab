@@ -1,0 +1,3 @@
+%s %s %s structural MRI data were collected (%s slices;
+repetition time, TR= %s ms; echo time, TE= %s ms; flip angle, FA=%s deg;
+field of view, FOV= %s mm; matrix size= %s; voxel size= %s mm)

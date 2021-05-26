@@ -1,0 +1,6 @@
+%s run(s) of %s %s %s fMRI data were collected (%s slices acquired in 
+a %s fashion; repetition time, TR= %s ms; echo time, TE= %s ms;  
+flip angle, FA= %s deg; field of view, FOV= %s mm; matrix size= %s; 
+voxel size= %s mm; multiband factor= %s; 
+in-plane acceleration factor= %s). 
+Each run was %s minutes in length, during which %s functional volumes were acquired.

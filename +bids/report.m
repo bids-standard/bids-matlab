@@ -99,7 +99,7 @@ function report(varargin)
 
       tasks = bids.query(BIDS, 'tasks', filter);
 
-      boilerplate_text = get_boilerplate(suffixes{iType}, file_id);
+      boilerplate_text = get_boilerplate(suffixes{iType});
 
       switch suffixes{iType}
 
@@ -238,15 +238,27 @@ function report(varargin)
 
       end
 
-      fprintf(file_id, '\n');
-      if p.Results.verbose && file_id ~= 1
-        fprintf(file_id, '\n');
-      end
+      print_to_output('\n', file_id, p.Results.verbose);
 
     end
 
   end
 
+  print_credit(file_id, p.Results.verbose);
+
+end
+
+function print_credit(file_id, verbose)
+  boilerplate_text = get_boilerplate('credit');
+  text = [boilerplate_text '\n'];
+  print_to_output(text, file_id, verbose);
+end
+
+function print_to_output(text, file_id, verbose)
+  fprintf(file_id,  text);
+  if verbose && file_id ~= 1
+    fprintf(1, text);
+  end
 end
 
 function sub = select_subject(BIDS, p)
@@ -321,55 +333,40 @@ function [filter, nb_runs] = update_filter_with_run_label(BIDS, filter)
 
 end
 
-function template = get_boilerplate(type, file_id)
+function template = get_boilerplate(type)
 
-  template = '';
+  file = '';
 
   switch type
 
     case 'Institution'
-      template = [ ...
-                  'The recordings were performed in the {{InstitutionName}},', ...
-                  '{{InstitutionalDepartmentName}}, {{InstitutionAddress}}.'];
+      file = 'institution.txt';
 
     case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
-      template = [ ...
-                  '%s %s %s structural MRI data were collected (%s slices; \n', ...
-                  'repetition time, TR= %s ms; echo time, TE= %s ms; flip angle, FA=%s deg; \n', ...
-                  'field of view, FOV= %s mm; matrix size= %s; voxel size= %s mm) \n\n'];
+      file = 'anat.txt';
 
     case 'bold'
-      template = [ ...
-                  '%s run(s) of %s %s %s fMRI data were collected (%s slices acquired in \n', ...
-                  'a %s fashion; repetition time, TR= %s ms; echo time, TE= %s ms;  \n', ...
-                  'flip angle, FA= %s deg; field of view, FOV= %s mm; matrix size= %s; \n', ...
-                  'voxel size= %s mm; multiband factor= %s; \n', ...
-                  'in-plane acceleration factor= %s). \n', ...
-                  'Each run was %s minutes in length, during which %s functional volumes  \n', ...
-                  'were acquired. \n\n'];
+      file = 'func.txt';
 
     case   'phasediff'
-      template = [ ...
-                  'A %s %s field map (phase encoding: %s; %s slices; repetition time, \n', ...
-                  'TR= %s ms; echo time 1 / 2, TE 1/2= %s ms; flip angle, FA= %s deg; \n', ...
-                  'field of view, FOV= %s mm; matrix size= %s; \n', ...
-                  'voxel size= %s mm) was acquired %s. \n\n'];
+      file = 'fmap.txt';
 
     case 'dwi'
+      file = 'dwi.txt';
 
-      template = [ ...
-                  'One run of %s %s diffusion-weighted (dMRI) data were collected \n', ...
-                  '(%s  slices %s ; repetition time, TR= %s ms \n', ...
-                  'echo time, TE= %s ms; flip angle, FA= %s deg; field of view, \n', ...
-                  'FOV= %s mm; matrix size= %s ; voxel size= %s mm \n', ...
-                  'b-values of %s acquired; %s diffusion directions; \n', ...
-                  'multiband factor= %s ). \n\n'];
+    case 'credit'
+      file = 'credit.tmp';
 
   end
 
-  % if we save to file we don't need new lines.
-  if file_id > 1
-    template = strrep(template, '\n', '');
+  if ~isempty(file)
+    fid = fopen(fullfile(fileparts(mfilename('fullpath')), '..', ...
+                         'templates', 'boilerplates', file));
+    C = textscan(fid, '%s');
+    fclose(fid);
+    template = strjoin(C{1}, ' ');
+  else
+    template = '';
   end
 
 end
