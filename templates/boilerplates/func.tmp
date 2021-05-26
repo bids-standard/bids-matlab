@@ -1,0 +1,7 @@
+For the {{TaskName}}, %s run(s) of {{PulseSequenceType}} {{ScanningSequence}} {{SequenceVariant}} 
+fMRI data were collected (%s slices acquired in 
+a %s fashion; repetition time, TR= {{RepetitionTime}} ms; echo time, TE= %s ms;  
+flip angle, FA= {{FlipAngle}} deg; field of view, FOV= %s mm; matrix size= %s; 
+voxel size= %s mm; multiband factor= %s; 
+in-plane acceleration factor= %s). 
+Each run was %s minutes in length, during which %s functional volumes were acquired.

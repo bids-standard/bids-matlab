@@ -8,17 +8,19 @@ end
 
 function test_report_basic()
 
-  sub = 1;
-  ses = 1;
-  run = 1;
-  ReadNII = false;
+  read_nifti = false;
   output_path = fullfile(fileparts(mfilename('fullpath')), 'output');
   verbose = false;
 
+  sub = '';
+  ses = '';
+
   pth_bids_example = get_test_data_dir();
 
-  BIDS = fullfile(pth_bids_example, 'ds001');
+  BIDS = fullfile(pth_bids_example, 'ds000117'); % ds000117 ds001 asl001 synthetic
 
-  bids.report(BIDS, sub, ses, run, ReadNII, output_path, verbose);
+  BIDS = bids.layout(BIDS);
+
+  bids.report(BIDS, sub, ses, output_path, 'read_nifti', read_nifti, 'verbose', verbose);
 
 end

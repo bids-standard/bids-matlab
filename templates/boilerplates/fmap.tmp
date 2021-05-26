@@ -1,0 +1,4 @@
+A {{PulseSequenceType}} {{ScanningSequence}} {{SequenceVariant}} field map (phase encoding: {{PhaseEncodingDirection}}; %s slices; repetition time, 
+TR= {{RepetitionTime}} ms; echo time 1 / 2, TE 1/2= %s ms; flip angle, FA= {{FlipAngle}} deg; 
+field of view, FOV= %s mm; matrix size= %s; 
+voxel size= %s mm) was acquired %s. 

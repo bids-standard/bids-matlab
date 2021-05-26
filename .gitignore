@@ -3,16 +3,17 @@ octave-workspace
 *.*~
 *.swp
 
-# ignore virtual env
+# virtual env
 env/*
 
-# ignore bids-specification repo (necessary for convert_schema.py)
+# bids-specification repo (necessary for convert_schema.py)
 bids-specification/*
 
-# ignore input and output data involved in tests
+# input and output data involved in tests
 data/*
 derivatives/*
 tests/*.tsv
+
 
 # styling
 .prettierrc
