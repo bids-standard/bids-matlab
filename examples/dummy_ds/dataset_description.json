@@ -1,0 +1,32 @@
+{
+    "Name": "",
+    "BIDSVersion": "",
+    "DatasetType": "derivative",
+    "License": "",
+    "Authors": "",
+    "Acknowledgements": "",
+    "HowToAcknowledge": "",
+    "Funding": "",
+    "ReferencesAndLinks": "",
+    "DatasetDOI": "",
+    "HEDVersion": "",
+    "GeneratedBy": [
+        {
+            "Name": "",
+            "Version": "",
+            "Description": "",
+            "CodeURL": "",
+            "Container": {
+                "Type": "",
+                "Tag": ""
+            }
+        }
+    ],
+    "SourceDatasets": [
+        {
+            "DOI": "",
+            "URL": "",
+            "Version": ""
+        }
+    ]
+}

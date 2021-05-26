@@ -2,7 +2,21 @@ function init(varargin)
   %
   % Initialize dataset with README, description, folder structure...
   %
-  % init(pth, folders, is_derivative, is_datalad_ds)
+  % USAGE::
+  %
+  %   init(pth, folders, is_derivative, is_datalad_ds)
+  %
+  % :param pth: directory where to create the dataset
+  % :type  pth: string
+  % :param folders: define the folder structure to create.
+  %                 ``folders.subjects``
+  %                 ``folders.sessions``
+  %                 ``folders.modalities``
+  % :type  folders: structure
+  % :param is_derivative:
+  % :type  is_derivative: boolean
+  % :param is_datalad_ds:
+  % :type  is_derivative: boolean
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
