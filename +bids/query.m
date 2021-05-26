@@ -286,17 +286,13 @@ function result = update_result(query, options, result, this_subject, this_modal
           result{end + 1} = d(k).suffix;
 
         case 'prefixes'
-          if isfield(d(k), 'prefix')
-            result{end + 1} = d(k).prefix;
-          end
+          result{end + 1} = d(k).prefix;
 
         case 'extensions'
           result{end + 1} = d(k).ext;
 
         case 'dependencies'
-          if isfield(d(k), 'dependencies')
-            result{end + 1, 1} = d(k).dependencies;
-          end
+          result{end + 1, 1} = d(k).dependencies;
 
       end
 
