@@ -125,7 +125,7 @@ function report(varargin)
                          acq_param.ms, ...
                          acq_param.vs);
 
-          print_institution_info(file_id, metadata, p.Results.verbose);
+          print_base_report(file_id, metadata, p.Results.verbose);
           print_to_output(text, file_id, p.Results.verbose);
 
         case 'bold'
@@ -136,6 +136,8 @@ function report(varargin)
 
             filter.task = tasks{iTask};
             [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
+
+            [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
 
             acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
@@ -169,6 +171,7 @@ function report(varargin)
                            acq_param.length, ...
                            acq_param.n_vols);
 
+            print_base_report(file_id, metadata, p.Results.verbose);
             print_to_output(text, file_id, p.Results.verbose);
 
           end
@@ -178,6 +181,8 @@ function report(varargin)
           fprintf(file_id, '\nFIELD MAP REPORT\n\n');
 
           [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
+
+          [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
 
           acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
@@ -198,6 +203,7 @@ function report(varargin)
                          acq_param.vs, ...
                          acq_param.for);
 
+          print_base_report(file_id, metadata, p.Results.verbose);
           print_to_output(text, file_id, p.Results.verbose);
 
         case 'dwi'
@@ -205,6 +211,8 @@ function report(varargin)
           fprintf(file_id, '\nDWI REPORT\n\n');
 
           [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
+
+          [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
 
           acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
 
@@ -232,6 +240,7 @@ function report(varargin)
                          acq_param.n_vecs, ...
                          acq_param.mb_str);
 
+          print_base_report(file_id, metadata, p.Results.verbose);
           print_to_output(text, file_id, p.Results.verbose);
 
         case 'physio'
@@ -340,14 +349,14 @@ function [filter, nb_runs] = update_filter_with_run_label(BIDS, filter)
 
 end
 
-function template = get_boilerplate(suffix)
+function template = get_boilerplate(type)
 
   file = '';
 
-  switch suffix
+  switch type
 
-    case 'institution'
-      file = 'institution.tmp';
+    case {'institution', 'device_info'}
+      file = [type '.tmp'];
 
     case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
       file = 'anat.tmp';
@@ -574,7 +583,10 @@ function print_to_output(text, file_id, verbose)
   end
 end
 
-function boilerplate_text = replace_placeholders(boilerplate_text, placeholders, metadata)
+function boilerplate_text = replace_placeholders(boilerplate_text, metadata)
+
+  placeholders = return_list_placeholders(boilerplate_text);
+
   for i = 1:numel(placeholders)
 
     this_placeholder = placeholders{i}{1};
@@ -582,7 +594,7 @@ function boilerplate_text = replace_placeholders(boilerplate_text, placeholders,
     if isfield(metadata, this_placeholder) && ...
             ~isempty(metadata.(this_placeholder))
 
-      text_to_insert = placeholders{i}{1};
+      text_to_insert = metadata.(this_placeholder);
 
     else
       text_to_insert = ['XXX' placeholders{i}{1} 'XXX'];
@@ -590,25 +602,31 @@ function boilerplate_text = replace_placeholders(boilerplate_text, placeholders,
     end
 
     boilerplate_text = strrep(boilerplate_text, ...
-                              text_to_insert, ...
-                              metadata.(this_placeholder));
+                              this_placeholder,  ...
+                              text_to_insert);
 
   end
+
 end
 
 function placeholders = return_list_placeholders(boilerplate_text)
   placeholders = regexp(boilerplate_text, '{{(\w*)}}', 'tokens');
 end
 
+function print_base_report(file_id, metadata, verbose)
+  print_institution_info(file_id, metadata, verbose);
+  print_device_info(file_id, metadata, verbose);
+end
+
 function print_institution_info(file_id, metadata, verbose)
   boilerplate_text = get_boilerplate('institution');
-  placeholders = return_list_placeholders(boilerplate_text);
-  boilerplate_text = replace_placeholders(boilerplate_text, placeholders, metadata);
+  boilerplate_text = replace_placeholders(boilerplate_text, metadata);
   print_to_output(boilerplate_text, file_id, verbose);
 end
 
-function print_device_info(file_id, verbose)
-  boilerplate_text = get_boilerplate('credit');
+function print_device_info(file_id, metadata, verbose)
+  boilerplate_text = get_boilerplate('device_info');
+  boilerplate_text = replace_placeholders(boilerplate_text, metadata);
   print_to_output(boilerplate_text, file_id, verbose);
 end
 
