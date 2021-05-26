@@ -85,7 +85,7 @@ function report(varargin)
 
       if nb_ses > 1
         text = sprintf('\n Working on session: %s\n', ses{iSess});
-        print_to_output(text, 1, p.Results.verbose);
+        print_to_output(text, file_id, p.Results.verbose);
       end
 
     end
@@ -316,7 +316,7 @@ function file_id = open_output_file(BIDS, output_path, verbose)
     else
 
       text = sprintf('Dataset description saved in:  %s\n\n', filename);
-      print_to_output(text, 1, verbose);
+      print_to_output(text, file_id, verbose);
 
     end
 

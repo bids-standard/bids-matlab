@@ -10,7 +10,7 @@ function test_report_basic()
 
   read_nifti = false;
   output_path = fullfile(fileparts(mfilename('fullpath')), 'output');
-  verbose = true;
+  verbose = false;
 
   sub = '';
   ses = '';
