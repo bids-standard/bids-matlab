@@ -70,25 +70,26 @@ function report(varargin)
 
   sub = select_subject(BIDS, p);
 
-  ses = select_session(BIDS, p, sub);
+  [ses, nb_ses] = select_session(BIDS, p, sub);
 
   read_nii = p.Results.read_nifti & exist('spm_vol', 'file') == 2;
 
   file_id = open_output_file(BIDS, p.Results.output_path, p.Results.verbose);
 
-  % -Loop through all the required sessions
-  % --------------------------------------------------------------------------
-  for iSess = 1:numel(ses)
+  for iSess = 1:nb_ses
 
     clear filter;
 
     filter.sub = sub;
-    filter.ses = ses{iSess};
 
-    if numel(ses) ~= 1 && ~strcmp(ses{iSess}, '')
-      if p.Results.verbose
-        fprintf(1, '\n Working on session: %s\n', ses{iSess});
+    if ~isempty(ses)
+      filter.ses = ses{iSess};
+
+      if nb_ses > 1
+        text = sprintf('\n Working on session: %s\n', ses{iSess});
+        print_to_output(text, 1, p.Results.verbose);
       end
+
     end
 
     suffixes = bids.query(BIDS, 'suffixes', filter);
@@ -271,7 +272,7 @@ function sub = select_subject(BIDS, p)
 
 end
 
-function ses = select_session(BIDS, p, sub)
+function [ses, nb_ses] = select_session(BIDS, p, sub)
 
   ses = p.Results.ses;
   sessions = bids.query(BIDS, 'sessions', 'sub', sub);
@@ -280,6 +281,11 @@ function ses = select_session(BIDS, p, sub)
   end
   if ischar(ses)
     ses = {ses};
+  end
+
+  nb_ses = numel(ses);
+  if nb_ses < 1
+    nb_ses = 1;
   end
 
 end
