@@ -16,6 +16,7 @@ function tsvwrite(f, var)
   %
   %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   delim = sprintf('\t');
