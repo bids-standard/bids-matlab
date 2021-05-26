@@ -9,14 +9,18 @@ function result = query(BIDS, query, varargin)
   % :param BIDS: BIDS directory name or BIDS structure (from bids.layout)
   % :type  BIDS: strcuture or string
   % :param query: type of query:
-  %                          - 'data',
-  %                          - 'metadata',
-  %                          - 'sessions',
-  %                          - 'subjects',
-  %                          - 'runs',
-  %                          - 'tasks',
-  %                          - 'suffixes',
-  %                          - 'modalities'
+  %                              - 'sessions'
+  %                              - 'subjects'
+  %                              - 'modalities'
+  %                              - 'tasks'
+  %                              - 'runs'
+  %                              - 'suffixes'
+  %                              - 'data'
+  %                              - 'metadata'
+  %                              - 'metafiles'
+  %                              - 'dependencies'
+  %                              - 'extensions'
+  %                              - 'prefixes'
   % :type  query: string
   %
   % Queries can "filtered" by passing more arguments key-value pairs as a list of
@@ -272,21 +276,15 @@ function result = update_result(query, options, result, this_subject, this_modal
           %   result{end+1} = d(k).meta;
           % end
 
-        case 'runs'
-          if isfield(d(k).entities, 'run')
-            result{end + 1} = d(k).entities.run;
+        case {'runs', 'tasks'}
+          field = query(1:end - 1);
+          if isfield(d(k).entities, field)
+            result{end + 1} = d(k).entities.(field);
           end
 
-        case 'tasks'
-          if isfield(d(k).entities, 'task')
-            result{end + 1} = d(k).entities.task;
-          end
-
-        case 'suffixes'
-          result{end + 1} = d(k).suffix;
-
-        case 'prefixes'
-          result{end + 1} = d(k).prefix;
+        case {'suffixes', 'prefixes'}
+          field = query(1:end - 2);
+          result{end + 1} = d(k).(field);
 
         case 'extensions'
           result{end + 1} = d(k).ext;
