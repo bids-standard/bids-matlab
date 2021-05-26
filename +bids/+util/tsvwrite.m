@@ -16,6 +16,7 @@ function tsvwrite(f, var)
   %
   %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   delim = sprintf('\t');
@@ -60,43 +61,7 @@ function tsvwrite(f, var)
 
     end
 
-    % Actually write to file
-    fid = fopen(f, 'Wt');
-
-    if fid == -1
-      error('Unble to write file %s.', f);
-    end
-
-    for i = 1:size(var, 1)
-
-      for j = 1:size(var, 2)
-
-        to_print = var{i, j};
-
-        if iscell(to_print)
-          to_print = to_print{1};
-        end
-
-        if isempty(to_print)
-          to_print = 'n/a';
-
-        elseif any(to_print == delim)
-          to_print = ['"' to_print '"'];
-
-        end
-
-        fprintf(fid, '%s', to_print);
-
-        if j < size(var, 2)
-          fprintf(fid, delim);
-        end
-
-      end
-
-      fprintf(fid, '\n');
-    end
-
-    fclose(fid);
+    write_to_file(f, var, delim);
 
   elseif isa(var, 'table')
     writetable(var, f, ...
@@ -107,3 +72,45 @@ function tsvwrite(f, var)
     error('Unknown data type.');
 
   end
+
+end
+
+function write_to_file(filename, var, delim)
+
+  fid = fopen(filename, 'Wt');
+
+  if fid == -1
+    error('Unble to write file %s.', filename);
+  end
+
+  for i = 1:size(var, 1)
+
+    for j = 1:size(var, 2)
+
+      to_print = var{i, j};
+
+      if iscell(to_print)
+        to_print = to_print{1};
+      end
+
+      if isempty(to_print)
+        to_print = 'n/a';
+
+      elseif any(to_print == delim)
+        to_print = ['"' to_print '"'];
+
+      end
+
+      fprintf(fid, '%s', to_print);
+
+      if j < size(var, 2)
+        fprintf(fid, delim);
+      end
+
+    end
+
+    fprintf(fid, '\n');
+  end
+
+  fclose(fid);
+end
