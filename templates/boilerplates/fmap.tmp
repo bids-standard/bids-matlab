@@ -1,0 +1,4 @@
+A %s %s field map (phase encoding: %s; %s slices; repetition time, 
+TR= %s ms; echo time 1 / 2, TE 1/2= %s ms; flip angle, FA= %s deg; 
+field of view, FOV= %s mm; matrix size= %s; 
+voxel size= %s mm) was acquired %s. 

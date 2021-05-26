@@ -333,26 +333,26 @@ function [filter, nb_runs] = update_filter_with_run_label(BIDS, filter)
 
 end
 
-function template = get_boilerplate(type)
+function template = get_boilerplate(suffix)
 
   file = '';
 
-  switch type
+  switch suffix
 
-    case 'Institution'
-      file = 'institution.txt';
+    case 'institution'
+      file = 'institution.tmp';
 
     case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
-      file = 'anat.txt';
+      file = 'anat.tmp';
 
     case 'bold'
-      file = 'func.txt';
+      file = 'func.tmp';
 
     case   'phasediff'
-      file = 'fmap.txt';
+      file = 'fmap.tmp';
 
     case 'dwi'
-      file = 'dwi.txt';
+      file = 'dwi.tmp';
 
     case 'credit'
       file = 'credit.tmp';
