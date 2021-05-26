@@ -202,96 +202,104 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
   % Loop through all the subjects and modalities filtered previously
   for i = 1:numel(BIDS.subjects)
 
+    this_subject = BIDS.subjects(i);
+
     % Only continue if this subject is one of those filtered
-    if ~ismember(BIDS.subjects(i).name(5:end), subjects)
+    if ~ismember(this_subject.name(5:end), subjects)
       continue
     end
 
     for j = 1:numel(modalities)
 
+      this_modality = modalities{j};
+
       % Only continue if this modality is one of those filtered
-      if ~ismember(modalities{j}, fieldnames(BIDS.subjects(i)))
+      if ~ismember(this_modality, fieldnames(this_subject))
         continue
       end
 
-      d = BIDS.subjects(i).(modalities{j});
+      result = update_result(query, options, result, this_subject, this_modality, target);
 
-      for k = 1:numel(d)
-
-        % status is kept true only if this file matches
-        % the options of the query
-        status = bids.internal.keep_file_for_query(d(k), options);
-
-        if status
-
-          switch query
-
-            case 'subjects'
-              result{end + 1} = BIDS.subjects(i).name;
-
-            case 'sessions'
-              result{end + 1} = BIDS.subjects(i).session;
-
-            case 'modalities'
-              hasmod = structfun(@(x) isstruct(x) & ~isempty(x), ...
-                                 BIDS.subjects(i));
-              allmods = fieldnames(BIDS.subjects(i))';
-              result = union(result, allmods(hasmod));
-
-            case 'data'
-              result{end + 1} = fullfile(BIDS.subjects(i).path, modalities{j}, d(k).filename);
-
-            case 'metafiles'
-              fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
-              result = [result; fmeta];
-
-            case 'metadata'
-              fmeta = BIDS.subjects(i).(modalities{j})(k).metafile;
-              result{end + 1, 1} = bids.internal.get_metadata(fmeta);
-              if ~isempty(target)
-                try
-                  result{end} = subsref(result{end}, target);
-                catch
-                  warning('Non-existent field for metadata.');
-                  result{end} = [];
-                end
-              end
-
-              % if status && isfield(d(k),'meta')
-              %   result{end+1} = d(k).meta;
-              % end
-
-            case 'runs'
-              if isfield(d(k).entities, 'run')
-                result{end + 1} = d(k).entities.run;
-              end
-
-            case 'tasks'
-              if isfield(d(k).entities, 'task')
-                result{end + 1} = d(k).entities.task;
-              end
-
-            case 'suffixes'
-              result{end + 1} = d(k).suffix;
-
-            case 'prefixes'
-              if isfield(d(k), 'prefix')
-                result{end + 1} = d(k).prefix;
-              end
-
-            case 'extensions'
-              result{end + 1} = d(k).ext;
-
-            case 'dependencies'
-              if isfield(d(k), 'dependencies')
-                result{end + 1, 1} = d(k).dependencies;
-              end
-
-          end
-
-        end
-      end
     end
   end
 
+end
+
+function result = update_result(query, options, result, this_subject, this_modality, target)
+
+  d = this_subject.(this_modality);
+
+  for k = 1:numel(d)
+
+    % status is kept true only if this file matches the options of the query
+    status = bids.internal.keep_file_for_query(d(k), options);
+
+    if status
+
+      switch query
+
+        case 'subjects'
+          result{end + 1} = this_subject.name;
+
+        case 'sessions'
+          result{end + 1} = this_subject.session;
+
+        case 'modalities'
+          hasmod = structfun(@(x) isstruct(x) & ~isempty(x), this_subject);
+          allmods = fieldnames(this_subject)';
+          result = union(result, allmods(hasmod));
+
+        case 'data'
+          result{end + 1} = fullfile(this_subject.path, this_modality, d(k).filename);
+
+        case 'metafiles'
+          fmeta = this_subject.(this_modality)(k).metafile;
+          result = [result; fmeta];
+
+        case 'metadata'
+          fmeta = this_subject.(this_modality)(k).metafile;
+          result{end + 1, 1} = bids.internal.get_metadata(fmeta);
+          if ~isempty(target)
+            try
+              result{end} = subsref(result{end}, target);
+            catch
+              warning('Non-existent field for metadata.');
+              result{end} = [];
+            end
+          end
+
+          % if status && isfield(d(k),'meta')
+          %   result{end+1} = d(k).meta;
+          % end
+
+        case 'runs'
+          if isfield(d(k).entities, 'run')
+            result{end + 1} = d(k).entities.run;
+          end
+
+        case 'tasks'
+          if isfield(d(k).entities, 'task')
+            result{end + 1} = d(k).entities.task;
+          end
+
+        case 'suffixes'
+          result{end + 1} = d(k).suffix;
+
+        case 'prefixes'
+          if isfield(d(k), 'prefix')
+            result{end + 1} = d(k).prefix;
+          end
+
+        case 'extensions'
+          result{end + 1} = d(k).ext;
+
+        case 'dependencies'
+          if isfield(d(k), 'dependencies')
+            result{end + 1, 1} = d(k).dependencies;
+          end
+
+      end
+
+    end
+  end
 end

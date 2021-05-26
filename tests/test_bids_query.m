@@ -4,10 +4,6 @@ function test_suite = test_bids_query %#ok<*STOUT>
   catch % no problem; early Matlab versions can use initTestSuite fine
   end
   initTestSuite;
-
-  % Copyright (C) 2019, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2019--, BIDS-MATLAB developers
-
 end
 
 function test_query_basic()
