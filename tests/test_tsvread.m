@@ -7,20 +7,6 @@ function test_suite = test_tsvread %#ok<*STOUT>
 end
 
 function test_tsvread_basic()
-  % Test the tsvread function
-  % __________________________________________________________________________
-  %
-  % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
-  %   The brain imaging data structure, a format for organizing and
-  %   describing outputs of neuroimaging experiments.
-  %   K. J. Gorgolewski et al, Scientific Data, 2016.
-  % __________________________________________________________________________
-  %
-  % Copyright (C) 2019, Remi Gau
-  % Copyright (C) 2019--, BIDS-MATLAB developers
-  %
-  %
-  % Small test to ensure that the functionality of the tsvread function
 
   pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
 
@@ -38,5 +24,19 @@ function test_tsvread_basic()
                                       'data', ...
                                       'sub-01_task-auditory_events.tsv.gz'));
   assertEqual(output.onset', events.onset);
+
+end
+
+function test_tsvread_subset()
+
+  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
+
+  % define the expected output from bids query metadata
+  events.onset = [42 126 210 294 378 462 546];
+
+  %% test tsvread on tsv file
+  tsv_file = fullfile(pth, 'sub-01', 'func', 'sub-01_task-auditory_events.tsv');
+  output = bids.util.tsvread(tsv_file, 'onset');
+  assertEqual(output', events.onset);
 
 end

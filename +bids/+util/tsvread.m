@@ -79,6 +79,12 @@ function fileContent = tsvread(filename, fieldToReturn, hdr)
       end
   end
 
+  fileContent = return_subset(fileContent, fieldToReturn);
+
+end
+
+function fileContent = return_subset(fileContent, fieldToReturn)
+
   % -Return relevant subset of the data if required
   % --------------------------------------------------------------------------
   if isstruct(fileContent)
@@ -120,10 +126,10 @@ function fileContent = tsvread(filename, fieldToReturn, hdr)
     end
   end
 
-  % ==========================================================================
-  % function x = dsv_read(f,delim)
-  % ==========================================================================
+end
+
 function x = dsv_read(filename, delim, header)
+
   % Read delimiter-separated values file into a structure array
   % * header line of column names will be used if detected
   % * 'n/a' fields are replaced with NaN
@@ -217,3 +223,5 @@ function x = dsv_read(filename, delim, header)
     x = struct2cell(x);
     x = [x{:}];
   end
+
+end
