@@ -788,7 +788,7 @@ function file_list = return_file_list(modality, subject)
       pattern = '_([a-zA-Z0-9]+){1}\\.nii(\\.gz)?';
 
     case 'pet'
-      pattern = '_task-.*_pet\\.nii(\\.gz)?';
+      pattern = '_pet\\.nii(\\.gz)?';
 
     case 'ieeg'
       pattern = '_task-.*_ieeg\\..*[^json]';
