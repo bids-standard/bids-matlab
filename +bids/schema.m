@@ -91,6 +91,7 @@ classdef schema
       for i = 1:size(entity_names, 1)
         entities{1, i} = obj.content.entities.(entity_names{i}).entity; %#ok<*AGROW>
       end
+
     end
 
     % ----------------------------------------------------------------------- %

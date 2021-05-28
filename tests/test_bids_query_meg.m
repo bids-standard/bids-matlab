@@ -23,7 +23,8 @@ function test_bids_query_meg_basic()
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   % smoke tests
-  %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds000247'));
-  %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000247'));
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'));
 
 end

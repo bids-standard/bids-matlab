@@ -27,13 +27,29 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
     idx = schema.find_suffix_group(modality, p.suffix);
 
     if isempty(idx)
-      warning('append_to_structure:noMatchingSuffix', ...
+      warning('append_to_layout:noMatchingSuffix', ...
               'Skipping file with no valid suffix in schema: %s', file);
       p = [];
       return
     end
 
-    entities = schema.return_modality_entities(schema.content.datatypes.(modality)(idx));
+    this_suffix_group = schema.content.datatypes.(modality)(idx);
+
+    entities = schema.return_modality_entities(this_suffix_group);
+    is_required = schema.check_if_required(schema, this_suffix_group);
+
+    required_entities = entities(is_required);
+    present_entities = fieldnames(p.entities);
+    missing_entities = ~ismember(required_entities, present_entities);
+    if any(missing_entities)
+      missing_entities = required_entities(missing_entities);
+      warning('append_to_layout:missingRequiredEntity', ...
+              'Skipping file %s.\nMissing REQUIRED entity: %s', file, ...
+              strjoin(missing_entities, ' '));
+      p = [];
+      return
+    end
+
     p = bids.internal.parse_filename(file, entities);
 
     % do not index json files when using the schema

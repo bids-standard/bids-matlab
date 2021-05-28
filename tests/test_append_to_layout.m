@@ -35,6 +35,24 @@ function test_append_to_layout_basic()
 
 end
 
+function test_append_to_layout_missing_required_entity()
+
+  schema = bids.schema;
+  schema = schema.load();
+
+  subject = struct('func', struct([]));
+
+  modality = 'func';
+
+  % func with missing task entity
+  file = '../sub-16/anat/sub-16_bold.nii.gz';
+
+  assertWarning( ...
+                @()bids.internal.append_to_layout(file, subject, modality, schema), ...
+                'append_to_layout:missingRequiredEntity');
+
+end
+
 function test_append_to_structure_basic_test()
 
   schema = bids.schema;
