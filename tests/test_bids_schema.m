@@ -6,6 +6,19 @@ function test_suite = test_bids_schema %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_return_required_entities
+  schema = bids.schema();
+  schema = schema.load();
+
+  suffix_group = schema.content.datatypes.func(1);
+  required_entities = schema.required_entities_for_suffix_group(suffix_group);
+
+  expected_output = {'sub', 'task'};
+
+  assertEqual(required_entities, expected_output);
+
+end
+
 function test_load()
 
   use_schema = fullfile(fileparts(mfilename('fullpath')), 'schema');

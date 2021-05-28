@@ -7,6 +7,7 @@ classdef schema
   properties
     content
     quiet = true
+    is_bids_schema = false
   end
 
   %% PUBLIC
@@ -44,8 +45,10 @@ classdef schema
 
       if ischar(use_schema)
         schema_dir = use_schema;
+        obj.is_bids_schema = false;
       else
         schema_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'schema');
+        obj.is_bids_schema = true;
       end
 
       if ~exist(schema_dir, 'dir')
@@ -57,17 +60,37 @@ classdef schema
       obj.content = obj.append_json_to_schema(obj.content, json_file_list);
 
       obj.content = obj.inspect_subdir(obj, obj.content, dirs);
+
+      % add extra field listing all required entities
+      if obj.is_bids_schema
+        mod_groups = obj.return_modality_groups();
+        for i = 1:numel(mod_groups)
+          modalities = obj.return_modalities([], mod_groups{i});
+          for j = 1:numel(modalities)
+            suffix_groups = obj.content.datatypes.(modalities{j});
+            for k = 1:numel(suffix_groups)
+              this_suffix_group = suffix_groups(k);
+              required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
+              obj.content.datatypes.(modalities{j})(k).required_entities = required_entities;
+            end
+          end
+        end
+      end
+
     end
 
     function modalities = return_modalities(obj, subject, modality_group)
-      % if we go schema-less we list directories in the subject/session folder
+      % if we go schema-less or use another schema than the "official" one
+      % we list directories in the subject/session folder
       % as proxy of the modalities that we have to parse
-      modalities = cellstr(bids.internal.file_utils('List', ...
-                                                    subject.path, ...
-                                                    'dir', ...
-                                                    '.*'));
-      if ~isempty(obj.content)
+      if ~obj.is_bids_schema || isempty(obj.content)
+        modalities = cellstr(bids.internal.file_utils('List', ...
+                                                      subject.path, ...
+                                                      'dir', ...
+                                                      '.*'));
+      else
         modalities = obj.content.modalities.(modality_group).datatypes;
+
       end
     end
 
@@ -78,7 +101,7 @@ classdef schema
       % Returns a dummy variable if we go schema less
       %
       groups = {nan()};
-      if ~isempty(obj.content)
+      if ~isempty(obj.content) && isfield(obj.content, 'modalities')
         groups = fieldnames(obj.content.modalities);
       end
     end
@@ -103,6 +126,11 @@ classdef schema
       %  are required in the bids schema
       %
       this_suffix_group = obj.ci_check(this_suffix_group);
+
+      if isfield(this_suffix_group, 'required_entities')
+        required_entities = this_suffix_group.required_entities;
+        return
+      end
 
       entities_long_name = fieldnames(this_suffix_group.entities);
       nb_entities = numel(entities_long_name);
