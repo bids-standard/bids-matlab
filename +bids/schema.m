@@ -74,6 +74,7 @@ classdef schema
 
             suffix_grps = obj.content.datatypes.(mods{j});
             tmp = suffix_grps;
+            tmp = obj.ci_check(tmp);
             [tmp(:).required_entities] = deal([]);
 
             for k = 1:numel(suffix_grps)
