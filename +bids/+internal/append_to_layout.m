@@ -35,6 +35,19 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
 
     this_suffix_group = schema.content.datatypes.(modality)(idx);
 
+    extension = p.ext;
+    if strcmp(p.suffix, 'meg') && strcmp(extension, '.ds')
+      extension = [extension '/'];
+    end
+
+    if ~ismember('*', this_suffix_group.extensions) && ...
+            ~ismember(extension, this_suffix_group.extensions)
+      msg = sprintf('Unknown extension %s in schema for file %s', extension, file);
+      warning('append_to_layout:unknownExtension', msg);
+      p = [];
+      return
+    end
+
     entities = schema.return_entities_for_suffix_group(this_suffix_group);
     required_entities = schema.required_entities_for_suffix_group(this_suffix_group);
 
