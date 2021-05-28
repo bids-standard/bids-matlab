@@ -63,16 +63,26 @@ classdef schema
 
       % add extra field listing all required entities
       if obj.is_bids_schema
-        mod_groups = obj.return_modality_groups();
-        for i = 1:numel(mod_groups)
-          modalities = obj.return_modalities([], mod_groups{i});
-          for j = 1:numel(modalities)
-            suffix_groups = obj.content.datatypes.(modalities{j});
-            for k = 1:numel(suffix_groups)
-              this_suffix_group = suffix_groups(k);
-              required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
-              obj.content.datatypes.(modalities{j})(k).required_entities = required_entities;
+
+        mod_grps = obj.return_modality_groups();
+
+        for i = 1:numel(mod_grps)
+
+          mods = obj.return_modalities([], mod_grps{i});
+
+          for j = 1:numel(mods)
+
+            suffix_grps = obj.content.datatypes.(mods{j});
+            tmp = suffix_grps;
+            [tmp(:).required_entities] = deal([]);
+
+            for k = 1:numel(suffix_grps)
+              required_entities = obj.required_entities_for_suffix_group(suffix_grps(k));
+              tmp(k).required_entities = required_entities;
             end
+
+            obj.content.datatypes.(mods{j}) = tmp;
+
           end
         end
       end
