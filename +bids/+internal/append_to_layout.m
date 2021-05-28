@@ -35,6 +35,13 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
 
     this_suffix_group = schema.content.datatypes.(modality)(idx);
 
+    schema_entities = schema.return_entities_for_suffix_group(this_suffix_group);
+    required_entities = schema.required_entities_for_suffix_group(this_suffix_group);
+
+    present_entities = fieldnames(p.entities);
+    missing_entities = ~ismember(required_entities, present_entities);
+    unknown_entity = present_entities(~ismember(present_entities, schema_entities));
+
     extension = p.ext;
     if strcmp(p.suffix, 'meg') && strcmp(extension, '.ds')
       extension = [extension '/'];
@@ -48,11 +55,14 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
       return
     end
 
-    entities = schema.return_entities_for_suffix_group(this_suffix_group);
-    required_entities = schema.required_entities_for_suffix_group(this_suffix_group);
+    if ~isempty(unknown_entity)
+      warning('append_to_layout:unknownEntity', ...
+              'Unknown entities %s in schema for file: %s', file, ...
+              strjoin(unknown_entity, ' '));
+      p = [];
+      return
+    end
 
-    present_entities = fieldnames(p.entities);
-    missing_entities = ~ismember(required_entities, present_entities);
     if any(missing_entities)
       missing_entities = required_entities(missing_entities);
       warning('append_to_layout:missingRequiredEntity', ...
@@ -62,7 +72,7 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
       return
     end
 
-    p = bids.internal.parse_filename(file, entities);
+    p = bids.internal.parse_filename(file, schema_entities);
 
     % do not index json files when using the schema
     if isempty(p) || (~isempty(p) && strcmp(p.ext, '.json'))
