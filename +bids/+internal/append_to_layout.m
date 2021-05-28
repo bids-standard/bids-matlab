@@ -49,8 +49,8 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
 
     if ~ismember('*', this_suffix_group.extensions) && ...
             ~ismember(extension, this_suffix_group.extensions)
-      msg = sprintf('Unknown extension %s in schema for file %s', extension, file);
-      warning('append_to_layout:unknownExtension', msg);
+      warning('append_to_layout:unknownExtension', msg, ...
+              'Unknown extension %s in schema for file %s', extension, file);
       p = [];
       return
     end
