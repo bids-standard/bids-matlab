@@ -83,7 +83,10 @@ classdef schema
       end
     end
 
-    function entities = return_modality_entities(obj, suffix_group)
+    % ----------------------------------------------------------------------- %
+    %% SUFFIX GROUP
+
+    function entities = return_entities_for_suffix_group(obj, suffix_group)
       suffix_group = obj.ci_check(suffix_group);
 
       entity_names = fieldnames(suffix_group.entities);
@@ -92,6 +95,59 @@ classdef schema
         entities{1, i} = obj.content.entities.(entity_names{i}).entity; %#ok<*AGROW>
       end
 
+    end
+
+    function required_entities = required_entities_for_suffix_group(obj, this_suffix_group)
+      %
+      %  Returns a logical vector to track which entities of a suffix group
+      %  are required in the bids schema
+      %
+      this_suffix_group = obj.ci_check(this_suffix_group);
+
+      entities_long_name = fieldnames(this_suffix_group.entities);
+      nb_entities = numel(entities_long_name);
+
+      entities = obj.return_entities_for_suffix_group(this_suffix_group);
+
+      is_required = false(1, nb_entities);
+
+      for i = 1:nb_entities
+        if strcmpi(this_suffix_group.entities.(entities_long_name{i}), 'required')
+          is_required(i) = true;
+        end
+      end
+
+      required_entities = entities(is_required);
+
+    end
+
+    function idx = find_suffix_group(obj, modality, suffix)
+      %
+      % For a given sufffix and modality, this returns the "suffix group" this
+      % suffix belongs to
+      %
+
+      idx = [];
+
+      if isempty(obj.content)
+        return
+      end
+
+      % the following loop could probably be improved with some cellfun magic
+      %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
+      for i = 1:size(obj.content.datatypes.(modality), 1)
+        this_suffix_group = obj.content.datatypes.(modality)(i);
+        this_suffix_group = obj.ci_check(this_suffix_group);
+        if any(strcmp(suffix, this_suffix_group.suffixes))
+          idx = i;
+          break
+        end
+      end
+
+      if isempty(idx) && ~obj.quiet
+        warning('findSuffix:noMatchingSuffix', ...
+                'No corresponding suffix in schema for %s for datatype %s', suffix, modality);
+      end
     end
 
     % ----------------------------------------------------------------------- %
@@ -123,7 +179,7 @@ classdef schema
       end
     end
 
-    function [entities, is_required] = return_entities_for_suffix(obj, suffix)
+    function [entities, required_entities] = return_entities_for_suffix(obj, suffix)
       %
       % returns the list of entities for a given suffix
       %
@@ -144,42 +200,13 @@ classdef schema
         end
 
         if ~isempty(idx)
-          is_required = obj.check_if_required(obj, this_suffix_group);
-          entities = obj.return_modality_entities(this_suffix_group);
+          required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
+          entities = obj.return_entities_for_suffix_group(this_suffix_group);
           break
         end
 
       end
 
-    end
-
-    function idx = find_suffix_group(obj, modality, suffix)
-      %
-      % For a given sufffix and modality, this returns the "suffix group" this
-      % suffix belongs to
-      %
-
-      idx = [];
-
-      if isempty(obj.content)
-        return
-      end
-
-      % the following loop could probably be improved with some cellfun magic
-      %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
-      for i = 1:size(obj.content.datatypes.(modality), 1)
-        this_suffix_group = obj.content.datatypes.(modality)(i);
-        this_suffix_group = obj.ci_check(this_suffix_group);
-        if any(strcmp(suffix, this_suffix_group.suffixes))
-          idx = i;
-          break
-        end
-      end
-
-      if isempty(idx) && ~obj.quiet
-        warning('findSuffix:noMatchingSuffix', ...
-                'No corresponding suffix in schema for %s for datatype %s', suffix, modality);
-      end
     end
 
     % ----------------------------------------------------------------------- %
@@ -243,26 +270,6 @@ classdef schema
     end
 
     %% Other
-    function is_required = check_if_required(obj, this_suffix_group)
-      %
-      %  Returns a logical vector to track which entities of a suffix group
-      %  are required in the bids schema
-      %
-      this_suffix_group = obj.ci_check(this_suffix_group);
-
-      entities = fieldnames(this_suffix_group.entities);
-      nb_entities = numel(entities);
-
-      is_required = false(1, nb_entities);
-
-      for i = 1:nb_entities
-        if strcmpi(this_suffix_group.entities.(entities{i}), 'required')
-          is_required(i) = true;
-        end
-      end
-
-    end
-
     function variable_to_check = ci_check(variable_to_check)
       % Mostly to avoid some crash in continuous integration
       if iscell(variable_to_check)

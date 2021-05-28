@@ -53,25 +53,26 @@ function [filename, pth, json] = create_filename(p, file)
 
   entities = fieldnames(p.entities);
 
-  [p, entities, is_required] = reorder_entities(p, entities);
+  [p, entities, required_entities] = reorder_entities(p, entities);
 
   filename = '';
   for iEntity = 1:numel(entities)
 
-    thisEntity = entities{iEntity};
+    this_entity = entities{iEntity};
 
-    if is_required(iEntity) && ...
-            (~isfield(p.entities, thisEntity) || isempty(p.entities.(thisEntity)))
+    if ~isempty(required_entities) && ...
+            ismember(this_entity, required_entities) && ...
+            ~isfield(p.entities, this_entity)
       errorStruct.identifier = 'bidsMatlab:requiredEntity';
       errorStruct.message = sprintf('The entity %s cannot not be empty for the suffix %s', ...
-                                    thisEntity, ...
+                                    this_entity, ...
                                     p.suffix);
       error(errorStruct);
     end
 
-    if isfield(p.entities, thisEntity) && ~isempty(p.entities.(thisEntity))
-      thisLabel = bids.internal.camel_case(p.entities.(thisEntity));
-      filename = [filename '_' thisEntity '-' thisLabel]; %#ok<AGROW>
+    if isfield(p.entities, this_entity) && ~isempty(p.entities.(this_entity))
+      thisLabel = bids.internal.camel_case(p.entities.(this_entity));
+      filename = [filename '_' this_entity '-' thisLabel]; %#ok<AGROW>
     end
 
   end
@@ -105,7 +106,7 @@ function parsed_file = rename_file(p, file)
 
 end
 
-function [p, entities, is_required] = reorder_entities(p, entities)
+function [p, entities, required_entities] = reorder_entities(p, entities)
   %
   % reorder entities by one of the following ways
   %   - user defined: p.entity_order
@@ -113,38 +114,30 @@ function [p, entities, is_required] = reorder_entities(p, entities)
   %   - order defined by entities order in p.entities
   %
 
+  required_entities = {};
+
   if ~isempty(p.entity_order)
 
     if size(p.entity_order, 2) > 1
       p.entity_order = p.entity_order';
     end
 
-    idx = ismember(entities, p.entity_order);
-    entities = cat(1, p.entity_order, entities(~idx));
-    is_required = false(size(entities));
-
   elseif p.use_schema
 
-    [p, is_required] = get_entity_order_from_schema(p);
-
-    idx = ismember(entities, p.entity_order);
-    entities = cat(1, p.entity_order, entities(~idx));
-
-  else
-
-    idx = ismember(entities, p.entity_order);
-    entities = cat(1, p.entity_order, entities(~idx));
-    is_required = false(size(entities));
+    [p, required_entities] = get_entity_order_from_schema(p);
 
   end
 
+  idx = ismember(entities, p.entity_order);
+  entities = cat(1, p.entity_order, entities(~idx));
+
 end
 
-function [p, is_required] = get_entity_order_from_schema(p)
+function [p, required_entities] = get_entity_order_from_schema(p)
 
   schema = bids.schema();
   schema = schema.load(p.use_schema);
-  [schema_entities, is_required] = schema.return_entities_for_suffix(p.suffix);
+  [schema_entities, required_entities] = schema.return_entities_for_suffix(p.suffix);
   for i = 1:numel(schema_entities)
     p.entity_order{i, 1} = schema_entities{i};
   end

@@ -35,10 +35,9 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
 
     this_suffix_group = schema.content.datatypes.(modality)(idx);
 
-    entities = schema.return_modality_entities(this_suffix_group);
-    is_required = schema.check_if_required(schema, this_suffix_group);
+    entities = schema.return_entities_for_suffix_group(this_suffix_group);
+    required_entities = schema.required_entities_for_suffix_group(this_suffix_group);
 
-    required_entities = entities(is_required);
     present_entities = fieldnames(p.entities);
     missing_entities = ~ismember(required_entities, present_entities);
     if any(missing_entities)
