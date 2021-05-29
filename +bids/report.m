@@ -317,7 +317,7 @@ function file_id = open_output_file(BIDS, output_path, verbose)
 
     bids.util.mkdir(output_path);
 
-    [~, folder] = fileparts(BIDS.dir);
+    [~, folder] = fileparts(BIDS.pth);
 
     filename = fullfile( ...
                         output_path, ...

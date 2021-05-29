@@ -1,4 +1,4 @@
-function BIDS = layout(root, use_schema, tolerant, verbose)
+function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   %
   % Parse a directory structure formated according to the BIDS standard
   %
@@ -40,9 +40,6 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
 
     end
 
-  elseif nargin > 4
-    error('Too many input arguments.');
-
   end
 
   if ~exist('tolerant', 'var')
@@ -55,6 +52,10 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
 
   if ~exist('use_schema', 'var')
     use_schema = true;
+  end
+
+  if ~exist('index_derivatives', 'var')
+    index_derivatives = false;
   end
 
   if ~exist(root, 'dir')
@@ -128,6 +129,28 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
   % ==========================================================================
 
   BIDS = manage_dependencies(BIDS, verbose);
+
+  %% Derivatives folder
+  % ==========================================================================
+  if index_derivatives && exist(fullfile(BIDS.pth, 'derivatives'), 'dir')
+
+    deriv_folders = cellstr(bids.internal.file_utils('List', ...
+                                                     fullfile(BIDS.pth, 'derivatives'), ...
+                                                     'dir', ...
+                                                     '.*'));
+
+    for iDir = 1:numel(deriv_folders)
+      BIDS.derivatives.(deriv_folders{iDir}) = bids.layout( ...
+                                                           fullfile(BIDS.pth, ...
+                                                                    'derivatives', ...
+                                                                    deriv_folders{iDir}), ...
+                                                           false, ...
+                                                           index_derivatives, ...
+                                                           true, ...
+                                                           verbose);
+    end
+
+  end
 
 end
 
