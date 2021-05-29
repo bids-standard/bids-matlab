@@ -214,6 +214,15 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
 
     file_list = return_file_list(modality, subject, schema);
 
+    % dependency previous file
+    dep_prev_files = struct( ...
+                            'index_group', 0, ...
+                            'group_base',  '', ...
+                            'group_len', 1, ...
+                            'index_data', 0, ...
+                            'data_base', '', ...
+                            'data_len', 1);
+
     for iFile = 1:size(file_list, 1)
 
       [subject, parsing] = bids.internal.append_to_layout(file_list{iFile}, ...
@@ -223,7 +232,11 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
 
       if ~isempty(parsing)
 
-        subject = index_dependencies(subject, modality, file_list{iFile});
+        [subject, dep_prev_files] = index_dependencies(subject, ...
+                                                       modality, ...
+                                                       file_list{iFile}, ...
+                                                       iFile, ...
+                                                       dep_prev_files);
 
         switch subject.(modality)(end).suffix
 
@@ -346,7 +359,7 @@ function file_list = return_file_list(modality, subject, schema)
 
 end
 
-function subject = index_dependencies(subject, modality, file)
+function [subject, dep_prev_files] = index_dependencies(subject, modality, file, i, dep_prev_files)
   %
   % Each file structure contains dependencies sub-structure with guaranteed fields:
   %
@@ -365,36 +378,49 @@ function subject = index_dependencies(subject, modality, file)
   pth = fullfile(subject.path, modality);
   fullpath_filename = fullfile(pth, file);
 
-  subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
-  subject.(modality)(end).dependencies.explicit = {};
-  subject.(modality)(end).dependencies.data = {};
-  subject.(modality)(end).dependencies.group = {};
+  if strncmp(dep_prev_files.data_base, file, dep_prev_files.data_len)
+    subject.(modality)(end + 1, 1) = subject.(modality)(end, 1);
+    subject.(modality)(end, 1).ext = file(dep_prev_files.data_len:end);
+    subject.(modality)(end, 1).filename = file;
+    dep_fname = fullfile(pth, subject.(modality)(end - 1, 1).filename);
+    subject.(modality)(end).dependencies.data{end + 1} = dep_fname;
+  else
+    %       subject = bids.internal.append_to_layout(file, subject, modality, schema);
+    subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+    subject.(modality)(end).dependencies.explicit = {};
+    subject.(modality)(end).dependencies.data = {};
+    subject.(modality)(end).dependencies.group = {};
+  end
 
-  ext = subject.(modality)(end).ext;
-  suffix = subject.(modality)(end).suffix;
-  pattern = strrep(file, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
-  candidates = bids.internal.file_utils('List', pth, ['^' pattern '$']);
-  candidates = cellstr(candidates);
-
-  for ii = 1:numel(candidates)
-
-    if strcmp(candidates{ii}, file)
-      continue
-    end
-
-    if bids.internal.ends_with(candidates{ii}, '.json')
-      continue
-    end
-
-    match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
-    % different suffix
-    if isempty(match)
-      subject.(modality)(end).dependencies.group{end + 1, 1} = fullfile(pth, candidates{ii});
-      % same suffix
+  % Checking dependencies
+  if strncmp(dep_prev_files.group_base, file, dep_prev_files.group_len)
+    if strncmp(dep_prev_files.data_base, file, dep_prev_files.data_len)
+      % same data
+      for di = dep_prev_files.index_data:i - 1
+        subject.(modality)(di).dependencies.data{end + 1} = fullpath_filename;
+      end
     else
-      subject.(modality)(end).dependencies.data{end + 1, 1} = fullfile(pth, candidates{ii});
+      % not same data but same group
+      dep_prev_files.index_data = i;
+      dep_prev_files.data_len = find(file == '.', 1);
+      dep_prev_files.data_base = file(1:dep_prev_files.data_len);
+
+      for gi = dep_prev_files.index_group:i
+        dep_fname = fullfile(pth, subject.(modality)(gi).filename);
+        subject.(modality)(end).dependencies.group{end + 1} = dep_fname;
+        subject.(modality)(gi).dependencies.group{end + 1} = fullpath_filename;
+      end
     end
 
+    % new group
+  else
+    dep_prev_files.index_group = i;
+    dep_prev_files.group_len = find(file == '_', 1, 'last');
+    dep_prev_files.group_base = file(1:dep_prev_files.group_len);
+
+    dep_prev_files.index_data = i;
+    dep_prev_files.data_len = find(file == '.', 1);
+    dep_prev_files.data_base = file(1:dep_prev_files.data_len);
   end
 
 end
