@@ -73,16 +73,21 @@ classdef schema
           for j = 1:numel(mods)
 
             suffix_grps = obj.content.datatypes.(mods{j});
-            tmp = suffix_grps;
-            tmp = obj.ci_check(tmp);
-            [tmp(:).required_entities] = deal([]);
+            % need to use a tmp variable to avoid some errors in continuous
+            % integration to avoid some errors with octave
+            updated_suffix_grps = struct('suffixes', [], ...
+                                         'extensions', [], ...
+                                         'entities', [], ...
+                                         'required_entities', []);
 
             for k = 1:numel(suffix_grps)
-              required_entities = obj.required_entities_for_suffix_group(suffix_grps(k));
-              tmp(k).required_entities = required_entities;
+              this_suffix_group = suffix_grps(k);
+              required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
+              this_suffix_group.required_entities = required_entities;
+              updated_suffix_grps(k, 1) = this_suffix_group;
             end
 
-            obj.content.datatypes.(mods{j}) = tmp;
+            obj.content.datatypes.(mods{j}) = updated_suffix_grps;
 
           end
         end
