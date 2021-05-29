@@ -82,6 +82,6 @@ function test_parse_filename_wrong_template()
 
   assertWarning( ...
                 @()bids.internal.parse_filename(filename, {'echo'}, true), ...
-                'bidsMatlab:noMatchingTemplate');
+                'parse_filename:noMatchingTemplate');
 
 end

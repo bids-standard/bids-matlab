@@ -312,7 +312,8 @@ function file_id = open_output_file(BIDS, output_path, verbose)
 
     if file_id == -1
 
-      bids.internal.warning('Unable to write file %s. Will print to screen.', verbose);
+      msg = 'Unable to write file %s. Will print to screen.';
+      bids.internal.error_handling(mfilename, 'cannotWriteToFile', msg, true, verbose);
 
       file_id = 1;
 
@@ -457,8 +458,10 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
       acq_param.fov = sprintf('%.2f X %.2f', vs(1) * dim(1), vs(2) * dim(2));
 
     catch
-      bids.internal.warning(sprintf('Could not read the header from file %s.\n', filename{1}), ...
-                            verbose);
+
+      msg = sprintf('Could not read the header from file %s.\n', filename{1});
+      bids.internal.error_handling(mfilename, 'cannotReadHeader', msg, true, verbose);
+
     end
   end
 

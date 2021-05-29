@@ -10,6 +10,7 @@ function test_append_to_layout_schema_unknown_entity()
 
   schema = bids.schema;
   schema = schema.load();
+  schema.verbose = true;
 
   subject = struct('meg', struct([]));
 
@@ -28,6 +29,7 @@ function test_append_to_layout_schema_unknown_extension()
 
   schema = bids.schema;
   schema = schema.load();
+  schema.verbose = true;
 
   subject = struct('meg', struct([]));
 
@@ -46,6 +48,7 @@ function test_append_to_layout_basic()
 
   schema = bids.schema;
   schema = schema.load();
+  schema.verbose = true;
 
   subject = struct('anat', struct([]));
 
@@ -75,6 +78,7 @@ function test_append_to_layout_schema_missing_required_entity()
 
   schema = bids.schema;
   schema = schema.load();
+  schema.verbose = true;
 
   subject = struct('func', struct([]));
 

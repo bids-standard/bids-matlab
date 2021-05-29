@@ -27,8 +27,8 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
     idx = schema.find_suffix_group(modality, p.suffix);
 
     if isempty(idx)
-      warning('append_to_layout:noMatchingSuffix', ...
-              'Skipping file with no valid suffix in schema: %s', file);
+      msg = sprintf('Skipping file with no valid suffix in schema: %s', file);
+      bids.internal.error_handling(function_name, 'noMatchingSuffix', msg, true, schema.verbose);
       p = [];
       return
     end
@@ -49,25 +49,25 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
 
     if ~ismember('*', this_suffix_group.extensions) && ...
             ~ismember(extension, this_suffix_group.extensions)
-      warning('append_to_layout:unknownExtension', ...
-              'Unknown extension %s in schema for file %s', extension, file);
-      p = [];
-      return
+      id = 'unknownExtension';
+      msg = sprintf('Unknown extension %s in schema for file %s', extension, file);
     end
 
     if ~isempty(unknown_entity)
-      warning('append_to_layout:unknownEntity', ...
-              'Unknown entities %s in schema for file: %s', file, ...
-              strjoin(unknown_entity, ' '));
-      p = [];
-      return
+      id = 'unknownEntity';
+      msg = sprintf('Unknown entities %s in schema for file: %s', file, ...
+                    strjoin(unknown_entity, ' '));
     end
 
     if any(missing_entities)
       missing_entities = required_entities(missing_entities);
-      warning('append_to_layout:missingRequiredEntity', ...
-              'Skipping file %s.\nMissing REQUIRED entity: %s', file, ...
-              strjoin(missing_entities, ' '));
+      id = 'missingRequiredEntity';
+      msg = sprintf('Skipping file %s.\nMissing REQUIRED entity: %s', file, ...
+                    strjoin(missing_entities, ' '));
+    end
+
+    if exist('id', 'var')
+      bids.internal.error_handling(mfilename, id, msg, true, schema.verbose);
       p = [];
       return
     end

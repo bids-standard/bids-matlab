@@ -4,6 +4,9 @@ classdef dataset_description
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  % TODO
+  % - transfer validate function of layout in here
+
   properties
     content
     is_derivative = false
