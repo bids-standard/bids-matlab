@@ -378,18 +378,25 @@ function [subject, dep_prev_files] = index_dependencies(subject, modality, file,
   pth = fullfile(subject.path, modality);
   fullpath_filename = fullfile(pth, file);
 
-  if strncmp(dep_prev_files.data_base, file, dep_prev_files.data_len)
-    subject.(modality)(end + 1, 1) = subject.(modality)(end, 1);
-    subject.(modality)(end, 1).ext = file(dep_prev_files.data_len:end);
-    subject.(modality)(end, 1).filename = file;
-    dep_fname = fullfile(pth, subject.(modality)(end - 1, 1).filename);
-    subject.(modality)(end).dependencies.data{end + 1} = dep_fname;
-  else
-    %       subject = bids.internal.append_to_layout(file, subject, modality, schema);
-    subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+  if ~isfield(subject.(modality)(end), 'dependencies') || ...
+          isempty(subject.(modality)(end).dependencies)
     subject.(modality)(end).dependencies.explicit = {};
     subject.(modality)(end).dependencies.data = {};
     subject.(modality)(end).dependencies.group = {};
+  end
+
+  if strncmp(dep_prev_files.data_base, file, dep_prev_files.data_len)
+
+    %     subject.(modality)(end + 1, 1) = subject.(modality)(end, 1);
+    %     subject.(modality)(end, 1).ext = file(dep_prev_files.data_len:end);
+    %     subject.(modality)(end, 1).filename = file;
+
+    dep_fname = fullfile(pth, subject.(modality)(end - 1, 1).filename);
+    subject.(modality)(end).dependencies.data{end + 1} = dep_fname;
+
+  else
+    subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
+
   end
 
   % Checking dependencies
