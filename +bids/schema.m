@@ -231,36 +231,6 @@ classdef schema
       end
     end
 
-    function [entities, required] = return_entities_for_suffix(obj, suffix)
-      %
-      % returns the list of entities for a given suffix
-      %
-
-      modalities = obj.return_modality_groups;
-
-      for iModality = 1:numel(modalities)
-
-        datatypes = obj.content.modalities.(modalities{iModality}).datatypes;
-
-        for iDatatype = 1:numel(datatypes)
-          idx = obj.find_suffix_group(datatypes{iDatatype}, suffix);
-          if ~isempty(idx)
-            this_datatype = datatypes{iDatatype};
-            this_suffix_group = obj.content.datatypes.(this_datatype)(idx);
-            break
-          end
-        end
-
-        if ~isempty(idx)
-          required = obj.required_entities_for_suffix_group(this_suffix_group);
-          entities = obj.return_entities_for_suffix_group(this_suffix_group);
-          break
-        end
-
-      end
-
-    end
-
     function [entities, required] = return_entities_for_suffix_modality(obj, suffix, modality)
       %
       % returns the list of entities for a given suffix of a given modality

@@ -113,21 +113,6 @@ function test_return_modality_regex
 
 end
 
-function test_return_entities_for_suffix
-
-  schema = bids.schema();
-  schema = schema.load();
-
-  [entities, required_entities] = schema.return_entities_for_suffix('bold');
-
-  expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
-
-  assertEqual(entities, expected_output);
-
-  assertEqual(required_entities, {'sub', 'task'});
-
-end
-
 function test_return_modality_entities_basic
 
   schema = bids.schema();
