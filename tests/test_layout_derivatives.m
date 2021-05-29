@@ -6,7 +6,18 @@ function test_suite = test_layout_derivatives %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_layout_nested_derivatives()
+function test_layout_nested()
+
+  pth_bids_example = get_test_data_dir();
+
+  use_schema = true;
+
+  index_derivatives = true;
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'), use_schema, index_derivatives);
+end
+
+function test_layout_meg_derivatives()
 
   pth_bids_example = get_test_data_dir();
 

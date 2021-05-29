@@ -1,4 +1,4 @@
-function BIDS = layout(root, use_schema, tolerant, verbose)
+function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   %
   % Parse a directory structure formated according to the BIDS standard
   %
@@ -40,9 +40,6 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
 
     end
 
-  elseif nargin > 4
-    error('Too many input arguments.');
-
   end
 
   if ~exist('tolerant', 'var')
@@ -55,6 +52,10 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
 
   if ~exist('use_schema', 'var')
     use_schema = true;
+  end
+
+  if ~exist('index_derivatives', 'var')
+    index_derivatives = false;
   end
 
   if ~exist(root, 'dir')
@@ -71,7 +72,7 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
   % BIDS.subjects'    -- structure array of subjects
 
   BIDS = struct( ...
-                'dir', root, ...
+                'pth', root, ...
                 'description', struct([]), ...
                 'sessions', {{}}, ...
                 'participants', struct([]), ...
@@ -88,11 +89,11 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
   % [phenotype/]
 
   BIDS.participants = [];
-  BIDS.participants = manage_tsv(BIDS.participants, BIDS.dir, 'participants.tsv', verbose);
+  BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, 'participants.tsv', verbose);
 
   %% Subjects
   % ==========================================================================
-  subjects = cellstr(bids.internal.file_utils('List', BIDS.dir, 'dir', '^sub-.*$'));
+  subjects = cellstr(bids.internal.file_utils('List', BIDS.pth, 'dir', '^sub-.*$'));
   if isequal(subjects, {''})
     error('No subjects found in BIDS directory.');
   end
@@ -103,16 +104,16 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
 
   for iSub = 1:numel(subjects)
     sessions = cellstr(bids.internal.file_utils('List', ...
-                                                fullfile(BIDS.dir, subjects{iSub}), ...
+                                                fullfile(BIDS.pth, subjects{iSub}), ...
                                                 'dir', ...
                                                 '^ses-.*$'));
 
     for iSess = 1:numel(sessions)
       if isempty(BIDS.subjects)
-        BIDS.subjects = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema, verbose);
+        BIDS.subjects = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, schema, verbose);
 
       else
-        new_subject = parse_subject(BIDS.dir, subjects{iSub}, sessions{iSess}, schema, verbose);
+        new_subject = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, schema, verbose);
         [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
                                                                             new_subject);
         % TODO: this can be added to "match_structure_fields"
@@ -128,6 +129,28 @@ function BIDS = layout(root, use_schema, tolerant, verbose)
   % ==========================================================================
 
   BIDS = manage_dependencies(BIDS, verbose);
+
+  %% Derivatives folder
+  % ==========================================================================
+  if index_derivatives && exist(fullfile(BIDS.pth, 'derivatives'), 'dir')
+
+    deriv_folders = cellstr(bids.internal.file_utils('List', ...
+                                                     fullfile(BIDS.pth, 'derivatives'), ...
+                                                     'dir', ...
+                                                     '.*'));
+
+    for iDir = 1:numel(deriv_folders)
+      BIDS.derivatives.(deriv_folders{iDir}) = bids.layout( ...
+                                                           fullfile(BIDS.pth, ...
+                                                                    'derivatives', ...
+                                                                    deriv_folders{iDir}), ...
+                                                           false, ...
+                                                           index_derivatives, ...
+                                                           true, ...
+                                                           verbose);
+    end
+
+  end
 
 end
 
@@ -239,15 +262,15 @@ end
 
 function BIDS = validate_description(BIDS, tolerant, verbose)
 
-  if ~exist(fullfile(BIDS.dir, 'dataset_description.json'), 'file')
+  if ~exist(fullfile(BIDS.pth, 'dataset_description.json'), 'file')
 
     msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
-                  BIDS.dir);
+                  BIDS.pth);
     bids.internal.error_handling(mfilename, 'missingDescripton', msg, tolerant, verbose);
 
   end
   try
-    BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
+    BIDS.description = bids.util.jsondecode(fullfile(BIDS.pth, 'dataset_description.json'));
   catch err
     msg = sprintf('BIDS dataset description could not be read: %s', err.message);
     bids.internal.error_handling(mfilename, 'cannotReadDescripton', msg, tolerant, verbose);
@@ -435,7 +458,7 @@ function BIDS = manage_dependencies(BIDS, verbose)
     end
 
     for iIntended = 1:numel(intended)
-      dest = fullfile(BIDS.dir, BIDS.subjects(info_src.sub_idx).name, ...
+      dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
       if ~exist(dest, 'file')
         msg = ['IntendedFor file ' dest ' from ' file.filename ' not found'];

@@ -91,7 +91,7 @@ function copy_to_derivative(varargin)
   % Determine and create output directory
   out_path = p.Results.out_path;
   if isempty(out_path)
-    out_path = fullfile(BIDS.dir, '..', 'derivatives');
+    out_path = fullfile(BIDS.pth, '..', 'derivatives');
   end
   if ~exist(out_path, 'dir')
     mkdir(out_path);
@@ -149,7 +149,7 @@ function copy_participants_tsv(BIDS, derivatives_folder, p)
 
   if ~isempty(BIDS.participants)
 
-    src = fullfile(BIDS.dir, 'participants.tsv');
+    src = fullfile(BIDS.pth, 'participants.tsv');
     target = fullfile(derivatives_folder, 'participants.tsv');
 
     copy_tsv(src, target, p);
