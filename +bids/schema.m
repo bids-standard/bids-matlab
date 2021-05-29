@@ -81,7 +81,7 @@ classdef schema
                                          'required_entities', []);
 
             for k = 1:numel(suffix_grps)
-              this_suffix_group = suffix_grps(k);
+              this_suffix_group = obj.ci_check(suffix_grps(k));
               required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
               this_suffix_group.required_entities = required_entities;
               updated_suffix_grps(k, 1) = this_suffix_group;
