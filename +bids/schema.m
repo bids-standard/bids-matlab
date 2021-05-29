@@ -200,6 +200,14 @@ classdef schema
       %
       % For a given suffix, returns all the possible datatypes that have this suffix.
       %
+      % EXAMPLE::
+      %
+      %       schema = bids.schema();
+      %       schema = schema.load();
+      %
+      %       datatypes = schema.return_datatypes_for_suffix('bold');
+      %       assertEqual(datatypes, {'func'});
+      %
 
       datatypes = {};
 
@@ -223,7 +231,7 @@ classdef schema
       end
     end
 
-    function [entities, required_entities] = return_entities_for_suffix(obj, suffix)
+    function [entities, required] = return_entities_for_suffix(obj, suffix)
       %
       % returns the list of entities for a given suffix
       %
@@ -244,13 +252,29 @@ classdef schema
         end
 
         if ~isempty(idx)
-          required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
+          required = obj.required_entities_for_suffix_group(this_suffix_group);
           entities = obj.return_entities_for_suffix_group(this_suffix_group);
           break
         end
 
       end
 
+    end
+
+    function [entities, required] = return_entities_for_suffix_modality(obj, suffix, modality)
+      %
+      % returns the list of entities for a given suffix of a given modality
+      %
+      idx = obj.find_suffix_group(modality, suffix);
+
+      if ~isempty(idx)
+        this_suffix_group = obj.content.datatypes.(modality)(idx);
+      end
+
+      if ~isempty(idx)
+        required = obj.required_entities_for_suffix_group(this_suffix_group);
+        entities = obj.return_entities_for_suffix_group(this_suffix_group);
+      end
     end
 
     % ----------------------------------------------------------------------- %

@@ -7,6 +7,7 @@ function test_suite = test_bids_schema %#ok<*STOUT>
 end
 
 function test_return_required_entities
+
   schema = bids.schema();
   schema = schema.load();
 
