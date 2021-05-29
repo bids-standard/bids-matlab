@@ -20,6 +20,10 @@ function [filename, pth, json] = create_filename(p, file)
   %                           and reorder entities according to the BIDS schema.
   %   - ``p.entity_order``  - user specified order in which to arranges the entities
   %                           in the filename. Overrides ``p.use_schema``.
+  %   - ``p.modality``      - string to define the modality of the file
+  %                           (example: ``p.modality = 'meg``). If ``p.use_schema == true``
+  %                           the function will try to guess it from the
+  %                           bids schema.
   %
   % If no entity order is specified and the filename creation is not based on the BIDS
   % schema, then the filename will be created by concatenating the entity-label pairs
@@ -37,8 +41,12 @@ function [filename, pth, json] = create_filename(p, file)
 
   default.use_schema = true;
   default.entity_order = {};
-  default.ext = '';
+
   p = bids.internal.match_structure_fields(p, default);
+
+  if isempty(p.use_schema)
+    p.use_schema = default.use_schema;
+  end
 
   if nargin > 1
     p = rename_file(p, file);
@@ -48,30 +56,42 @@ function [filename, pth, json] = create_filename(p, file)
     error('We need at least a suffix to create a filename.');
   end
 
+  default.ext = '';
   default.prefix = '';
   p = bids.internal.match_structure_fields(p, default);
 
+  if ~isfield(p, 'modality')
+    p.modality = {};
+  end
+  if isempty(p.modality) && p.use_schema
+    p = get_modality_from_schema(p);
+  end
+  if ~iscell(p.modality)
+    p.modality = {p.modality};
+  end
+
   entities = fieldnames(p.entities);
 
-  [p, entities, is_required] = reorder_entities(p, entities);
+  [p, entities, required_entities] = reorder_entities(p, entities);
 
   filename = '';
   for iEntity = 1:numel(entities)
 
-    thisEntity = entities{iEntity};
+    this_entity = entities{iEntity};
 
-    if is_required(iEntity) && ...
-            (~isfield(p.entities, thisEntity) || isempty(p.entities.(thisEntity)))
+    if ~isempty(required_entities) && ...
+            ismember(this_entity, required_entities) && ...
+            ~isfield(p.entities, this_entity)
       errorStruct.identifier = 'bidsMatlab:requiredEntity';
       errorStruct.message = sprintf('The entity %s cannot not be empty for the suffix %s', ...
-                                    thisEntity, ...
+                                    this_entity, ...
                                     p.suffix);
       error(errorStruct);
     end
 
-    if isfield(p.entities, thisEntity) && ~isempty(p.entities.(thisEntity))
-      thisLabel = bids.internal.camel_case(p.entities.(thisEntity));
-      filename = [filename '_' thisEntity '-' thisLabel]; %#ok<AGROW>
+    if isfield(p.entities, this_entity) && ~isempty(p.entities.(this_entity))
+      thisLabel = bids.internal.camel_case(p.entities.(this_entity));
+      filename = [filename '_' this_entity '-' thisLabel]; %#ok<AGROW>
     end
 
   end
@@ -82,6 +102,11 @@ function [filename, pth, json] = create_filename(p, file)
   filename = [p.prefix, filename '_', p.suffix, p.ext];
 
   pth = bids.create_path(filename);
+  modality_folder = bids.internal.file_utils(pth, 'filename');
+  if ~isempty(p.modality) && ~strcmp(modality_folder, p.modality)
+    pth = fullfile(pth, p.modality);
+  end
+  pth = char(pth);
 
   json = bids.derivatives_json(filename);
 
@@ -93,8 +118,21 @@ function parsed_file = rename_file(p, file)
 
   parsed_file.entity_order = p.entity_order;
   parsed_file.use_schema = p.use_schema;
+
   if isfield(p, 'prefix')
     parsed_file.prefix = p.prefix;
+  end
+
+  if isfield(p, 'suffix')
+    parsed_file.suffix = p.suffix;
+  end
+
+  if isfield(p, 'ext')
+    parsed_file.ext = p.ext;
+  end
+
+  if isfield(p, 'modality')
+    parsed_file.modality = p.modality;
   end
 
   entities_to_change = fieldnames(p.entities);
@@ -105,7 +143,7 @@ function parsed_file = rename_file(p, file)
 
 end
 
-function [p, entities, is_required] = reorder_entities(p, entities)
+function [p, entities, required_entities] = reorder_entities(p, entities)
   %
   % reorder entities by one of the following ways
   %   - user defined: p.entity_order
@@ -113,38 +151,51 @@ function [p, entities, is_required] = reorder_entities(p, entities)
   %   - order defined by entities order in p.entities
   %
 
+  required_entities = {};
+
   if ~isempty(p.entity_order)
 
     if size(p.entity_order, 2) > 1
       p.entity_order = p.entity_order';
     end
 
-    idx = ismember(entities, p.entity_order);
-    entities = cat(1, p.entity_order, entities(~idx));
-    is_required = false(size(entities));
-
   elseif p.use_schema
 
-    [p, is_required] = get_entity_order_from_schema(p);
+    [p, required_entities] = get_entity_order_from_schema(p);
 
-    idx = ismember(entities, p.entity_order);
-    entities = cat(1, p.entity_order, entities(~idx));
+  end
 
-  else
+  idx = ismember(entities, p.entity_order);
+  entities = cat(1, p.entity_order, entities(~idx));
 
-    idx = ismember(entities, p.entity_order);
-    entities = cat(1, p.entity_order, entities(~idx));
-    is_required = false(size(entities));
+end
 
+function [p] = get_modality_from_schema(p)
+
+  schema = bids.schema();
+  schema = schema.load(p.use_schema);
+
+  p.modality = schema.return_datatypes_for_suffix(p.suffix);
+
+  if numel(p.modality) > 1
+    errorStruct.identifier = 'bidsMatlab:manyModalityForsuffix';
+    errorStruct.message = sprintf(['The suffix %s exist for several modalities: %s.', ...
+                                   '\nSpecify which one in p.modality'], ...
+                                  p.suffix, ...
+                                  strjoin(p.modality, ', '));
+    error(errorStruct);
   end
 
 end
 
-function [p, is_required] = get_entity_order_from_schema(p)
+function [p, required_entities] = get_entity_order_from_schema(p)
 
   schema = bids.schema();
   schema = schema.load(p.use_schema);
-  [schema_entities, is_required] = schema.return_entities_for_suffix(p.suffix);
+
+  [schema_entities, required_entities] = schema.return_entities_for_suffix_modality(p.suffix, ...
+                                                                                    p.modality{1});
+
   for i = 1:numel(schema_entities)
     p.entity_order{i, 1} = schema_entities{i};
   end

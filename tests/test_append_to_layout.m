@@ -6,6 +6,42 @@ function test_suite = test_append_to_layout %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_append_to_layout_schema_unknown_entity()
+
+  schema = bids.schema;
+  schema = schema.load();
+
+  subject = struct('meg', struct([]));
+
+  modality = 'meg';
+
+  % func with missing task entity
+  file = '../sub-16/meg/sub-16_task-bar_foo-bar_meg.ds';
+
+  assertWarning( ...
+                @()bids.internal.append_to_layout(file, subject, modality, schema), ...
+                'append_to_layout:unknownEntity');
+
+end
+
+function test_append_to_layout_schema_unknown_extension()
+
+  schema = bids.schema;
+  schema = schema.load();
+
+  subject = struct('meg', struct([]));
+
+  modality = 'meg';
+
+  % func with missing task entity
+  file = '../sub-16/meg/sub-16_task-bar_meg.foo';
+
+  assertWarning( ...
+                @()bids.internal.append_to_layout(file, subject, modality, schema), ...
+                'append_to_layout:unknownExtension');
+
+end
+
 function test_append_to_layout_basic()
 
   schema = bids.schema;
@@ -32,6 +68,24 @@ function test_append_to_layout_basic()
                                             'part', ''));
 
   assertEqual(subject, expected);
+
+end
+
+function test_append_to_layout_schema_missing_required_entity()
+
+  schema = bids.schema;
+  schema = schema.load();
+
+  subject = struct('func', struct([]));
+
+  modality = 'func';
+
+  % func with missing task entity
+  file = '../sub-16/func/sub-16_bold.nii.gz';
+
+  assertWarning( ...
+                @()bids.internal.append_to_layout(file, subject, modality, schema), ...
+                'append_to_layout:missingRequiredEntity');
 
 end
 

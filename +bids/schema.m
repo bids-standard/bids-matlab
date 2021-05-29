@@ -7,6 +7,7 @@ classdef schema
   properties
     content
     quiet = true
+    is_bids_schema = false
   end
 
   %% PUBLIC
@@ -44,8 +45,10 @@ classdef schema
 
       if ischar(use_schema)
         schema_dir = use_schema;
+        obj.is_bids_schema = false;
       else
         schema_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'schema');
+        obj.is_bids_schema = true;
       end
 
       if ~exist(schema_dir, 'dir')
@@ -57,17 +60,53 @@ classdef schema
       obj.content = obj.append_json_to_schema(obj.content, json_file_list);
 
       obj.content = obj.inspect_subdir(obj, obj.content, dirs);
+
+      % add extra field listing all required entities
+      if obj.is_bids_schema
+
+        mod_grps = obj.return_modality_groups();
+
+        for i = 1:numel(mod_grps)
+
+          mods = obj.return_modalities([], mod_grps{i});
+
+          for j = 1:numel(mods)
+
+            suffix_grps = obj.content.datatypes.(mods{j});
+            % need to use a tmp variable to avoid some errors in continuous
+            % integration to avoid some errors with octave
+            updated_suffix_grps = struct('suffixes', [], ...
+                                         'extensions', [], ...
+                                         'entities', [], ...
+                                         'required_entities', []);
+
+            for k = 1:numel(suffix_grps)
+              this_suffix_group = obj.ci_check(suffix_grps(k));
+              required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
+              this_suffix_group.required_entities = required_entities;
+              updated_suffix_grps(k, 1) = this_suffix_group;
+            end
+
+            obj.content.datatypes.(mods{j}) = updated_suffix_grps;
+
+          end
+        end
+      end
+
     end
 
     function modalities = return_modalities(obj, subject, modality_group)
-      % if we go schema-less we list directories in the subject/session folder
+      % if we go schema-less or use another schema than the "official" one
+      % we list directories in the subject/session folder
       % as proxy of the modalities that we have to parse
-      modalities = cellstr(bids.internal.file_utils('List', ...
-                                                    subject.path, ...
-                                                    'dir', ...
-                                                    '.*'));
-      if ~isempty(obj.content)
+      if ~obj.is_bids_schema || isempty(obj.content)
+        modalities = cellstr(bids.internal.file_utils('List', ...
+                                                      subject.path, ...
+                                                      'dir', ...
+                                                      '.*'));
+      else
         modalities = obj.content.modalities.(modality_group).datatypes;
+
       end
     end
 
@@ -78,12 +117,15 @@ classdef schema
       % Returns a dummy variable if we go schema less
       %
       groups = {nan()};
-      if ~isempty(obj.content)
+      if ~isempty(obj.content) && isfield(obj.content, 'modalities')
         groups = fieldnames(obj.content.modalities);
       end
     end
 
-    function entities = return_modality_entities(obj, suffix_group)
+    % ----------------------------------------------------------------------- %
+    %% SUFFIX GROUP
+
+    function entities = return_entities_for_suffix_group(obj, suffix_group)
       suffix_group = obj.ci_check(suffix_group);
 
       entity_names = fieldnames(suffix_group.entities);
@@ -91,64 +133,35 @@ classdef schema
       for i = 1:size(entity_names, 1)
         entities{1, i} = obj.content.entities.(entity_names{i}).entity; %#ok<*AGROW>
       end
+
     end
 
-    % ----------------------------------------------------------------------- %
-    %% SUFFIXES
-    function datatypes = return_datatypes_for_suffix(obj, suffix)
+    function required_entities = required_entities_for_suffix_group(obj, this_suffix_group)
       %
-      % For a given suffix, returns all the possible datatypes that have this suffix.
+      %  Returns a logical vector to track which entities of a suffix group
+      %  are required in the bids schema
       %
+      this_suffix_group = obj.ci_check(this_suffix_group);
 
-      datatypes = {};
-
-      if isempty(obj.content)
+      if isfield(this_suffix_group, 'required_entities')
+        required_entities = this_suffix_group.required_entities;
         return
       end
 
-      datatypes_list = fieldnames(obj.content.datatypes);
+      entities_long_name = fieldnames(this_suffix_group.entities);
+      nb_entities = numel(entities_long_name);
 
-      for i = 1:size(datatypes_list, 1)
+      entities = obj.return_entities_for_suffix_group(this_suffix_group);
 
-        this_datatype = obj.content.datatypes.(datatypes_list{i});
-        this_datatype = obj.ci_check(this_datatype);
+      is_required = false(1, nb_entities);
 
-        suffix_list = cat(1, this_datatype.suffixes);
-
-        if any(ismember(suffix_list, suffix))
-          datatypes{end + 1} = datatypes_list{i};
+      for i = 1:nb_entities
+        if strcmpi(this_suffix_group.entities.(entities_long_name{i}), 'required')
+          is_required(i) = true;
         end
-
       end
-    end
 
-    function [entities, is_required] = return_entities_for_suffix(obj, suffix)
-      %
-      % returns the list of entities for a given suffix
-      %
-
-      modalities = obj.return_modality_groups;
-
-      for iModality = 1:numel(modalities)
-
-        datatypes = obj.content.modalities.(modalities{iModality}).datatypes;
-
-        for iDatatype = 1:numel(datatypes)
-          idx = obj.find_suffix_group(datatypes{iDatatype}, suffix);
-          if ~isempty(idx)
-            this_datatype = datatypes{iDatatype};
-            this_suffix_group = obj.content.datatypes.(this_datatype)(idx);
-            break
-          end
-        end
-
-        if ~isempty(idx)
-          is_required = obj.check_if_required(obj, this_suffix_group);
-          entities = obj.return_modality_entities(this_suffix_group);
-          break
-        end
-
-      end
+      required_entities = entities(is_required);
 
     end
 
@@ -178,6 +191,59 @@ classdef schema
       if isempty(idx) && ~obj.quiet
         warning('findSuffix:noMatchingSuffix', ...
                 'No corresponding suffix in schema for %s for datatype %s', suffix, modality);
+      end
+    end
+
+    % ----------------------------------------------------------------------- %
+    %% SUFFIXES
+    function datatypes = return_datatypes_for_suffix(obj, suffix)
+      %
+      % For a given suffix, returns all the possible datatypes that have this suffix.
+      %
+      % EXAMPLE::
+      %
+      %       schema = bids.schema();
+      %       schema = schema.load();
+      %
+      %       datatypes = schema.return_datatypes_for_suffix('bold');
+      %       assertEqual(datatypes, {'func'});
+      %
+
+      datatypes = {};
+
+      if isempty(obj.content)
+        return
+      end
+
+      datatypes_list = fieldnames(obj.content.datatypes);
+
+      for i = 1:size(datatypes_list, 1)
+
+        this_datatype = obj.content.datatypes.(datatypes_list{i});
+        this_datatype = obj.ci_check(this_datatype);
+
+        suffix_list = cat(1, this_datatype.suffixes);
+
+        if any(ismember(suffix_list, suffix))
+          datatypes{end + 1} = datatypes_list{i};
+        end
+
+      end
+    end
+
+    function [entities, required] = return_entities_for_suffix_modality(obj, suffix, modality)
+      %
+      % returns the list of entities for a given suffix of a given modality
+      %
+      idx = obj.find_suffix_group(modality, suffix);
+
+      if ~isempty(idx)
+        this_suffix_group = obj.content.datatypes.(modality)(idx);
+      end
+
+      if ~isempty(idx)
+        required = obj.required_entities_for_suffix_group(this_suffix_group);
+        entities = obj.return_entities_for_suffix_group(this_suffix_group);
       end
     end
 
@@ -242,26 +308,6 @@ classdef schema
     end
 
     %% Other
-    function is_required = check_if_required(obj, this_suffix_group)
-      %
-      %  Returns a logical vector to track which entities of a suffix group
-      %  are required in the bids schema
-      %
-      this_suffix_group = obj.ci_check(this_suffix_group);
-
-      entities = fieldnames(this_suffix_group.entities);
-      nb_entities = numel(entities);
-
-      is_required = false(1, nb_entities);
-
-      for i = 1:nb_entities
-        if strcmpi(this_suffix_group.entities.(entities{i}), 'required')
-          is_required(i) = true;
-        end
-      end
-
-    end
-
     function variable_to_check = ci_check(variable_to_check)
       % Mostly to avoid some crash in continuous integration
       if iscell(variable_to_check)

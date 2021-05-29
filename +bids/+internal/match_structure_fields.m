@@ -1,6 +1,6 @@
 function [s1, s2] = match_structure_fields(s1, s2)
   %
-  % Update field content of a structure so it matches that of another.
+  % Update list of fields of a structure so it matches that of another.
   %
   % USAGE::
   %

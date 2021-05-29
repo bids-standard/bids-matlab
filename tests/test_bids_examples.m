@@ -8,20 +8,11 @@ end
 
 function test_bids_examples_basic()
   % Test datasets from https://github.com/bids-standard/bids-examples
+  %
   % This repository is downloaded automatically by the continuous integration
   % framework and is required for the tests to be run.
-  % __________________________________________________________________________
   %
-  % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
-  %   The brain imaging data structure, a format for organizing and
-  %   describing outputs of neuroimaging experiments.
-  %   K. J. Gorgolewski et al, Scientific Data, 2016.
-  % __________________________________________________________________________
-
-  % Copyright (C) 2019, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2019--, BIDS-MATLAB developers
-
-  % -List all the directories in the bids-example folder that are actual
+  % List all the directories in the bids-example folder that are actual
   % datasets
   pth_bids_example = get_test_data_dir();
 

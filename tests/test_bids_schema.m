@@ -6,6 +6,20 @@ function test_suite = test_bids_schema %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_return_required_entities
+
+  schema = bids.schema();
+  schema = schema.load();
+
+  suffix_group = schema.content.datatypes.func(1);
+  required_entities = schema.required_entities_for_suffix_group(suffix_group);
+
+  expected_output = {'sub', 'task'};
+
+  assertEqual(required_entities, expected_output);
+
+end
+
 function test_load()
 
   use_schema = fullfile(fileparts(mfilename('fullpath')), 'schema');
@@ -41,9 +55,14 @@ function test_return_datatypes_for_suffix
   schema = schema.load();
 
   datatypes = schema.return_datatypes_for_suffix('bold');
+  assertEqual(datatypes, {'func'});
 
-  expected_output = {'func'};
+  datatypes = schema.return_datatypes_for_suffix('events');
+  expected_output = {'beh', 'eeg', 'func', 'ieeg', 'meg', 'pet'};
+  assertEqual(datatypes, expected_output);
 
+  datatypes = schema.return_datatypes_for_suffix('m0scan');
+  expected_output = {'fmap', 'perf'};
   assertEqual(datatypes, expected_output);
 
 end
@@ -53,7 +72,8 @@ function test_return_modality_suffixes_regex
   schema = bids.schema();
   schema = schema.load();
 
-  suffixes = schema.return_modality_suffixes_regex(schema.content.datatypes.func(1));
+  suffix_group = schema.content.datatypes.func(1);
+  suffixes = schema.return_modality_suffixes_regex(suffix_group);
   assertEqual(suffixes, '_(bold|cbv|sbref){1}');
 
 end
@@ -63,7 +83,8 @@ function test_return_modality_extensions_regex
   schema = bids.schema();
   schema = schema.load();
 
-  extensions = schema.return_modality_extensions_regex(schema.content.datatypes.func(1));
+  suffix_group = schema.content.datatypes.func(1);
+  extensions = schema.return_modality_extensions_regex(suffix_group);
   assertEqual(extensions, '(.nii.gz|.nii){1}');
 
 end
@@ -73,7 +94,8 @@ function test_return_modality_regex
   schema = bids.schema();
   schema = schema.load();
 
-  regular_expression = schema.return_modality_regex(schema.content.datatypes.anat(1));
+  suffix_group = schema.content.datatypes.anat(1);
+  regular_expression = schema.return_modality_regex(suffix_group);
 
   expected_expression = ['^%s.*', ...
                          '_(T1w|T2w|PDw|T2starw|FLAIR|inplaneT1|inplaneT2|PDT2|angio|', ...
@@ -91,25 +113,13 @@ function test_return_modality_regex
 
 end
 
-function test_return_entities_for_suffix
-
-  schema = bids.schema();
-  schema = schema.load();
-
-  entities = schema.return_entities_for_suffix('bold');
-
-  expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
-
-  assertEqual(entities, expected_output);
-
-end
-
 function test_return_modality_entities_basic
 
   schema = bids.schema();
   schema = schema.load();
 
-  entities = schema.return_modality_entities(schema.content.datatypes.func(1));
+  suffix_group = schema.content.datatypes.func(1);
+  entities = schema.return_entities_for_suffix_group(suffix_group);
 
   expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
 
