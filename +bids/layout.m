@@ -1,4 +1,4 @@
-function BIDS = layout(root, use_schema, verbose)
+function BIDS = layout(root, use_schema, tolerant, verbose)
   %
   % Parse a directory structure formated according to the BIDS standard
   %
@@ -13,7 +13,7 @@ function BIDS = layout(root, use_schema, verbose)
   %                    If set to ``false`` files just have to be of the form
   %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
   %                    If a folder path is provided, then the schema contained
-  %                    in that folder willl be used for parsing.
+  %                    in that folder will be used for parsing.
   % :type  use_schema: boolean
   %
   %
@@ -40,9 +40,13 @@ function BIDS = layout(root, use_schema, verbose)
 
     end
 
-  elseif nargin > 3
+  elseif nargin > 4
     error('Too many input arguments.');
 
+  end
+
+  if ~exist('tolerant', 'var')
+    tolerant = true;
   end
 
   if ~exist('verbose', 'var')
@@ -73,7 +77,7 @@ function BIDS = layout(root, use_schema, verbose)
                 'participants', struct([]), ...
                 'subjects', struct([]));
 
-  BIDS = validate_description(BIDS, use_schema, verbose);
+  BIDS = validate_description(BIDS, tolerant, verbose);
 
   %% Optional directories
   % ==========================================================================
@@ -95,7 +99,7 @@ function BIDS = layout(root, use_schema, verbose)
 
   schema = bids.schema();
   schema = schema.load(use_schema);
-  schema.quiet = ~verbose;
+  schema.verbose = verbose;
 
   for iSub = 1:numel(subjects)
     sessions = cellstr(bids.internal.file_utils('List', ...
@@ -233,21 +237,20 @@ end
 %                            HELPER FUNCTIONS
 % --------------------------------------------------------------------------
 
-function BIDS = validate_description(BIDS, use_schema, verbose)
+function BIDS = validate_description(BIDS, tolerant, verbose)
 
   if ~exist(fullfile(BIDS.dir, 'dataset_description.json'), 'file')
 
     msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
                   BIDS.dir);
-
-    tolerant_message(use_schema, msg, verbose);
+    bids.internal.error_handling(mfilename, 'missingDescripton', msg, tolerant, verbose);
 
   end
   try
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.dir, 'dataset_description.json'));
   catch err
     msg = sprintf('BIDS dataset description could not be read: %s', err.message);
-    tolerant_message(use_schema, msg, verbose);
+    bids.internal.error_handling(mfilename, 'cannotReadDescripton', msg, tolerant, verbose);
   end
 
   fields_to_check = {'BIDSVersion', 'Name'};
@@ -257,7 +260,7 @@ function BIDS = validate_description(BIDS, use_schema, verbose)
       msg = sprintf( ...
                     'BIDS dataset description not valid: missing %s field.', ...
                     fields_to_check{iField});
-      tolerant_message(use_schema, msg, verbose);
+      bids.internal.error_handling(mfilename, 'invalidDescripton', msg, tolerant, verbose);
     end
 
     % TODO
@@ -265,14 +268,6 @@ function BIDS = validate_description(BIDS, use_schema, verbose)
 
   end
 
-end
-
-function tolerant_message(use_schema, msg, verbose)
-  if use_schema
-    error(msg);
-  elseif ~use_schema
-    bids.internal.warning(msg, verbose);
-  end
 end
 
 function f = convert_to_cell(f)
@@ -388,13 +383,16 @@ function structure = manage_tsv(structure, pth, filename, verbose)
   % Does NOT look for the metadata of a file at higher levels
   %
 
+  tolerant = true;
+
   ext = bids.internal.file_utils(filename, 'ext');
   tsv_file = bids.internal.file_utils('FPList', ...
                                       pth,  ...
                                       ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
   if isempty(tsv_file)
-    bids.internal.warning(sprintf('Missing: %s', fullfile(pth, filename)), verbose);
+    msg = sprintf('Missing: %s', fullfile(pth, filename));
+    bids.internal.error_handling(mfilename, 'tsvMissing', msg, tolerant, verbose);
 
   else
     structure.content = bids.util.tsvread(tsv_file);
@@ -414,6 +412,8 @@ function BIDS = manage_dependencies(BIDS, verbose)
   %
   % Loops over all files and retrieve all files that current file depends on
   %
+
+  tolerant = true;
 
   file_list = bids.query(BIDS, 'data');
 
@@ -438,8 +438,8 @@ function BIDS = manage_dependencies(BIDS, verbose)
       dest = fullfile(BIDS.dir, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
       if ~exist(dest, 'file')
-        bids.internal.warning(['IntendedFor file ' dest ' from ' file.filename ' not found'], ...
-                              verbose);
+        msg = ['IntendedFor file ' dest ' from ' file.filename ' not found'];
+        bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
         continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);
@@ -452,10 +452,15 @@ function BIDS = manage_dependencies(BIDS, verbose)
 end
 
 function perf = manage_M0(perf, pth, verbose)
+
+  tolerant = true;
+
   % M0 field is flexible:
 
   if ~isfield(perf.meta, 'M0Type')
-    bids.internal.warning('M0Type field missing for %s', perf.filename);
+
+    msg = sprintf('M0Type field missing for %s', perf.filename);
+    bids.internal.error_handling(mfilename, 'm0typeMissing', msg, tolerant, verbose);
 
   else
 
@@ -480,7 +485,8 @@ function perf = manage_M0(perf, pth, verbose)
                              ['_m0scan' perf.ext]);
 
         if ~exist(fullfile(pth, m0_filename), 'file')
-          bids.internal.warning(['Missing: ' m0_filename], verbose);
+          msg = ['Missing: ' m0_filename];
+          bids.internal.error_handling(mfilename, 'm0FileMissing', msg, tolerant, verbose);
 
         else
           % subject.perf(j).m0_filename = m0_filename;
@@ -493,7 +499,8 @@ function perf = manage_M0(perf, pth, verbose)
                             '_m0scan.json');
 
         if ~exist(fullfile(pth, m0_sidecar), 'file')
-          bids.internal.warning(['Missing: ' m0_sidecar], verbose);
+          msg = ['Missing: ' m0_sidecar];
+          bids.internal.error_handling(mfilename, 'm0JsonMissing', msg, tolerant, verbose);
 
         else
           % subject.perf(j).m0_json_sidecar_filename = m0_json_sidecar_filename;
@@ -504,16 +511,16 @@ function perf = manage_M0(perf, pth, verbose)
         % M0 is one or more image(s) in the *asl.nii[.gz] timeseries
         if ~isfield(perf.dependencies, 'context') || ...
                 ~isfield(perf.dependencies.context.content, 'volume_type')
-          bids.internal.warning(['Cannot find M0 volume in aslcontext,' ...
-                                 'context-information missing'], ...
-                                vserbose);
+          msg = 'Cannot find M0 volume type in aslcontext';
+          bids.internal.error_handling(mfilename, 'm0VolumeTypeMissing', msg, tolerant, verbose);
 
         else
           m0indices = find(cellfun(@(x) strcmp(x, 'm0scan'), ...
                                    perf.dependencies.context.content.volume_type) == true);
 
           if isempty(m0indices)
-            bids.internal.warning('No M0 volume found in aslcontext', verbose);
+            msg = 'No M0 volume found in aslcontext';
+            bids.internal.error_handling(mfilename, 'm0VolumeMissing', msg, tolerant, verbose);
 
           else
             m0_type = 'within_timeseries';
@@ -537,13 +544,15 @@ function perf = manage_M0(perf, pth, verbose)
                           'as pseudo-M0 (if no background suppression was used)'];
 
         if perf.meta.BackgroundSuppression == true
-          bids.internal.warning(['Caution when using control as M0,', ...
-                                 ' background suppression was applied'], ...
-                                verbose);
+          msg = 'Caution when using control as M0: background suppression was applied';
+          bids.internal.error_handling(mfilename, 'm0BackgroundSuppression', msg, ...
+                                       tolerant, ...
+                                       verbose);
         end
 
       otherwise
-        bids.internal.warning(['Unknown M0Type:', perf.meta.M0Type], verbose);
+        msg = ['Unknown M0Type:', perf.meta.M0Type];
+        bids.internal.error_handling(mfilename, 'unknownM0Type', msg, tolerant, verbose);
 
     end
 

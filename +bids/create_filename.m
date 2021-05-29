@@ -39,6 +39,8 @@ function [filename, pth, json] = create_filename(p, file)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  % ----------------------------------------------------------------
+  % this needs some serious refactoring !!!!
   default.use_schema = true;
   default.entity_order = {};
 
@@ -69,6 +71,7 @@ function [filename, pth, json] = create_filename(p, file)
   if ~iscell(p.modality)
     p.modality = {p.modality};
   end
+  % ----------------------------------------------------------------
 
   entities = fieldnames(p.entities);
 
@@ -82,11 +85,12 @@ function [filename, pth, json] = create_filename(p, file)
     if ~isempty(required_entities) && ...
             ismember(this_entity, required_entities) && ...
             ~isfield(p.entities, this_entity)
-      errorStruct.identifier = 'bidsMatlab:requiredEntity';
-      errorStruct.message = sprintf('The entity %s cannot not be empty for the suffix %s', ...
-                                    this_entity, ...
-                                    p.suffix);
-      error(errorStruct);
+
+      tolerant = false;
+      msg = sprintf('The entity %s cannot not be empty for the suffix %s', ...
+                    this_entity, ...
+                    p.suffix);
+      bids.internal.error_handling(mfilename, 'requiredEntity', msg, tolerant);
     end
 
     if isfield(p.entities, this_entity) && ~isempty(p.entities.(this_entity))
@@ -178,12 +182,12 @@ function [p] = get_modality_from_schema(p)
   p.modality = schema.return_datatypes_for_suffix(p.suffix);
 
   if numel(p.modality) > 1
-    errorStruct.identifier = 'bidsMatlab:manyModalityForsuffix';
-    errorStruct.message = sprintf(['The suffix %s exist for several modalities: %s.', ...
-                                   '\nSpecify which one in p.modality'], ...
-                                  p.suffix, ...
-                                  strjoin(p.modality, ', '));
-    error(errorStruct);
+    tolerant = false;
+    msg = sprintf(['The suffix %s exist for several modalities: %s.', ...
+                   '\nSpecify which one in p.modality'], ...
+                  p.suffix, ...
+                  strjoin(p.modality, ', '));
+    bids.internal.error_handling(mfilename, 'manyModalityForsuffix', msg, tolerant);
   end
 
 end

@@ -297,13 +297,13 @@ function copy_with_symlink(src, target, verbose)
                             target));
 
     if status > 0
-      message = [ ...
-                 'Copying data with system command failed: ' ...
-                 'Are you running Windows?\n', ...
-                 'Will use matlab/octave copyfile command instead.\n', ...
-                 'May be an issue if your data set contains symbolic links' ...
-                 '(e.g. if you use datalad or git-annex.)'];
-      error(message);
+      msg = [ ...
+             'Copying data with system command failed: ' ...
+             'Are you running Windows?\n', ...
+             'Will use matlab/octave copyfile command instead.\n', ...
+             'May be an issue if your data set contains symbolic links' ...
+             '(e.g. if you use datalad or git-annex.)'];
+      bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
     end
 
   catch
@@ -311,7 +311,8 @@ function copy_with_symlink(src, target, verbose)
     fprintf(1, 'Using octave/matlab to copy files.');
     [status, message, messageId] = copyfile(src, target);
     if ~status
-      warning([messageId ': ' message]);
+      msg = [messageId ': ' message];
+      bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
       return
     end
 
@@ -343,7 +344,10 @@ function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_de
           % to avoid infinite loop when using "force = true"
           copy_file(BIDS, derivatives_folder, dep_file, unzip, force, ~skip_dep, verbose);
         else
-          warning(['Dependency file ' dep_file ' not found']);
+
+          msg = sprintf('Dependency file %s not found', dep_file);
+          bids.internal.error_handling(mfilename, 'missingDependencyFile', msg, true, verbose);
+
         end
 
       end

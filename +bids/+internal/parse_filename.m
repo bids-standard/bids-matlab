@@ -87,10 +87,8 @@ function p = parse_filename(filename, fields, verbose)
       p = orderfields(p, fields_order);
       p.entities = orderfields(p.entities, fields);
     catch
-      if verbose
-        warning('bidsMatlab:noMatchingTemplate', ...
-                'Ignoring file %s not matching template.', filename);
-      end
+      msg = sprintf('Ignoring file %s not matching template.', filename);
+      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, true, verbose);
       p = struct([]);
     end
   end

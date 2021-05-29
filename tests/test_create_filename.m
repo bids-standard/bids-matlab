@@ -76,7 +76,7 @@ function test_create_filename_schema_error()
 
   assertExceptionThrown( ...
                         @()bids.create_filename(p), ...
-                        'bidsMatlab:requiredEntity');
+                        'create_filename:requiredEntity');
 
 end
 
@@ -104,7 +104,7 @@ function test_create_filename_suffix_in_2_modalitiesd()
 
   assertExceptionThrown( ...
                         @()bids.create_filename(p), ...
-                        'bidsMatlab:manyModalityForsuffix');
+                        'create_filename:manyModalityForsuffix');
 
 end
 

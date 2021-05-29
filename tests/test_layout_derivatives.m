@@ -6,6 +6,30 @@ function test_suite = test_layout_derivatives %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_nested_derivatives()
+
+  pth_bids_example = get_test_data_dir();
+
+  use_schema = false();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, ...
+                              'ds000117', ...
+                              'derivatives', ...
+                              'meg_derivatives'), use_schema);
+
+  modalities = {'meg'};
+  assertEqual(bids.query(BIDS, 'modalities'), modalities);
+
+  data = bids.query(BIDS, 'data', ...
+                    'sub', '01', ...
+                    'run', '01', ...
+                    'proc', 'sss', ...
+                    'suffix', 'meg');
+  basename = bids.internal.file_utils(data, 'basename');
+  assertEqual(basename, {'sub-01_ses-meg_task-facerecognition_run-01_proc-sss_meg'});
+
+end
+
 function test_layout_prefix()
 
   pth_bids_example = get_test_data_dir();
@@ -94,28 +118,4 @@ function test_layout_schemaless()
                          ['sub-10_task-balloonanalogrisktask_run-1', ...
                           '_space-MNI152NLin6Asym_desc-smoothAROMAnonaggr_bold.nii']
                         });
-end
-
-function test_layout_nested_derivatives()
-
-  pth_bids_example = get_test_data_dir();
-
-  use_schema = false();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, ...
-                              'ds000117', ...
-                              'derivatives', ...
-                              'meg_derivatives'), use_schema);
-
-  modalities = {'meg'};
-  assertEqual(bids.query(BIDS, 'modalities'), modalities);
-
-  data = bids.query(BIDS, 'data', ...
-                    'sub', '01', ...
-                    'run', '01', ...
-                    'proc', 'sss', ...
-                    'suffix', 'meg');
-  basename = bids.internal.file_utils(data, 'basename');
-  assertEqual(basename, {'sub-01_ses-meg_task-facerecognition_run-01_proc-sss_meg'});
-
 end

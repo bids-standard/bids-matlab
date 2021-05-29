@@ -6,7 +6,7 @@ classdef schema
 
   properties
     content
-    quiet = true
+    verbose = false
     is_bids_schema = false
   end
 
@@ -52,7 +52,8 @@ classdef schema
       end
 
       if ~exist(schema_dir, 'dir')
-        error('The schema directory %s does not exist.', schema_dir);
+        msg = sprintf('The schema directory %s does not exist.', schema_dir);
+        bids.internal.error_handling(function_name, 'missingDirectory', msg, false, true);
       end
 
       [json_file_list, dirs] = bids.internal.file_utils('FPList', schema_dir, '^.*.json$');
@@ -188,9 +189,11 @@ classdef schema
         end
       end
 
-      if isempty(idx) && ~obj.quiet
-        warning('findSuffix:noMatchingSuffix', ...
-                'No corresponding suffix in schema for %s for datatype %s', suffix, modality);
+      if isempty(idx)
+        msg = sprintf('No corresponding suffix in schema for %s for datatype %s', ...
+                      suffix, ...
+                      modality);
+        bids.internal.error_handling(function_name, 'noMatchingSuffix', msg, true, obj.verbose);
       end
     end
 

@@ -214,7 +214,12 @@ function report(varargin)
             acq_param.n_vecs = num2str(size(BIDS.subjects(sub).dwi.bval, 2));
             %             acq_param.bval_str = ???
           catch
-            bids.internal.warning('Could not read the bval & bvec values.', p.Results.verbose);
+            msg = 'Could not read the bval & bvec values.';
+            bids.internal.error_handling(mfilename, ...
+                                         'cannotReadBvalBvec', ...
+                                         msg, ...
+                                         true, ...
+                                         p.Results.verbose);
           end
 
           text = sprintf(boilerplate_text, ...
@@ -232,7 +237,12 @@ function report(varargin)
           print_to_output(text, file_id, p.Results.verbose);
 
         case 'physio'
-          bids.internal.warning('physio not supported yet', p.Results.verbose);
+          msg = 'physio not supported yet';
+          bids.internal.error_handling(mfilename, ...
+                                       'physioNotSupported', ...
+                                       msg, ...
+                                       true, ...
+                                       p.Results.verbose);
 
         case {'meg' 'eeg'}
 
@@ -249,7 +259,12 @@ function report(varargin)
           end
 
         case 'events'
-          bids.internal.warning('events not supported yet', p.Results.verbose);
+          msg = 'events not supported yet';
+          bids.internal.error_handling(mfilename, ...
+                                       'eventsNotSupported', ...
+                                       msg, ...
+                                       true, ...
+                                       p.Results.verbose);
 
         otherwise
           % 'channels' 'headshape'
@@ -312,7 +327,8 @@ function file_id = open_output_file(BIDS, output_path, verbose)
 
     if file_id == -1
 
-      bids.internal.warning('Unable to write file %s. Will print to screen.', verbose);
+      msg = 'Unable to write file %s. Will print to screen.';
+      bids.internal.error_handling(mfilename, 'cannotWriteToFile', msg, true, verbose);
 
       file_id = 1;
 
@@ -457,8 +473,10 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
       acq_param.fov = sprintf('%.2f X %.2f', vs(1) * dim(1), vs(2) * dim(2));
 
     catch
-      bids.internal.warning(sprintf('Could not read the header from file %s.\n', filename{1}), ...
-                            verbose);
+
+      msg = sprintf('Could not read the header from file %s.\n', filename{1});
+      bids.internal.error_handling(mfilename, 'cannotReadHeader', msg, true, verbose);
+
     end
   end
 
