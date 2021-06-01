@@ -172,7 +172,8 @@ function copy_tsv(src, target, p)
     copy_with_symlink(src, target, p.Results.verbose);
     if exist(bids.internal.file_utils(src, 'ext', '.json'), 'file')
       copy_with_symlink(bids.internal.file_utils(src, 'ext', '.json'), ...
-                        bids.internal.file_utils(target, 'ext', '.json'));
+                        bids.internal.file_utils(target, 'ext', '.json'), ...
+                        p.Results.verbose);
     end
   end
 
