@@ -12,21 +12,22 @@ end
 
 function test_copy_to_derivative_basic()
 
-  [BIDS, out_path] = fixture('qmri_tb1tfl');
+  [BIDS, out_path, filters, cfg] = fixture('qmri_tb1tfl');
 
   pipeline_name = 'bids-matlab';
   unzip = false;
-  filters = struct();
+  verbose = cfg.verbose;
 
   bids.copy_to_derivative(BIDS, out_path, pipeline_name, ...
                           filters, ...
-                          'unzip', unzip);
+                          'unzip', unzip, ...
+                          'verbose', verbose);
 
   % force copy
   force = true;
   skip_dependencies = false;
   use_schema = false;
-  verbose = false;
+  verbose = cfg.verbose;
 
   bids.copy_to_derivative(BIDS, ...
                           out_path, ...
@@ -43,13 +44,13 @@ end
 
 function test_copy_to_derivative_dependencies()
 
-  [BIDS, out_path, filters] = fixture('qmri_mp2rageme');
+  [BIDS, out_path, filters, cfg] = fixture('qmri_mp2rageme');
 
   pipeline_name = 'bids-matlab';
   unzip = false;
   force = false;
   use_schema = true;
-  verbose = false;
+  verbose = cfg.verbose;
 
   skip_dependencies = true;
 
@@ -93,13 +94,13 @@ end
 
 function test_copy_to_derivative_sessions_scans_tsv
 
-  [BIDS, out_path, filters] = fixture('7t_trt');
+  [BIDS, out_path, filters, cfg] = fixture('7t_trt');
 
   pipeline_name = 'bids-matlab';
   unzip = false;
   force = false;
   use_schema = true;
-  verbose = false;
+  verbose = cfg.verbose;
   skip_dependencies = true;
 
   bids.copy_to_derivative(BIDS, ...
@@ -120,7 +121,9 @@ function test_copy_to_derivative_sessions_scans_tsv
 
 end
 
-function [BIDS, out_path, filters] = fixture(dataset)
+function [BIDS, out_path, filters, cfg] = fixture(dataset)
+
+  cfg = set_test_cfg();
 
   pth_bids_example = get_test_data_dir();
   BIDS = fullfile(pth_bids_example, dataset);
@@ -137,6 +140,8 @@ function [BIDS, out_path, filters] = fixture(dataset)
   end
 
   bids.util.mkdir(out_path);
+
+  filters = struct();
 
   switch dataset
 
@@ -158,7 +163,6 @@ function [BIDS, out_path, filters] = fixture(dataset)
       filters.sub = {'01'; '02'; '03'; '04'};
 
     case 'MoAEpilot'
-      filters = struct();
 
   end
 
