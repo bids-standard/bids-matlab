@@ -75,7 +75,7 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
     p = bids.internal.parse_filename(file, schema_entities);
 
     % do not index json files when using the schema
-    if isempty(p) || (~isempty(p) && strcmp(p.ext, '.json'))
+    if strcmp(p.ext, '.json')
       return
     end
 
