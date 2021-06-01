@@ -159,9 +159,9 @@ function test_create_filename_basic()
 end
 
 function test_create_filename_change_suffix()
-    
+
   filename = 'sub-02_task-newTask_run-02_eeg.nii';
-  
+
   p.suffix = 'eeg';
 
   filename = bids.create_filename(p, filename);
@@ -171,9 +171,9 @@ function test_create_filename_change_suffix()
 end
 
 function test_create_filename_change_extension()
-    
+
   filename = 'sub-02_task-newTask_run-02_eeg.nii';
-  
+
   p.ext = '.json';
 
   filename = bids.create_filename(p, filename);

@@ -140,11 +140,11 @@ function parsed_file = rename_file(p, file)
   end
 
   if isfield(p, 'entities')
-      entities_to_change = fieldnames(p.entities);
+    entities_to_change = fieldnames(p.entities);
 
-      for iEntity = 1:numel(entities_to_change)
-        parsed_file.entities.(entities_to_change{iEntity}) = p.entities.(entities_to_change{iEntity});
-      end
+    for iEntity = 1:numel(entities_to_change)
+      parsed_file.entities.(entities_to_change{iEntity}) = p.entities.(entities_to_change{iEntity});
+    end
   end
 
 end
