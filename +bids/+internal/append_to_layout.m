@@ -28,7 +28,7 @@ function [subject, p] = append_to_layout(file, subject, modality, schema)
 
     if isempty(idx)
       msg = sprintf('Skipping file with no valid suffix in schema: %s', file);
-      bids.internal.error_handling(function_name, 'noMatchingSuffix', msg, true, schema.verbose);
+      bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, schema.verbose);
       p = [];
       return
     end

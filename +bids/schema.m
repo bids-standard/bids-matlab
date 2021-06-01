@@ -193,7 +193,7 @@ classdef schema
         msg = sprintf('No corresponding suffix in schema for %s for datatype %s', ...
                       suffix, ...
                       modality);
-        bids.internal.error_handling(function_name, 'noMatchingSuffix', msg, true, obj.verbose);
+        bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, obj.verbose);
       end
     end
 
