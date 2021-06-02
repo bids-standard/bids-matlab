@@ -47,7 +47,7 @@ function copy_to_derivative(varargin)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
-  default_out_path = fullfile(pwd, 'derivatives');
+  default_out_path = '';
   default_filter = struct();
 
   default_unzip = true;
@@ -90,7 +90,7 @@ function copy_to_derivative(varargin)
   % Determine and create output directory
   out_path = p.Results.out_path;
   if isempty(out_path)
-    out_path = fullfile(BIDS.pth, '..', 'derivatives');
+    out_path = fullfile(BIDS.pth, 'derivatives');
   end
   if ~exist(out_path, 'dir')
     mkdir(out_path);
