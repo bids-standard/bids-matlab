@@ -315,6 +315,8 @@ end
 
 function use_copyfile(src, target, unzip_files, verbose)
 
+  status = 1;
+
   if unzip_files && is_gunzipped(src)
     % Octave deletes the source file so we must copy and then unzip
     if is_octave()
