@@ -6,6 +6,21 @@ function test_suite = test_parse_filename %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_parse_filename_participants()
+
+  filename = 'participants.tsv';
+  output = bids.internal.parse_filename(filename);
+
+  expected = struct( ...
+                    'filename', 'participants.tsv', ...
+                    'suffix', 'participants', ...
+                    'ext', '.tsv', ...
+                    'prefix', '');
+
+  assertEqual(output, expected);
+
+end
+
 function test_parse_filename_prefix()
 
   filename = '../sub-16/anat/asub-16_task-rest_run-1_bold.nii';
