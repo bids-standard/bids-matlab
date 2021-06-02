@@ -50,14 +50,6 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
 
     if ~isempty(schema.content)
 
-      % CHECK: not sure the following is necessary as json are not supposed to
-      % be listed in the first place
-      % do not index json files when using the schema
-      if strcmp(p.ext, '.json')
-        status = 0;
-        return
-      end
-
       idx = schema.find_suffix_group(modality, p.suffix);
 
       if isempty(idx)
@@ -70,7 +62,6 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       this_suffix_group = schema.content.datatypes.(modality)(idx);
 
       allowed_extensions = this_suffix_group.extensions;
-      allowed_extensions(ismember(allowed_extensions, '.json')) = [];
 
       schema_entities = schema.return_entities_for_suffix_group(this_suffix_group);
       required_entities = schema.required_entities_for_suffix_group(this_suffix_group);
