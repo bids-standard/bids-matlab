@@ -27,14 +27,14 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
     % - <match>_events.mat
     %
     if ~isempty(schema.content) && ...
-            ~any(ismember(file(previous.data_len:end), ...
+            ~any(ismember(file(previous.data.len:end), ...
                           previous.allowed_ext))
       status = 0;
       return
     end
 
     subject.(modality)(end + 1, 1) = subject.(modality)(end, 1);
-    subject.(modality)(end, 1).ext = file(previous.data_len:end);
+    subject.(modality)(end, 1).ext = file(previous.data.len:end);
     subject.(modality)(end, 1).filename = file;
 
     dep_fname = fullfile(subject.path, modality, subject.(modality)(end - 1, 1).filename);
@@ -132,6 +132,6 @@ end
 
 function status = same_data(file, previous)
 
-  status = strncmp(previous.data_base, file, previous.data_len);
+  status = strncmp(previous.data.base, file, previous.data.len);
 
 end

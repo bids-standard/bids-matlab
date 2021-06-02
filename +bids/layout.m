@@ -215,13 +215,8 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
     file_list = return_file_list(modality, subject, schema);
 
     % dependency previous file
-    previous = struct( ...
-                      'index_group', 0, ...
-                      'group_base',  '', ...
-                      'group_len', 1, ...
-                      'index_data', 0, ...
-                      'data_base', '', ...
-                      'data_len', 1, ...
+    previous = struct('group', struct('index', 0, 'base', '', 'len', 1), ...
+                      'data', struct('index', 0, 'base', '', 'len', 1), ...
                       'allowed_ext', []);
 
     for iFile = 1:size(file_list, 1)
@@ -386,7 +381,7 @@ function [subject, previous] = index_dependencies(subject, modality, file, i, pr
     % same data
     if same_data(file, previous)
 
-      for di = previous.index_data:i - 1
+      for di = previous.data.index:numel(subject.(modality)) - 1
         subject.(modality)(di).dependencies.data{end + 1, 1} = fullpath_filename;
       end
 
@@ -395,7 +390,7 @@ function [subject, previous] = index_dependencies(subject, modality, file, i, pr
 
       previous = update_previous(previous, 'data', file, i);
 
-      for gi = previous.index_group:i - 1
+      for gi = previous.group.index:numel(subject.(modality)) - 1
         dep_fname = fullfile(pth, subject.(modality)(gi).filename);
         subject.(modality)(end).dependencies.group{end + 1, 1} = dep_fname;
         subject.(modality)(gi).dependencies.group{end + 1, 1} = fullpath_filename;
@@ -404,7 +399,7 @@ function [subject, previous] = index_dependencies(subject, modality, file, i, pr
 
     % new group
   else
-    previous = update_previous(previous, 'group', file, i);
+    previous = update_previous(previous, 'group', file, numel(subject.(modality)));
     previous = update_previous(previous, 'data', file, i);
 
   end
@@ -413,27 +408,25 @@ end
 
 function status = same_group(file, previous)
 
-  status = strncmp(previous.group_base, file, previous.group_len);
+  this_file_group_base = find(file == '_', 1, 'last');
+  status = strcmp(previous.group.base, file(1:this_file_group_base));
 
 end
 
 function status = same_data(file, previous)
 
-  status = strncmp(previous.data_base, file, previous.data_len);
+  status = strncmp(previous.data.base, file, previous.data.len);
 
 end
 
 function previous = update_previous(previous, type, file, idx)
-  switch type
-    case 'data'
-      previous.index_data = idx;
-      previous.data_len = find(file == '.', 1);
-      previous.data_base = file(1:previous.data_len);
-    case 'group'
-      previous.index_group = idx;
-      previous.group_len = find(file == '_', 1, 'last');
-      previous.group_base = file(1:previous.group_len);
+  if strcmp(type, 'data')
+    previous.data.len = find(file == '.', 1);
+  elseif strcmp(type, 'group')
+    previous.group.len = find(file == '_', 1, 'last');
   end
+  previous.(type).base = file(1:previous.(type).len);
+  previous.(type).index = idx;
 end
 
 function structure = manage_tsv(structure, pth, filename, verbose)
