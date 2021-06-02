@@ -73,7 +73,9 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       unknown_entity = present_entities(~ismember(present_entities, schema_entities));
 
       extension = p.ext;
-      if strcmp(p.suffix, 'meg') && strcmp(extension, '.ds')
+      % in case we are dealing with a folder
+      % (can be the case for some MEG formats: .ds)
+      if isdir(fullfile(subject.path, modality, p.filename))
         extension = [extension '/'];
       end
       if ~ismember('*', allowed_extensions) && ...
