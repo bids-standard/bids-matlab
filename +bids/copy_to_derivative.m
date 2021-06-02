@@ -168,10 +168,11 @@ function copy_tsv(src, target, p)
   end
 
   if flag
-    copy_with_symlink(src, target, p.Results.verbose);
+    copy_with_symlink(src, target, p.Results.unzip, p.Results.verbose);
     if exist(bids.internal.file_utils(src, 'ext', '.json'), 'file')
       copy_with_symlink(bids.internal.file_utils(src, 'ext', '.json'), ...
                         bids.internal.file_utils(target, 'ext', '.json'), ...
+                        p.Results.unzip, ...
                         p.Results.verbose);
     end
   end
@@ -221,7 +222,7 @@ function copy_session_scan_tsv(BIDS, derivatives_folder, p)
 
 end
 
-function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, verbose)
+function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip_dep, verbose)
 
   info = bids.internal.return_file_info(BIDS, data_file);
   file = BIDS.subjects(info.sub_idx).(info.modality)(info.file_idx);
@@ -250,10 +251,8 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
   end
 
   %% copy data file
-  % we follow any eventual symlink
-  % and then unzip the data if necessary
-  copy_with_symlink(data_file, fullfile(out_dir, file.filename), verbose);
-  unzip_data(file, out_dir, unzip);
+  % we follow any eventual symlink and gunzip the data
+  copy_with_symlink(data_file, fullfile(out_dir, file.filename), unzip_files, verbose);
 
   %% export metadata
   % All the metadata of each file is read through the whole hierarchy
@@ -267,11 +266,11 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip, force, skip_dep, 
     error('Failed to create sidecar json file: %s', output_metadata_file);
   end
 
-  copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_dep, verbose);
+  copy_dependencies(file, BIDS, derivatives_folder, unzip_files, force, skip_dep, verbose);
 
 end
 
-function copy_with_symlink(src, target, verbose)
+function copy_with_symlink(src, target, unzip_files, verbose)
   %
   % Follows symbolic link to copy data:
   % Might be necessary for datasets curated with datalad
@@ -283,39 +282,56 @@ function copy_with_symlink(src, target, verbose)
   % Though datalad should run on windows too
   %
 
-  command = 'cp -R -L -f';
-
   if verbose
     fprintf(1, '\n copying %s --> %s', src, target);
   end
 
   if  isunix
-    status = system( ...
-                    sprintf('%s %s %s', ...
-                            command, ...
-                            src, ...
-                            target));
+
+    if unzip_files && is_gunzipped(src)
+      command = sprintf('gunzip -kfc %s > %s', src, target(1:end - 3));
+    else
+      command = sprintf('cp -R -L -f %s %s', src, target);
+    end
+
+    status = system(command);
+
     if status > 0
       msg = ['Copying data with system command failed: ' ...
              'Will use matlab/octave copyfile command instead.\n', ...
              'May be an issue if your data set contains symbolic links' ...
              '(e.g. if you use datalad or git-annex.)'];
       bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
-      use_copyfile(src, target, verbose);
+
+      use_copyfile(src, target, unzip_files, verbose);
     end
 
   else
-    use_copyfile(src, target, verbose);
+    use_copyfile(src, target, unzip_files, verbose);
+
   end
 
 end
 
-function use_copyfile(src, target, verbose)
-  [status, message, messageId] = copyfile(src, target);
+function use_copyfile(src, target, unzip_files, verbose)
+
+  if unzip_files && is_gunzipped(src)
+    % Octave deletes the source file so we must copy and then unzip
+    if is_octave()
+      [status, message, messageId] = copyfile(src, target);
+      gunzip(target);
+    else
+      gunzip(src, bids.internal.file_utils(target, 'path'));
+    end
+  else
+    [status, message, messageId] = copyfile(src, target);
+  end
+
   if ~status
     msg = [messageId ': ' message];
     bids.internal.error_handling(mfilename, 'copyError', msg, false, verbose);
   end
+
 end
 
 function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_dep, verbose)
@@ -355,15 +371,27 @@ function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_de
 
 end
 
-function unzip_data(file, out_dir, unzip)
-  if ~unzip
-    return
+function status = is_gunzipped(file)
+  status = bids.internal.ends_with(file, '.gz');
+end
+
+function status = is_octave()
+  %
+  % Returns true if the environment is Octave.
+  %
+  % USAGE::
+  %
+  %   status = isOctave()
+  %
+  % :returns: :status: (boolean)
+  %
+  % (C) Copyright 2020 Agah Karakuzu
+
+  persistent cacheval   % speeds up repeated calls
+
+  if isempty (cacheval)
+    cacheval = (exist ('OCTAVE_VERSION', 'builtin') > 0);
   end
-  % to ensure a consistent behavior with matlab and octave
-  if bids.internal.ends_with(file.ext, '.gz')
-    gunzip(fullfile(out_dir, file.filename));
-    if exist(fullfile(out_dir, file.filename), 'file')
-      delete(fullfile(out_dir, file.filename));
-    end
-  end
+
+  status = cacheval;
 end
