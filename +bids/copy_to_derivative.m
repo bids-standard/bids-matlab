@@ -10,8 +10,9 @@ function copy_to_derivative(varargin)
   %                               pipeline_name, ...
   %                               filters, ...
   %                               'unzip', true, ...
-  %                               'force', false...
-  %                               'skip_dep', false ...
+  %                               'force', false, ...
+  %                               'skip_dep', false, ...
+  %                               'use_schema, use_schema, ...
   %                               'verbose', true);
   %
   %
@@ -290,35 +291,33 @@ function copy_with_symlink(src, target, verbose)
     fprintf(1, '\n copying %s --> %s', src, target);
   end
 
-  try
+  if  isunix
     status = system( ...
                     sprintf('%s %s %s', ...
                             command, ...
                             src, ...
                             target));
-
     if status > 0
-      msg = [ ...
-             'Copying data with system command failed: ' ...
-             'Are you running Windows?\n', ...
+      msg = ['Copying data with system command failed: ' ...
              'Will use matlab/octave copyfile command instead.\n', ...
              'May be an issue if your data set contains symbolic links' ...
              '(e.g. if you use datalad or git-annex.)'];
       bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
+      use_copyfile(src, target, verbose);
     end
 
-  catch
-
-    fprintf(1, 'Using octave/matlab to copy files.');
-    [status, message, messageId] = copyfile(src, target);
-    if ~status
-      msg = [messageId ': ' message];
-      bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
-      return
-    end
-
+  else
+    use_copyfile(src, target, verbose);
   end
 
+end
+
+function use_copyfile(src, target, verbose)
+  [status, message, messageId] = copyfile(src, target);
+  if ~status
+    msg = [messageId ': ' message];
+    bids.internal.error_handling(mfilename, 'copyError', msg, false, verbose);
+  end
 end
 
 function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_dep, verbose)

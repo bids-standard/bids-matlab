@@ -157,3 +157,27 @@ function test_create_filename_basic()
   assertEqual(filename, 'sub-02_task-newTask_run-02_bold.nii');
 
 end
+
+function test_create_filename_change_suffix()
+
+  filename = 'sub-02_task-newTask_run-02_eeg.nii';
+
+  p.suffix = 'eeg';
+
+  filename = bids.create_filename(p, filename);
+
+  assertEqual(filename, 'sub-02_task-newTask_run-02_eeg.nii');
+
+end
+
+function test_create_filename_change_extension()
+
+  filename = 'sub-02_task-newTask_run-02_eeg.nii';
+
+  p.ext = '.json';
+
+  filename = bids.create_filename(p, filename);
+
+  assertEqual(filename, 'sub-02_task-newTask_run-02_eeg.json');
+
+end
