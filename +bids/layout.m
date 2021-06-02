@@ -328,7 +328,15 @@ end
 
 function file_list = return_file_list(modality, subject, schema)
 
-  % We list anything but json files
+  % We list files followiung those rules:
+  %  - anything but json files
+  %  - requesting strart with sub-<subId>_ses-<sesId>_
+  %  - requesting a set of entities of form <key>-<value>_
+  %  - requestin exactly one suffix
+  %
+  %  When not using the schema, listed files
+  %  - can inlude a prefix
+  %  - can be json
 
   % TODO
   % it should be possible to create some of those patterns for the regexp
@@ -337,23 +345,42 @@ function file_list = return_file_list(modality, subject, schema)
   % TODO
   % this does not cover coordsystem.json
 
-  % jn to omit json but not .pos file for headshape.pos
-  pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
-  prefix = '';
+  % prefix only for shemaless data
   if isempty(schema.content)
-    pattern = '_([a-zA-Z0-9]+){1}\\..*';
-    prefix = '([a-zA-Z0-9]*)';
+    prefix = '^([a-zA-Z0-9_]*)';
+  else
+    prefix = '^';
   end
+
+  % sub and ses part
+  pattern = [prefix subject.name '_'];
+  if ~isempty(subject.session)
+    pattern = [pattern subject.session '_'];
+  end
+
+  % entities
+  pattern = [pattern '([a-zA-Z0-9]+-[a-zA-Z0-9]+_)*'];
+
+  % suffix
+  pattern = [pattern '([a-zA-Z0-9]+\.){1}'];
+
+  % extension
+  if ~isempty(schema.content)
+    pattern = [pattern '(?!json)'];
+  end
+  pattern = [pattern '([a-zA-Z0-9.]+){1}$'];
 
   pth = fullfile(subject.path, modality);
 
   [file_list, d] = bids.internal.file_utils('List', ...
                                             pth, ...
-                                            sprintf(['^' prefix '%s.*' pattern '$'], ...
-                                                    subject.name));
+                                            pattern);
 
   file_list = convert_to_cell(file_list);
 
+  % Consider removing 'strcmp(modality, 'meg') &&'
+  % just to cover eventual other modalities that stores data
+  % in folders
   if strcmp(modality, 'meg') && ~isempty(d)
     for i = 1:size(d, 1)
       file_list{end + 1, 1} = d(i, :); %#ok<*AGROW>
