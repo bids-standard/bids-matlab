@@ -29,6 +29,8 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
     if ~isempty(schema.content) && ...
             ~any(ismember(file(previous.data.len:end), ...
                           previous.allowed_ext))
+      [msg, id] = error_message('unknownExtension', file, file(previous.data.len:end));
+      bids.internal.error_handling(mfilename, id, msg, true, schema.verbose);
       status = 0;
       return
     end
@@ -53,8 +55,8 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       idx = schema.find_suffix_group(modality, p.suffix);
 
       if isempty(idx)
-        msg = sprintf('Skipping file with no valid suffix in schema: %s', file);
-        bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, schema.verbose);
+        [msg, id] = error_message('unknownSuffix', file, p.suffix);
+        bids.internal.error_handling(mfilename, id, msg, true, schema.verbose);
         status = 0;
         return
       end
@@ -76,21 +78,16 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       end
       if ~ismember('*', allowed_extensions) && ...
               ~ismember(extension, allowed_extensions)
-        id = 'unknownExtension';
-        msg = sprintf('Unknown extension %s in schema for file %s', extension, file);
+        [msg, id] = error_message('unknownExtension', file, extension);
       end
 
       if ~isempty(unknown_entity)
-        id = 'unknownEntity';
-        msg = sprintf('Unknown entities %s in schema for file: %s', file, ...
-                      strjoin(unknown_entity, ' '));
+        [msg, id] = error_message('unknownEntity', file, unknown_entity);
       end
 
       if any(missing_entities)
         missing_entities = required_entities(missing_entities);
-        id = 'missingRequiredEntity';
-        msg = sprintf('Skipping file %s.\nMissing REQUIRED entity: %s', file, ...
-                      strjoin(missing_entities, ' '));
+        [msg, id] = error_message('missingRequiredEntity', file, missing_entities);
       end
 
       if exist('id', 'var')
@@ -133,5 +130,27 @@ end
 function status = same_data(file, previous)
 
   status = strncmp(previous.data.base, file, previous.data.len);
+
+end
+
+function [msg, msg_id] = error_message(msg_id, file, varargin)
+
+  msg = sprintf('Skipping file %s.\n', file);
+
+  switch msg_id
+
+    case 'unknownExtension'
+      msg = sprintf('%s Unknown extension %s', varargin{1});
+
+    case 'missingRequiredEntity'
+      msg = sprintf('%s Missing REQUIRED entity: %s', strjoin(varargin{1}, ' '));
+
+    case 'unknownEntity'
+      msg = sprintf('%s Unknown entities: %s', strjoin(varargin{1}, ' '));
+
+    case 'unknownSuffix'
+      msg = sprintf('%s Unknown suffix: %s', varargin{1});
+
+  end
 
 end
