@@ -32,3 +32,20 @@ function test_basic()
                         'test_error_handling:unspecified');
 
 end
+
+% function test_bids_query_tolerant_layout()
+%
+%     use_schema =  true;
+%     index_derivatives = false;
+%     tolerant = true;
+%     verbose = true;
+%
+%     pth_bids_example = get_test_data_dir();
+%
+%     %%
+%     BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_face13'),...
+%         use_schema, ...
+%         index_derivatives, ...
+%         tolerant, ...
+%         verbose);
+% end
