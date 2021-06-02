@@ -15,6 +15,12 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   %                    If a folder path is provided, then the schema contained
   %                    in that folder will be used for parsing.
   % :type  use_schema: boolean
+  % :param index_derivatives:
+  % :type  index_derivatives: boolean
+  % :param tolerant:
+  % :type  tolerant: boolean
+  % :param verbose:
+  % :type  verbose: boolean
   %
   %
   % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
