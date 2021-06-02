@@ -5,9 +5,8 @@ function copy_to_derivative(varargin)
   %
   % USAGE::
   %
-  %   bids.copy_to_derivative(BIDS, ...
+  %   bids.copy_to_derivative(BIDS, pipeline_name...
   %                               out_path, ...
-  %                               pipeline_name, ...
   %                               filters, ...
   %                               'unzip', true, ...
   %                               'force', false, ...
@@ -18,11 +17,11 @@ function copy_to_derivative(varargin)
   %
   % :param BIDS:            BIDS directory name or BIDS structure (from bids.layout)
   % :type  BIDS:            structure or string
+  % :param pipeline_name:   name of pipeline to use
+  % :type  pipeline_name:   string
   %
   % :param out_path:        path to directory containing the derivatives
   % :type  out_path:        string
-  % :param pipeline_name:   name of pipeline to use
-  % :type  pipeline_name:   string
   % :param filter:          list of filters to choose what files to copy (see bids.query)
   % :type  filter:          structure or cell
   %
@@ -49,7 +48,6 @@ function copy_to_derivative(varargin)
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   default_out_path = fullfile(pwd, 'derivatives');
-  default_pipeline_name = 'bids-matlab';
   default_filter = struct();
 
   default_unzip = true;
@@ -61,9 +59,9 @@ function copy_to_derivative(varargin)
   p = inputParser;
 
   addRequired(p, 'BIDS');
+  addRequired(p, 'pipeline_name', @ischar);
 
   addOptional(p, 'out_path', default_out_path, @ischar);
-  addOptional(p, 'pipeline_name', default_pipeline_name, @ischar);
   addOptional(p, 'filter', default_filter, @isstruct);
 
   addParameter(p, 'unzip', default_unzip);
