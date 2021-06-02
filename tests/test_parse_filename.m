@@ -60,6 +60,24 @@ function test_parse_filename_prefix()
   entities = fieldnames(output.entities);
   assertEqual(entities, expectedEntities);
 
+  % sub containing entity later in the filename
+  % NOT SURE THIS IS THE EXPECTED BEHAVIOR
+  filename = 'group-ctrl_wsub-1_bold.nii';
+  output = bids.internal.parse_filename(filename);
+
+  expected = struct( ...
+                    'filename', 'group-ctrl_wsub-1_bold.nii', ...
+                    'suffix', 'bold', ...
+                    'prefix', 'group-ctrl_w', ...
+                    'ext', '.nii', ...
+                    'entities', struct('sub', '1'));
+
+  assertEqual(output, expected);
+
+  expectedEntities = fieldnames(expected.entities);
+  entities = fieldnames(output.entities);
+  assertEqual(entities, expectedEntities);
+
 end
 
 function test_parse_filename_basic()

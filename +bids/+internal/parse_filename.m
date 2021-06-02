@@ -42,11 +42,12 @@ function p = parse_filename(filename, fields, verbose)
 
   filename = bids.internal.file_utils(filename, 'filename');
 
-  % identidy an eventual prefix to the file
+  % identify an eventual prefix to the file
+  % only look for comes before the first "sub-"
   p.prefix = '';
   pos = strfind(filename, 'sub-');
-  if pos > 1
-    p.prefix = filename(1:pos - 1);
+  if ~isempty(pos) && pos(1) > 1
+    p.prefix = filename(1:pos(1) - 1);
   else
     pos = 1;
   end
