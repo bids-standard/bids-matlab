@@ -215,28 +215,30 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
     file_list = return_file_list(modality, subject, schema);
 
     % dependency previous file
-    dep_prev_files = struct( ...
-                            'index_group', 0, ...
-                            'group_base',  '', ...
-                            'group_len', 1, ...
-                            'index_data', 0, ...
-                            'data_base', '', ...
-                            'data_len', 1);
+    previous = struct( ...
+                      'index_group', 0, ...
+                      'group_base',  '', ...
+                      'group_len', 1, ...
+                      'index_data', 0, ...
+                      'data_base', '', ...
+                      'data_len', 1, ...
+                      'allowed_ext', []);
 
     for iFile = 1:size(file_list, 1)
 
-      [subject, parsing] = bids.internal.append_to_layout(file_list{iFile}, ...
-                                                          subject, ...
-                                                          modality, ...
-                                                          schema);
+      [subject, status, previous] = bids.internal.append_to_layout(file_list{iFile}, ...
+                                                                   subject, ...
+                                                                   modality, ...
+                                                                   schema,  ...
+                                                                   previous);
 
-      if ~isempty(parsing)
+      if status
 
-        [subject, dep_prev_files] = index_dependencies(subject, ...
-                                                       modality, ...
-                                                       file_list{iFile}, ...
-                                                       iFile, ...
-                                                       dep_prev_files);
+        [subject, previous] = index_dependencies(subject, ...
+                                                 modality, ...
+                                                 file_list{iFile}, ...
+                                                 iFile, ...
+                                                 previous);
 
         switch subject.(modality)(end).suffix
 
@@ -359,7 +361,7 @@ function file_list = return_file_list(modality, subject, schema)
 
 end
 
-function [subject, dep_prev_files] = index_dependencies(subject, modality, file, i, dep_prev_files)
+function [subject, previous] = index_dependencies(subject, modality, file, i, previous)
   %
   % Each file structure contains dependencies sub-structure with guaranteed fields:
   %
@@ -378,58 +380,60 @@ function [subject, dep_prev_files] = index_dependencies(subject, modality, file,
   pth = fullfile(subject.path, modality);
   fullpath_filename = fullfile(pth, file);
 
-  if ~isfield(subject.(modality)(end), 'dependencies') || ...
-          isempty(subject.(modality)(end).dependencies)
-    subject.(modality)(end).dependencies.explicit = {};
-    subject.(modality)(end).dependencies.data = {};
-    subject.(modality)(end).dependencies.group = {};
-  end
-
-  if strncmp(dep_prev_files.data_base, file, dep_prev_files.data_len)
-
-    %     subject.(modality)(end + 1, 1) = subject.(modality)(end, 1);
-    %     subject.(modality)(end, 1).ext = file(dep_prev_files.data_len:end);
-    %     subject.(modality)(end, 1).filename = file;
-
-    dep_fname = fullfile(pth, subject.(modality)(end - 1, 1).filename);
-    subject.(modality)(end).dependencies.data{end + 1} = dep_fname;
-
-  else
-    subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
-
-  end
-
   % Checking dependencies
-  if strncmp(dep_prev_files.group_base, file, dep_prev_files.group_len)
-    if strncmp(dep_prev_files.data_base, file, dep_prev_files.data_len)
-      % same data
-      for di = dep_prev_files.index_data:i - 1
-        subject.(modality)(di).dependencies.data{end + 1} = fullpath_filename;
-      end
-    else
-      % not same data but same group
-      dep_prev_files.index_data = i;
-      dep_prev_files.data_len = find(file == '.', 1);
-      dep_prev_files.data_base = file(1:dep_prev_files.data_len);
+  if same_group(file, previous)
 
-      for gi = dep_prev_files.index_group:i
+    % same data
+    if same_data(file, previous)
+
+      for di = previous.index_data:i - 1
+        subject.(modality)(di).dependencies.data{end + 1, 1} = fullpath_filename;
+      end
+
+      % not same data but same group
+    else
+
+      previous = update_previous(previous, 'data', file, i);
+
+      for gi = previous.index_group:i - 1
         dep_fname = fullfile(pth, subject.(modality)(gi).filename);
-        subject.(modality)(end).dependencies.group{end + 1} = dep_fname;
-        subject.(modality)(gi).dependencies.group{end + 1} = fullpath_filename;
+        subject.(modality)(end).dependencies.group{end + 1, 1} = dep_fname;
+        subject.(modality)(gi).dependencies.group{end + 1, 1} = fullpath_filename;
       end
     end
 
     % new group
   else
-    dep_prev_files.index_group = i;
-    dep_prev_files.group_len = find(file == '_', 1, 'last');
-    dep_prev_files.group_base = file(1:dep_prev_files.group_len);
+    previous = update_previous(previous, 'group', file, i);
+    previous = update_previous(previous, 'data', file, i);
 
-    dep_prev_files.index_data = i;
-    dep_prev_files.data_len = find(file == '.', 1);
-    dep_prev_files.data_base = file(1:dep_prev_files.data_len);
   end
 
+end
+
+function status = same_group(file, previous)
+
+  status = strncmp(previous.group_base, file, previous.group_len);
+
+end
+
+function status = same_data(file, previous)
+
+  status = strncmp(previous.data_base, file, previous.data_len);
+
+end
+
+function previous = update_previous(previous, type, file, idx)
+  switch type
+    case 'data'
+      previous.index_data = idx;
+      previous.data_len = find(file == '.', 1);
+      previous.data_base = file(1:previous.data_len);
+    case 'group'
+      previous.index_group = idx;
+      previous.group_len = find(file == '_', 1, 'last');
+      previous.group_base = file(1:previous.group_len);
+  end
 end
 
 function structure = manage_tsv(structure, pth, filename, verbose)
