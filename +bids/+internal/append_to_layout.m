@@ -18,9 +18,12 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  % We speed up indexing by checking that the current file has the same basename
+  % as the previous one.
+  % In this case we can copy most of the info from the previous file
   if same_data(file, previous)
 
-    % in case we are using the schema and faced with a file that
+    % Skip file in case we are using the schema and faced with a file that
     % does have the same basename as the previous file
     % but not a recognized extension
     % - <match>_events.tsv
@@ -78,6 +81,8 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       if isdir(fullfile(subject.path, modality, p.filename))
         extension = [extension '/'];
       end
+
+      %% Checks that this file is BIDS compliant
       if ~ismember('*', allowed_extensions) && ...
               ~ismember(extension, allowed_extensions)
         [msg, id] = error_message('unknownExtension', file, extension);
