@@ -18,6 +18,8 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  pth = [subject.path, filesep, modality];
+
   % We speed up indexing by checking that the current file has the same basename
   % as the previous one.
   % In this case we can copy most of the info from the previous file
@@ -42,7 +44,7 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
     subject.(modality)(end, 1).ext = file(previous.data.len:end);
     subject.(modality)(end, 1).filename = file;
 
-    dep_fname = fullfile(subject.path, modality, subject.(modality)(end - 1, 1).filename);
+    dep_fname = fullfile(pth, subject.(modality)(end - 1, 1).filename);
     subject.(modality)(end).dependencies.data{end + 1, 1} = dep_fname;
     status = 1;
     return
@@ -78,7 +80,7 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       extension = p.ext;
       % in case we are dealing with a folder
       % (can be the case for some MEG formats: .ds)
-      if isdir(fullfile(subject.path, modality, p.filename))
+      if exist(fullfile(pth, p.filename), 'dir')
         extension = [extension '/'];
       end
 
@@ -89,12 +91,14 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       end
 
       if ~isempty(unknown_entity)
-        [msg, id] = error_message('unknownEntity', file, unknown_entity);
+        [msg, id] = error_message('unknownEntity', file, ...
+                                  strjoin(cellstr(unknown_entity), ' '));
       end
 
       if any(missing_entities)
         missing_entities = required_entities(missing_entities);
-        [msg, id] = error_message('missingRequiredEntity', file, missing_entities);
+        [msg, id] = error_message('missingRequiredEntity', file, ...
+                                  strjoin(cellstr(missing_entities), ' '));
       end
 
       if exist('id', 'var')
@@ -140,23 +144,23 @@ function status = same_data(file, previous)
 
 end
 
-function [msg, msg_id] = error_message(msg_id, file, varargin)
+function [msg, msg_id] = error_message(msg_id, file, extra)
 
   msg = sprintf('Skipping file %s.\n', file);
 
   switch msg_id
 
     case 'unknownExtension'
-      msg = sprintf('%s Unknown extension %s', varargin{1});
+      msg = sprintf('%s Unknown extension %s', msg, extra);
 
     case 'missingRequiredEntity'
-      msg = sprintf('%s Missing REQUIRED entity: %s', strjoin(varargin{1}, ' '));
+      msg = sprintf('%s Missing REQUIRED entity: %s', msg, extra);
 
     case 'unknownEntity'
-      msg = sprintf('%s Unknown entities: %s', strjoin(varargin{1}, ' '));
+      msg = sprintf('%s Unknown entities: %s', msg, extra);
 
     case 'unknownSuffix'
-      msg = sprintf('%s Unknown suffix: %s', varargin{1});
+      msg = sprintf('%s Unknown suffix: %s', msg, extra);
 
   end
 

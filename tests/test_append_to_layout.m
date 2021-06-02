@@ -8,25 +8,33 @@ end
 
 function test_append_to_layout_schema_unknown_entity()
 
-  [subject, modality, schema, previous] = setUp('meg');
+  if ~is_octave()
 
-  file = 'sub-16_task-bar_foo-bar_meg.ds';
+    [subject, modality, schema, previous] = setUp('meg');
 
-  assertWarning( ...
-                @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
-                'append_to_layout:unknownEntity');
+    file = 'sub-16_task-bar_foo-bar_meg.ds';
+
+    assertWarning( ...
+                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                  'append_to_layout:unknownEntity');
+
+  end
 
 end
 
 function test_append_to_layout_schema_unknown_extension()
 
-  [subject, modality, schema, previous] = setUp('meg');
+  if ~is_octave()
 
-  file = 'sub-16_task-bar_meg.foo';
+    [subject, modality, schema, previous] = setUp('meg');
 
-  assertWarning( ...
-                @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
-                'append_to_layout:unknownExtension');
+    file = 'sub-16_task-bar_meg.foo';
+
+    assertWarning( ...
+                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                  'append_to_layout:unknownExtension');
+
+  end
 
 end
 
@@ -62,14 +70,17 @@ end
 
 function test_append_to_layout_schema_missing_required_entity()
 
-  [subject, modality, schema, previous] = setUp('func');
+  if ~is_octave()
+    [subject, modality, schema, previous] = setUp('func');
 
-  % func with missing task entity
-  file = 'sub-16_bold.nii.gz';
+    % func with missing task entity
+    file = 'sub-16_bold.nii.gz';
 
-  assertWarning( ...
-                @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
-                'append_to_layout:missingRequiredEntity');
+    assertWarning( ...
+                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                  'append_to_layout:missingRequiredEntity');
+
+  end
 
 end
 
@@ -150,7 +161,7 @@ function test_append_to_layout_schemaless()
   expected.newmod(1, 1).dependencies.data = {};
   expected.newmod(1, 1).dependencies.group = {};
 
-  expected.path = pwd;
+  expected.path = fullfile(pwd, 'sub-01');
 
   assertEqual(subject, expected);
 
@@ -170,10 +181,31 @@ function [subject, modality, schema, previous] = setUp(modality, use_schema)
 
   subject = struct( ...
                    modality, struct([]), ...
-                   'path', pwd);
+                   'path', fullfile(pwd, 'sub-01'));
 
   previous = struct('group', struct('index', 0, 'base', '', 'len', 1), ...
                     'data', struct('index', 0, 'base', '', 'len', 1), ...
                     'allowed_ext', []);
 
+end
+
+function status = is_octave()
+  %
+  % Returns true if the environment is Octave.
+  %
+  % USAGE::
+  %
+  %   status = isOctave()
+  %
+  % :returns: :status: (boolean)
+  %
+  % (C) Copyright 2020 Agah Karakuzu
+
+  persistent cacheval   % speeds up repeated calls
+
+  if isempty (cacheval)
+    cacheval = (exist ('OCTAVE_VERSION', 'builtin') > 0);
+  end
+
+  status = cacheval;
 end
