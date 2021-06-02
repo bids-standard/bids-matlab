@@ -71,7 +71,7 @@ function test_layout_parse_json()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_qsm'));
 
   data = bids.query(BIDS, 'data', ...
                     'sub', '01', ...
@@ -82,13 +82,13 @@ function test_layout_parse_json()
   %%
   use_schema = false();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'), use_schema);
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_qsm'), use_schema);
 
   data = bids.query(BIDS, 'data', ...
                     'sub', '01', ...
                     'modality', 'anat');
 
-  assertEqual(size(data, 1), 4);
+  assertEqual(size(data, 1), 3);
 
 end
 

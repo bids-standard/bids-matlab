@@ -27,4 +27,8 @@ function test_bids_query_meg_basic()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds000248'));
 
+  dependencies = bids.query(BIDS, 'dependencies', 'sub', '01', 'suffix', 'meg');
+
+  assertEqual(numel(dependencies.group), 2);
+
 end
