@@ -9,13 +9,13 @@ function varargout = jsonwrite(varargin)
 % S        - serialized JSON structure (string)
 %  
 % FORMAT [...] = jsonwrite(...,opts)
-% opts     - structure or list of name/value pairs of optional parameters:
-%              prettyPrint: indent output [Default: true]
-%              replacementStyle: string to control how non-alphanumeric
-%                characters are replaced {'underscore','hex','delete','nop'}
-%                [Default: 'underscore']
-%              convertInfAndNaN: encode NaN, Inf and -Inf as "null"
-%                [Default: true]
+% opts    - structure or list of name/value pairs of optional parameters:
+%             prettyPrint: indent output [Default: true]
+%             replacementStyle: string to control how non-alphanumeric
+%               characters are replaced {'underscore','hex','delete','nop'}
+%               [Default: 'underscore']
+%             convertInfAndNaN: encode NaN, Inf and -Inf as "null"
+%               [Default: true]
 %  
 % References:
 %   JSON Standard: https://www.json.org/
@@ -59,7 +59,9 @@ else
 end
 fn = fieldnames(opt);
 for i=1:numel(fn)
-    if ~isfield(opts,lower(fn{i})), warning('Unknown option "%s".',fn{i}); end
+    if ~isfield(opts,lower(fn{i}))
+        warning('Unknown option "%s".',fn{i}); 
+    end
     opts.(lower(fn{i})) = opt.(fn{i});
 end
 if opts.prettyprint
@@ -115,7 +117,8 @@ elseif isa(json,'string')
         if numel(idx) == 1 % vector
             S = jsonwrite_cell(json,tab);
         else % array
-            S = jsonwrite_cell(num2cell(json,setdiff(1:ndims(json),idx(1))),tab);
+            S = jsonwrite_cell(...
+                num2cell(json,setdiff(1:ndims(json),idx(1))),tab);
         end
     end
 elseif isa(json,'datetime') || isa(json,'categorical')
@@ -255,7 +258,9 @@ b = '';
 if nargin == 1
     if varargin{1} > 0, b = repmat(tab,1,varargin{1}); end
 elseif nargin == 2
-    if ~isempty(tab) && ~isempty(varargin{2}), b = sprintf(varargin{1}); end
+    if ~isempty(tab) && ~isempty(varargin{2})
+        b = sprintf(varargin{1}); 
+    end
 end
 
 %==========================================================================
