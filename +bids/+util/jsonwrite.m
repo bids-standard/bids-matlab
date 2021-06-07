@@ -3,11 +3,11 @@ function varargout = jsonwrite(varargin)
 % FORMAT jsonwrite(filename,json)
 % filename - JSON filename
 % json     - JSON structure
-%
+%  
 % FORMAT S = jsonwrite(json)
 % json     - JSON structure
 % S        - serialized JSON structure (string)
-%
+%  
 % FORMAT [...] = jsonwrite(...,opts)
 % opts     - structure or list of name/value pairs of optional parameters:
 %              prettyPrint: indent output [Default: true]
@@ -16,11 +16,11 @@ function varargout = jsonwrite(varargin)
 %                [Default: 'underscore']
 %              convertInfAndNaN: encode NaN, Inf and -Inf as "null"
 %                [Default: true]
-% 
+%  
 % References:
 %   JSON Standard: https://www.json.org/
 %   jsonencode: https://www.mathworks.com/help/matlab/ref/jsonencode.html
-
+%  
 % Guillaume Flandin
 % $Id: spm_jsonwrite.m 8031 2020-12-10 13:37:00Z guillaume $
 
