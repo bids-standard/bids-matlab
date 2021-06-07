@@ -10,7 +10,7 @@ function varargout = jsonwrite(varargin)
 %
 % FORMAT [...] = jsonwrite(...,opts)
 % opts     - structure or list of name/value pairs of optional parameters:
-%              prettyPrint: indent output [Default: false]
+%              prettyPrint: indent output [Default: true]
 %              replacementStyle: string to control how non-alphanumeric
 %                characters are replaced {'underscore','hex','delete','nop'}
 %                [Default: 'underscore']
@@ -29,7 +29,7 @@ function varargout = jsonwrite(varargin)
 %--------------------------------------------------------------------------
 opts = struct(...
     'indent','',...
-    'prettyprint',false,...
+    'prettyprint',true,...
     'replacementstyle','underscore',...
     'convertinfandnan',true);
 opt  = {struct([])};
