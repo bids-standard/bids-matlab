@@ -37,5 +37,5 @@ function varargout = jsonencode(varargin)
   if ~nargin
     error('Not enough input arguments.');
   else
-    [varargout{1:nargout}] = jsonwrite(varargin{:}); % JSONio copy - always exist
+    [varargout{1:nargout}] = bids.util.jsonwrite(varargin{:}); % JSONio copy - always exist
   end
