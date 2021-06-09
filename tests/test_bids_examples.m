@@ -16,6 +16,11 @@ function test_bids_examples_basic()
   % datasets
   pth_bids_example = get_test_data_dir();
 
+  use_schema =  true;
+  index_derivatives = false;
+  tolerant = false;
+  verbose = false;
+
   d = dir(pth_bids_example);
   d(arrayfun(@(x) ~x.isdir || ismember(x.name, {'.', '..', '.git', '.github'}), d)) = [];
 
@@ -30,7 +35,11 @@ function test_bids_examples_basic()
       continue
     end
     try
-      BIDS = bids.layout(fullfile(pth_bids_example, d(i).name));
+      BIDS = bids.layout(fullfile(pth_bids_example, d(i).name), ...
+                         use_schema, ...
+                         index_derivatives, ...
+                         tolerant, ...
+                         verbose);
       status(i) = true;
       fprintf('.');
     catch err

@@ -42,8 +42,19 @@ function p = parse_filename(filename, fields, verbose)
 
   filename = bids.internal.file_utils(filename, 'filename');
 
+  % identify an eventual prefix to the file
+  % only look for comes before the first "sub-"
+  p.prefix = '';
+  pos = strfind(filename, 'sub-');
+  if ~isempty(pos) && pos(1) > 1
+    p.prefix = filename(1:pos(1) - 1);
+  else
+    pos = 1;
+  end
+  basename = filename(pos:end);
+
   % -Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
-  [parts, dummy] = regexp(filename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
+  [parts, dummy] = regexp(basename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
   p.filename = filename;
 
   % -Identify the suffix and extension of this file
@@ -53,29 +64,6 @@ function p = parse_filename(filename, fields, verbose)
   for i = 1:numel(parts) - 1
     [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match'); %#ok<ASGLU>
     p.entities.(d{1}) = d{2};
-  end
-
-  % identidy an eventual prefix to the file
-  % and amends the sub entity accordingly
-  p.prefix = '';
-
-  if strfind(parts{1}, 'sub-')
-
-    tmp = regexp(parts{1}, '(sub-)', 'split');
-    p.prefix = tmp{1};
-
-    if ~isempty(p.prefix)
-
-      p.entities.sub = p.entities.([p.prefix 'sub']);
-      p.entities = rmfield(p.entities, [p.prefix 'sub']);
-
-      % reorder entities so that the 'sub' entity stays on top
-      entity_order = fieldnames(p.entities);
-      entity_order = entity_order([end, 1:end - 1]);
-      p.entities = orderfields(p.entities, entity_order);
-
-    end
-
   end
 
   % Extra fields can be added to the structure and ordered specifically.

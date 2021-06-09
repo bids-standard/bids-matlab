@@ -15,4 +15,13 @@ function test_bids_query_func_basic()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
 
+  %% dependencies
+  dependencies = bids.query(BIDS, 'dependencies', ...
+                            'sub', '01', ...
+                            'suffix', 'bold', ...
+                            'run', '01');
+
+  assertEqual(numel(dependencies.data), 0);
+  assertEqual(numel(dependencies.group), 1);
+
 end

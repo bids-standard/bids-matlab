@@ -15,6 +15,12 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   %                    If a folder path is provided, then the schema contained
   %                    in that folder will be used for parsing.
   % :type  use_schema: boolean
+  % :param index_derivatives:
+  % :type  index_derivatives: boolean
+  % :param tolerant:
+  % :type  tolerant: boolean
+  % :param verbose:
+  % :type  verbose: boolean
   %
   %
   % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
@@ -214,16 +220,26 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
 
     file_list = return_file_list(modality, subject, schema);
 
+    % dependency previous file
+    previous = struct('group', struct('index', 0, 'base', '', 'len', 1), ...
+                      'data', struct('index', 0, 'base', '', 'len', 1), ...
+                      'allowed_ext', []);
+
     for iFile = 1:size(file_list, 1)
 
-      [subject, parsing] = bids.internal.append_to_layout(file_list{iFile}, ...
-                                                          subject, ...
-                                                          modality, ...
-                                                          schema);
+      [subject, status, previous] = bids.internal.append_to_layout(file_list{iFile}, ...
+                                                                   subject, ...
+                                                                   modality, ...
+                                                                   schema,  ...
+                                                                   previous);
 
-      if ~isempty(parsing)
+      if status
 
-        subject = index_dependencies(subject, modality, file_list{iFile});
+        [subject, previous] = index_dependencies(subject, ...
+                                                 modality, ...
+                                                 file_list{iFile}, ...
+                                                 iFile, ...
+                                                 previous);
 
         switch subject.(modality)(end).suffix
 
@@ -312,7 +328,15 @@ end
 
 function file_list = return_file_list(modality, subject, schema)
 
-  % We list anything but json files
+  % We list files followiung those rules:
+  %  - anything but json files
+  %  - requesting strart with sub-<subId>_ses-<sesId>_
+  %  - requesting a set of entities of form <key>-<value>_
+  %  - requestin exactly one suffix
+  %
+  %  When not using the schema, listed files
+  %  - can inlude a prefix
+  %  - can be json
 
   % TODO
   % it should be possible to create some of those patterns for the regexp
@@ -321,23 +345,42 @@ function file_list = return_file_list(modality, subject, schema)
   % TODO
   % this does not cover coordsystem.json
 
-  % jn to omit json but not .pos file for headshape.pos
-  pattern = '_([a-zA-Z0-9]+){1}\\..*[^jn]';
-  prefix = '';
+  % prefix only for shemaless data
   if isempty(schema.content)
-    pattern = '_([a-zA-Z0-9]+){1}\\..*';
-    prefix = '([a-zA-Z0-9]*)';
+    prefix = '^([a-zA-Z0-9_]*)';
+  else
+    prefix = '^';
   end
+
+  % sub and ses part
+  pattern = [prefix subject.name '_'];
+  if ~isempty(subject.session)
+    pattern = [pattern subject.session '_'];
+  end
+
+  % entities
+  pattern = [pattern '([a-zA-Z0-9]+-[a-zA-Z0-9]+_)*'];
+
+  % suffix
+  pattern = [pattern '([a-zA-Z0-9]+\.){1}'];
+
+  % extension
+  if ~isempty(schema.content)
+    pattern = [pattern '(?!json)'];
+  end
+  pattern = [pattern '([a-zA-Z0-9.]+){1}$'];
 
   pth = fullfile(subject.path, modality);
 
   [file_list, d] = bids.internal.file_utils('List', ...
                                             pth, ...
-                                            sprintf(['^' prefix '%s.*' pattern '$'], ...
-                                                    subject.name));
+                                            pattern);
 
   file_list = convert_to_cell(file_list);
 
+  % Consider removing 'strcmp(modality, 'meg') &&'
+  % just to cover eventual other modalities that stores data
+  % in folders
   if strcmp(modality, 'meg') && ~isempty(d)
     for i = 1:size(d, 1)
       file_list{end + 1, 1} = d(i, :); %#ok<*AGROW>
@@ -346,7 +389,7 @@ function file_list = return_file_list(modality, subject, schema)
 
 end
 
-function subject = index_dependencies(subject, modality, file)
+function [subject, previous] = index_dependencies(subject, modality, file, i, previous)
   %
   % Each file structure contains dependencies sub-structure with guaranteed fields:
   %
@@ -365,38 +408,58 @@ function subject = index_dependencies(subject, modality, file)
   pth = fullfile(subject.path, modality);
   fullpath_filename = fullfile(pth, file);
 
-  subject.(modality)(end).metafile = bids.internal.get_meta_list(fullpath_filename);
-  subject.(modality)(end).dependencies.explicit = {};
-  subject.(modality)(end).dependencies.data = {};
-  subject.(modality)(end).dependencies.group = {};
+  % Checking dependencies
+  if same_group(file, previous)
 
-  ext = subject.(modality)(end).ext;
-  suffix = subject.(modality)(end).suffix;
-  pattern = strrep(file, ['_' suffix ext], '_[a-zA-Z0-9.]+$');
-  candidates = bids.internal.file_utils('List', pth, ['^' pattern '$']);
-  candidates = cellstr(candidates);
+    % same data
+    if same_data(file, previous)
 
-  for ii = 1:numel(candidates)
+      for di = previous.data.index:numel(subject.(modality)) - 1
+        subject.(modality)(di).dependencies.data{end + 1, 1} = fullpath_filename;
+      end
 
-    if strcmp(candidates{ii}, file)
-      continue
-    end
-
-    if bids.internal.ends_with(candidates{ii}, '.json')
-      continue
-    end
-
-    match = regexp(candidates{ii}, ['_' suffix '\..*$'], 'match');
-    % different suffix
-    if isempty(match)
-      subject.(modality)(end).dependencies.group{end + 1, 1} = fullfile(pth, candidates{ii});
-      % same suffix
+      % not same data but same group
     else
-      subject.(modality)(end).dependencies.data{end + 1, 1} = fullfile(pth, candidates{ii});
+
+      previous = update_previous(previous, 'data', file, i);
+
+      for gi = previous.group.index:numel(subject.(modality)) - 1
+        dep_fname = fullfile(pth, subject.(modality)(gi).filename);
+        subject.(modality)(end).dependencies.group{end + 1, 1} = dep_fname;
+        subject.(modality)(gi).dependencies.group{end + 1, 1} = fullpath_filename;
+      end
     end
+
+    % new group
+  else
+    previous = update_previous(previous, 'group', file, numel(subject.(modality)));
+    previous = update_previous(previous, 'data', file, i);
 
   end
 
+end
+
+function status = same_group(file, previous)
+
+  this_file_group_base = find(file == '_', 1, 'last');
+  status = strcmp(previous.group.base, file(1:this_file_group_base));
+
+end
+
+function status = same_data(file, previous)
+
+  status = strncmp(previous.data.base, file, previous.data.len);
+
+end
+
+function previous = update_previous(previous, type, file, idx)
+  if strcmp(type, 'data')
+    previous.data.len = find(file == '.', 1);
+  elseif strcmp(type, 'group')
+    previous.group.len = find(file == '_', 1, 'last');
+  end
+  previous.(type).base = file(1:previous.(type).len);
+  previous.(type).index = idx;
 end
 
 function structure = manage_tsv(structure, pth, filename, verbose)

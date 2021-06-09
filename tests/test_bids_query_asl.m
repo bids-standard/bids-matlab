@@ -29,6 +29,8 @@ function test_bids_query_asl_basic_asl002()
                       bids.internal.file_utils(dependencies.group, 'filename'), ...
                       'sub-Sub103_aslcontext.tsv')));
 
+  assertEqual(numel(dependencies.group), 3);
+
 end
 
 function test_bids_query_asl_basic_asl001()
@@ -57,6 +59,8 @@ function test_bids_query_asl_basic_asl001()
                       'sub-Sub103_asllabeling.jpg')));
   dependencies.context;
   dependencies.m0;
+
+  assertEqual(numel(dependencies.group), 2);
 
 end
 

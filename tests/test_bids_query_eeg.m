@@ -35,4 +35,14 @@ function test_bids_query_eeg_basic()
   % Missing: 'channels' in root folder
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
+  %% dependencies
+  dependencies = bids.query(BIDS, 'dependencies', ...
+                            'sub', '01', ...
+                            'suffix', 'eeg', ...
+                            'run', '1', ...
+                            'extension', '.set');
+
+  assertEqual(numel(dependencies.data), 1);
+  assertEqual(numel(dependencies.group), 1);
+
 end

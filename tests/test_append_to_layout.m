@@ -8,54 +8,42 @@ end
 
 function test_append_to_layout_schema_unknown_entity()
 
-  schema = bids.schema;
-  schema = schema.load();
-  schema.verbose = true;
+  if ~is_octave()
 
-  subject = struct('meg', struct([]));
+    [subject, modality, schema, previous] = setUp('meg');
 
-  modality = 'meg';
+    file = 'sub-16_task-bar_foo-bar_meg.ds';
 
-  % func with missing task entity
-  file = '../sub-16/meg/sub-16_task-bar_foo-bar_meg.ds';
+    assertWarning( ...
+                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                  'append_to_layout:unknownEntity');
 
-  assertWarning( ...
-                @()bids.internal.append_to_layout(file, subject, modality, schema), ...
-                'append_to_layout:unknownEntity');
+  end
 
 end
 
 function test_append_to_layout_schema_unknown_extension()
 
-  schema = bids.schema;
-  schema = schema.load();
-  schema.verbose = true;
+  if ~is_octave()
 
-  subject = struct('meg', struct([]));
+    [subject, modality, schema, previous] = setUp('meg');
 
-  modality = 'meg';
+    file = 'sub-16_task-bar_meg.foo';
 
-  % func with missing task entity
-  file = '../sub-16/meg/sub-16_task-bar_meg.foo';
+    assertWarning( ...
+                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                  'append_to_layout:unknownExtension');
 
-  assertWarning( ...
-                @()bids.internal.append_to_layout(file, subject, modality, schema), ...
-                'append_to_layout:unknownExtension');
+  end
 
 end
 
 function test_append_to_layout_basic()
 
-  schema = bids.schema;
-  schema = schema.load();
-  schema.verbose = true;
+  [subject, modality, schema, previous] = setUp('anat');
 
-  subject = struct('anat', struct([]));
-
-  modality = 'anat';
-
-  file = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
-  subject = bids.internal.append_to_layout(file, subject, modality, schema);
+  file = 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
+  subject = bids.internal.append_to_layout(file, subject, modality, schema, previous);
 
   expected.anat = struct( ...
                          'filename', 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz', ...
@@ -70,42 +58,43 @@ function test_append_to_layout_basic()
                                             'rec', '', ...
                                             'part', ''));
 
-  assertEqual(subject, expected);
+  expected.anat.metafile = {};
+
+  expected.anat.dependencies.explicit = {};
+  expected.anat.dependencies.data = {};
+  expected.anat.dependencies.group = {};
+
+  assertEqual(subject.anat, expected.anat);
 
 end
 
 function test_append_to_layout_schema_missing_required_entity()
 
-  schema = bids.schema;
-  schema = schema.load();
-  schema.verbose = true;
+  if ~is_octave()
+    [subject, modality, schema, previous] = setUp('func');
 
-  subject = struct('func', struct([]));
+    % func with missing task entity
+    file = 'sub-16_bold.nii.gz';
 
-  modality = 'func';
+    assertWarning( ...
+                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                  'append_to_layout:missingRequiredEntity');
 
-  % func with missing task entity
-  file = '../sub-16/func/sub-16_bold.nii.gz';
-
-  assertWarning( ...
-                @()bids.internal.append_to_layout(file, subject, modality, schema), ...
-                'append_to_layout:missingRequiredEntity');
+  end
 
 end
 
 function test_append_to_structure_basic_test()
 
-  schema = bids.schema;
-  schema = schema.load();
+  [subject, modality, schema, previous] = setUp('anat');
 
-  subject = struct('anat', struct([]));
-  modality = 'anat';
+  file = 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
+  [subject, ~, previous] = bids.internal.append_to_layout(file, subject, ...
+                                                          modality, schema, previous);
 
-  file = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
-  subject = bids.internal.append_to_layout(file, subject, modality, schema);
-
-  file = '../sub-16/anat/sub-16_ses-mri_run-1_T1map.nii.gz';
-  subject = bids.internal.append_to_layout(file, subject, modality, schema);
+  file = 'sub-16_ses-mri_run-1_T1map.nii.gz';
+  subject = bids.internal.append_to_layout(file, subject, ...
+                                           modality, schema, previous);
 
   expected.anat(1, 1) = struct( ...
                                'filename', 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz', ...
@@ -119,35 +108,43 @@ function test_append_to_structure_basic_test()
                                                   'ce', '', ...
                                                   'rec', '', ...
                                                   'part', ''));
+  expected.anat(1, 1).metafile = {};
 
-  expected.anat(2, 1) = struct( ...
-                               'filename', 'sub-16_ses-mri_run-1_T1map.nii.gz', ...
-                               'suffix', 'T1map', ...
-                               'ext', '.nii.gz', ...
-                               'prefix', '', ...
-                               'entities', struct('sub', '16', ...
-                                                  'ses', 'mri', ...
-                                                  'run', '1', ...
-                                                  'acq', '', ...
-                                                  'ce', '', ...
-                                                  'rec', ''));     %#ok<*STRNU>
+  expected.anat(1, 1).dependencies.explicit = {};
+  expected.anat(1, 1).dependencies.data = {};
+  expected.anat(1, 1).dependencies.group = {};
 
-  assertEqual(subject, expected);
+  tmp = struct( ...
+               'filename', 'sub-16_ses-mri_run-1_T1map.nii.gz', ...
+               'suffix', 'T1map', ...
+               'ext', '.nii.gz', ...
+               'prefix', '', ...
+               'entities', struct('sub', '16', ...
+                                  'ses', 'mri', ...
+                                  'run', '1', ...
+                                  'acq', '', ...
+                                  'ce', '', ...
+                                  'rec', ''));     %#ok<*STRNU>
+
+  tmp.metafile = {};
+
+  tmp.dependencies.explicit = {};
+  tmp.dependencies.data = {};
+  tmp.dependencies.group = {};
+
+  expected.anat(2, 1) = tmp;
+
+  assertEqual(subject.anat, expected.anat);
 
 end
 
 function test_append_to_layout_schemaless()
 
   use_schema = false;
-  schema = bids.schema;
-  schema = schema.load(use_schema);
+  [subject, modality, schema, previous] = setUp('newmod', use_schema);
 
-  subject = struct('newmod', struct([]));
-
-  modality = 'newmod';
-
-  file = '../sub-16/newmod/sub-16_schema-less_anything-goes_newsuffix.EXT';
-  subject = bids.internal.append_to_layout(file, subject, modality, schema);
+  file = 'sub-16_schema-less_anything-goes_newsuffix.EXT';
+  subject = bids.internal.append_to_layout(file, subject, modality, schema, previous);
 
   expected.newmod = struct( ...
                            'filename', 'sub-16_schema-less_anything-goes_newsuffix.EXT', ...
@@ -158,6 +155,57 @@ function test_append_to_layout_schemaless()
                                               'schema', 'less', ...
                                               'anything', 'goes'));
 
-  assertEqual(subject.newmod, expected.newmod);
+  expected.newmod(1, 1).metafile = {};
 
+  expected.newmod(1, 1).dependencies.explicit = {};
+  expected.newmod(1, 1).dependencies.data = {};
+  expected.newmod(1, 1).dependencies.group = {};
+
+  expected.path = fullfile(pwd, 'sub-01');
+
+  assertEqual(subject, expected);
+
+end
+
+%% Fixture
+
+function [subject, modality, schema, previous] = setUp(modality, use_schema)
+
+  if ~exist('use_schema', 'var')
+    use_schema = true;
+  end
+
+  schema = bids.schema;
+  schema = schema.load(use_schema);
+  schema.verbose = true;
+
+  subject = struct( ...
+                   modality, struct([]), ...
+                   'path', fullfile(pwd, 'sub-01'));
+
+  previous = struct('group', struct('index', 0, 'base', '', 'len', 1), ...
+                    'data', struct('index', 0, 'base', '', 'len', 1), ...
+                    'allowed_ext', []);
+
+end
+
+function status = is_octave()
+  %
+  % Returns true if the environment is Octave.
+  %
+  % USAGE::
+  %
+  %   status = isOctave()
+  %
+  % :returns: :status: (boolean)
+  %
+  % (C) Copyright 2020 Agah Karakuzu
+
+  persistent cacheval   % speeds up repeated calls
+
+  if isempty (cacheval)
+    cacheval = (exist ('OCTAVE_VERSION', 'builtin') > 0);
+  end
+
+  status = cacheval;
 end
