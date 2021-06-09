@@ -93,7 +93,7 @@ function test_query_modalities()
 
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
   assertEqual(bids.query(BIDS, 'modalities', 'sub', '01'), modalities);
-  assertEqual(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '01'), modalities);
+  assertEqual(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', 'rescan'), modalities);
 
   % this now fails on octave 4.2.2 but not on Matlab
   %
