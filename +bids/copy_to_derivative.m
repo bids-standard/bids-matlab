@@ -272,14 +272,8 @@ end
 
 function copy_with_symlink(src, target, unzip_files, verbose)
   %
-  % Follows symbolic link to copy data:
-  % Might be necessary for datasets curated with datalad
-  %
-  % Comment from Guillaume:
-  %   I think we should make a system() call only out of necessity.
-  %   We could test for symlinks within a isunix condition and only use cp -L for these?
-  %
-  % Though datalad should run on windows too
+  % TODO:
+  % - test with actual datalad datasets on all OS
   %
 
   if verbose
@@ -300,6 +294,11 @@ function copy_with_symlink(src, target, unzip_files, verbose)
       msg = ['Copying data with system command failed: \n\t %s', src];
       bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
     end
+
+  elseif ispc
+    msg = 'Unknown system: copy may fail';
+    bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
+    use_copyfile(src, target, unzip_files, verbose);
 
   else
     use_copyfile(src, target, unzip_files, verbose);
