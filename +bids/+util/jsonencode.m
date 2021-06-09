@@ -25,7 +25,7 @@ function varargout = jsonencode(varargin)
   % :param opts: optional parameters
   % :type opts: structure
   %
-  %   - ``Indent``: string to use for indentation; [Default: ``''``]
+  %   - ``prettyPrint``: indent output [Default: ``true``]
   %   - ``ReplacementStyle``: string to control how non-alphanumeric
   %                       characters are replaced; [Default: ``'underscore'``]
   %   - ``ConvertInfAndNaN``: encode ``NaN``, ``Inf`` and ``-Inf`` as ``"null"``;
