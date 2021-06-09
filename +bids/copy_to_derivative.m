@@ -296,14 +296,9 @@ function copy_with_symlink(src, target, unzip_files, verbose)
 
     status = system(command);
 
-    if status > 0
-      msg = ['Copying data with system command failed: ' ...
-             'Will use matlab/octave copyfile command instead.\n', ...
-             'May be an issue if your data set contains symbolic links' ...
-             '(e.g. if you use datalad or git-annex.)'];
+    if status > 0 % throw warning
+      msg = ['Copying data with system command failed: \n\t %s', src];
       bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
-
-      use_copyfile(src, target, unzip_files, verbose);
     end
 
   else
