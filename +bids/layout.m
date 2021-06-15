@@ -34,22 +34,19 @@ function BIDS = layout(root, use_schema)
   if ~nargin
     root = pwd;
 
-  elseif nargin == 1
-
-    if ischar(root)
-      root = bids.internal.file_utils(root, 'CPath');
-
-    elseif isstruct(root)
-      BIDS = root; % for bids.query
-      return
-
-    else
-      error('Invalid syntax.');
-
-    end
-
   elseif nargin > 2
     error('Too many input arguments.');
+  end
+
+  if ischar(root)
+    root = bids.internal.file_utils(root, 'CPath');
+
+  elseif isstruct(root)
+    BIDS = root; % for bids.query
+    return
+
+  else
+    error('Invalid syntax.');
 
   end
 
