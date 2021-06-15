@@ -1,0 +1,100 @@
+{
+    "Name": "balloonanalogrisktask",
+    "Description": "default model for balloonanalogrisktask",
+    "Input": {
+        "task": "balloonanalogrisktask"
+    },
+    "Steps": [
+        {
+            "Level": "subject",
+            "Transformations": [
+                {
+                    "Name": "Factor",
+                    "Inputs": [
+                        "trial_type"
+                    ]
+                },
+                {
+                    "Name": "Convolve",
+                    "Model": "",
+                    "Inputs": [
+                        " "
+                    ]
+                }
+            ],
+            "Model": {
+                "X": [
+                    "trial_type.cash_demean",
+                    "trial_type.control_pumps_demean",
+                    "trial_type.explode_demean",
+                    "trial_type.pumps_demean"
+                ],
+                "Options": {
+                    "high_pass_filter_cutoff_secs": " "
+                },
+                "Software": {
+                    "spm": {
+                        "whitening": ""
+                    }
+                },
+                "Mask": " "
+            },
+            "AutoContrasts": [
+                "trial_type.cash_demean",
+                "trial_type.control_pumps_demean",
+                "trial_type.explode_demean",
+                "trial_type.pumps_demean"
+            ]
+        },
+        {
+            "Level": "run",
+            "Transformations": [
+                {
+                    "Name": "Factor",
+                    "Inputs": [
+                        "trial_type"
+                    ]
+                },
+                {
+                    "Name": "Convolve",
+                    "Model": "",
+                    "Inputs": [
+                        " "
+                    ]
+                }
+            ],
+            "Model": {
+                "X": [
+                    "trial_type.cash_demean",
+                    "trial_type.control_pumps_demean",
+                    "trial_type.explode_demean",
+                    "trial_type.pumps_demean"
+                ],
+                "Options": {
+                    "high_pass_filter_cutoff_secs": " "
+                },
+                "Software": {
+                    "spm": {
+                        "whitening": ""
+                    }
+                },
+                "Mask": " "
+            },
+            "AutoContrasts": [
+                "trial_type.cash_demean",
+                "trial_type.control_pumps_demean",
+                "trial_type.explode_demean",
+                "trial_type.pumps_demean"
+            ]
+        },
+        {
+            "Level": "dataset",
+            "AutoContrasts": [
+                "trial_type.cash_demean",
+                "trial_type.control_pumps_demean",
+                "trial_type.explode_demean",
+                "trial_type.pumps_demean"
+            ]
+        }
+    ]
+}
