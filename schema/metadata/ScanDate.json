@@ -1,0 +1,6 @@
+{
+  "name": "ScanDate",
+  "description": "Date of scan in the format `\"YYYY-MM-DD[Z]\"`.\nThis field is DEPRECATED, and this metadata SHOULD be recorded in the `acq_time` column of the\ncorresponding [Scans file](/03-modality-agnostic-files.html#scans-file).\n",
+  "type": "string",
+  "pattern": "date"
+}

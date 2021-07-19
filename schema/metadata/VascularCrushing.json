@@ -1,0 +1,5 @@
+{
+  "name": "VascularCrushing",
+  "description": "Boolean indicating if Vascular Crushing is used.\nCorresponds to DICOM Tag 0018, 9259 `ASL Crusher Flag`.\n",
+  "type": "boolean"
+}

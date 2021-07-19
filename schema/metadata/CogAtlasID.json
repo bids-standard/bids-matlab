@@ -1,0 +1,6 @@
+{
+  "name": "CogAtlasID",
+  "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nof the corresponding [Cognitive Atlas](https://www.cognitiveatlas.org/)\nTask term.\n",
+  "type": "string",
+  "format": "uri"
+}

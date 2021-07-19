@@ -1,0 +1,6 @@
+{
+  "name": "MixingTime",
+  "description": "In the context of a stimulated- and spin-echo 3D EPI sequence for B1+ mapping,\ncorresponds to the interval between spin- and stimulated-echo pulses.\nIn the context of a diffusion-weighted double spin-echo sequence,\ncorresponds to the interval between two successive diffusion sensitizing\ngradients, specified in seconds.\n",
+  "type": "number",
+  "unit": "s"
+}

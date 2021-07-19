@@ -1,0 +1,5 @@
+{
+  "name": "HEDVersion",
+  "description": "If HED tags are used:\nThe version of the HED schema used to validate HED tags for study.\n",
+  "type": "string"
+}

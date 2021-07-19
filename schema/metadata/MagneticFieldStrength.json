@@ -1,0 +1,5 @@
+{
+  "name": "MagneticFieldStrength",
+  "description": "Nominal field strength of MR magnet in Tesla.\nCorresponds to DICOM Tag 0018, 0087 `Magnetic Field Strength`.\n",
+  "type": "number"
+}

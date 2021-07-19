@@ -1,0 +1,15 @@
+{
+  "name": "PharmaceuticalDoseAmount",
+  "description": "Dose amount of pharmaceutical coadministered with tracer.\n",
+  "anyOf": [
+    {
+      "type": "number"
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    }
+  ]
+}

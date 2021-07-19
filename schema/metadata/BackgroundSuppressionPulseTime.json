@@ -1,0 +1,10 @@
+{
+  "name": "BackgroundSuppressionPulseTime",
+  "description": "Array of numbers containing timing, in seconds,\nof the background suppression pulses with respect to the start of the\nlabeling.\nIn case of multi-PLD with different background suppression pulse times,\nonly the pulse time of the first PLD should be defined.\n",
+  "type": "array",
+  "items": {
+    "type": "number",
+    "minimum": 0,
+    "unit": "s"
+  }
+}

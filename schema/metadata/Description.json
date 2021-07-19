@@ -1,0 +1,5 @@
+{
+  "name": "Description",
+  "description": "Free-form natural language description.\n",
+  "type": "string"
+}

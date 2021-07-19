@@ -1,0 +1,15 @@
+{
+  "name": "HED",
+  "description": "Hierarchical Event Descriptor (HED) information,\nsee: [Appendix III](/99-appendices/03-hed.html) for details.\n",
+  "anyOf": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  ]
+}

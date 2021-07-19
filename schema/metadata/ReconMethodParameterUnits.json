@@ -1,0 +1,9 @@
+{
+  "name": "ReconMethodParameterUnits",
+  "description": "Unit of reconstruction parameters (for example, `[\"none\", \"none\"]`).\n",
+  "type": "array",
+  "items": {
+    "type": "string",
+    "format": "unit"
+  }
+}

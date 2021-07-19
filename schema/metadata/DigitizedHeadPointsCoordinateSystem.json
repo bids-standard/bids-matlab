@@ -1,0 +1,18 @@
+{
+  "name": "DigitizedHeadPointsCoordinateSystem",
+  "description": "Defines the coordinate system for the digitized head points.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`DigitizedHeadPointsCoordinateSystemDescription`.\n",
+  "anyOf": [
+    {
+      "$ref": "_MEGCoordSys.yaml"
+    },
+    {
+      "$ref": "_EEGCoordSys.yaml"
+    },
+    {
+      "$ref": "_StandardTemplateCoordSys.yaml"
+    },
+    {
+      "$ref": "_StandardTemplateDeprecatedCoordSys.yaml"
+    }
+  ]
+}

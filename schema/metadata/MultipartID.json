@@ -1,0 +1,5 @@
+{
+  "name": "MultipartID",
+  "description": "A unique (per participant) label tagging DWI runs that are part of a\nmultipart scan.\n",
+  "type": "string"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "ElectrodeManufacturer",
+  "description": "Can be used if all electrodes are of the same manufacturer\n(for example, `\"AD-TECH\"`, `\"DIXI\"`).\nIf electrodes of different manufacturers are used,\nplease use the corresponding table in the `_electrodes.tsv` file.\n",
+  "type": "string"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "SinglesRate",
+  "description": "Singles rate for each frame (same units as `Units`, for example, `\"Bq/mL\"`).\n",
+  "type": "array",
+  "items": {
+    "type": "number"
+  }
+}

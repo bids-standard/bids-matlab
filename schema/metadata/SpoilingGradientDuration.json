@@ -1,0 +1,6 @@
+{
+  "name": "SpoilingGradientDuration",
+  "description": "The duration of the spoiler gradient lobe in seconds.\nThe duration of a trapezoidal lobe is defined as the summation of ramp-up\nand plateau times.\n",
+  "type": "number",
+  "unit": "s"
+}

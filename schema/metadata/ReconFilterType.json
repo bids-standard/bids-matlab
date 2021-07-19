@@ -1,0 +1,15 @@
+{
+  "name": "ReconFilterType",
+  "description": "Type of post-recon smoothing (for example, `[\"Shepp\"]`).\n",
+  "anyOf": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  ]
+}

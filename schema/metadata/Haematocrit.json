@@ -1,0 +1,5 @@
+{
+  "name": "Haematocrit",
+  "description": "Measured haematocrit, meaning the volume of erythrocytes divided by the\nvolume of whole blood.\n",
+  "type": "number"
+}

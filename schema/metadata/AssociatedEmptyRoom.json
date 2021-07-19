@@ -1,0 +1,17 @@
+{
+  "name": "AssociatedEmptyRoom",
+  "description": "Relative path in BIDS folder structure to empty-room file associated with\nthe subject\u2019s MEG recording.\nThe path needs to use forward slashes instead of backward slashes\n(for example,\n\"sub-emptyroom/ses-/meg/sub-emptyroom_ses-_task-noise_run-_meg.ds\").\n",
+  "anyOf": [
+    {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "dataset_relative"
+      }
+    },
+    {
+      "type": "string",
+      "format": "dataset_relative"
+    }
+  ]
+}
