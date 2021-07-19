@@ -1,0 +1,8 @@
+{
+  "name": "ReconMethodParameterValues",
+  "description": "Values of reconstruction parameters (for example, `[21, 3]`).\n",
+  "type": "array",
+  "items": {
+    "type": "number"
+  }
+}

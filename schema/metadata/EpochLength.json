@@ -1,0 +1,6 @@
+{
+  "name": "EpochLength",
+  "description": "Duration of individual epochs in seconds (for example, `1`)\nin case of epoched data.\nIf recording was continuous or discontinuous, leave out the field.\n",
+  "type": "number",
+  "minimum": 0
+}

@@ -1,0 +1,6 @@
+{
+  "name": "NumberOfVolumesDiscardedByScanner",
+  "description": "Number of volumes (\"dummy scans\") discarded by the scanner\n(as opposed to those discarded by the user post hoc)\nbefore saving the imaging file.\nFor example, a sequence that automatically discards the first 4 volumes\nbefore saving would have this field as 4.\nA sequence that doesn't discard dummy scans would have this set to 0.\nPlease note that the onsets recorded in the `events.tsv` file should always\nrefer to the beginning of the acquisition of the first volume in the\ncorresponding imaging file - independent of the value of\n`NumberOfVolumesDiscardedByScanner` field.\n",
+  "type": "integer",
+  "minimum": 0
+}

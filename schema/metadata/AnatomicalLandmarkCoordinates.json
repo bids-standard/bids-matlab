@@ -1,0 +1,13 @@
+{
+  "name": "AnatomicalLandmarkCoordinates",
+  "description": "Key:value pairs of the labels and 3-D digitized locations of anatomical landmarks,\ninterpreted following the `AnatomicalLandmarkCoordinateSystem`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`.\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
+  "type": "object",
+  "additionalProperties": {
+    "type": "array",
+    "items": {
+      "type": "number"
+    },
+    "minItems": 3,
+    "maxItems": 3
+  }
+}

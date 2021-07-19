@@ -1,0 +1,8 @@
+{
+  "name": "ReferencesAndLinks",
+  "description": "List of references to publications that contain information on the dataset.\nA reference may be textual or a\n[URI](/02-common-principles.html#uniform-resource-indicator).\n",
+  "items": {
+    "type": "string"
+  },
+  "type": "array"
+}

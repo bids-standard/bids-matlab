@@ -1,0 +1,5 @@
+{
+  "name": "DewarPosition",
+  "description": "Position of the dewar during the MEG scan:\n`\"upright\"`, `\"supine\"` or `\"degrees\"` of angle from vertical:\nfor example on CTF systems, `\"upright=15\u00b0, supine=90\u00b0\"`.\n",
+  "type": "string"
+}

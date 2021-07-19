@@ -1,0 +1,5 @@
+{
+  "name": "NonlinearGradientCorrection",
+  "description": "Boolean stating if the image saved has been corrected for gradient\nnonlinearities by the scanner sequence.\n",
+  "type": "boolean"
+}

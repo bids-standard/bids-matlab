@@ -1,0 +1,5 @@
+{
+  "name": "GradientSetType",
+  "description": "It should be possible to infer the gradient coil from the scanner model.\nIf not, for example because of a custom upgrade or use of a gradient\ninsert set, then the specifications of the actual gradient coil should be\nreported independently.\n",
+  "type": "string"
+}

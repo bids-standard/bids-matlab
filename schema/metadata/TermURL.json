@@ -1,0 +1,5 @@
+{
+  "name": "TermURL",
+  "description": "URL pointing to a formal definition of this type of data in an ontology\navailable on the web.\n",
+  "type": "string"
+}

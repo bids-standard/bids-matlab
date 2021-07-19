@@ -1,0 +1,6 @@
+{
+  "name": "SpoilingGradientMoment",
+  "description": "Zeroth moment of the spoiler gradient lobe in\nmillitesla times second per meter (mT.s/m).\n",
+  "type": "number",
+  "unit": "mT.s/m"
+}

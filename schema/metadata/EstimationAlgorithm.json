@@ -1,0 +1,5 @@
+{
+  "name": "EstimationAlgorithm",
+  "description": "Type of algorithm used to perform fitting\n(for example, linear, non-linear, LM and such).\n",
+  "type": "string"
+}

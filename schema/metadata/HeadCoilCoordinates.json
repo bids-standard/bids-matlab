@@ -1,0 +1,13 @@
+{
+  "name": "HeadCoilCoordinates",
+  "description": "Key:value pairs describing head localization coil labels and their\ncoordinates, interpreted following the `HeadCoilCoordinateSystem`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`).\nNote that coils are not always placed at locations that have a known\nanatomical name (for example, for Elekta, Yokogawa systems); in that case\ngeneric labels can be used\n(for example, `{\"coil1\": [12.2,21.3,12.3], \"coil2\": [6.7,12.3,8.6],\n\"coil3\": [21.9,11.0,8.1]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
+  "type": "object",
+  "additionalProperties": {
+    "type": "array",
+    "items": {
+      "type": "number"
+    },
+    "minItems": 3,
+    "maxItems": 3
+  }
+}

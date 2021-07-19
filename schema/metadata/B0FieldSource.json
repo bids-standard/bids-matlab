@@ -1,0 +1,17 @@
+{
+  "name": "B0FieldSource",
+  "description": "At least one existing `B0FieldIdentifier` defined by other images in the\nparticipant's tree.\nThis field states the *B<sub>0</sub> field* estimation designated by the\n`B0FieldIdentifier` that may be used to correct the dataset for distortions\ncaused by B<sub>0</sub> inhomogeneities.\n`B0FieldSource` and `B0FieldIdentifier` are mutually exclusive.\n",
+  "anyOf": [
+    {
+      "type": "string",
+      "format": "participant_relative"
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "participant_relative"
+      }
+    }
+  ]
+}

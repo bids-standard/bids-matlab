@@ -1,0 +1,5 @@
+{
+  "name": "InstitutionalDepartmentName",
+  "description": "The department in the institution in charge of the equipment that produced\nthe measurements.\nCorresponds to DICOM Tag 0008, 1040 `Institutional Department Name`.\n",
+  "type": "string"
+}

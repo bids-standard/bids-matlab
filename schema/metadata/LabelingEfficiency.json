@@ -1,0 +1,6 @@
+{
+  "name": "LabelingEfficiency",
+  "description": "Labeling efficiency, specified as a number between zero and one,\nonly if obtained externally (for example phase-contrast based).\n",
+  "type": "number",
+  "exclusiveMinimum": 0
+}

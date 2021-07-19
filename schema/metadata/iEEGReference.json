@@ -1,0 +1,5 @@
+{
+  "name": "iEEGReference",
+  "description": "General description of the reference scheme used and (when applicable) of\nlocation of the reference electrode in the raw recordings\n(for example, `\"left mastoid\"`, `\"bipolar\"`,\n`\"T01\"` for electrode with name T01,\n`\"intracranial electrode on top of a grid, not included with data\"`,\n`\"upside down electrode\"`).\nIf different channels have a different reference,\nthis field should have a general description and the channel specific\nreference should be defined in the channels.tsv file.\n",
+  "type": "string"
+}

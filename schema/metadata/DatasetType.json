@@ -1,0 +1,9 @@
+{
+  "name": "DatasetType",
+  "description": "The interpretation of the dataset.\nMUST be one of `\"raw\"` or `\"derivative\"`.\nFor backwards compatibility, the default value is `\"raw\"`.\n",
+  "type": "string",
+  "enum": [
+    "raw",
+    "derivative"
+  ]
+}

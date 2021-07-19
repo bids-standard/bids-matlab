@@ -1,0 +1,5 @@
+{
+  "name": "ParallelAcquisitionTechnique",
+  "description": "The type of parallel imaging used (for example `\"GRAPPA\"`, `\"SENSE\"`).\nCorresponds to DICOM Tag 0018, 9078 `Parallel Acquisition Technique`.\n",
+  "type": "string"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "DigitizedLandmarks",
+  "description": "`true` or `false` value indicating whether anatomical landmark points\n(fiducials) are contained within this recording.\n",
+  "type": "boolean"
+}

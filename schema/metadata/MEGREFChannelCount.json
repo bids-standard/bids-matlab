@@ -1,0 +1,6 @@
+{
+  "name": "MEGREFChannelCount",
+  "description": "Number of MEG reference channels (for example, 23).\nFor systems without such channels (for example, Neuromag Vectorview),\n`MEGREFChannelCount` should be set to `0`.\n",
+  "type": "integer",
+  "minimum": 0
+}

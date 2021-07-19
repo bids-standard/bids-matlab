@@ -1,0 +1,5 @@
+{
+  "name": "TaskName",
+  "description": "Name of the task.\nNo two tasks should have the same name.\nThe task label included in the file name is derived from this TaskName field\nby removing all non-alphanumeric (`[a-zA-Z0-9]`) characters.\nFor example `TaskName` `\"faces n-back\"` will correspond to task label\n`facesnback`.\nA RECOMMENDED convention is to name resting state task using labels beginning\nwith `rest`.\n",
+  "type": "string"
+}

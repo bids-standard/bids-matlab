@@ -1,0 +1,5 @@
+{
+  "name": "InjectedRadioactivity",
+  "description": "Total amount of radioactivity injected into the patient (for example, 400).\nFor bolus-infusion experiments, this value should be the sum of all injected\nradioactivity originating from both bolus and infusion.\nCorresponds to DICOM Tag 0018, 1074 `Radionuclide Total Dose`.\n",
+  "type": "number"
+}

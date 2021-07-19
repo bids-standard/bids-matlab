@@ -1,0 +1,5 @@
+{
+  "name": "FiducialsDescription",
+  "description": "Free-form text description of how the fiducials such as vitamin-E capsules\nwere placed relative to anatomical landmarks,\nand how the position of the fiducials were measured\n(for example, both with Polhemus and with T1w MRI).\n",
+  "type": "string"
+}

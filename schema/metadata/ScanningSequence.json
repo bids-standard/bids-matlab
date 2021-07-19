@@ -1,0 +1,15 @@
+{
+  "name": "ScanningSequence",
+  "description": "Description of the type of data acquired.\nCorresponds to DICOM Tag 0018, 0020 `Scanning Sequence`.\n",
+  "anyOf": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  ]
+}
