@@ -1,0 +1,5 @@
+{
+  "name": "PASLType",
+  "description": "Type of the labeling pulse of the `PASL` labeling,\nfor example `\"FAIR\"`, `\"EPISTAR\"`, or `\"PICORE\"`.\n",
+  "type": "string"
+}

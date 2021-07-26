@@ -1,0 +1,5 @@
+{
+  "name": "Instructions",
+  "description": "Text of the instructions given to participants before the recording.\nThis is especially important in context of resting state recordings and\ndistinguishing between eyes open and eyes closed paradigms.\n",
+  "type": "string"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Phase image",
+  "description": "[DEPRECATED](/02-common-principles.html#definitions).\nPhase information associated with magnitude information stored in BOLD\ncontrast.\nThis suffix should be replaced by the\n[`part-phase`](/99-appendices/09-entities.html#part)\nin conjunction with the `bold` suffix.\n",
+  "anyOf": [
+    {
+      "unit": "arbitrary"
+    },
+    {
+      "unit": "rad"
+    }
+  ]
+}

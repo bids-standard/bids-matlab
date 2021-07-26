@@ -1,0 +1,5 @@
+{
+  "name": "iEEGElectrodeGroups",
+  "description": "Field to describe the way electrodes are grouped into strips, grids or depth\nprobes.\nFor example, `\"grid1: 10x8 grid on left temporal pole, strip2: 1x8 electrode\nstrip on xxx\"`.\n",
+  "type": "string"
+}

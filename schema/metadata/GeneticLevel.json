@@ -1,0 +1,15 @@
+{
+  "name": "GeneticLevel",
+  "description": "Describes the level of analysis.\nValues MUST be one of `\"Genetic\"`, `\"Genomic\"`, `\"Epigenomic\"`,\n`\"Transcriptomic\"`, `\"Metabolomic\"`, or `\"Proteomic\"`.\n",
+  "anyOf": [
+    {
+      "$ref": "_GeneticLevelEnum.yaml"
+    },
+    {
+      "type": "array",
+      "items": {
+        "$ref": "_GeneticLevelEnum.yaml"
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "iEEGGround",
+  "description": "Description of the location of the ground electrode\n(`\"placed on right mastoid (M2)\"`).\n",
+  "type": "string"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Longitudinal relaxation time image",
+  "description": "In seconds (s).\nT1 maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\nSee [this interactive book on T1 mapping](https://qmrlab.org/t1_book/intro)\nfor further reading on T1-mapping.\n",
+  "unit": "s"
+}

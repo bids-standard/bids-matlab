@@ -1,0 +1,5 @@
+{
+  "name": "Macromolecular tissue volume (MTV) image",
+  "description": "In arbitrary units (arbitrary).\nMTV maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\n",
+  "unit": "arbitrary"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "ContinuousHeadLocalization",
+  "description": "`true` or `false` value indicating whether continuous head localisation\nwas performed.\n",
+  "type": "boolean"
+}

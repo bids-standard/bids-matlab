@@ -1,0 +1,4 @@
+{
+  "name": "TB1EPI",
+  "description": "This B1<sup>+</sup> mapping method\n([Jiru and Klose 2006](https://doi.org/10.1002/mrm.21083)) is based on two\nEPI readouts to acquire spin echo (SE) and stimulated echo (STE) images at\nmultiple flip angles in one sequence, used in the calculation of deviations\nfrom the nominal flip angle.\n"
+}

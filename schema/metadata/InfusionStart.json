@@ -1,0 +1,6 @@
+{
+  "name": "InfusionStart",
+  "description": "Time of start of infusion with respect to `TimeZero` in the default unit\nseconds.\n",
+  "type": "number",
+  "unit": "s"
+}

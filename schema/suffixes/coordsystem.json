@@ -1,0 +1,4 @@
+{
+  "name": "Coordinate System File",
+  "description": "A JSON document specifying the coordinate system(s) used for the MEG, EEG,\nhead localization coils, and anatomical landmarks.\n"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "iEEGPlacementScheme",
+  "description": "Freeform description of the placement of the iEEG electrodes.\nLeft/right/bilateral/depth/surface\n(for example, `\"left frontal grid and bilateral hippocampal depth\"` or\n`\"surface strip and STN depth\"` or\n`\"clinical indication bitemporal, bilateral temporal strips and left grid\"`).\n",
+  "type": "string"
+}

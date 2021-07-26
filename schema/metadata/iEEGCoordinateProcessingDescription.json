@@ -1,0 +1,5 @@
+{
+  "name": "iEEGCoordinateProcessingDescription",
+  "description": "Has any post-processing (such as projection) been done on the electrode\npositions (for example, `\"surface_projection\"`, `\"none\"`).\n",
+  "type": "string"
+}

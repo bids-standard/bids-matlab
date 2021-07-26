@@ -1,0 +1,4 @@
+{
+  "name": "Behavioral recording",
+  "description": "Behavioral recordings from tasks.\nThese files are similar to events files, but do not include the `\"onset\"` and\n`\"duration\"` columns that are mandatory for events files.\n"
+}

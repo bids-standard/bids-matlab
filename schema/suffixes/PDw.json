@@ -1,0 +1,5 @@
+{
+  "name": "Proton density (PD) weighted image",
+  "description": "In arbitrary units (arbitrary).\nThe contrast of these images is mainly determined by spatial variations in\nthe spin density (1H) of the imaged specimen.\nIn spin-echo sequences this contrast is achieved at short repetition and long\necho times.\nIn a gradient-echo acquisition, PD weighting dominates the contrast at long\nrepetition and short echo times, and at small flip angles.\n",
+  "unit": "arbitrary"
+}

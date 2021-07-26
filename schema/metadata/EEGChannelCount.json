@@ -1,0 +1,6 @@
+{
+  "name": "EEGChannelCount",
+  "description": "Number of EEG channels recorded simultaneously (for example, `21`).\n",
+  "type": "integer",
+  "minimum": 0
+}

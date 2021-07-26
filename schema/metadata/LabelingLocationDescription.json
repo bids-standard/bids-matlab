@@ -1,0 +1,5 @@
+{
+  "name": "LabelingLocationDescription",
+  "description": "Description of the location of the labeling plane (`\"CASL\"` or `\"PCASL\"`) or\nthe labeling slab (`\"PASL\"`) that cannot be captured by fields\n`LabelingOrientation` or `LabelingDistance`.\nMay include a link to an anonymized screenshot of the planning of the\nlabeling slab/plane with respect to the imaging slab or slices\n`*_asllabeling.jpg`.\nBased on DICOM macro C.8.13.5.14.\n",
+  "type": "string"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "NumberOfVolumesDiscardedByUser",
+  "description": "Number of volumes (\"dummy scans\") discarded by the user before including the\nfile in the dataset.\nIf possible, including all of the volumes is strongly recommended.\nPlease note that the onsets recorded in the `events.tsv` file should always\nrefer to the beginning of the acquisition of the first volume in the\ncorresponding imaging file - independent of the value of\n`NumberOfVolumesDiscardedByUser` field.\n",
+  "type": "integer",
+  "minimum": 0
+}

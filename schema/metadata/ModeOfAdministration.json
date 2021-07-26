@@ -1,0 +1,5 @@
+{
+  "name": "ModeOfAdministration",
+  "description": "Mode of administration of the injection\n(for example, `\"bolus\"`, `\"infusion\"`, or `\"bolus-infusion\"`).\n",
+  "type": "string"
+}

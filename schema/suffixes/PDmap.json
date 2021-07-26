@@ -1,0 +1,5 @@
+{
+  "name": "Proton density image",
+  "description": "In arbitrary units (arbitrary).\nPD maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\n",
+  "unit": "arbitrary"
+}

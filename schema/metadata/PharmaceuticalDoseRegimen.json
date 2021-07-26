@@ -1,0 +1,5 @@
+{
+  "name": "PharmaceuticalDoseRegimen",
+  "description": "Details of the pharmaceutical dose regimen.\nEither adequate description or short-code relating to regimen documented\nelsewhere (for example, `\"single oral bolus\"`).\n",
+  "type": "string"
+}

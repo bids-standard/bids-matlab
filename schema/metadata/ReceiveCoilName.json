@@ -1,0 +1,5 @@
+{
+  "name": "ReceiveCoilName",
+  "description": "Information describing the receiver coil.\nCorresponds to DICOM Tag 0018, 1250 `Receive Coil Name`,\nalthough not all vendors populate that DICOM Tag,\nin which case this field can be derived from an appropriate\nprivate DICOM field.\n",
+  "type": "string"
+}

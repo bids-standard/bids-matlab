@@ -1,0 +1,6 @@
+{
+  "name": "TotalReadoutTime",
+  "description": "This is actually the \"effective\" total readout time,\ndefined as the readout duration, specified in seconds,\nthat would have generated data with the given level of distortion.\nIt is NOT the actual, physical duration of the readout train.\nIf `EffectiveEchoSpacing` has been properly computed,\nit is just `EffectiveEchoSpacing * (ReconMatrixPE - 1)`.\n",
+  "type": "number",
+  "unit": "s"
+}

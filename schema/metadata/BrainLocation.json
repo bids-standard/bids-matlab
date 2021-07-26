@@ -1,0 +1,5 @@
+{
+  "name": "BrainLocation",
+  "description": "Refers to the location in space of the `TissueOrigin`.\nValues may be an MNI coordinate,\na label taken from the\n[Allen Brain Atlas](https://atlas.brain-map.org/atlas?atlas=265297125&plate=\\\n112360888&structure=4392&x=40348.15104166667&y=46928.75&zoom=-7&resolution=\\\n206.60&z=3),\nor layer to refer to layer-specific gene expression,\nwhich can also tie up with laminar fMRI.\n",
+  "type": "string"
+}

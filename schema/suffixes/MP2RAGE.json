@@ -1,0 +1,4 @@
+{
+  "name": "Magnetization Prepared Two Gradient Echoes",
+  "description": "The MP2RAGE method is a special protocol that collects several images at\ndifferent flip angles and inversion times to create a parametric T1map by\ncombining the magnitude and phase images\n([Marques et al. 2010](https://doi.org/10.1016/j.neuroimage.2009.10.002)).\n"
+}

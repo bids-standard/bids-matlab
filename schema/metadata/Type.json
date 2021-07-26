@@ -1,0 +1,11 @@
+{
+  "name": "Type",
+  "description": "Short identifier of the mask.\nReserved values: `Brain` - brain mask, `Lesion` - lesion mask,\n`Face` - face mask, `ROI` - ROI mask\n",
+  "type": "string",
+  "enum": [
+    "Brain",
+    "Lesion",
+    "Face",
+    "ROI"
+  ]
+}

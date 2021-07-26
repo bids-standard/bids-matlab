@@ -1,0 +1,6 @@
+{
+  "name": "DelayAfterTrigger",
+  "description": "Duration (in seconds) from trigger delivery to scan onset.\nThis delay is commonly caused by adjustments and loading times.\nThis specification is entirely independent of\n`NumberOfVolumesDiscardedByScanner` or `NumberOfVolumesDiscardedByUser`,\nas the delay precedes the acquisition.\n",
+  "type": "number",
+  "unit": "s"
+}
