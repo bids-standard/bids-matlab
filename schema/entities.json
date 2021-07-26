@@ -13,6 +13,12 @@
     "type": "string",
     "format": "label"
   },
+  "sample": {
+    "name": "Sample",
+    "entity": "sample",
+    "description": "A sample pertaining to a subject such as tissue, primary cell\nor cell-free sample.\nThe `sample-<label>` key/value pair is used to distinguish between different\nsamples from the same subject.\nThe label MUST be unique per subject and is RECOMMENDED to be unique\nthroughout the dataset.\n",
+    "format": "label"
+  },
   "task": {
     "name": "Task",
     "entity": "task",
