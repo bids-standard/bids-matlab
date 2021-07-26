@@ -1,0 +1,5 @@
+{
+  "name": "T2star weighted image",
+  "description": "In arbitrary units (arbitrary).\nThe contrast of these images is mainly determined by spatial variations in\nthe (observed) transverse relaxation time of the imaged specimen.\nIn spin-echo sequences, this effect is negated as the excitation is followed\nby an inversion pulse.\nThe contrast of gradient-echo images natively depends on T2-star effects.\nHowever, for T2-star variation to dominate the image contrast,\ngradient-echo acquisitions are carried out at long repetition and echo times,\nand at small flip angles.\n",
+  "unit": "arbitrary"
+}

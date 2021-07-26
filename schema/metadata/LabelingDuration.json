@@ -1,0 +1,19 @@
+{
+  "name": "LabelingDuration",
+  "description": "Total duration of the labeling pulse train, in seconds,\ncorresponding to the temporal width of the labeling bolus for\n`\"PCASL\"` or `\"CASL\"`.\nIn case all control-label volumes (or deltam or CBF) have the same\n`LabelingDuration`, a scalar must be specified.\nIn case the control-label volumes (or deltam or cbf) have a different\n`LabelingDuration`, an array of numbers must be specified,\nfor which any `m0scan` in the timeseries has a `LabelingDuration` of zero.\nIn case an array of numbers is provided,\nits length should be equal to the number of volumes specified in\n`*_aslcontext.tsv`.\nCorresponds to DICOM Tag 0018, 9258 `ASL Pulse Train Duration`.\n",
+  "anyOf": [
+    {
+      "type": "number",
+      "minimum": 0,
+      "unit": "s"
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "unit": "s",
+        "minimum": 0
+      }
+    }
+  ]
+}

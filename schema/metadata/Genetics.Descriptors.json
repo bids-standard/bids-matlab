@@ -1,0 +1,15 @@
+{
+  "name": "Genetics.Descriptors",
+  "description": "List of relevant descriptors (for example, journal articles) for dataset\nusing a valid\n[URI](/02-common-principles.html#uniform-resource-indicator)\nwhen possible.\n",
+  "anyOf": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  ]
+}

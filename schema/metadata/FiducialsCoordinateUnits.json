@@ -1,0 +1,11 @@
+{
+  "name": "FiducialsCoordinateUnits",
+  "description": "Units in which the coordinates that are  listed in the field\n`FiducialsCoordinateSystem` are represented.\nMUST be `\"m\"`, `\"cm\"`, or `\"mm\"`.\n",
+  "type": "string",
+  "enum": [
+    "m",
+    "mm",
+    "cm",
+    "n/a"
+  ]
+}

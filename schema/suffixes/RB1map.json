@@ -1,0 +1,5 @@
+{
+  "name": "RF receive sensitivity map",
+  "description": "In arbitrary units (arbitrary).\nRadio frequency (RF) receive (B1-) sensitivity maps are REQUIRED to use this\nsuffix regardless of the method used to generate them.\nRB1map intensity values are RECOMMENDED to be represented as percent\nmultiplicative factors such that Amplitude<sub>effective</sub> =\nB1-<sub>intensity</sub>\\*Amplitude<sub>ideal</sub>.\n",
+  "unit": "arbitrary"
+}

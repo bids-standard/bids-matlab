@@ -1,0 +1,6 @@
+{
+  "name": "TracerMolecularWeightUnits",
+  "description": "Unit of the molecular weights measurement (for example, `\"g/mol\"`).\n",
+  "type": "string",
+  "format": "unit"
+}

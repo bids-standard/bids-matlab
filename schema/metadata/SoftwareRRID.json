@@ -1,0 +1,6 @@
+{
+  "name": "SoftwareRRID",
+  "description": "[Research Resource Identifier](https://scicrunch.org/resources) of the\nsoftware that was used to present the stimuli.\nExamples: The RRID for Psychtoolbox is 'SCR_002881',\nand that of PsychoPy is 'SCR_006571'.\n",
+  "type": "string",
+  "pattern": ".+_.+"
+}

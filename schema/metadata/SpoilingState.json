@@ -1,0 +1,5 @@
+{
+  "name": "SpoilingState",
+  "description": "Boolean stating whether the pulse sequence uses any type of spoiling\nstrategy to suppress residual transverse magnetization.\n",
+  "type": "boolean"
+}

@@ -1,0 +1,4 @@
+{
+  "name": "Fieldmap",
+  "description": "Some MR schemes such as spiral-echo imaging (SEI) sequences are able to\ndirectly provide maps of the *B<sub>0</sub>* field inhomogeneity.\n"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "NumberShots",
+  "description": "The number of RF excitations needed to reconstruct a slice or volume\n(may be referred to as partition).\nPlease mind that this is not the same as Echo Train Length which denotes the\nnumber of k-space lines collected after excitation in a multi-echo readout.\nThe data type array is applicable for specifying this parameter before and\nafter the k-space center is sampled.\nPlease see\n[`NumberShots` metadata field]\\\n(/99-appendices/11-qmri.html#numbershots-metadata-field)\nin the qMRI appendix for corresponding calculations.\n",
+  "anyOf": [
+    {
+      "type": "number"
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    }
+  ]
+}

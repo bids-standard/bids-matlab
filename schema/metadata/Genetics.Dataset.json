@@ -1,0 +1,6 @@
+{
+  "name": "Genetics.Dataset",
+  "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nwhere data can be retrieved.\n",
+  "type": "string",
+  "format": "uri"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "PartialFourier",
+  "description": "The fraction of partial Fourier information collected.\nCorresponds to DICOM Tag 0018, 9081 `Partial Fourier`.\n",
+  "type": "number"
+}

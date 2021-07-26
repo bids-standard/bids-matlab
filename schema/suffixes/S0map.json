@@ -1,0 +1,4 @@
+{
+  "name": "Observed signal amplitude (S0) image",
+  "description": "In arbitrary units (arbitrary).\nFor a multi-echo (typically fMRI) sequence, S0 maps index the baseline signal\nbefore exponential (T2-star) signal decay.\nIn other words: the exponential of the intercept for a linear decay model\nacross log-transformed echos. For more information, please see, for example,\n[the tedana documentation](https://tedana.readthedocs.io/en/latest/\\\napproach.html#monoexponential-decay-model-fit).\nS0 maps are RECOMMENDED to use this suffix if derived from an ME-FMRI dataset.\n"
+}

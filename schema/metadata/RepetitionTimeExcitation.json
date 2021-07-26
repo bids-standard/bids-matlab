@@ -1,0 +1,7 @@
+{
+  "name": "RepetitionTimeExcitation",
+  "description": "The interval, in seconds, between two successive excitations.\n[DICOM Tag 0018, 0080](http://dicomlookup.com/lookup.asp?sw=Tnumber&q=(0018,0080)\nbest refers to this parameter.\nThis field may be used together with the `RepetitionTimePreparation` for\ncertain use cases, such as\n[MP2RAGE](https://doi.org/10.1016/j.neuroimage.2009.10.002).\nUse `RepetitionTimeExcitation` (in combination with\n`RepetitionTimePreparation` if needed) for anatomy imaging data rather than\n`RepetitionTime` as it is already defined as the amount of time that it takes\nto acquire a single volume in the\n[task imaging data](/04-modality-specific-files/01-magnetic-resonance-\\\nimaging-data.html#task-including-resting-state-imaging-data)\nsection.\n",
+  "type": "number",
+  "minimum": 0,
+  "unit": "s"
+}

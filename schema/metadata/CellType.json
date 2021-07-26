@@ -1,0 +1,5 @@
+{
+  "name": "CellType",
+  "description": "Describes the type of cell analyzed.\nValues SHOULD come from the\n[cell ontology](http://obofoundry.org/ontology/cl.html).\n",
+  "type": "string"
+}

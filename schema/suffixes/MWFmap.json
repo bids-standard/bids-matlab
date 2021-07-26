@@ -1,0 +1,7 @@
+{
+  "name": "Myelin water fraction image",
+  "description": "In arbitrary units (arbitrary).\nMWF maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\nMWF intensity values are RECOMMENDED to be represented in percentage in the\nrange of 0-100%.\n",
+  "unit": "arbitrary",
+  "minValue": 0,
+  "maxValue": 100
+}

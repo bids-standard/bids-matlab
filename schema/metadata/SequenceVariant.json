@@ -1,0 +1,15 @@
+{
+  "name": "SequenceVariant",
+  "description": "Variant of the ScanningSequence.\nCorresponds to DICOM Tag 0018, 0021 `Sequence Variant`.\n",
+  "anyOf": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  ]
+}

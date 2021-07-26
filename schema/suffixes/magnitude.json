@@ -1,0 +1,4 @@
+{
+  "name": "Magnitude",
+  "description": "Field-mapping MR schemes such as gradient-recalled echo (GRE) generate a\nMagnitude image to be used for anatomical reference.\nRequires the existence of Phase, Phase-difference or Fieldmap maps.\n"
+}

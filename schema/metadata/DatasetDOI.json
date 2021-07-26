@@ -1,0 +1,6 @@
+{
+  "name": "DatasetDOI",
+  "description": "The Digital Object Identifier of the dataset (not the corresponding paper).\nDOIs SHOULD be expressed as a valid\n[URI](/02-common-principles.html#uniform-resource-indicator);\nbare DOIs such as `10.0.2.3/dfjj.10` are\n[DEPRECATED](/02-common-principles.html#definitions).\n",
+  "type": "string",
+  "format": "uri"
+}
