@@ -8,6 +8,7 @@ classdef schema
     content
     verbose = false
     is_bids_schema = false
+    load_schema_metadata = false
   end
 
   %% PUBLIC
@@ -297,17 +298,24 @@ classdef schema
       % Recursively inspects subdirectory for json files and reflects folder
       % hierarchy in the output structure.
       %
+
       for iDir = 1:size(subdir_list, 1)
 
         directory = deblank(subdir_list(iDir, :));
 
-        [json_file_list, dirs] = bids.internal.file_utils('FPList', directory, '^.*.json$');
+        % skip loading json files about metadata unless asked for it
+        if obj.load_schema_metadata || ...
+                ~strcmp(bids.internal.file_utils(directory, 'basename'), 'metadata')
 
-        if ~isempty(json_file_list)
-          field_name = bids.internal.file_utils(directory, 'basename');
-          structure.(field_name) = struct();
-          structure.(field_name) = obj.append_json_to_schema(structure.(field_name), ...
-                                                             json_file_list);
+          [json_file_list, dirs] = bids.internal.file_utils('FPList', directory, '^.*.json$');
+
+          if ~isempty(json_file_list)
+            field_name = bids.internal.file_utils(directory, 'basename');
+            structure.(field_name) = struct();
+            structure.(field_name) = obj.append_json_to_schema(structure.(field_name), ...
+                                                               json_file_list);
+          end
+
         end
 
         structure = obj.inspect_subdir(obj, structure, dirs);
