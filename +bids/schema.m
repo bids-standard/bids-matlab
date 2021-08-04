@@ -272,7 +272,7 @@ classdef schema
   %% STATIC
   methods (Static)
 
-    %% Loading related methods
+    %% Methods related to schema loading
     function structure = append_json_to_schema(structure, json_file_list)
       %
       % Reads a json file and appends its content to the bids schema
@@ -280,7 +280,12 @@ classdef schema
       for iFile = 1:size(json_file_list, 1)
         file = deblank(json_file_list(iFile, :));
 
+        % use dynamic field name and converts to a valid matlab fieldname
         field_name = bids.internal.file_utils(file, 'basename');
+        field_name = strrep(field_name, '.', '_');
+        if strcmp(field_name(1), '_')
+          field_name(1) = [];
+        end
 
         structure.(field_name) = bids.util.jsondecode(file);
       end
