@@ -6,6 +6,20 @@ function test_suite = test_bids_schema %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_metadata_loading()
+
+  schema = bids.schema;
+  schema = schema.load();
+  assert(~isfield(schema.content, 'metadata'));
+
+  schema = bids.schema;
+  schema.load_schema_metadata = true;
+  schema = schema.load();
+  assert(isfield(schema.content, 'metadata'));
+  assert(isstruct(schema.content.metadata));
+
+end
+
 function test_return_required_entities
 
   schema = bids.schema();
