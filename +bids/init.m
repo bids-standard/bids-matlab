@@ -61,7 +61,7 @@ function init(varargin)
 
   %% CHANGELOG
   file_id = fopen(fullfile(p.Results.pth, 'CHANGES'), 'w');
-  fprintf(file_id, '1.0.0 %s\n', datestr(now, 'YYYY-MM-DD'));
+  fprintf(file_id, '1.0.0 %s\n', datestr(now, 'yyyy-mm-dd'));
   fprintf(file_id, '- dataset creation.');
   fclose(file_id);
 
