@@ -20,6 +20,9 @@ function test_query_exclude_entity()
   
   filter = struct('sub', '0001', 'acq', 'NAS');
   assertEqual(bids.query(BIDS, 'modalities', filter), {'meg'});
+  
+  filter = struct('sub', '0001', 'acq', '');
+  assertEqual(bids.query(BIDS, 'suffixes', filter), {'T1w', 'channels', 'headshape', 'meg'});
 
 end
 
