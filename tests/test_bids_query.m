@@ -6,6 +6,23 @@ function test_suite = test_bids_query %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_query_exclude_entity()
+
+  pth_bids_example = get_test_data_dir();
+      
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000246'));
+
+  filter = struct('sub', '0001');
+  assertEqual(bids.query(BIDS, 'modalities', filter), {'anat', 'meg'});
+  
+  filter = struct('sub', '0001', 'suffix', 'photo');
+  assertEqual(bids.query(BIDS, 'modalities', filter), {'meg'});
+  
+  filter = struct('sub', '0001', 'acq', 'NAS');
+  assertEqual(bids.query(BIDS, 'modalities', filter), {'meg'});
+
+end
+
 function test_query_basic()
 
   pth_bids_example = get_test_data_dir();

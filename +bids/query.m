@@ -249,9 +249,11 @@ function result = update_result(query, options, result, this_subject, this_modal
           result{end + 1} = this_subject.session;
 
         case 'modalities'
-          hasmod = structfun(@(x) isstruct(x) & ~isempty(x), this_subject);
-          allmods = fieldnames(this_subject)';
-          result = union(result, allmods(hasmod));
+%           hasmod = structfun(@(x) isstruct(x) & ~isempty(x), this_subject);
+%           allmods = fieldnames(this_subject)';
+%           allmods = this_modality;
+%           result = union(result, allmods(hasmod));
+          result = unique(cat(1, result, {this_modality}));
 
         case 'data'
           result{end + 1} = fullfile(this_subject.path, this_modality, d(k).filename);
