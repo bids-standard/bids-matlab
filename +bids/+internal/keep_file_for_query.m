@@ -25,15 +25,15 @@ function status = keep_file_for_query(file_struct, options)
   for l = 1:size(options, 1)
 
     if ~any(strcmp(options{l, 1}, {'suffix', 'extension', 'prefix'}))
-        
+
       file_has_entity = ismember(options{l, 1}, fieldnames(file_struct.entities));
       exclude_entity = numel(options{l, 2}) == 1 && strcmp(options{l, 2}, {''});
- 
+
       if ~file_has_entity && ~exclude_entity
         status = false;
         break
       end
-      
+
       if file_has_entity && exclude_entity && ~isempty(file_struct.entities.(options{l, 1}))
         status = false;
         break

@@ -8,8 +8,8 @@ function test_suite = test_keep_file %#ok<*STOUT>
 end
 
 function test_keep_file_exclude_entity()
-    
-      file_struct = struct('suffix', 'bold', ...
+
+  file_struct = struct('suffix', 'bold', ...
                        'ext', '.nii.gz', ...
                        'entities', struct('task', 'balloon', ...
                                           'ses', '01', ...
@@ -17,8 +17,7 @@ function test_keep_file_exclude_entity()
                                           'acq', 'fullbrain', ...
                                           'rec', ''), ...
                        'prefix', 'swau');
-                   
-                     
+
   options = {'ses', {'01'}
              'rec', {''}};
   assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
@@ -40,7 +39,7 @@ function test_keep_file_basic()
 
   options = {'ses', {'02'}};
   assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
-  
+
   options = {'ses', {'01'}
              'acq', {'frontal'}};
   assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);

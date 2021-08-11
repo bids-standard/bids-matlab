@@ -9,18 +9,18 @@ end
 function test_query_exclude_entity()
 
   pth_bids_example = get_test_data_dir();
-      
+
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds000246'));
 
   filter = struct('sub', '0001');
   assertEqual(bids.query(BIDS, 'modalities', filter), {'anat', 'meg'});
-  
+
   filter = struct('sub', '0001', 'suffix', 'photo');
   assertEqual(bids.query(BIDS, 'modalities', filter), {'meg'});
-  
+
   filter = struct('sub', '0001', 'acq', 'NAS');
   assertEqual(bids.query(BIDS, 'modalities', filter), {'meg'});
-  
+
   filter = struct('sub', '0001', 'acq', '');
   assertEqual(bids.query(BIDS, 'suffixes', filter), {'T1w', 'channels', 'headshape', 'meg'});
 
