@@ -9,59 +9,59 @@ end
 
 function test_keep_file_basic()
 
+  cfg = set_test_cfg();
+
   file_struct = struct('suffix', 'bold', ...
                        'ext', '.nii.gz', ...
                        'entities', struct('task', 'balloon', ...
                                           'ses', '01', ...
-                                          'sub', '02'), ...
+                                          'sub', '02', ...
+                                          'acq', 'fullbrain'), ...
                        'prefix', 'swau');
 
-  options = {'ses', {'01'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
+  options_and_expected_result = {{'ses', {'01'}},                                     true; ...
+                                 {'ses', {'02'}},                                     false; ...
+                                 {'ses', {'01'}; 'acq', {'frontal'}},                 false; ...
+                                 {'ses', {'01', '02'}},                               true; ...
+                                 {'suffix', {'T1w'}},                                 false; ...
+                                 {'suffix', {'bold'}},                                true; ...
+                                 {'suffix', {'bold'}; 'extension', {'.nii'}},         false; ...
+                                 {'suffix', {'bold'}; 'prefix', {''}}                 false; ...
+                                 {'suffix', {'T1w', 'bold'}},                         true; ...
+                                 {'sub', {'02'}; 'ses', {'01'}},                      true; ...
+                                 {'sub', {'02'}; 'ses', {'02'}}                       false; ...
+                                 {'sub', {'02'}; 'ses', {'01'}; 'suffix', {'T1w'}},   false; ...
+                                 {'sub', {'02'}; 'task', {'balloon'}},                true };
 
-  options = {'ses', {'02'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
-
-  options = {'ses', {'01', '02'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
-
-  options = {'suffix', {'T1w'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
-
-  options = {'suffix', {'bold'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
-
-  options = {'suffix', {'bold'}
-             'extension', {'.nii'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
-
-  options = {'suffix', {'bold'}
-             'prefix', {''}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
-
-  options = {'suffix', {'T1w', 'bold'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
-
-  options = {'sub', {'02'}
-             'ses', {'01'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
-
-  options = {'sub', {'02'}
-             'ses', {'02'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
-
-  options = {'sub', {'02'}
-             'ses', {'01'}
-             'suffix', {'T1w'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
-
-  options = {'sub', {'02'}
-             'task', {'balloon'}};
-  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
+  for iTest = 1:size(options_and_expected_result, 1)
+    options = options_and_expected_result{iTest, 1};
+    expected_result = options_and_expected_result{iTest, 2};
+    assertEqual(bids.internal.keep_file_for_query(file_struct, options), expected_result);
+  end
 
   file_struct = struct('suffix', 'T1w', ...
                        'entities', struct('ses', '01', ...
                                           'sub', '02'));
+  options = {'sub', {'02'}
+             'task', {'balloon'}};
+
   assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
+
+end
+
+function test_keep_file_exclude_entity()
+
+  file_struct = struct('suffix', 'bold', ...
+                       'ext', '.nii.gz', ...
+                       'entities', struct('task', 'balloon', ...
+                                          'ses', '01', ...
+                                          'sub', '02', ...
+                                          'acq', 'fullbrain', ...
+                                          'rec', ''), ...
+                       'prefix', 'swau');
+
+  options = {'ses', {'01'}
+             'rec', {''}};
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
 
 end
