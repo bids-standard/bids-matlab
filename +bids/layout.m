@@ -75,7 +75,8 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   % BIDS.description  -- content of dataset_description.json
   % BIDS.sessions     -- cellstr of sessions
   % BIDS.participants -- for participants.tsv
-  % BIDS.subjects'    -- structure array of subjects
+  % BIDS.subjects     -- structure array of subjects
+  % BIDS.root         -- tsv and json files in the root folder
 
   BIDS = struct( ...
                 'pth', root, ...
@@ -96,6 +97,8 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
 
   BIDS.participants = [];
   BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, 'participants.tsv', verbose);
+
+  BIDS = index_root_directory(BIDS);
 
   %% Subjects
   % ==========================================================================
@@ -131,13 +134,32 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
 
   end
 
-  %% Dependencies
-  % ==========================================================================
-
   BIDS = manage_dependencies(BIDS, verbose);
 
-  %% Derivatives folder
-  % ==========================================================================
+  BIDS = index_derivatives_dir(BIDS, index_derivatives, verbose);
+
+end
+
+function BIDS = index_root_directory(BIDS)
+  % index json and tsv files in the root directory
+  files_to_exclude = {'participants', ... already done
+                      'dataset_description', ...
+                      'genetic_info', ... % because it messes the parse_filename
+                      '(.bids-validator-config)' ...
+                     };
+  pattern = ['^(?!', strjoin(files_to_exclude, '|'), ').*.(tsv|json)$'];
+
+  files_in_root = bids.internal.file_utils('FPList', BIDS.pth, pattern);
+  BIDS.root = struct([]);
+  for i = 1:size(files_in_root, 1)
+    new_file = bids.internal.parse_filename(files_in_root(i, :));
+    [BIDS.root, new_file] = bids.internal.match_structure_fields(BIDS.root, new_file);
+    BIDS.root(i) = new_file;
+  end
+
+end
+
+function BIDS = index_derivatives_dir(BIDS, index_derivatives, verbose)
   if index_derivatives && exist(fullfile(BIDS.pth, 'derivatives'), 'dir')
 
     deriv_folders = cellstr(bids.internal.file_utils('List', ...
@@ -157,7 +179,6 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
     end
 
   end
-
 end
 
 function subject = parse_subject(pth, subjname, sesname, schema, verbose)
@@ -506,6 +527,10 @@ function BIDS = manage_dependencies(BIDS, verbose)
   for iFile = 1:size(file_list, 1)
 
     info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
+    % skip files in the root folder with no sub entity
+    if isempty(info_src.sub_idx)
+      continue
+    end
     file = BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx);
     metadata = bids.internal.get_metadata(file.metafile);
 

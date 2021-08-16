@@ -7,6 +7,12 @@ function sub_idx = return_subject_index(BIDS, filename)
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   parsed_file = bids.internal.parse_filename(filename);
+
+  % for files in the root folder with no sub entity we return immediately
+  if ~isfield(parsed_file, 'entities') || ~isfield(parsed_file.entities, 'sub')
+    sub_idx = [];
+    return
+  end
   sub = parsed_file.entities.sub;
 
   sub_idx = strcmp(['sub-' sub], {BIDS.subjects.name}');

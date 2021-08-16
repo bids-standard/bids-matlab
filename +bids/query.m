@@ -225,7 +225,10 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
       result = update_result(query, options, result, this_subject, this_modality, target);
 
     end
+
   end
+
+  result = update_result_with_root_content(query, options, result, BIDS);
 
 end
 
@@ -289,6 +292,56 @@ function result = update_result(query, options, result, this_subject, this_modal
 
         case 'dependencies'
           result{end + 1, 1} = d(k).dependencies;
+
+      end
+
+    end
+  end
+end
+
+function result = update_result_with_root_content(query, options, result, BIDS)
+
+  d = BIDS.root;
+
+  % remove 'ses' key from options as it does not apply to files in the root folder
+  idx = strcmp('ses', options(:, 1));
+  if any(idx)
+    options(idx, :) = [];
+  end
+
+  for k = 1:numel(d)
+
+    % status is kept true only if this file matches the options of the query
+    status = bids.internal.keep_file_for_query(d(k), options);
+
+    if status
+
+      switch query
+
+        case {'subjects', 'sessions'}
+
+          % there should not be subject / session specific in the root folder
+          % error('This should not happen!')
+
+        case {'modalities', 'metafiles', 'dependencies', 'metadata'}
+
+          % those cases are not covered yet
+
+        case 'data'
+          result{end + 1} = fullfile(BIDS.pth, d(k).filename);
+
+        case {'runs', 'tasks'}
+          field = query(1:end - 1);
+          if isfield(d(k).entities, field)
+            result{end + 1} = d(k).entities.(field);
+          end
+
+        case {'suffixes', 'prefixes'}
+          field = query(1:end - 2);
+          result{end + 1} = d(k).(field);
+
+        case 'extensions'
+          result{end + 1} = d(k).ext;
 
       end
 

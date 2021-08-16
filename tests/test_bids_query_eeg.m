@@ -30,9 +30,8 @@ function test_bids_query_eeg_basic()
   modalities = {'anat', 'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  suffixes = {'T1w', 'eeg', 'electrodes', 'events'};
-  % Missing: 'coordsystem',
-  % Missing: 'channels' in root folder
+  suffixes = {'T1w', 'channels', 'eeg', 'electrodes', 'events'};
+  % Missing: 'coordsystem'
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %% dependencies
