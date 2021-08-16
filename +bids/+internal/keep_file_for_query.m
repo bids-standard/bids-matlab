@@ -21,7 +21,14 @@ function status = keep_file_for_query(file_struct, options)
     end
 
   end
+  
+    % some files in the root folder might have no entity 
+    if isempty(file_struct.entities)
+      status = false;
+      return
+    end
 
+  % work on the the entities
   for l = 1:size(options, 1)
 
     if ~any(strcmp(options{l, 1}, {'suffix', 'extension', 'prefix'}))
