@@ -15,6 +15,7 @@ function test_layout_nested()
   index_derivatives = true;
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'), use_schema, index_derivatives);
+
 end
 
 function test_layout_meg_derivatives()

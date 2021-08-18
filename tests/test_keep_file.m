@@ -65,3 +65,15 @@ function test_keep_file_exclude_entity()
   assertEqual(bids.internal.keep_file_for_query(file_struct, options), true);
 
 end
+
+function test_keep_file_events_in_root()
+
+  file_struct = struct('prefix', '', ...
+                       'suffix', 'events', ...
+                       'ext', '.tsv', ...
+                       'entities', struct('task', 'nback'));
+
+  options = {'sub', {'01'}};
+  assertEqual(bids.internal.keep_file_for_query(file_struct, options), false);
+
+end

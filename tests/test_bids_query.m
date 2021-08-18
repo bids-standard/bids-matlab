@@ -6,6 +6,21 @@ function test_suite = test_bids_query %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_query_events_tsv_in_root()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+
+  data = bids.query(BIDS, 'data', 'sub', '01', 'ses', '01', 'task', 'nback', 'suffix', 'events');
+
+  assertEqual(data, ...
+              {bids.internal.file_utils(fullfile(pth_bids_example, ...
+                                                 'synthetic', ...
+                                                 'task-nback_events.tsv'), 'cpath')});
+
+end
+
 function test_query_exclude_entity()
 
   pth_bids_example = get_test_data_dir();
