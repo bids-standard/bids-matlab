@@ -1,4 +1,4 @@
-function p = parse_filename(filename, fields, verbose)
+function p = parse_filename(filename, fields, tolerant, verbose)
   %
   % Split a filename into its building constituents
   %
@@ -11,8 +11,10 @@ function p = parse_filename(filename, fields, verbose)
   % :type  filename: string
   % :param fields:   cell of strings of the entities to use for parsing
   % :type  fields:   cell
+  % :param verbose:  ``true`` prints warning to the screen
+  % :type  verbose:  boolean
   %
-  % Example:
+  % Example::
   %
   %   filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   %
@@ -30,11 +32,34 @@ function p = parse_filename(filename, fields, verbose)
   %                        'run', '1', ...
   %                        'acq', 'hd');
   %
+  % Example::
+  %
+  %   filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
+  %   fields = {'sub', 'ses', 'run', 'acq', 'ce'};
+  %   output = bids.internal.parse_filename(filename, fields);
+  %
+  % The output will have the following shape::
+  %
+  %   output = struct( ...
+  %                     'filename', 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz', ...
+  %                     'suffix', 'T1w', ...
+  %                     'ext', '.nii.gz', ...
+  %                     'entities', struct('sub', '16', ...
+  %                                        'ses', 'mri', ...
+  %                                        'run', '1', ...
+  %                                        'acq', 'hd', ...
+  %                                        'ce', ''), ...
+  %                     'prefix', '');
+  %
   %
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % (C) Copyright 2018 BIDS-MATLAB developers
 
-  if nargin < 3 || isempty(verbose)
+  if nargin < 3 || isempty(tolerant)
+    tolerant = true;
+  end
+
+  if nargin < 4 || isempty(verbose)
     verbose = false;
   end
 
@@ -62,8 +87,26 @@ function p = parse_filename(filename, fields, verbose)
 
   % -Separate the entity from the label for each pair identified above
   for i = 1:numel(parts) - 1
-    [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match'); %#ok<ASGLU>
-    p.entities.(d{1}) = d{2};
+    try
+      [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match'); %#ok<ASGLU>
+      p.entities.(d{1}) = d{2};
+    catch
+      msg = sprintf(['Entity-label pair %s of file %s is not valid.\n', ...
+                     'This could also be to a suffix with an extra _'], parts{i}, filename);
+      if tolerant
+        msg = sprintf('%s\nThis file will be ignored', msg);
+      end
+
+      bids.internal.error_handling(mfilename, 'problematicEntityLabelPair', ...
+                                   msg, ...
+                                   tolerant, ...
+                                   verbose);
+
+      if tolerant
+        p = struct([]);
+        return
+      end
+    end
   end
 
   % Extra fields can be added to the structure and ordered specifically.
@@ -76,7 +119,7 @@ function p = parse_filename(filename, fields, verbose)
       p.entities = orderfields(p.entities, fields);
     catch
       msg = sprintf('Ignoring file %s not matching template.', filename);
-      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, true, verbose);
+      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, verbose);
       p = struct([]);
     end
   end
