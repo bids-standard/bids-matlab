@@ -38,10 +38,26 @@ function init(varargin)
 
   parse(p, varargin{:});
 
+  subjects =  p.Results.folders.subjects;
+  if ~iscell(subjects)
+    subjects = {subjects};
+  end
+  if ~isempty(p.Results.folders.subjects)
+    subjects = cellfun(@(x) ['sub-' x], p.Results.folders.subjects, 'UniformOutput', false);
+  end
+
+  sessions =  p.Results.folders.sessions;
+  if ~iscell(sessions)
+    sessions = {sessions};
+  end
+  if ~isempty(p.Results.folders.sessions)
+    sessions = cellfun(@(x) ['ses-' x], p.Results.folders.sessions, 'UniformOutput', false);
+  end
+
   %% Folder structure
   bids.util.mkdir(p.Results.pth, ...
-                  p.Results.folders.subjects, ...
-                  p.Results.folders.sessions, ...
+                  subjects, ...
+                  sessions, ...
                   p.Results.folders.modalities);
 
   %% README
