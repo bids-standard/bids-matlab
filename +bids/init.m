@@ -38,21 +38,8 @@ function init(varargin)
 
   parse(p, varargin{:});
 
-  subjects =  p.Results.folders.subjects;
-  if ~iscell(subjects)
-    subjects = {subjects};
-  end
-  if ~isempty(p.Results.folders.subjects)
-    subjects = cellfun(@(x) ['sub-' x], p.Results.folders.subjects, 'UniformOutput', false);
-  end
-
-  sessions =  p.Results.folders.sessions;
-  if ~iscell(sessions)
-    sessions = {sessions};
-  end
-  if ~isempty(p.Results.folders.sessions)
-    sessions = cellfun(@(x) ['ses-' x], p.Results.folders.sessions, 'UniformOutput', false);
-  end
+  subjects = create_folder_names(p, 'subjects');
+  sessions = create_folder_names(p, 'sessions');
 
   %% Folder structure
   bids.util.mkdir(p.Results.pth, ...
@@ -80,5 +67,27 @@ function init(varargin)
   fprintf(file_id, '1.0.0 %s\n', datestr(now, 'yyyy-mm-dd'));
   fprintf(file_id, '- dataset creation.');
   fclose(file_id);
+
+end
+
+function folder_list = create_folder_names(p, folder_level)
+
+  folder_list =  p.Results.folders.(folder_level);
+  if ~iscell(folder_list)
+    folder_list = {folder_list};
+  end
+
+  switch folder_level
+    case 'subjects'
+      prefix = 'sub-';
+    case 'sessions'
+      prefix = 'ses-';
+  end
+
+  if ~isempty(p.Results.folders.(folder_level))
+    folder_list = cellfun(@(x) [prefix x], ...
+                          p.Results.folders.(folder_level), ...
+                          'UniformOutput', false);
+  end
 
 end
