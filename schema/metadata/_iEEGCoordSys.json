@@ -3,6 +3,7 @@
   "enum": [
     "Pixels",
     "ACPC",
+    "ScanRAS",
     "Other"
   ]
 }
