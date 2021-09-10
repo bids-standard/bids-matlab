@@ -6,6 +6,22 @@ function test_suite = test_parse_filename %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_parse_filename_invalid_name()
+
+  fields = {};
+  tolerant = true;
+  verbose = true;
+
+  filename = 'sub-01_T1w_trim.nii';
+  assertWarning(@()bids.internal.parse_filename(filename, fields, tolerant, verbose), ...
+                'parse_filename:problematicEntityLabelPair');
+
+  p = bids.internal.parse_filename(filename, fields, tolerant, false);
+
+  assertEqual(p, struct([]));
+
+end
+
 function test_parse_filename_participants()
 
   filename = 'participants.tsv';
@@ -133,7 +149,7 @@ function test_parse_filename_wrong_template()
   filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
 
   assertWarning( ...
-                @()bids.internal.parse_filename(filename, {'echo'}, true), ...
+                @()bids.internal.parse_filename(filename, {'echo'}, false), ...
                 'parse_filename:noMatchingTemplate');
 
 end
