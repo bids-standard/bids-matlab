@@ -54,6 +54,10 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
     % Parse file fist to identify the suffix group in the template.
     % Then reparse the file using the entity-label pairs defined in the schema.
     p = bids.internal.parse_filename(file);
+    if isempty(p)
+      status = 0;
+      return;
+    end
 
     if ~isempty(schema.content)
 
@@ -108,6 +112,10 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       end
 
       p = bids.internal.parse_filename(file, schema_entities);
+      if isempty(p)
+        status = 0;
+        return;
+      end
 
       previous.allowed_ext = allowed_extensions;
 

@@ -118,7 +118,7 @@ end
 
 function parsed_file = rename_file(p, file)
 
-  parsed_file = bids.internal.parse_filename(file);
+  parsed_file = bids.internal.parse_filename(file, 'tolerant', false);
 
   parsed_file.entity_order = p.entity_order;
   parsed_file.use_schema = p.use_schema;

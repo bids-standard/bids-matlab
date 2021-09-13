@@ -153,8 +153,15 @@ function BIDS = index_root_directory(BIDS)
   BIDS.root = struct([]);
   for i = 1:size(files_in_root, 1)
     new_file = bids.internal.parse_filename(files_in_root(i, :));
-    [BIDS.root, new_file] = bids.internal.match_structure_fields(BIDS.root, new_file);
-    BIDS.root(i) = new_file;
+    if isempty(new_file)
+      continue;
+    end
+    if isempty(BIDS.root)
+      BIDS.root = new_file
+    else
+      [BIDS.root, new_file] = bids.internal.match_structure_fields(BIDS.root, new_file);
+      BIDS.root(end + 1) = new_file;
+    end
   end
 
 end

@@ -1,4 +1,4 @@
-function p = parse_filename(filename, fields, tolerant, verbose)
+function p = parse_filename(filename, fields, tolerant)
   %
   % Split a filename into its building constituents
   %
@@ -11,8 +11,6 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   % :type  filename: string
   % :param fields:   cell of strings of the entities to use for parsing
   % :type  fields:   cell
-  % :param verbose:  ``true`` prints warning to the screen
-  % :type  verbose:  boolean
   %
   % Example::
   %
@@ -59,10 +57,6 @@ function p = parse_filename(filename, fields, tolerant, verbose)
     tolerant = true;
   end
 
-  if nargin < 4 || isempty(verbose)
-    verbose = false;
-  end
-
   fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
 
   filename = bids.internal.file_utils(filename, 'filename');
@@ -78,29 +72,52 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   end
   basename = filename(pos:end);
 
+  % removing extention
+  [basename, p.ext] = strtok(basename, '.');
+
   % -Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
   [parts, dummy] = regexp(basename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
   p.filename = filename;
 
   % -Identify the suffix and extension of this file
-  [p.suffix, p.ext] = strtok(parts{end}, '.');
+  p.entities = struct();
+  p.suffix = '';
 
   % -Separate the entity from the label for each pair identified above
-  for i = 1:numel(parts) - 1
+  for i = 1:numel(parts)
     try
+      if isempty(parts{i})
+        error('empty entity');
+      end
       [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match'); %#ok<ASGLU>
-      p.entities.(d{1}) = d{2};
-    catch
-      msg = sprintf(['Entity-label pair %s of file %s is not valid.\n', ...
-                     'This could also be to a suffix with an extra _'], parts{i}, filename);
+      switch size(dummy, 2)
+        case 0 % no - in entity, may be suffux
+          if i ~= numel(parts)
+            error('entity don''t contain ''-''');
+          end
+          p.suffix = d{1};
+        case 1 % normal entity
+          if isempty(d{1})
+            error('entity tag is empty');
+          end
+          if isempty(d{2})
+            error('entity value is empty');
+          end
+          p.entities.(d{1}) = d{2};
+        otherwise
+          error('entity contains several ''-''')
+      end
+    catch ME
+      msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s', ...
+                     parts{i}, filename, ME.message);
       if tolerant
-        msg = sprintf('%s\nThis file will be ignored', msg);
+        msg = sprintf('%s\n\tThis file will be ignored', msg);
       end
 
       bids.internal.error_handling(mfilename, 'problematicEntityLabelPair', ...
                                    msg, ...
                                    tolerant, ...
-                                   verbose);
+                                   true);
 
       if tolerant
         p = struct([]);
@@ -119,7 +136,7 @@ function p = parse_filename(filename, fields, tolerant, verbose)
       p.entities = orderfields(p.entities, fields);
     catch
       msg = sprintf('Ignoring file %s not matching template.', filename);
-      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, verbose);
+      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, true);
       p = struct([]);
     end
   end

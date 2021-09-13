@@ -24,8 +24,11 @@ function metalist = get_meta_list(filename, pattern)
   end
 
   pth = fileparts(filename);
-  p = bids.internal.parse_filename(filename);
   metalist = {};
+  p = bids.internal.parse_filename(filename);
+  if isempty(p)
+    return;
+  end
 
   % Default assumes we are dealing with a file in the root directory
   % like "participants.tsv"
@@ -58,6 +61,9 @@ function metalist = get_meta_list(filename, pattern)
     for i = 1:numel(metafile)
 
       p2 = bids.internal.parse_filename(metafile{i});
+      if isempty(p2)
+        continue;
+      end
       entities = {};
       if isfield(p2, 'entities')
         entities = fieldnames(p2.entities);
