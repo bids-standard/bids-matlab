@@ -93,38 +93,49 @@ function p = parse_filename(filename, fields, tolerant)
     try
 
       if isempty(parts{i})
+        error_id = 'emptyEntity';
         error('empty entity');
       end
 
       [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match');
 
       switch size(dummy, 2)
-        case 0 % no - in entity, may be suffux
+
+        case 0 % no - in entity, may be suffix
           if i ~= numel(parts)
-            error('entity don''t contain ''-''');
+            error_id = 'missingDash';
+            error('entity does not contain ''-''');
           end
           p.suffix = d{1};
+
         case 1 % normal entity
           if isempty(d{1})
-            error('entity tag is empty');
+            error_id = 'emptyEntityKey';
+            error('entity key is empty');
           end
+
           if isempty(d{2})
-            error('entity value is empty');
+            error_id = 'emptyEntityLabel';
+            error('entity label is empty');
           end
+
           p.entities.(d{1}) = d{2};
+
         otherwise
+          error_id = 'tooManyDashes';
           error('entity contains several ''-''');
+
       end
 
     catch ME
 
-      msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s', ...
+      msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s.', ...
                     parts{i}, filename, ME.message);
       if tolerant
-        msg = sprintf('%s\n\tThis file will be ignored', msg);
+        msg = sprintf('%s\n\tThis file will be ignored.', msg);
       end
 
-      bids.internal.error_handling(mfilename, 'problematicEntityLabelPair', ...
+      bids.internal.error_handling(mfilename, error_id, ...
                                    msg, ...
                                    tolerant, ...
                                    true);

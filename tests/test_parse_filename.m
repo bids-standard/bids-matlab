@@ -6,19 +6,32 @@ function test_suite = test_parse_filename %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_parse_filename_invalid_name()
+function test_parse_filename_problematic_entity_label_pairs()
 
   fields = {};
   tolerant = true;
   verbose = true;
 
-  filename = 'sub-01_T1w_trim.nii';
-  assertWarning(@()bids.internal.parse_filename(filename, fields, tolerant), ...
-                'parse_filename:problematicEntityLabelPair');
+  filename_error = {
+                    {'sub-01_-02_T1w.nii'}, 'emptyEntityKey'; ...
+                    {'sub-01_ses-_T1w.nii'}, 'emptyEntityLabel'; ...
+                    {'sub-01-trim_T1w.nii'}, 'tooManyDashes'; ...
+                    {'test__suffix.nii'; ...
+                     'sub-01_T1w_trim.nii'; ...
+                     'sub-01_ses-01_run_acq-1pt0_T1w.nii'}, 'missingDash'};
 
-  p = bids.internal.parse_filename(filename, fields, tolerant);
+  for i = 1:size(filename_error, 1)
+    for j = 1:numel(filename_error{i, 1})
 
-  assertEqual(p, struct([]));
+      assertWarning(@()bids.internal.parse_filename(filename_error{i, 1}{j}, fields, tolerant), ...
+                    ['parse_filename:' filename_error{i, 2}]);
+
+      p = bids.internal.parse_filename(filename_error{i, 1}{j}, fields, tolerant);
+
+      assertEqual(p, struct([]));
+
+    end
+  end
 
 end
 
