@@ -119,6 +119,14 @@ function p = parse_filename(filename, fields, tolerant)
             error('entity label is empty');
           end
 
+          for j = 1:2
+            m = regexp(d{j}, '[^a-zA-Z0-9]', 'match');
+            if ~isempty(m)
+              error_id = 'invalidChar';
+              error('entity and label must be alphanumeric');
+            end
+          end
+
           p.entities.(d{1}) = d{2};
 
         otherwise
