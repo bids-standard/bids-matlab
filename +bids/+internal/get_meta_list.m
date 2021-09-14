@@ -27,7 +27,7 @@ function metalist = get_meta_list(filename, pattern)
   metalist = {};
   p = bids.internal.parse_filename(filename);
   if isempty(p)
-    return;
+    return
   end
 
   % Default assumes we are dealing with a file in the root directory
@@ -62,7 +62,7 @@ function metalist = get_meta_list(filename, pattern)
 
       p2 = bids.internal.parse_filename(metafile{i});
       if isempty(p2)
-        continue;
+        continue
       end
       entities = {};
       if isfield(p2, 'entities')

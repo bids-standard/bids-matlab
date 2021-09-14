@@ -105,11 +105,11 @@ function p = parse_filename(filename, fields, tolerant)
           end
           p.entities.(d{1}) = d{2};
         otherwise
-          error('entity contains several ''-''')
+          error('entity contains several ''-''');
       end
     catch ME
       msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s', ...
-                     parts{i}, filename, ME.message);
+                    parts{i}, filename, ME.message);
       if tolerant
         msg = sprintf('%s\n\tThis file will be ignored', msg);
       end
