@@ -53,6 +53,10 @@ function p = parse_filename(filename, fields, tolerant)
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % (C) Copyright 2018 BIDS-MATLAB developers
 
+  if nargin < 2 || isempty(fields)
+    fields = {};
+  end
+
   if nargin < 3 || isempty(tolerant)
     tolerant = true;
   end
@@ -85,11 +89,15 @@ function p = parse_filename(filename, fields, tolerant)
 
   % -Separate the entity from the label for each pair identified above
   for i = 1:numel(parts)
+
     try
+
       if isempty(parts{i})
         error('empty entity');
       end
-      [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match'); %#ok<ASGLU>
+
+      [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match');
+
       switch size(dummy, 2)
         case 0 % no - in entity, may be suffux
           if i ~= numel(parts)
@@ -107,7 +115,9 @@ function p = parse_filename(filename, fields, tolerant)
         otherwise
           error('entity contains several ''-''');
       end
+
     catch ME
+
       msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s', ...
                     parts{i}, filename, ME.message);
       if tolerant
@@ -123,11 +133,13 @@ function p = parse_filename(filename, fields, tolerant)
         p = struct([]);
         return
       end
+
     end
+
   end
 
   % Extra fields can be added to the structure and ordered specifically.
-  if nargin > 1
+  if ~isempty(fields)
     for i = 1:numel(fields)
       p.entities = bids.internal.add_missing_field(p.entities, fields{i});
     end

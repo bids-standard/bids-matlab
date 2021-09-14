@@ -34,7 +34,7 @@ function json = derivatives_json(derivative_filename, force)
     force = false;
   end
 
-  p = bids.internal.parse_filename(derivative_filename, 'tolerant', false);
+  p = bids.internal.parse_filename(derivative_filename);
 
   json =  struct('filename', '', 'content', '');
 
