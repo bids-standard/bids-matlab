@@ -64,6 +64,7 @@ function p = parse_filename(filename, fields, tolerant)
   fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
 
   filename = bids.internal.file_utils(filename, 'filename');
+  p.filename = filename;
 
   % identify an eventual prefix to the file
   % only look for comes before the first "sub-"
@@ -76,18 +77,37 @@ function p = parse_filename(filename, fields, tolerant)
   end
   basename = filename(pos:end);
 
-  % removing extention
+  % Identify extention
   [basename, p.ext] = strtok(basename, '.');
 
-  % -Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
-  [parts, dummy] = regexp(basename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
-  p.filename = filename;
+  p = parse_entity_label_pairs(p, basename, tolerant);
 
-  % -Identify the suffix and extension of this file
+  % Extra fields can be added to the structure and ordered specifically.
+  if ~isempty(fields)
+    for i = 1:numel(fields)
+      p.entities = bids.internal.add_missing_field(p.entities, fields{i});
+    end
+    try
+      p = orderfields(p, fields_order);
+      p.entities = orderfields(p.entities, fields);
+    catch
+      msg = sprintf('Ignoring file %s not matching template.', filename);
+      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, true);
+      p = struct([]);
+    end
+  end
+
+end
+
+function p = parse_entity_label_pairs(p, basename, tolerant)
+
   p.entities = struct();
   p.suffix = '';
 
-  % -Separate the entity from the label for each pair identified above
+  % -Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
+  [parts, dummy] = regexp(basename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
+
+  % Separate the entity from the label for each pair identified above
   for i = 1:numel(parts)
 
     try
@@ -110,12 +130,12 @@ function p = parse_filename(filename, fields, tolerant)
 
         case 1 % normal entity
           if isempty(d{1})
-            error_id = 'emptyEntityKey';
+            error_id = 'emptyEntity';
             error('entity key is empty');
           end
 
           if isempty(d{2})
-            error_id = 'emptyEntityLabel';
+            error_id = 'emptyLabel';
             error('entity label is empty');
           end
 
@@ -138,7 +158,7 @@ function p = parse_filename(filename, fields, tolerant)
     catch ME
 
       msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s.', ...
-                    parts{i}, filename, ME.message);
+                    parts{i}, p.filename, ME.message);
       if tolerant
         msg = sprintf('%s\n\tThis file will be ignored.', msg);
       end
@@ -155,21 +175,6 @@ function p = parse_filename(filename, fields, tolerant)
 
     end
 
-  end
-
-  % Extra fields can be added to the structure and ordered specifically.
-  if ~isempty(fields)
-    for i = 1:numel(fields)
-      p.entities = bids.internal.add_missing_field(p.entities, fields{i});
-    end
-    try
-      p = orderfields(p, fields_order);
-      p.entities = orderfields(p.entities, fields);
-    catch
-      msg = sprintf('Ignoring file %s not matching template.', filename);
-      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, true);
-      p = struct([]);
-    end
   end
 
 end
