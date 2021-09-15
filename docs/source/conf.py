@@ -53,6 +53,8 @@ master_doc = 'index'
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
 
+autodoc_member_order = 'bysource'
+
 
 # -- Options for HTML output -------------------------------------------------
 

@@ -1,4 +1,5 @@
 miss_hit==0.9.20
 pre-commit
 ruamel.yaml
+-r docs/requirements.txt
 

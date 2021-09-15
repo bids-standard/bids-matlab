@@ -4,25 +4,25 @@ function fileContent = tsvread(filename, fieldToReturn, hdr)
   %
   % USAGE::
   %
-  %   x = tsvread(f,v,hdr)
+  %   fileContent = tsvread(filename, fieldToReturn, hdr)
   %
-  % :param f: filfilename (can be gzipped) {txt,mat,csv,tsv,json}ename
-  % :type f: string
-  % :param v: name of field to return if data stored in a structure [default: ``''``]
-  %            or index of column if data stored as an array
-  % :type v:
+  % :param filename: filename (can be gzipped) {txt,mat,csv,tsv,json}ename
+  % :type filename: string
+  % :param fieldToReturn: name of field to return if data stored in a structure
+  %                       [default: ``''``]; or index of column if data stored as an array
+  % :type fieldToReturn:
   % :param hdr: detect the presence of a header row for csv/tsv [default: ``true``]
   % :type hdr: boolean
   %
   %
-  % x - corresponding data array or structure
-  %
+  % :returns: - :fileContent: corresponding data array or structure
   %
   %
   % Based on spm_load.m from SPM12.
   %
   %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   % -Check input arguments
