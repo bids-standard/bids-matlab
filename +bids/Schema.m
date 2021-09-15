@@ -6,9 +6,12 @@ classdef Schema
 
   properties
     content
-    verbose = false
-    is_bids_schema = false
-    load_schema_metadata = false
+
+    verbose = false %
+
+    is_bids_schema = false %
+
+    load_schema_metadata = false %
   end
 
   %% PUBLIC

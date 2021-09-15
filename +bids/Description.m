@@ -10,19 +10,21 @@ classdef Description
 
   properties
 
-    content % this is a test
+    content % dataset description content
 
-    is_derivative = false % this too
+    is_derivative = false % boolean
 
-    pipeline = '' %
+    pipeline = '' % name of the pipeline used to generate this derivative dataset
 
-    source_description = struct([]) %
+    source_description = struct([])
 
   end
 
   methods
 
     function obj = Description(obj, pipeline, BIDS)
+      %
+      % Instance constructor
       %
       % USAGE::
       %
@@ -124,7 +126,7 @@ classdef Description
 
     function obj = append(obj, key, value)
       %
-      % appends an item to the dataset description content
+      % Appends an item to the dataset description content.
       %
       % USAGE::
       %
