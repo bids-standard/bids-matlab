@@ -1,6 +1,6 @@
 function tsvwrite(f, var)
   %
-  % Save text and numeric data to .tsv file
+  % Save text and numeric data to tab-separated-value file
   %
   % USAGE::
   %

@@ -32,10 +32,12 @@ function varargout = jsonencode(varargin)
   %                       [Default: ``true``]
   %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   if ~nargin
     error('Not enough input arguments.');
   else
+    % TODO: jsonwrite should probably be moved to +internal
     [varargout{1:nargout}] = bids.util.jsonwrite(varargin{:}); % JSONio copy - always exist
   end

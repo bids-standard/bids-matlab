@@ -2,21 +2,32 @@ classdef dataset_description
   %
   % Class to deal with dataset_description files.
   %
+  %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   % TODO
   % - transfer validate function of layout in here
 
   properties
-    content
-    is_derivative = false
-    pipeline = ''
-    source_description = struct([])
+
+    content % this is a test
+
+    is_derivative = false % this too
+
+    pipeline = '' %
+
+    source_description = struct([]) %
+
   end
 
   methods
 
     function obj = generate(obj, pipeline, BIDS)
+      %
+      % USAGE::
+      %
+      %  ds_desc = ds_desc.generate(pipeline, BIDS)
+      %
 
       if nargin > 1
         obj.is_derivative = true;

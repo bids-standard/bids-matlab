@@ -8,20 +8,24 @@ function result = query(BIDS, query, varargin)
   %
   % :param BIDS: BIDS directory name or BIDS structure (from bids.layout)
   % :type  BIDS: strcuture or string
-  % :param query: type of query:
-  %                              - 'sessions'
-  %                              - 'subjects'
-  %                              - 'modalities'
-  %                              - 'tasks'
-  %                              - 'runs'
-  %                              - 'suffixes'
-  %                              - 'data'
-  %                              - 'metadata'
-  %                              - 'metafiles'
-  %                              - 'dependencies'
-  %                              - 'extensions'
-  %                              - 'prefixes'
+  % :param query: type of query (see list below)
   % :type  query: string
+  %
+  % Type of query allowed:
+  %
+  %     - ``'sessions'``
+  %     - ``'subjects'``
+  %     - ``'modalities'``
+  %     - ``'tasks'``
+  %     - ``'runs'``
+  %     - ``'suffixes'``
+  %     - ``'data'``
+  %     - ``'metadata'``
+  %     - ``'metafiles'``
+  %     - ``'dependencies'``
+  %     - ``'extensions'``
+  %     - ``'prefixes'``
+  %
   %
   % Queries can "filtered" by passing more arguments key-value pairs as a list of
   % strings or as a cell or a structure
@@ -38,9 +42,19 @@ function result = query(BIDS, query, varargin)
   % Example 2::
   %
   %     filters = struct('sub', '01', ...
-  %                     'task', 'stopsignalwithpseudowordnaming', ...
-  %                     'extension', '.nii.gz', ...
-  %                     'suffix', 'bold');
+  %                      'task', 'stopsignalwithpseudowordnaming', ...
+  %                      'extension', '.nii.gz', ...
+  %                      'suffix', 'bold');
+  %
+  %     data = bids.query(BIDS, 'data', filters);
+  %
+  %
+  % Example 3::
+  %
+  %     filters = {'sub', '01'; ...
+  %                'task', 'stopsignalwithpseudowordnaming'; ...
+  %                'extension', '.nii.gz'; ...
+  %                'suffix', 'bold'};
   %
   %     data = bids.query(BIDS, 'data', filters);
   %

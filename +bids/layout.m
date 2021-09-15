@@ -4,7 +4,7 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   %
   % USAGE::
   %
-  %   BIDS = bids.layout(root = pwd, use_schema = false)
+  %   BIDS = bids.layout(root = pwd, use_schema = false, tolerant = true, verbose = false+)
   %
   % :param root:       directory of the dataset formated according to BIDS [default: ``pwd``]
   % :type  root:       string
@@ -17,9 +17,10 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   % :type  use_schema: boolean
   % :param index_derivatives:
   % :type  index_derivatives: boolean
-  % :param tolerant:
+  % :param tolerant: Set to ``true`` to turn validation errors into warnings
+  %                  [default: ``true``]
   % :type  tolerant: boolean
-  % :param verbose:
+  % :param verbose: Set to ``true`` to get more feedback [default: ``false``]
   % :type  verbose: boolean
   %
   %
