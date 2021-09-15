@@ -21,15 +21,16 @@ function error_handling(varargin)
   function_name = bids.internal.file_utils(p.Results.function_name, 'basename');
 
   id = [function_name, ':' p.Results.id];
+  msg = p.Results.msg;
 
   if ~p.Results.tolerant
     errorStruct.identifier = id;
-    errorStruct.message = p.Results.msg;
+    errorStruct.message = msg;
     error(errorStruct);
   end
 
   if p.Results.verbose
-    warning(id, p.Results.msg);
+    warning(id, msg);
   end
 
 end
