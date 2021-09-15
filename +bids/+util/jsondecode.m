@@ -7,16 +7,16 @@ function value = jsondecode(file, varargin)
   %   json = bids.util.jsondecode(file, opts)
   %
   % :param file: name of a JSON file or JSON string
-  % :type filename: string
+  % :type file: string
   % :param opts: structure of optional parameters (only with JSONio):
   % :type opts: structure
   %
-  % replacementStyle: string to control how non-alphanumeric characters are replaced.
+  % ``opt.replacementStyle``: string to control how non-alphanumeric characters are replaced.
   %
-  %        - ``'underscore'`` Default
-  %        - ``'hex'``
-  %        - ``'delete'``
-  %        - ``'nop'``
+  %    - ``'underscore'`` Default
+  %    - ``'hex'``
+  %    - ``'delete'``
+  %    - ``'nop'``
   %
   %
   % :returns: - :json: JSON structure

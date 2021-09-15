@@ -35,6 +35,7 @@
 % K. J. Gorgolewski et al, Scientific Data, 2016.
 % __________________________________________________________________________
 %
+%
 % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 %
 % (C) Copyright 2018 BIDS-MATLAB developers

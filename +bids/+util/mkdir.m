@@ -4,14 +4,20 @@ function sts = mkdir(varargin)
   %
   % USAGE::
   %
-  %   sts = bids.util.mkdir(dir,...)
+  %   sts = bids.util.mkdir(dir, ...)
   %
-  % :param dir:
+  %
+  % :param dir: directory structure to create
   % :type dir: character array, or cell array of strings
-  % :param sts: status is ``true`` if all directories were successfully created or already
-  %          existing, ``false`` otherwise.
-  % :type sts: character array, or cell array of strings
   %
+  %
+  % :returns:
+  %   - :sts: status is ``true`` if all directories were successfully created or already
+  %                   existing, ``false`` otherwise.
+  %
+  % EXAMPLE::
+  %
+  %   bids.util.mkdir('dataset', {'sub-01', 'sub-02'}, {'mri', 'eeg'});
   %
   % Based on spm_mkdir from SPM12
   %
