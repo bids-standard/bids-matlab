@@ -8,11 +8,10 @@ end
 
 function test_metadata_loading()
 
-  schema = bids.schema;
-  schema = schema.load();
+  schema = bids.Schema();
   assert(~isfield(schema.content, 'metadata'));
 
-  schema = bids.schema;
+  schema = bids.Schema;
   schema.load_schema_metadata = true;
   schema = schema.load();
   assert(isfield(schema.content, 'metadata'));
@@ -22,8 +21,7 @@ end
 
 function test_return_required_entities
 
-  schema = bids.schema();
-  schema = schema.load();
+  schema = bids.Schema();
 
   suffix_group = schema.content.datatypes.func(1);
   required_entities = schema.required_entities_for_suffix_group(suffix_group);
@@ -38,8 +36,7 @@ function test_load()
 
   use_schema = fullfile(fileparts(mfilename('fullpath')), 'schema');
 
-  schema = bids.schema;
-  schema = schema.load(use_schema);
+  schema = bids.Schema(use_schema);
 
   assert(isfield(schema.content, 'base'));
   assert(isfield(schema.content, 'subfolder_1'));
@@ -56,8 +53,7 @@ function test_schemaless()
 
   use_schema = false();
 
-  schema = bids.schema;
-  schema = schema.load(use_schema);
+  schema = bids.Schema(use_schema);
 
   assertEqual(schema.content, struct([]));
 
@@ -65,8 +61,7 @@ end
 
 function test_return_datatypes_for_suffix
 
-  schema = bids.schema();
-  schema = schema.load();
+  schema = bids.Schema();
 
   datatypes = schema.return_datatypes_for_suffix('bold');
   assertEqual(datatypes, {'func'});
@@ -83,8 +78,7 @@ end
 
 function test_return_modality_suffixes_regex
 
-  schema = bids.schema();
-  schema = schema.load();
+  schema = bids.Schema();
 
   suffix_group = schema.content.datatypes.func(1);
   suffixes = schema.return_modality_suffixes_regex(suffix_group);
@@ -94,8 +88,7 @@ end
 
 function test_return_modality_extensions_regex
 
-  schema = bids.schema();
-  schema = schema.load();
+  schema = bids.Schema();
 
   suffix_group = schema.content.datatypes.func(1);
   extensions = schema.return_modality_extensions_regex(suffix_group);
@@ -105,8 +98,7 @@ end
 
 function test_return_modality_regex
 
-  schema = bids.schema();
-  schema = schema.load();
+  schema = bids.Schema();
 
   suffix_group = schema.content.datatypes.anat(1);
   regular_expression = schema.return_modality_regex(suffix_group);
@@ -129,8 +121,7 @@ end
 
 function test_return_modality_entities_basic
 
-  schema = bids.schema();
-  schema = schema.load();
+  schema = bids.Schema();
 
   suffix_group = schema.content.datatypes.func(1);
   entities = schema.return_entities_for_suffix_group(suffix_group);

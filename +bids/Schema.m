@@ -1,4 +1,4 @@
-classdef schema
+classdef Schema
   %
   % Class to interact with the BIDS schema
   %
@@ -13,6 +13,14 @@ classdef schema
 
   %% PUBLIC
   methods
+
+    function obj = Schema(use_schema)
+      obj.content = [];
+      if nargin < 1
+        use_schema = true();
+      end
+      obj = load(obj, use_schema);
+    end
 
     function obj = load(obj, use_schema)
       %
@@ -41,8 +49,6 @@ classdef schema
         obj.content = struct([]);
         return
       end
-
-      obj.content = [];
 
       if ischar(use_schema)
         schema_dir = use_schema;
