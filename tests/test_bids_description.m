@@ -10,8 +10,7 @@ end
 function test_description()
 
   % generate dataset_description
-  ds_desc = bids.dataset_description;
-  ds_desc = ds_desc.generate();
+  ds_desc = bids.Description();
 
   content = struct( ...
                    'Name', 'Multisubject, multimodal face processing', ...
@@ -58,8 +57,7 @@ function test_description_derivative()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
 
-  ds_desc = bids.dataset_description;
-  ds_desc = ds_desc.generate('my_pipeline', BIDS);
+  ds_desc = bids.Description('my_pipeline', BIDS);
 
   ds_desc = ds_desc.append('GeneratedBy', struct('Name', 'Manual'));
 
