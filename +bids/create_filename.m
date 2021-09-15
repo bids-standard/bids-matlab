@@ -178,8 +178,7 @@ end
 
 function [p] = get_modality_from_schema(p)
 
-  schema = bids.schema();
-  schema = schema.load(p.use_schema);
+  schema = bids.Schema(p.use_schema);
 
   p.modality = schema.return_datatypes_for_suffix(p.suffix);
 
@@ -196,8 +195,7 @@ end
 
 function [p, required_entities] = get_entity_order_from_schema(p)
 
-  schema = bids.schema();
-  schema = schema.load(p.use_schema);
+  schema = bids.Schema(p.use_schema);
 
   [schema_entities, required_entities] = schema.return_entities_for_suffix_modality(p.suffix, ...
                                                                                     p.modality{1});

@@ -15,6 +15,15 @@ classdef Schema
   methods
 
     function obj = Schema(use_schema)
+      %
+      %
+      % USAGE::
+      %
+      %   schema = bids.Schema(use_schema)
+      %
+      % use_schema: boolean
+      %
+
       obj.content = [];
       if nargin < 1
         use_schema = true();
@@ -31,7 +40,7 @@ classdef Schema
       %
       % USAGE::
       %
-      %   schema = bids.schema
+      %   schema = bids.Schema
       %   schema = schema.load
       %
 
@@ -124,6 +133,7 @@ classdef Schema
       %
       % Returns a dummy variable if we go schema less
       %
+
       groups = {nan()};
       if ~isempty(obj.content) && isfield(obj.content, 'modalities')
         groups = fieldnames(obj.content.modalities);
@@ -149,6 +159,11 @@ classdef Schema
       %  Returns a logical vector to track which entities of a suffix group
       %  are required in the bids schema
       %
+      % USAGE::
+      %
+      %  required_entities = schema.required_entities_for_suffix_group(this_suffix_group)
+      %
+
       this_suffix_group = obj.ci_check(this_suffix_group);
 
       if isfield(this_suffix_group, 'required_entities')
@@ -177,6 +192,10 @@ classdef Schema
       %
       % For a given sufffix and modality, this returns the "suffix group" this
       % suffix belongs to
+      %
+      % USAGE::
+      %
+      %  idx = schema.find_suffix_group(modality, suffix)
       %
 
       idx = [];
@@ -212,9 +231,7 @@ classdef Schema
       %
       % EXAMPLE::
       %
-      %       schema = bids.schema();
-      %       schema = schema.load();
-      %
+      %       schema = bids.Schema();
       %       datatypes = schema.return_datatypes_for_suffix('bold');
       %       assertEqual(datatypes, {'func'});
       %
@@ -245,6 +262,11 @@ classdef Schema
       %
       % returns the list of entities for a given suffix of a given modality
       %
+      % USAGE::
+      %
+      %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
+      %
+
       idx = obj.find_suffix_group(modality, suffix);
 
       if ~isempty(idx)
@@ -259,18 +281,42 @@ classdef Schema
 
     % ----------------------------------------------------------------------- %
     %% REGEX GENERATION
-    function regex = return_modality_suffixes_regex(obj, modality)
-      regex = obj.return_regex(modality, 'suffixes');
+    function reg_ex = return_modality_suffixes_regex(obj, modality)
+      %
+      % creates a regular expression of suffixes for a given imaging modality
+      %
+      % USAGE::
+      %
+      %   reg_ex = schema.return_modality_suffixes_regex(modality)
+      %
+
+      reg_ex = obj.return_regex(modality, 'suffixes');
     end
 
-    function regex = return_modality_extensions_regex(obj, modality)
-      regex = obj.return_regex(modality, 'extensions');
+    function reg_ex = return_modality_extensions_regex(obj, modality)
+      %
+      % creates a regular expression of extensions for a given imaging modality
+      %
+      % USAGE::
+      %
+      %   reg_ex = schema.return_modality_extensions_regex(modality)
+      %
+
+      reg_ex = obj.return_regex(modality, 'extensions');
     end
 
-    function modality_regex = return_modality_regex(obj, modality)
+    function reg_ex = return_modality_regex(obj, modality)
+      %
+      % creates a regular expression of suffixes and extension for a given imaging modality
+      %
+      % USAGE::
+      %
+      %   reg_ex = schema.return_modality_regex(modality)
+      %
+
       suffixes = obj.return_modality_suffixes_regex(modality);
       extensions = obj.return_modality_extensions_regex(modality);
-      modality_regex = ['^%s.*' suffixes extensions '$'];
+      reg_ex = ['^%s.*' suffixes extensions '$'];
     end
 
   end
@@ -284,6 +330,11 @@ classdef Schema
       %
       % Reads a json file and appends its content to the bids schema
       %
+      % USAGE::
+      %
+      %   structure = append_json_to_schema(structure, json_file_list)
+      %
+
       for iFile = 1:size(json_file_list, 1)
         file = deblank(json_file_list(iFile, :));
 
@@ -303,6 +354,10 @@ classdef Schema
       %
       % Recursively inspects subdirectory for json files and reflects folder
       % hierarchy in the output structure.
+      %
+      % USAGE::
+      %
+      %   structure = inspect_subdir(obj, structure, subdir_list)
       %
 
       for iDir = 1:size(subdir_list, 1)
