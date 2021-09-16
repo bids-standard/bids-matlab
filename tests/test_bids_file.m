@@ -39,8 +39,7 @@ end
 
 function test_bids_file_reset_name_spec()
   % GIVEN
-  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  file = bids.File(input_file);
+  file = set_up();
   name_spec.entities.sub = '02';
   % WHEN
   file = file.set_name_spec(name_spec);
@@ -116,15 +115,12 @@ function test_bids_file_reorder_entities_order_specified()
   assertEqual(file.entity_order, {'ses'
                                   'sub'
                                   'run'});
+  assertEqual(file.entities, struct('ses', '02', 'sub', '01', 'run', '03'));
 end
 
 function test_bids_file_reorder_entities_schema_based()
   % GIVEN
-  input_file = fullfile(pwd, 'sub-01_run-03_T1w.nii');
-  use_schema = true;
-  file = bids.File(input_file, use_schema);
-  name_spec.entities.ses = '02';
-  file = file.set_name_spec(name_spec);
+  file = set_up_with_schema();
   % WHEN
   file = file.reorder_entities();
   % THEN
@@ -139,18 +135,17 @@ end
 
 function test_bids_file_reorder_entities_user_specified()
   % GIVEN
-  input_file = fullfile(pwd, 'sub-01_run-03_T1w.nii');
-  use_schema = true;
-  file = bids.File(input_file, use_schema);
+  file = set_up_with_schema();
   % WHEN
   file = file.reorder_entities({'run', 'ses', 'sub'});
   % THEN
   assertEqual(file.entity_order, {'run'; 'ses'; 'sub'});
+  assertEqual(file.entities, struct('ses', '02', 'sub', '01'));
 end
 
 function test_bids_file_create_filename()
   % GIVEN
-  file = bids.File(fullfile(pwd, 'sub-01_ses-02_T1w.nii'));
+  file = set_up();
   name_spec.entities.sub = '02';
   file = file.set_name_spec(name_spec);
   % WHEN
@@ -161,9 +156,7 @@ end
 
 function test_bids_file_get_entity_order()
   % GIVEN
-  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  use_schema = true;
-  file = bids.File(input_file, use_schema);
+  file = set_up_with_schema();
   % WHEN
   file = file.get_entity_order_from_schema();
   % THEN
@@ -178,9 +171,7 @@ end
 
 function test_bids_file_get_required_entity()
   % GIVEN
-  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  use_schema = true;
-  file = bids.File(input_file, use_schema);
+  file = set_up_with_schema();
   % WHEN
   file = file.get_required_entity_from_schema();
   % THEN
@@ -189,11 +180,22 @@ end
 
 function test_bids_file_get_modality_from_schema()
   % GIVEN
-  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  use_schema = true;
-  file = bids.File(input_file, use_schema);
+  file = set_up_with_schema();
   % WHEN
   file = file.get_modality_from_schema();
   % THEN
   assertEqual(file.modality, {'anat'});
+end
+
+% Fixtures
+
+function file = set_up()
+  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
+  file = bids.File(input_file);
+end
+
+function file = set_up_with_schema()
+  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
+  use_schema = true;
+  file = bids.File(input_file, use_schema);
 end
