@@ -85,6 +85,8 @@ classdef File
 
       end
 
+      obj.entity_order = fieldnames(obj.entities);
+
       obj = create_rel_path(obj);
 
       if p.Results.use_schema
@@ -206,31 +208,35 @@ classdef File
     function obj = reorder_entities(obj, entity_order)
       %
       % reorder entities by one of the following ways
-      %   - order defined by entity_order
       %   - as defined in obj.entity_order
+      %   - order defined by entity_order
       %   - schema based: obj.use_schema
-      %
+
+      order = obj.entity_order;
 
       if nargin > 1 && ~isempty(entity_order)
 
-        obj.entity_order = entity_order;
+        order = entity_order;
 
-      elseif ~isempty(obj.entity_order)
-
-      elseif obj.use_schema
+      elseif ~isempty(obj.schema)
 
         obj = get_entity_order_from_schema(obj);
+        return
 
       end
 
-      if size(obj.entity_order, 2) > 1
-        obj.entity_order = obj.entity_order';
+      if size(order, 2) > 1
+        order = order';
       end
 
       entity_names = fieldnames(obj.entities);
 
-      idx = ismember(entity_names, obj.entity_order);
-      obj.entities = cat(1, obj.entity_order, entity_names(~idx));
+      idx = ismember(entity_names, order);
+      obj.entity_order = cat(1, order, entity_names(~idx));
+
+      if size(obj.entity_order, 2) > 1
+        obj.entity_order = obj.entity_order';
+      end
 
     end
 
