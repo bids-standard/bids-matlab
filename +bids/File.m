@@ -25,7 +25,7 @@ classdef File
 
     filename
 
-    prefix
+    prefix = ''
 
     entities = struct()
 
@@ -38,9 +38,9 @@ classdef File
   properties (SetAccess = private)
     default_filename = ''
     default_name_spec = struct()
-    default_fields = {}
     default_tolerant = true
     default_verbose = true
+    default_use_schema = false
   end
 
   methods
@@ -52,40 +52,87 @@ classdef File
       charOrStruct = @(x) isstruct(x) || ischar(x);
 
       addOptional(p, 'input_file', obj.default_filename, charOrStruct);
+      addOptional(p, 'use_schema', obj.default_use_schema, @islogical);
       addOptional(p, 'name_spec', obj.default_name_spec, @isstruct);
-      addOptional(p, 'fields', obj.default_fields, @iscell);
       addOptional(p, 'tolerant', obj.default_tolerant, @islogical);
       addOptional(p, 'verbose', obj.default_verbose, @islogical);
 
       parse(p, varargin{:});
 
-      input_file = p.Results.input_file;
-      if isempty(input_file)
-        return
-      else
-        if ischar(input_file)
-          obj.filename = bids.internal.file_utils(input_file, 'filename');
-          obj.pth = bids.internal.file_utils(input_file, 'path');
-        end
-      end
-
       obj.verbose = p.Results.verbose;
       obj.tolerant = p.Results.tolerant;
 
-      obj = obj.parse(p.Results.fields);
+      input_file = p.Results.input_file;
+
+      if isempty(input_file)
+        return
+
+      else
+
+        if ischar(input_file)
+
+          obj.filename = bids.internal.file_utils(input_file, 'filename');
+          obj.pth = bids.internal.file_utils(input_file, 'path');
+
+          obj = obj.parse();
+
+        elseif isstruct(input_file)
+
+          obj = obj.set_name_spec(input_file);
+          obj = obj.create_filename();
+
+        end
+
+      end
 
       obj = create_rel_path(obj);
+
+      if p.Results.use_schema
+        obj = use_schema(obj);
+      end
+
+    end
+
+    function obj = set_name_spec(obj, name_spec)
+
+      fields = {'prefix', 'entities', 'suffix', 'ext'};
+
+      for i = 1:numel(fields)
+        if isfield(name_spec, fields{i})
+
+          if strcmp(fields{i}, 'entities')
+            entity_names = fieldnames(name_spec.entities);
+            for j = 1:numel(entity_names)
+              obj.entities.(entity_names{j}) = name_spec.entities.(entity_names{j});
+            end
+          else
+            obj.(fields{i}) = name_spec.(fields{i});
+          end
+
+        end
+      end
 
     end
 
     function obj = use_schema(obj)
+
       obj.schema = bids.schema();
       obj.schema = obj.schema.load();
-      obj = create_rel_path(obj);
-      obj = get_entity_order_from_schema(obj);
+
+      obj = obj.create_rel_path();
+      obj = obj.get_required_entity_from_schema();
+      obj = obj.get_entity_order_from_schema();
+
     end
 
     function obj = parse(obj, fields)
+
+      % TODO add possibility to parse according to BIDS schema
+      % (will require to extract function from append_to_layout)
+
+      if nargin < 2
+        fields = {};
+      end
 
       if ~isempty(obj.filename)
 
@@ -153,6 +200,7 @@ classdef File
       obj.filename(1) = [];
 
       obj.filename = [obj.prefix, obj.filename '_', obj.suffix, obj.ext];
+
     end
 
     function obj = reorder_entities(obj, entity_order)
@@ -186,18 +234,28 @@ classdef File
 
     end
 
-    function [obj, required] = get_entity_order_from_schema(obj)
+    function [obj, required] = get_required_entity_from_schema(obj)
 
       obj = obj.get_modality_from_schema();
 
-      [schemq_entities, required] = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
-                                                                                   obj.modality{1});
-
-      for i = 1:numel(schemq_entities)
-        obj.entity_order{i, 1} = schemq_entities{i};
-      end
+      [~, required] = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
+                                                                     obj.modality{1});
 
       obj.required_entities = required;
+
+    end
+
+    function [obj, entity_order] = get_entity_order_from_schema(obj)
+
+      obj = obj.get_modality_from_schema();
+
+      schema_entities = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
+                                                                       obj.modality{1});
+      for i = 1:numel(schema_entities)
+        obj.entity_order{i, 1} = schema_entities{i};
+      end
+
+      entity_order = obj.entity_order;
 
     end
 
