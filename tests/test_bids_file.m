@@ -6,6 +6,47 @@ function test_suite = test_bids_file %#ok<*STOUT>
   initTestSuite;
 end
 
+%% create filenames
+
+function test_create_filename_basic()
+
+  % GIVEN
+  use_schema = true;
+
+  name_spec.suffix = 'bold';
+  name_spec.ext = '.nii';
+  name_spec.entities = struct( ...
+                              'sub', '01', ...
+                              'ses', 'test', ...
+                              'task', 'face recognition', ...
+                              'run', '02');
+  % WHEN
+  file = bids.File(name_spec, use_schema);
+
+  % THEN
+  assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii');
+  assertEqual(file.relative_pth, fullfile('sub-01', 'ses-test', 'func'));
+
+  %% Modify existing filename
+  new_spec.entities = struct( ...
+                             'sub', '02', ...
+                             'task', 'new task');
+
+  file = file.create_filename(new_spec);
+
+  assertEqual(file.filename, 'sub-02_ses-test_task-newTask_run-02_bold.nii');
+
+  %% Remove entity from filename
+  new_spec.entities = struct('ses', '');
+
+  file = file.create_filename(new_spec);
+
+  assertEqual(file.filename, 'sub-02_task-newTask_run-02_bold.nii');
+
+end
+
+%%
+
 function test_bids_file_basic()
   file = bids.File();
   file = file.reorder_entities();

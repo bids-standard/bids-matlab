@@ -171,7 +171,11 @@ classdef File
 
     end
 
-    function obj = create_filename(obj)
+    function obj = create_filename(obj, name_spec)
+
+      if nargin > 1 && ~isempty(name_spec)
+        obj = obj.set_name_spec(name_spec);
+      end
 
       obj.filename = [obj.prefix, obj.concatenate_entities(), '_', obj.suffix, obj.ext];
 
