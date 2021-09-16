@@ -7,7 +7,18 @@ function test_suite = test_bids_file %#ok<*STOUT>
 end
 
 function test_bids_file_basic()
-  bids.File();
+  file = bids.File();
+  file = file.reorder_entities();
+  file = file.get_required_entity_from_schema();
+  file = file.create_filename();
+end
+
+function test_bids_file_basic_schema()
+  use_schema = true;
+  file = bids.File('', use_schema);
+  file = file.reorder_entities();
+  file = file.get_required_entity_from_schema();
+  file = file.create_filename();
 end
 
 function test_bids_file_set_name_spec()
@@ -40,7 +51,7 @@ function test_bids_file_reset_name_spec()
   assertEqual(file.entities.ses, '02');
 end
 
-function test_bids_filec_input_as_filename()
+function test_bids_file_input_as_filename()
   % GIVEN
   input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
   % WHEN
@@ -54,7 +65,7 @@ function test_bids_filec_input_as_filename()
   assertEqual(file.relative_pth, 'sub-01/ses-02');
 end
 
-function test_bids_filec_input_as_filename_with_schema()
+function test_bids_file_input_as_filename_with_schema()
   % GIVEN
   input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
   use_schema = true;

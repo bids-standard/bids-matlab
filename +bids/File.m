@@ -173,35 +173,7 @@ classdef File
 
     function obj = create_filename(obj)
 
-      obj.filename = '';
-
-      entity_names = fieldnames(obj.entities);
-
-      for iEntity = 1:numel(entity_names)
-
-        this_entity = entity_names{iEntity};
-
-        if ~isempty(obj.required_entities) && ...
-                ismember(this_entity, obj.required_entities) && ...
-                ~isfield(obj.entities, this_entity)
-
-          msg = sprintf('The entity %s cannot not be empty for the suffix %s', ...
-                        this_entity, ...
-                        obj.suffix);
-          bids.internal.error_handling(mfilename, 'requiredEntity', msg, obj.tolerant, obj.verbose);
-        end
-
-        if isfield(obj.entities, this_entity) && ~isempty(obj.entities.(this_entity))
-          thisLabel = bids.internal.camel_case(obj.entities.(this_entity));
-          obj.filename = [obj.filename '_' this_entity '-' thisLabel]; %#ok<AGROW>
-        end
-
-      end
-
-      % remove lead '_'
-      obj.filename(1) = [];
-
-      obj.filename = [obj.prefix, obj.filename '_', obj.suffix, obj.ext];
+      obj.filename = [obj.prefix, obj.concatenate_entities(), '_', obj.suffix, obj.ext];
 
     end
 
@@ -238,9 +210,23 @@ classdef File
         obj.entity_order = obj.entity_order';
       end
 
+      tmp = struct();
+      for i = 1:numel(obj.entity_order)
+        this_entity = obj.entity_order{i};
+        if isfield(obj.entities, this_entity)
+          tmp.(this_entity) = obj.entities.(this_entity);
+        end
+      end
+      obj.entities = tmp;
+
     end
 
     function [obj, required] = get_required_entity_from_schema(obj)
+
+      if isempty(obj.schema)
+        error_missing_schema(obj);
+        return
+      end
 
       obj = obj.get_modality_from_schema();
 
@@ -252,6 +238,11 @@ classdef File
     end
 
     function [obj, entity_order] = get_entity_order_from_schema(obj)
+
+      if isempty(obj.schema)
+        error_missing_schema(obj);
+        return
+      end
 
       obj = obj.get_modality_from_schema();
 
@@ -267,6 +258,11 @@ classdef File
 
     function obj = get_modality_from_schema(obj)
 
+      if isempty(obj.schema)
+        error_missing_schema(obj);
+        return
+      end
+
       obj.modality = obj.schema.return_datatypes_for_suffix(obj.suffix);
 
       if numel(obj.modality) > 1
@@ -281,6 +277,50 @@ classdef File
                                      obj.verbose);
       end
 
+    end
+
+    function output = concatenate_entities(obj)
+
+      output = '';
+
+      entity_names = fieldnames(obj.entities);
+
+      if isempty(entity_names)
+        return
+      end
+
+      for iEntity = 1:numel(entity_names)
+
+        this_entity = entity_names{iEntity};
+
+        if ~isempty(obj.required_entities) && ...
+                ismember(this_entity, obj.required_entities) && ...
+                ~isfield(obj.entities, this_entity)
+
+          msg = sprintf('The entity %s cannot not be empty for the suffix %s', ...
+                        this_entity, ...
+                        obj.suffix);
+          bids.internal.error_handling(mfilename, 'requiredEntity', msg, obj.tolerant, obj.verbose);
+        end
+
+        if isfield(obj.entities, this_entity) && ~isempty(obj.entities.(this_entity))
+          thisLabel = bids.internal.camel_case(obj.entities.(this_entity));
+          output = [output '_' this_entity '-' thisLabel]; %#ok<AGROW>
+        end
+
+      end
+
+      % remove lead '_'
+      output(1) = [];
+
+    end
+
+    function error_missing_schema(obj)
+      bids.internal.error_handling(mfilename, ...
+                                   'schemaMissing', ...
+                                   'no schema specified: run file.use_schema()', ...
+                                   obj.tolerant, ...
+                                   obj.verbose);
     end
 
   end
