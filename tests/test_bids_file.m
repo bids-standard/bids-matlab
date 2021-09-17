@@ -8,6 +8,98 @@ end
 
 %% create filenames
 
+function test_create_filename_derivatives_2()
+
+  % GIVEN
+  filename = 'sub-01_ses-test_T1w.nii';
+  use_schema = false;
+  name_spec.modality = 'roi';
+  name_spec.suffix = 'mask';
+  name_spec.entities = struct('desc', 'preproc');
+  % WHEN
+  file = bids.File(filename, use_schema, name_spec);
+  % THEN
+  assertEqual(file.filename, 'sub-01_ses-test_desc-preproc_mask.nii');
+  assertEqual(file.relative_pth, fullfile('sub-01', 'ses-test', 'roi'));
+
+end
+
+function test_create_filename_derivatives()
+
+  % GIVEN
+  filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  use_schema = false;
+  name_spec.prefix = '';
+  name_spec.entities = struct('desc', 'preproc');
+  % WHEN
+  file = bids.File(filename, use_schema, name_spec);
+  % THEN
+  assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii');
+
+end
+
+function test_create_filename_order()
+
+  % GIVEN
+  name_spec.suffix = 'bold';
+  name_spec.ext = '.nii';
+  name_spec.entities = struct( ...
+                              'sub', '01', ...
+                              'ses', 'test', ...
+                              'task', 'face recognition', ...
+                              'run', '02');
+  file = bids.File(name_spec);
+  file = file.reorder_entities({'sub', 'run'});
+  % WHEN
+  [~, filename] = file.create_filename();
+  % THEN
+  assertEqual(filename, 'sub-01_run-02_ses-test_task-faceRecognition_bold.nii');
+
+end
+
+function test_create_filename_schema_based()
+
+  % GIVEN
+  name_spec.suffix = 'bold';
+  name_spec.ext = '.nii';
+  name_spec.entities = struct( ...
+                              'sub', '01', ...
+                              'run', '02', ...
+                              'task', 'face recognition');
+  use_schema = true;
+  % WHEN
+  file = bids.File(name_spec, use_schema);
+  % THEN
+  assertEqual(file.filename, 'sub-01_task-faceRecognition_run-02_bold.nii');
+
+end
+
+function test_create_filename_prefix_suffix_ext()
+
+  % GIVEN
+  filename = 'sub-02_task-newTask_run-02_bold.nii';
+  file = bids.File(filename);
+  name_spec = struct('suffix', 'eeg');
+  % WHEN
+  [~, filename] = file.create_filename(name_spec);
+  % THEN
+  assertEqual(filename, 'sub-02_task-newTask_run-02_eeg.nii');
+
+end
+
+function test_create_filename_change_extension()
+
+  % GIVEN
+  filename = 'sub-02_task-newTask_run-02_eeg.nii';
+  file = bids.File(filename);
+  name_spec = struct('ext', '.json');
+  % WHEN
+  [~, filename] = file.create_filename(name_spec);
+  % THEN
+  assertEqual(filename, 'sub-02_task-newTask_run-02_eeg.json');
+
+end
+
 function test_create_filename_basic()
 
   % GIVEN
@@ -45,7 +137,7 @@ function test_create_filename_basic()
 
 end
 
-%%
+%% smoke tests
 
 function test_bids_file_basic()
   file = bids.File();
@@ -61,6 +153,8 @@ function test_bids_file_basic_schema()
   file = file.get_required_entity_from_schema();
   file = file.create_filename();
 end
+
+%% methods
 
 function test_bids_file_set_name_spec()
   % GIVEN
@@ -119,14 +213,9 @@ function test_bids_file_input_as_filename_with_schema()
   assertEqual(file.entities.ses, '02');
   assertEqual(file.relative_pth, 'sub-01/ses-02/anat');
   assertEqual(file.entity_order, {'sub'
-                                  'ses'
-                                  'run'
-                                  'acq'
-                                  'ce'
-                                  'rec'
-                                  'part'});
+                                  'ses'});
   assertEqual(file.required_entities, {'sub'});
-  assertEqual(file.modality, {'anat'});
+  assertEqual(file.modality, 'anat');
 end
 
 function test_bids_file_basic_input_as_structure()
@@ -156,12 +245,16 @@ function test_bids_file_reorder_entities_order_specified()
   assertEqual(file.entity_order, {'ses'
                                   'sub'
                                   'run'});
-  assertEqual(file.entities, struct('ses', '02', 'sub', '01', 'run', '03'));
+  assertEqual(file.entities, struct('ses', '02', ...
+                                    'sub', '01', ...
+                                    'run', '03'));
 end
 
 function test_bids_file_reorder_entities_schema_based()
   % GIVEN
-  file = set_up_with_schema();
+  input_file = fullfile(pwd, 'sub-01_run-03_ses-02_T1w.nii');
+  use_schema = true;
+  file = bids.File(input_file, use_schema);
   % WHEN
   file = file.reorder_entities();
   % THEN
@@ -172,6 +265,9 @@ function test_bids_file_reorder_entities_schema_based()
                                   'ce'
                                   'rec'
                                   'part'});
+  assertEqual(file.entities, struct('sub', '01', ...
+                                    'ses', '02', ...
+                                    'run', '03'));
 end
 
 function test_bids_file_reorder_entities_user_specified()
@@ -181,7 +277,8 @@ function test_bids_file_reorder_entities_user_specified()
   file = file.reorder_entities({'run', 'ses', 'sub'});
   % THEN
   assertEqual(file.entity_order, {'run'; 'ses'; 'sub'});
-  assertEqual(file.entities, struct('ses', '02', 'sub', '01'));
+  assertEqual(file.entities, struct('ses', '02', ...
+                                    'sub', '01'));
 end
 
 function test_bids_file_create_filename()
@@ -225,7 +322,7 @@ function test_bids_file_get_modality_from_schema()
   % WHEN
   file = file.get_modality_from_schema();
   % THEN
-  assertEqual(file.modality, {'anat'});
+  assertEqual(file.modality, 'anat');
 end
 
 % Fixtures

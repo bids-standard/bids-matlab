@@ -37,7 +37,7 @@ classdef File
 
   properties (SetAccess = private)
     default_filename = ''
-    default_name_spec = struct()
+    default_name_spec = struct([])
     default_tolerant = true
     default_verbose = true
     default_use_schema = false
@@ -79,36 +79,43 @@ classdef File
         elseif isstruct(input_file)
 
           obj = obj.set_name_spec(input_file);
-          obj = obj.create_filename();
 
         end
 
       end
 
-      obj.entity_order = fieldnames(obj.entities);
-
-      obj = create_rel_path(obj);
-
       if p.Results.use_schema
-        obj = use_schema(obj);
+        obj = obj.use_schema();
       end
+
+      if ~isempty(p.Results.name_spec)
+        obj = obj.set_name_spec(p.Results.name_spec);
+      end
+
+      obj = obj.create_filename();
+      obj = create_rel_path(obj);
+      obj.entity_order = fieldnames(obj.entities);
 
     end
 
     function obj = set_name_spec(obj, name_spec)
 
-      fields = {'prefix', 'entities', 'suffix', 'ext'};
+      fields = {'prefix', 'entities', 'suffix', 'ext', 'modality'};
 
       for i = 1:numel(fields)
         if isfield(name_spec, fields{i})
 
           if strcmp(fields{i}, 'entities')
+
             entity_names = fieldnames(name_spec.entities);
             for j = 1:numel(entity_names)
               obj.entities.(entity_names{j}) = name_spec.entities.(entity_names{j});
             end
+
           else
+
             obj.(fields{i}) = name_spec.(fields{i});
+
           end
 
         end
@@ -123,7 +130,7 @@ classdef File
 
       obj = obj.create_rel_path();
       obj = obj.get_required_entity_from_schema();
-      obj = obj.get_entity_order_from_schema();
+      obj = obj.reorder_entities();
 
     end
 
@@ -162,22 +169,22 @@ classdef File
         obj.relative_pth = fullfile(obj.relative_pth, ['ses-' obj.entities.ses]);
       end
 
-      if ~isempty(obj.schema)
-        datatypes = obj.schema.return_datatypes_for_suffix(obj.suffix);
-        if numel(datatypes) == 1
-          obj.relative_pth = fullfile(obj.relative_pth, datatypes{1});
-        end
+      if isempty(obj.modality)
+        obj = get_modality_from_schema(obj);
       end
+      obj.relative_pth = fullfile(obj.relative_pth, obj.modality);
 
     end
 
-    function obj = create_filename(obj, name_spec)
+    function [obj, output] = create_filename(obj, name_spec)
 
       if nargin > 1 && ~isempty(name_spec)
         obj = obj.set_name_spec(name_spec);
       end
 
-      obj.filename = [obj.prefix, obj.concatenate_entities(), '_', obj.suffix, obj.ext];
+      output = [obj.prefix, obj.concatenate_entities(), '_', obj.suffix, obj.ext];
+
+      obj.filename = output;
 
     end
 
@@ -197,7 +204,7 @@ classdef File
       elseif ~isempty(obj.schema)
 
         obj = get_entity_order_from_schema(obj);
-        return
+        order = obj.entity_order;
 
       end
 
@@ -235,7 +242,7 @@ classdef File
       obj = obj.get_modality_from_schema();
 
       [~, required] = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
-                                                                     obj.modality{1});
+                                                                     obj.modality);
 
       obj.required_entities = required;
 
@@ -251,7 +258,7 @@ classdef File
       obj = obj.get_modality_from_schema();
 
       schema_entities = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
-                                                                       obj.modality{1});
+                                                                       obj.modality);
       for i = 1:numel(schema_entities)
         obj.entity_order{i, 1} = schema_entities{i};
       end
@@ -280,6 +287,8 @@ classdef File
                                      obj.tolerant, ...
                                      obj.verbose);
       end
+
+      obj.modality = obj.modality{1};
 
     end
 
