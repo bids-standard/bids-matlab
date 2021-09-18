@@ -1,4 +1,4 @@
-function p = parse_filename(filename, fields, tolerant, verbose)
+function p = parse_filename(filename, fields, tolerant)
   %
   % Split a filename into its building constituents
   %
@@ -11,8 +11,6 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   % :type  filename: string
   % :param fields:   cell of strings of the entities to use for parsing
   % :type  fields:   cell
-  % :param verbose:  ``true`` prints warning to the screen
-  % :type  verbose:  boolean
   %
   % Example::
   %
@@ -55,17 +53,18 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % (C) Copyright 2018 BIDS-MATLAB developers
 
-  if nargin < 3 || isempty(tolerant)
-    tolerant = true;
+  if nargin < 2 || isempty(fields)
+    fields = {};
   end
 
-  if nargin < 4 || isempty(verbose)
-    verbose = false;
+  if nargin < 3 || isempty(tolerant)
+    tolerant = true;
   end
 
   fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
 
   filename = bids.internal.file_utils(filename, 'filename');
+  p.filename = filename;
 
   % identify an eventual prefix to the file
   % only look for comes before the first "sub-"
@@ -78,39 +77,13 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   end
   basename = filename(pos:end);
 
-  % -Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
-  [parts, dummy] = regexp(basename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
-  p.filename = filename;
+  % Identify extention
+  [basename, p.ext] = strtok(basename, '.');
 
-  % -Identify the suffix and extension of this file
-  [p.suffix, p.ext] = strtok(parts{end}, '.');
-
-  % -Separate the entity from the label for each pair identified above
-  for i = 1:numel(parts) - 1
-    try
-      [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match'); %#ok<ASGLU>
-      p.entities.(d{1}) = d{2};
-    catch
-      msg = sprintf(['Entity-label pair %s of file %s is not valid.\n', ...
-                     'This could also be to a suffix with an extra _'], parts{i}, filename);
-      if tolerant
-        msg = sprintf('%s\nThis file will be ignored', msg);
-      end
-
-      bids.internal.error_handling(mfilename, 'problematicEntityLabelPair', ...
-                                   msg, ...
-                                   tolerant, ...
-                                   verbose);
-
-      if tolerant
-        p = struct([]);
-        return
-      end
-    end
-  end
+  p = parse_entity_label_pairs(p, basename, tolerant);
 
   % Extra fields can be added to the structure and ordered specifically.
-  if nargin > 1
+  if ~isempty(fields)
     for i = 1:numel(fields)
       p.entities = bids.internal.add_missing_field(p.entities, fields{i});
     end
@@ -119,9 +92,89 @@ function p = parse_filename(filename, fields, tolerant, verbose)
       p.entities = orderfields(p.entities, fields);
     catch
       msg = sprintf('Ignoring file %s not matching template.', filename);
-      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, verbose);
+      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, true);
       p = struct([]);
     end
+  end
+
+end
+
+function p = parse_entity_label_pairs(p, basename, tolerant)
+
+  p.entities = struct();
+  p.suffix = '';
+
+  % -Identify all the BIDS entity-label pairs present in the filename (delimited by "_")
+  [parts, dummy] = regexp(basename, '(?:_)+', 'split', 'match'); %#ok<ASGLU>
+
+  % Separate the entity from the label for each pair identified above
+  for i = 1:numel(parts)
+
+    try
+
+      if isempty(parts{i})
+        error_id = 'emptyEntity';
+        error('empty entity');
+      end
+
+      [d, dummy] = regexp(parts{i}, '(?:\-)+', 'split', 'match');
+
+      switch size(dummy, 2)
+
+        case 0 % no - in entity, may be suffix
+          if i ~= numel(parts)
+            error_id = 'missingDash';
+            error('entity does not contain ''-''');
+          end
+          p.suffix = d{1};
+
+        case 1 % normal entity
+          if isempty(d{1})
+            error_id = 'emptyEntity';
+            error('entity key is empty');
+          end
+
+          if isempty(d{2})
+            error_id = 'emptyLabel';
+            error('entity label is empty');
+          end
+
+          for j = 1:2
+            m = regexp(d{j}, '[^a-zA-Z0-9]', 'match');
+            if ~isempty(m)
+              error_id = 'invalidChar';
+              error('entity and label must be alphanumeric');
+            end
+          end
+
+          p.entities.(d{1}) = d{2};
+
+        otherwise
+          error_id = 'tooManyDashes';
+          error('entity contains several ''-''');
+
+      end
+
+    catch ME
+
+      msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s.', ...
+                    parts{i}, p.filename, ME.message);
+      if tolerant
+        msg = sprintf('%s\n\tThis file will be ignored.', msg);
+      end
+
+      bids.internal.error_handling(mfilename, error_id, ...
+                                   msg, ...
+                                   tolerant, ...
+                                   true);
+
+      if tolerant
+        p = struct([]);
+        return
+      end
+
+    end
+
   end
 
 end

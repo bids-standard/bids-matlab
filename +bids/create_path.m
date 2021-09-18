@@ -11,6 +11,9 @@ function pth = create_path(filename)
   pth = '';
 
   p = bids.internal.parse_filename(filename);
+  if isempty(p)
+    return
+  end
 
   if isfield(p.entities, 'sub')
     pth = ['sub-' p.entities.sub];

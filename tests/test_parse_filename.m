@@ -6,19 +6,40 @@ function test_suite = test_parse_filename %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_parse_filename_invalid_name()
+function test_parse_filename_warnings()
+
+  if is_octave()
+    return
+  end
 
   fields = {};
   tolerant = true;
   verbose = true;
 
-  filename = 'sub-01_T1w_trim.nii';
-  assertWarning(@()bids.internal.parse_filename(filename, fields, tolerant, verbose), ...
-                'parse_filename:problematicEntityLabelPair');
+  filename_error = {
+                    {'_a_'; ...
+                     'sub-01_-02_T1w.nii'},                 'emptyEntity'; ...
+                    {'sub-01_ses-_T1w.nii'},                'emptyLabel'; ...
+                    {'sub-01-trim_T1w.nii'},                'tooManyDashes'; ...
+                    {'test__suffix.nii'; ...
+                     'sub-01_T1w_trim.nii'; ...
+                     'sub-01_ses-01_run_acq-1pt0_T1w.nii'}, 'missingDash'; ...
+                    {'sub-01_s?-01_T1w.nii'; ...
+                     'sub-01_ses-b!_T1w.nii'},              'invalidChar'};
+  % the invalid characters test still needs to be able to handle "%" on Octave
 
-  p = bids.internal.parse_filename(filename, fields, tolerant, false);
+  for i = 1:size(filename_error, 1)
+    for j = 1:numel(filename_error{i, 1})
 
-  assertEqual(p, struct([]));
+      assertWarning(@()bids.internal.parse_filename(filename_error{i, 1}{j}, fields, tolerant), ...
+                    ['parse_filename:' filename_error{i, 2}]);
+
+      p = bids.internal.parse_filename(filename_error{i, 1}{j}, fields, tolerant);
+
+      assertEqual(p, struct([]));
+
+    end
+  end
 
 end
 
@@ -30,6 +51,7 @@ function test_parse_filename_participants()
   expected = struct( ...
                     'filename', 'participants.tsv', ...
                     'suffix', 'participants', ...
+                    'entities', struct(), ...
                     'ext', '.tsv', ...
                     'prefix', '');
 

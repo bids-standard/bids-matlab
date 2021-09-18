@@ -71,7 +71,6 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
 
   %% BIDS structure
   % ==========================================================================
-
   % BIDS.dir          -- BIDS directory
   % BIDS.description  -- content of dataset_description.json
   % BIDS.sessions     -- cellstr of sessions
@@ -153,8 +152,15 @@ function BIDS = index_root_directory(BIDS)
   BIDS.root = struct([]);
   for i = 1:size(files_in_root, 1)
     new_file = bids.internal.parse_filename(files_in_root(i, :));
-    [BIDS.root, new_file] = bids.internal.match_structure_fields(BIDS.root, new_file);
-    BIDS.root(i) = new_file;
+    if isempty(new_file)
+      continue
+    end
+    if isempty(BIDS.root)
+      BIDS.root = new_file;
+    else
+      [BIDS.root, new_file] = bids.internal.match_structure_fields(BIDS.root, new_file);
+      BIDS.root(end + 1) = new_file;
+    end
   end
 
 end
@@ -292,10 +298,6 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
   end
 
 end
-
-% --------------------------------------------------------------------------
-%                            HELPER FUNCTIONS
-% --------------------------------------------------------------------------
 
 function BIDS = validate_description(BIDS, tolerant, verbose)
 
