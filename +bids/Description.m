@@ -2,6 +2,16 @@ classdef Description
   %
   % Class to deal with dataset_description files.
   %
+  % USAGE::
+  %
+  %   ds_desc = bids.Description(pipeline, BIDS);
+  %
+  % :param pipeline: pipeline name
+  % :type  pipeline: string
+  % :param BIDS: output from BIDS layout to identify the source dataset
+  %              used when creating a derivatives dataset
+  % :type  BIDS: structure
+  %
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
@@ -25,16 +35,6 @@ classdef Description
     function obj = Description(obj, pipeline, BIDS)
       %
       % Instance constructor
-      %
-      % USAGE::
-      %
-      %  ds_desc = bids.Description(pipeline, BIDS);
-      %
-      % :param pipeline: pipeline name
-      % :type  pipeline: string
-      % :param BIDS: output from BIDS layout to identify the source dataset
-      %              used when creating a derivatives dataset
-      % :type  BIDS: structure
       %
 
       if nargin > 1

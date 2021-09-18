@@ -1,9 +1,18 @@
 function json = derivatives_json(derivative_filename, force)
   %
-  %   Creates dummy content for a given BIDS derivative file.
+  % Creates dummy content for a given BIDS derivative file.
   %
+  % USAGE::
   %
-  %   (C) Copyright 2018 BIDS-MATLAB developers
+  %   json = derivatives_json(derivative_filename, force)
+  %
+  % :param derivative_filename:
+  % :type derivative_filename: string
+  % :param force: when `true` it will force the creation of a json content even
+  %  when the filename contains no BIDS derivatives entity.
+  % :type focce: boolean
+  %
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   %
   %     %% Common
