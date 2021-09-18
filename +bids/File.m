@@ -65,7 +65,7 @@ classdef File
 
   properties
 
-    filename % filename 
+    filename % filename
 
     pth = '' % path
 
@@ -76,9 +76,9 @@ classdef File
     entities = struct() % structure of entity name - label pairs
 
     suffix = '' %
- 
+
     ext = '' %
- 
+
     modality = '' % modality inferred from schema if not specified by user
 
     required_entities % required entities  inferred from schema
@@ -213,7 +213,6 @@ classdef File
       %
       %   file = file.parse([fields = {}]);
       %
-      %
 
       % TODO add possibility to parse according to BIDS schema
       % (will require to extract function from append_to_layout)
@@ -271,11 +270,16 @@ classdef File
       % :param name_spec: specifies how to update the
       % :type name_spec: structure
       %
-      %
-      %
 
       if nargin > 1 && ~isempty(name_spec)
         obj = obj.set_name_spec(name_spec);
+      end
+
+      if isempty(obj.suffix)
+        obj.bidsFile_error('emptySuffix');
+      end
+      if isempty(obj.ext)
+        obj.bidsFile_error('emptyExtension');
       end
 
       output = [obj.prefix, obj.concatenate_entities(), '_', obj.suffix, obj.ext];
@@ -288,9 +292,9 @@ classdef File
       %
       % Reorder entities by one of the following ways:
       %
-      %   - as defined in ``file.entity_order``
       %   - order defined by ``entity_order``
       %   - schema based depending on ``file.use_schema``
+      %   - as defined in ``file.entity_order``
       %
       % USAGE::
       %
@@ -300,29 +304,24 @@ classdef File
       order = obj.entity_order;
 
       if nargin > 1 && ~isempty(entity_order)
-
         order = entity_order;
 
       elseif ~isempty(obj.schema)
-
         obj = get_entity_order_from_schema(obj);
         order = obj.entity_order;
 
       end
 
+      % entities in order are put first:
+      % any other entity not included in order come after in the order they were
       if size(order, 2) > 1
         order = order';
       end
-
       entity_names = fieldnames(obj.entities);
-
       idx = ismember(entity_names, order);
       obj.entity_order = cat(1, order, entity_names(~idx));
 
-      if size(obj.entity_order, 2) > 1
-        obj.entity_order = obj.entity_order';
-      end
-
+      % reorder obj.entities
       tmp = struct();
       for i = 1:numel(obj.entity_order)
         this_entity = obj.entity_order{i};
@@ -362,19 +361,17 @@ classdef File
       %
 
       if isempty(obj.schema)
-        error_missing_schema(obj);
+        obj.bidsFile_error('schemaMissing');
         return
       end
 
       obj = obj.get_modality_from_schema();
-
       if isempty(obj.modality) || iscell(obj.modality)
         return
       end
 
       [~, required] = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
                                                                      obj.modality);
-
       obj.required_entities = required;
 
     end
@@ -387,12 +384,11 @@ classdef File
       %
 
       if isempty(obj.schema)
-        error_missing_schema(obj);
+        obj.bidsFile_error('schemaMissing');
         return
       end
 
       obj = obj.get_modality_from_schema();
-
       if isempty(obj.modality) || iscell(obj.modality)
         return
       end
@@ -402,7 +398,6 @@ classdef File
       for i = 1:numel(schema_entities)
         obj.entity_order{i, 1} = schema_entities{i};
       end
-
       entity_order = obj.entity_order;
 
     end
@@ -415,29 +410,21 @@ classdef File
       %
 
       if isempty(obj.schema)
-        error_missing_schema(obj);
+        obj.bidsFile_error('schemaMissing');
         return
       end
 
       obj.modality = obj.schema.return_datatypes_for_suffix(obj.suffix);
 
       if numel(obj.modality) > 1
-        msg = sprintf(['The suffix %s exist for several modalities: %s.', ...
-                       '\nSpecify which one in name_spec.modality'], ...
-                      obj.suffix, ...
-                      strjoin(obj.modality, ', '));
-        bids.internal.error_handling(mfilename, ...
-                                     'manyModalityForsuffix', ...
-                                     msg, ...
-                                     obj.tolerant, ...
-                                     obj.verbose);
+        obj.bidsFile_error('manyModalityForsuffix');
 
       else
         % convert to char
         obj.modality = obj.modality{1};
-      end
+        modality = obj.modality;
 
-      modality = obj.modality;
+      end
 
     end
 
@@ -457,11 +444,7 @@ classdef File
       entity_names = fieldnames(obj.entities);
 
       if isempty(entity_names)
-        bids.internal.error_handling(mfilename, ...
-                                     'noEntity', ...
-                                     'No entity-label pairs.', ...
-                                     obj.tolerant, ...
-                                     obj.verbose);
+        obj.bidsFile_error('noEntity');
         return
       end
 
@@ -499,17 +482,38 @@ classdef File
         msg = sprintf('Entities ''%s'' cannot not be empty for the suffix ''%s''', ...
                       strjoin(obj.required_entities(missing_required_entity), ', '), ...
                       obj.suffix);
-        bids.internal.error_handling(mfilename, 'requiredEntity', msg, obj.tolerant, obj.verbose);
+        obj.bidsFile_error('requiredEntity', msg);
       end
 
     end
 
-    function error_missing_schema(obj)
-      bids.internal.error_handling(mfilename, ...
-                                   'schemaMissing', ...
-                                   'no schema specified: run file.use_schema()', ...
-                                   obj.tolerant, ...
-                                   obj.verbose);
+    function bidsFile_error(obj, id, msg)
+
+      if nargin < 2
+        msg = '';
+      end
+
+      switch id
+        case 'noEntity'
+          msg = 'No entity-label pairs.';
+
+        case 'schemaMissing'
+          msg = 'no schema specified: run file.use_schema()';
+
+        case 'emptySuffix'
+          msg = 'no suffix specified';
+
+        case 'emptyExtension'
+          msg = 'no extension specified';
+
+        case 'manyModalityForsuffix'
+          msg = sprintf(['The suffix %s exist for several modalities: %s.', ...
+                         '\nSpecify which one in name_spec.modality'], ...
+                        obj.suffix, ...
+                        strjoin(obj.modality, ', '));
+      end
+
+      bids.internal.error_handling(mfilename, id, msg, obj.tolerant, obj.verbose);
     end
 
   end

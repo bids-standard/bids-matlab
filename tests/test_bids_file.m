@@ -342,7 +342,7 @@ function test_error_required_entity()
 
 end
 
-function test_warning_suffix_in_many_modalities()
+function test_error_suffix_in_many_modalities()
   % GIVEN
   name_spec.suffix = 'events';
   name_spec.ext = '.tsv';
@@ -353,6 +353,29 @@ function test_warning_suffix_in_many_modalities()
   % THEN
   assertExceptionThrown(@()bids.File(name_spec, use_schema,  struct(), tolerant), ...
                         'File:manyModalityForsuffix');
+end
+
+function test_error_no_suffix()
+  % GIVEN
+  name_spec.entities = struct('sub', '01', ...
+                              'task', 'faces');
+  use_schema = false;
+  tolerant = false;
+  % THEN
+  assertExceptionThrown(@()bids.File(name_spec, use_schema,  struct(), tolerant), ...
+                        'File:emptySuffix');
+end
+
+function test_error_no_extension()
+  % GIVEN
+  name_spec.suffix = 'bold';
+  name_spec.entities = struct('sub', '01', ...
+                              'task', 'faces');
+  use_schema = false;
+  tolerant = false;
+  % THEN
+  assertExceptionThrown(@()bids.File(name_spec, use_schema,  struct(), tolerant), ...
+                        'File:emptyExtension');
 end
 
 % Fixtures
