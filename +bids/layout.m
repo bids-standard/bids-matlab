@@ -70,7 +70,6 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
 
   %% BIDS structure
   % ==========================================================================
-
   % BIDS.dir          -- BIDS directory
   % BIDS.description  -- content of dataset_description.json
   % BIDS.sessions     -- cellstr of sessions
@@ -299,10 +298,6 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
   end
 
 end
-
-% --------------------------------------------------------------------------
-%                            HELPER FUNCTIONS
-% --------------------------------------------------------------------------
 
 function BIDS = validate_description(BIDS, tolerant, verbose)
 
