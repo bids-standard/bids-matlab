@@ -3,8 +3,6 @@ Function description
 
 .. automodule:: +bids 
 
-.. autofunction:: create_filename
-.. autofunction:: create_path
 .. autofunction:: derivatives_json
 
 .. autofunction:: init

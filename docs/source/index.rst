@@ -17,6 +17,7 @@ To see how to install BIDS-Matlab, please check
    :caption: Content
 
    layout_query
+   file
    function_description
    utility_functions
    schema

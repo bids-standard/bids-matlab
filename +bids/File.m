@@ -1,48 +1,95 @@
 classdef File
   %
-  % Class to deal with BIDS files
+  % Class to deal with BIDS files and to help to create BIDS valid names
   %
   % USAGE::
   %
-  % file = bids.File(input_file, use_schema, name_spec, tolerant, verbose)
+  %   file = bids.File(input_file, use_schema, name_spec, tolerant, verbose);
   %
-  % input_file
-  % use_schema
-  % name_spec
-  % tolerant
-  % verbose
+  % :param input_file:
+  % :type input_file: filename or structure
+  % :param use_schema: default  = ``false``
+  % :type use_schema: boolean
+  % :param name_spec:
+  % :type name_spec: structure
+  % :param tolerant: turns errors into warning; default  = ``true``
+  % :type tolerant: boolean
+  % :param verbose: silences warnings; default  = ``false``
+  % :type verbose: boolean
   %
+  % **Initiliaze with a filename**
   %
+  % EXAMPLE::
+  %
+  %    input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
+  %    file = bids.File(input_file);
+  %
+  % **Initialize with a structure**
+  %
+  % EXAMPLE::
+  %
+  %    input_file = struct('ext', '.nii', ...
+  %                        'suffix', 'T1w', ...
+  %                        'entities', struct('sub', '01', ...
+  %                                           'ses', '02'));
+  %    file = bids.File(input_file);
+  %
+  % **Remove prefixes and add a ``desc-preproc`` entity-label pair**
+  %
+  % EXAMPLE::
+  %
+  %   filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  %   use_schema = false;
+  %
+  %   name_spec.prefix = '';
+  %   name_spec.entities = struct('desc', 'preproc');
+  %
+  %   file = bids.File(filename, use_schema, name_spec);
+  %
+  % **Use the BIDS schema to get entities in the right order**
+  %
+  % EXAMPLE::
+  %
+  %   name_spec.suffix = 'bold';
+  %   name_spec.ext = '.nii';
+  %   name_spec.entities = struct( ...
+  %                               'sub', '01', ...
+  %                               'acq', '1pt5', ...
+  %                               'run', '02', ...
+  %                               'task', 'face recognition');
+  %   use_schema = true;
+  %
+  %   file = bids.File(name_spec, use_schema);
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   properties
+
+    filename % filename 
+
+    pth = '' % path
+
+    relative_pth = '' % path relative to the root of the BIDS dataset
+
+    prefix = '' %
+
+    entities = struct() % structure of entity name - label pairs
+
+    suffix = '' %
+ 
+    ext = '' %
+ 
+    modality = '' % modality inferred from schema if not specified by user
+
+    required_entities % required entities  inferred from schema
+
+    entity_order = {} % entity order inferred from schema
 
     schema
 
     verbose
 
     tolerant
-
-    entity_order = {}
-
-    required_entities
-
-    modality = ''
-
-    pth = ''
-
-    relative_pth = ''
-
-    filename
-
-    prefix = ''
-
-    entities = struct()
-
-    suffix = ''
-
-    ext = ''
 
   end
 
@@ -58,15 +105,7 @@ classdef File
 
     function obj = File(varargin)
       %
-      % USAGE::
-      %
-      % file = bids.File(input_file, use_schema, name_spec, tolerant, verbose)
-      %
-      % input_file
-      % use_schema
-      % name_spec
-      % tolerant
-      % verbose
+      % Constructor
       %
 
       p = inputParser;
@@ -121,6 +160,26 @@ classdef File
     end
 
     function obj = set_name_spec(obj, name_spec)
+      %
+      % Updates attributes ``file.prefix``, ``file.entities``, ``file.suffix``,
+      % ``file.ext``, ``file.modality``
+      %
+      % USAGE::
+      %
+      %   file = file.set_name_spec(name_spec)
+      %
+      % :param name_spec:
+      % :type name_spec: structure
+      %
+      % EXAMPLE::
+      %
+      %   file = bids.File();
+      %   name_spec = struct('ext', '.nii', ...
+      %                      'suffix', 'T1w', ...
+      %                      'entities', struct('sub', '01', ...
+      %                                         'ses', '02'));
+      %   file = file.set_name_spec(name_spec);
+      %
 
       fields = {'prefix', 'entities', 'suffix', 'ext', 'modality'};
 
@@ -145,17 +204,16 @@ classdef File
 
     end
 
-    function obj = use_schema(obj)
-
-      obj.schema = bids.Schema();
-
-      obj = obj.get_required_entity_from_schema();
-      obj = obj.reorder_entities();
-      obj = obj.create_rel_path();
-
-    end
-
     function obj = parse(obj, fields)
+      %
+      % Parse filename and updates attributes
+      % ``file.prefix``, ``file.entities``, ``file.suffix``, ``file.ext``, ``file.modality``
+      %
+      % USAGE::
+      %
+      %   file = file.parse([fields = {}]);
+      %
+      %
 
       % TODO add possibility to parse according to BIDS schema
       % (will require to extract function from append_to_layout)
@@ -166,19 +224,23 @@ classdef File
 
       if ~isempty(obj.filename)
 
-        parts = bids.internal.parse_filename(obj.filename, fields, obj.tolerant);
+        name_spec = bids.internal.parse_filename(obj.filename, fields, obj.tolerant);
 
-        if ~isempty(parts)
-          obj.prefix = parts.prefix;
-          obj.entities = parts.entities;
-          obj.suffix = parts.suffix;
-          obj.ext = parts.ext;
+        if ~isempty(name_spec)
+          obj = obj.set_name_spec(name_spec);
         end
 
       end
     end
 
     function obj = create_rel_path(obj)
+      %
+      % Updates attribute ``file.relative_pth``
+      %
+      % USAGE::
+      %
+      %   file = file.create_rel_path();
+      %
 
       obj.relative_pth = '';
 
@@ -198,6 +260,19 @@ classdef File
     end
 
     function [obj, output] = create_filename(obj, name_spec)
+      %
+      % Updates attribute ``file.filename``. If ``name_spec`` is passed as argument
+      % then the filename will be updated accordingly
+      %
+      % USAGE::
+      %
+      %   [file, filename] = file.create_filename([name_spec]);
+      %
+      % :param name_spec: specifies how to update the
+      % :type name_spec: structure
+      %
+      %
+      %
 
       if nargin > 1 && ~isempty(name_spec)
         obj = obj.set_name_spec(name_spec);
@@ -211,10 +286,16 @@ classdef File
 
     function obj = reorder_entities(obj, entity_order)
       %
-      % reorder entities by one of the following ways
-      %   - as defined in obj.entity_order
-      %   - order defined by entity_order
-      %   - schema based: obj.use_schema
+      % Reorder entities by one of the following ways:
+      %
+      %   - as defined in ``file.entity_order``
+      %   - order defined by ``entity_order``
+      %   - schema based depending on ``file.use_schema``
+      %
+      % USAGE::
+      %
+      %   file = file.reorder_entities(entity_order)
+      %
 
       order = obj.entity_order;
 
@@ -253,7 +334,32 @@ classdef File
 
     end
 
+    %% schema related methods
+
+    function obj = use_schema(obj)
+      %
+      % Loads BIDS schema into instance and tries to update attributes 'modality'
+      % ``file.required_entity``, ``file.entity_order``, ``file.relative_pth``
+      %
+      % USAGE::
+      %
+      %   file = file.use_schema();
+      %
+
+      obj.schema = bids.Schema();
+
+      obj = obj.get_required_entity_from_schema();
+      obj = obj.reorder_entities();
+      obj = obj.create_rel_path();
+
+    end
+
     function [obj, required] = get_required_entity_from_schema(obj)
+      %
+      % USAGE::
+      %
+      %   [file, required_entities] = file.get_required_entity_from_schema()
+      %
 
       if isempty(obj.schema)
         error_missing_schema(obj);
@@ -274,6 +380,11 @@ classdef File
     end
 
     function [obj, entity_order] = get_entity_order_from_schema(obj)
+      %
+      % USAGE::
+      %
+      %   [file, entity_order] = file.get_entity_order_from_schema()
+      %
 
       if isempty(obj.schema)
         error_missing_schema(obj);
@@ -297,6 +408,11 @@ classdef File
     end
 
     function [obj, modality] = get_modality_from_schema(obj)
+      %
+      % USAGE::
+      %
+      %   [file, modality] = file.get_modality_from_schema()
+      %
 
       if isempty(obj.schema)
         error_missing_schema(obj);
@@ -325,7 +441,16 @@ classdef File
 
     end
 
+    %% Things that might go private
+
     function output = concatenate_entities(obj)
+      %
+      % Concatenate entities and checks if there are missing required entities.
+      %
+      % USAGE::
+      %
+      %   concatenated_entities = file.concatenate_entities()
+      %
 
       output = '';
 
@@ -359,6 +484,11 @@ classdef File
     end
 
     function check_required_entities(obj)
+      %
+      % USAGE::
+      %
+      %   file.check_required_entities()
+      %
 
       if isempty(obj.required_entities)
         return
