@@ -325,6 +325,34 @@ function test_bids_file_get_modality_from_schema()
   assertEqual(file.modality, 'anat');
 end
 
+% Errors
+
+function test_error_required_entity()
+  % GIVEN
+  name_spec.suffix = 'bold';
+  name_spec.ext = '.nii';
+  name_spec.entities = struct( ...
+                              'run', '02', ...
+                              'acq', '01');
+  use_schema = true;
+  % THEN
+  assertWarning(@()bids.File(name_spec, use_schema), ...
+                'File:requiredEntity');
+
+end
+
+function test_warning_suffix_in_many_modalities()
+  % GIVEN
+  name_spec.suffix = 'events';
+  name_spec.ext = '.tsv';
+  name_spec.entities = struct('sub', '01', ...
+                              'task', 'faces');
+  use_schema = true;
+  % THEN
+  assertWarning(@()bids.File(name_spec, use_schema), ...
+                'File:manyModalityForsuffix');
+end
+
 % Fixtures
 
 function file = set_up()

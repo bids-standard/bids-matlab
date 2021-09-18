@@ -125,12 +125,11 @@ classdef File
 
     function obj = use_schema(obj)
 
-      obj.schema = bids.schema();
-      obj.schema = obj.schema.load();
+      obj.schema = bids.Schema();
 
-      obj = obj.create_rel_path();
       obj = obj.get_required_entity_from_schema();
       obj = obj.reorder_entities();
+      obj = obj.create_rel_path();
 
     end
 
@@ -241,6 +240,10 @@ classdef File
 
       obj = obj.get_modality_from_schema();
 
+      if isempty(obj.modality) || iscell(obj.modality)
+        return
+      end
+
       [~, required] = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
                                                                      obj.modality);
 
@@ -257,6 +260,10 @@ classdef File
 
       obj = obj.get_modality_from_schema();
 
+      if isempty(obj.modality) || iscell(obj.modality)
+        return
+      end
+
       schema_entities = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
                                                                        obj.modality);
       for i = 1:numel(schema_entities)
@@ -267,7 +274,7 @@ classdef File
 
     end
 
-    function obj = get_modality_from_schema(obj)
+    function [obj, modality] = get_modality_from_schema(obj)
 
       if isempty(obj.schema)
         error_missing_schema(obj);
@@ -278,7 +285,7 @@ classdef File
 
       if numel(obj.modality) > 1
         msg = sprintf(['The suffix %s exist for several modalities: %s.', ...
-                       '\nSpecify which one in p.modality'], ...
+                       '\nSpecify which one in name_spec.modality'], ...
                       obj.suffix, ...
                       strjoin(obj.modality, ', '));
         bids.internal.error_handling(mfilename, ...
@@ -286,9 +293,13 @@ classdef File
                                      msg, ...
                                      obj.tolerant, ...
                                      obj.verbose);
+
+      else
+        % convert to char
+        obj.modality = obj.modality{1};
       end
 
-      obj.modality = obj.modality{1};
+      modality = obj.modality;
 
     end
 
@@ -299,22 +310,19 @@ classdef File
       entity_names = fieldnames(obj.entities);
 
       if isempty(entity_names)
+        bids.internal.error_handling(mfilename, ...
+                                     'noEntity', ...
+                                     'No entity-label pairs.', ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
         return
       end
+
+      obj.check_required_entities();
 
       for iEntity = 1:numel(entity_names)
 
         this_entity = entity_names{iEntity};
-
-        if ~isempty(obj.required_entities) && ...
-                ismember(this_entity, obj.required_entities) && ...
-                ~isfield(obj.entities, this_entity)
-
-          msg = sprintf('The entity %s cannot not be empty for the suffix %s', ...
-                        this_entity, ...
-                        obj.suffix);
-          bids.internal.error_handling(mfilename, 'requiredEntity', msg, obj.tolerant, obj.verbose);
-        end
 
         if isfield(obj.entities, this_entity) && ~isempty(obj.entities.(this_entity))
           thisLabel = bids.internal.camel_case(obj.entities.(this_entity));
@@ -325,6 +333,22 @@ classdef File
 
       % remove lead '_'
       output(1) = [];
+
+    end
+
+    function check_required_entities(obj)
+
+      if isempty(obj.required_entities)
+        return
+      end
+      missing_required_entity = ~ismember(obj.required_entities, fieldnames(obj.entities));
+
+      if any(missing_required_entity)
+        msg = sprintf('Entities ''%s'' cannot not be empty for the suffix ''%s''', ...
+                      strjoin(obj.required_entities(missing_required_entity), ', '), ...
+                      obj.suffix);
+        bids.internal.error_handling(mfilename, 'requiredEntity', msg, obj.tolerant, obj.verbose);
+      end
 
     end
 
