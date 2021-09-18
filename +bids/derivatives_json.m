@@ -55,7 +55,7 @@ function json = derivatives_json(derivative_filename, force)
 
     content.Sources = {{'OPTIONAL'}};
     content.RawSources = {{'OPTIONAL'}};
-    content.SpatialReference = {{ ['REQUIRED if no space entity', ...
+    content.SpatialReference = {{ ['REQUIRED if no space entity ', ...
                                    'or if non standard space RECOMMENDED otherwise'] }};
 
     %% entity related content

@@ -3,7 +3,7 @@
 ## Set up virtual environment
 
 ```bash
-virtualenv -p /usr/bin/python3 env
+virtualenv -p /usr/bin/python3.8 env
 source env/bin/activate
 
 pip install -r requirements.txt
