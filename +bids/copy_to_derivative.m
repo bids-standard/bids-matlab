@@ -100,8 +100,7 @@ function copy_to_derivative(varargin)
     mkdir(derivatives_folder);
   end
 
-  % Creating / loading description
-  ds_desc = bids.Description();
+  ds_desc = bids.Description(p.Results.pipeline_name, BIDS);
 
   % Incase we are copying again to the output folder, we append that info to the
   % description otherwise we create a bran new dataset description for

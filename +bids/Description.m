@@ -32,19 +32,19 @@ classdef Description
 
   methods
 
-    function obj = Description(obj, pipeline, BIDS)
+    function obj = Description(pipeline, BIDS)
       %
       % Instance constructor
       %
 
-      if nargin > 1
+      if nargin > 0
         obj.is_derivative = true;
         if ~isempty(pipeline)
           obj.pipeline = pipeline;
         end
       end
 
-      if nargin > 2 && ~isempty(BIDS)
+      if nargin > 1 && ~isempty(BIDS)
         obj.source_description = BIDS.description;
       end
 
@@ -56,10 +56,10 @@ classdef Description
                            'Acknowledgements', '', ...
                            'HowToAcknowledge', '', ...
                            'DatasetDOI', '', ...
-                           'HEDVersion', '');
-      obj.content.Funding = {};
-      obj.content.Authors = {};
-      obj.content.ReferencesAndLinks = {};
+                           'HEDVersion', '', ...
+                           'Funding', {{}}, ...
+                           'Authors', {{}}, ...
+                           'ReferencesAndLinks', {{}});
 
       obj = set_derivative(obj);
 

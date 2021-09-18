@@ -6,6 +6,65 @@ function test_suite = test_copy_to_derivative %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_copy_to_derivative_GeneratedBy()
+
+  [BIDS, out_path, ~, cfg] = fixture('qmri_vfa');
+
+  filters =  struct('modality', 'anat');
+
+  pipeline_name = 'SPM12';
+
+  bids.copy_to_derivative(BIDS, ...
+                          pipeline_name, ...
+                          out_path, ...
+                          filters, ...
+                          'force', true, ...
+                          'unzip', false, ...
+                          'verbose', cfg.verbose);
+
+  BIDS = bids.layout(fullfile(out_path, 'SPM12'));
+
+  assertEqual(BIDS.description.GeneratedBy.Name, 'SPM12');
+
+  teardown(out_path);
+
+end
+
+function test_copy_to_derivative_basic()
+
+  [BIDS, out_path, filters, cfg] = fixture('qmri_tb1tfl');
+
+  pipeline_name = 'bids-matlab';
+  unzip = false;
+  verbose = cfg.verbose;
+
+  bids.copy_to_derivative(BIDS, pipeline_name, ...
+                          out_path, ...
+                          filters, ...
+                          'unzip', unzip, ...
+                          'verbose', verbose);
+
+  BIDSder = bids.layout(fullfile(out_path, pipeline_name));
+  assertEqual(BIDSder.description.GeneratedBy.Name, 'bids-matlab');
+
+  % force copy
+  force = true;
+  skip_dependencies = false;
+  use_schema = false;
+  verbose = cfg.verbose;
+
+  bids.copy_to_derivative(BIDS, pipeline_name, ...
+                          out_path, ...
+                          filters, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
+
+  teardown(out_path);
+
+end
+
 function test_copy_to_derivative_unzip
 
   [BIDS, out_path, filters, cfg] = fixture('MoAEpilot');
@@ -30,38 +89,6 @@ function test_copy_to_derivative_unzip
 
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
-
-  teardown(out_path);
-
-end
-
-function test_copy_to_derivative_basic()
-
-  [BIDS, out_path, filters, cfg] = fixture('qmri_tb1tfl');
-
-  pipeline_name = 'bids-matlab';
-  unzip = false;
-  verbose = cfg.verbose;
-
-  bids.copy_to_derivative(BIDS, pipeline_name, ...
-                          out_path, ...
-                          filters, ...
-                          'unzip', unzip, ...
-                          'verbose', verbose);
-
-  % force copy
-  force = true;
-  skip_dependencies = false;
-  use_schema = false;
-  verbose = cfg.verbose;
-
-  bids.copy_to_derivative(BIDS, pipeline_name, ...
-                          out_path, ...
-                          filters, ...
-                          'unzip', unzip, ...
-                          'force', force, ...
-                          'skip_dep', skip_dependencies, ...
-                          'verbose', verbose);
 
   teardown(out_path);
 
@@ -193,6 +220,8 @@ function [BIDS, out_path, filters, cfg] = fixture(dataset)
 
       gzip(fullfile(BIDS, 'sub-01', 'func', 'sub-01_task-auditory_bold.nii'));
       delete(fullfile(BIDS, 'sub-01', 'func', 'sub-01_task-auditory_bold.nii'));
+
+    otherwise
 
   end
 
