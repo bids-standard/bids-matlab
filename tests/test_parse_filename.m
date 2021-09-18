@@ -6,7 +6,11 @@ function test_suite = test_parse_filename %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_parse_filename_problematic_errors()
+function test_parse_filename_warnings()
+
+  if is_octave()
+    return
+  end
 
   fields = {};
   tolerant = true;
