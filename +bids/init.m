@@ -4,7 +4,7 @@ function init(varargin)
   %
   % USAGE::
   %
-  %   init(pth, folders, is_derivative, is_datalad_ds)
+  %   bids.init(pth, folders, is_derivative, is_datalad_ds)
   %
   % :param pth: directory where to create the dataset
   % :type  pth: string
@@ -57,9 +57,8 @@ function init(varargin)
   copyfile(src, fullfile(p.Results.pth, 'README'));
 
   %% dataset_description
-  ds_desc = bids.dataset_description;
-  ds_desc = ds_desc.generate();
-  ds_desc.is_derivative =  p.Results.is_derivative;
+  ds_desc = bids.Description();
+  ds_desc.is_derivative = p.Results.is_derivative;
   ds_desc = ds_desc.set_derivative;
   ds_desc.write(p.Results.pth);
 

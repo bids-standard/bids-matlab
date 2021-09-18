@@ -20,8 +20,7 @@ function pth = create_path(filename)
     pth = [pth, filesep, 'ses-', p.entities.ses];
   end
 
-  schema = bids.schema();
-  schema = schema.load();
+  schema = bids.Schema();
   datatypes = schema.return_datatypes_for_suffix(p.suffix);
   if numel(datatypes) == 1
     pth = [pth, filesep, datatypes{1}];

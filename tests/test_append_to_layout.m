@@ -175,8 +175,7 @@ function [subject, modality, schema, previous] = setUp(modality, use_schema)
     use_schema = true;
   end
 
-  schema = bids.schema;
-  schema = schema.load(use_schema);
+  schema = bids.Schema(use_schema);
   schema.verbose = true;
 
   subject = struct( ...

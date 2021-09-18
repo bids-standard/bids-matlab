@@ -17,13 +17,12 @@ function [filename, pth, json] = create_filename(p, file)
   %   - ``p.entities``      - structure listing the entity-label pairs to compose the filename
   %   - ``p.prefix``        - prefex to prepend (default: ``p.prefix = ''``)
   %   - ``p.use_schema``    - bollean to check required entities for a given suffix,
-  %                           and reorder entities according to the BIDS schema.
+  %     and reorder entities according to the BIDS schema.
   %   - ``p.entity_order``  - user specified order in which to arranges the entities
-  %                           in the filename. Overrides ``p.use_schema``.
+  %     in the filename. Overrides ``p.use_schema``.
   %   - ``p.modality``      - string to define the modality of the file
-  %                           (example: ``p.modality = 'meg``). If ``p.use_schema == true``
-  %                           the function will try to guess it from the
-  %                           bids schema.
+  %     (example: ``p.modality = 'meg``). If ``p.use_schema == true``
+  %     the function will try to guess it from the bids schema.
   %
   % If no entity order is specified and the filename creation is not based on the BIDS
   % schema, then the filename will be created by concatenating the entity-label pairs
@@ -178,8 +177,7 @@ end
 
 function [p] = get_modality_from_schema(p)
 
-  schema = bids.schema();
-  schema = schema.load(p.use_schema);
+  schema = bids.Schema(p.use_schema);
 
   p.modality = schema.return_datatypes_for_suffix(p.suffix);
 
@@ -196,8 +194,7 @@ end
 
 function [p, required_entities] = get_entity_order_from_schema(p)
 
-  schema = bids.schema();
-  schema = schema.load(p.use_schema);
+  schema = bids.Schema(p.use_schema);
 
   [schema_entities, required_entities] = schema.return_entities_for_suffix_modality(p.suffix, ...
                                                                                     p.modality{1});

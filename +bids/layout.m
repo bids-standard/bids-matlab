@@ -108,8 +108,7 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
     error('No subjects found in BIDS directory.');
   end
 
-  schema = bids.schema();
-  schema = schema.load(use_schema);
+  schema = bids.Schema(use_schema);
   schema.verbose = verbose;
 
   for iSub = 1:numel(subjects)

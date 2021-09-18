@@ -101,7 +101,7 @@ function copy_to_derivative(varargin)
   end
 
   % Creating / loading description
-  ds_desc = bids.dataset_description;
+  ds_desc = bids.Description();
 
   % Incase we are copying again to the output folder, we append that info to the
   % description otherwise we create a bran new dataset description for
@@ -113,7 +113,7 @@ function copy_to_derivative(varargin)
     ds_desc = ds_desc.append('GeneratedBy', struct('Name', p.Results.pipeline_name));
 
   else
-    ds_desc = ds_desc.generate(p.Results.pipeline_name, BIDS);
+    ds_desc = bids.Description(p.Results.pipeline_name, BIDS);
 
   end
 
@@ -140,7 +140,7 @@ end
 
 function copy_participants_tsv(BIDS, derivatives_folder, p)
   %
-  % Very "brutal" approach wehere we copy the whole file
+  % Very "brutal" approach where we copy the whole file
   %
   % TODO:
   %   -  if only certain subjects are copied only copy those entries from the TSV

@@ -8,10 +8,10 @@
 %   copy_to_derivative  - Copy selected data from BIDS layout to given derivatives folder,
 %   create_filename     - Creates a BIDS compatible filename
 %   create_path         - Creates a relative path based on the content of a BIDS filename.
-%   dataset_description - Class to deal with dataset_description files.
+%   Description - Class to deal with dataset_description files.
 %   init                - Initialize dataset with README, description, folder structure...
 %   derivatives_json    - Creates dummy content for a given BIDS derivative file.
-%   schema              - Class to interact with the BIDS schema
+%   Schema              - Class to interact with the BIDS schema
 %
 %   util.jsondecode - Decode JSON-formatted file
 %   util.jsonencode - Encode data to JSON-formatted file

@@ -9,12 +9,8 @@ Function description
 
 .. autofunction:: init
 
-.. autoclass:: dataset_description
+.. autoclass:: Description
     :members:
-    
-.. autoattribute:: dataset_description.content
-
-.. automethod:: dataset_description.generate
 
 .. autofunction:: copy_to_derivative
 

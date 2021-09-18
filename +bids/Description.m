@@ -1,4 +1,4 @@
-classdef dataset_description
+classdef Description
   %
   % Class to deal with dataset_description files.
   %
@@ -10,23 +10,31 @@ classdef dataset_description
 
   properties
 
-    content % this is a test
+    content % dataset description content
 
-    is_derivative = false % this too
+    is_derivative = false % boolean
 
-    pipeline = '' %
+    pipeline = '' % name of the pipeline used to generate this derivative dataset
 
-    source_description = struct([]) %
+    source_description = struct([])
 
   end
 
   methods
 
-    function obj = generate(obj, pipeline, BIDS)
+    function obj = Description(obj, pipeline, BIDS)
+      %
+      % Instance constructor
       %
       % USAGE::
       %
-      %  ds_desc = ds_desc.generate(pipeline, BIDS)
+      %  ds_desc = bids.Description(pipeline, BIDS);
+      %
+      % :param pipeline: pipeline name
+      % :type  pipeline: string
+      % :param BIDS: output from BIDS layout to identify the source dataset
+      %              used when creating a derivatives dataset
+      % :type  BIDS: structure
       %
 
       if nargin > 1
@@ -58,6 +66,11 @@ classdef dataset_description
     end
 
     function obj = set_derivative(obj)
+      %
+      % USAGE::
+      %
+      %  ds_desc = ds_desc.set_derivative();
+      %
 
       if obj.is_derivative
 
@@ -87,6 +100,13 @@ classdef dataset_description
     end
 
     function obj = set_field(obj, varargin)
+      %
+      % USAGE::
+      %
+      %  ds_desc = ds_desc.set_field(key, value);
+      %  ds_desc = ds_desc.set_field(struct(key1, value1, ...
+      %                                     key2, value2));
+      %
 
       if numel(varargin) == 2
         key = varargin{1};
@@ -105,6 +125,13 @@ classdef dataset_description
     end
 
     function obj = append(obj, key, value)
+      %
+      % Appends an item to the dataset description content.
+      %
+      % USAGE::
+      %
+      %  ds_desc = ds_desc.append(key, value);
+      %
 
       if ~isfield(obj.content, key)
         new_value = value;
@@ -131,6 +158,13 @@ classdef dataset_description
     end
 
     function write(obj, folder)
+      %
+      % Writes json file of the dataset description.
+      %
+      % USAGE::
+      %
+      %  ds_desc.write([folder = pwd]);
+      %
 
       if nargin < 2 || isempty(folder)
         folder = pwd;
