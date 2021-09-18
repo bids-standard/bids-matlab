@@ -1,5 +1,8 @@
 function status = keep_file_for_query(file_struct, options)
   %
+  % USAGE::
+  % 
+  %   status = keep_file_for_query(file_struct, options)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 

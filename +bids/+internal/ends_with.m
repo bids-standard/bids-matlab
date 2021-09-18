@@ -3,16 +3,19 @@ function res = ends_with(str, pattern)
   % Checks id character array 'str' ends with 'pat'
   %
   % USAGE::
-  %         res = bids.internal.endsWith(str, pat)
   %
-  % str        - character array
-  % pat        - character array
+  %   res = bids.internal.endsWith(str, pattern)
   %
-  % __________________________________________________________________________
+  % :param str: 
+  % :type str: character array
+  % :param pattern: 
+  % :type pattern: character array
+  %
   %
   % Based on the equivalent function from SPM12
-  % __________________________________________________________________________
+  % 
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   res = false;

@@ -33,11 +33,11 @@ function varargout = file_utils(str, varargin)
   %
   % opt_val    - string of new value for feature
   %
-  % __________________________________________________________________________
   %
   % Based on spm_file.m and spm_select.m from SPM12.
-  % __________________________________________________________________________
+  %
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %#ok<*AGROW>
