@@ -2,6 +2,17 @@ classdef File
   %
   % Class to deal with BIDS files
   %
+  % USAGE::
+  %
+  % file = bids.File(input_file, use_schema, name_spec, tolerant, verbose)
+  %
+  % input_file
+  % use_schema
+  % name_spec
+  % tolerant
+  % verbose
+  %
+  %
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
@@ -39,13 +50,24 @@ classdef File
     default_filename = ''
     default_name_spec = struct([])
     default_tolerant = true
-    default_verbose = true
+    default_verbose = false
     default_use_schema = false
   end
 
   methods
 
     function obj = File(varargin)
+      %
+      % USAGE::
+      %
+      % file = bids.File(input_file, use_schema, name_spec, tolerant, verbose)
+      %
+      % input_file
+      % use_schema
+      % name_spec
+      % tolerant
+      % verbose
+      %
 
       p = inputParser;
 

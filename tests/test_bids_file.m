@@ -335,9 +335,10 @@ function test_error_required_entity()
                               'run', '02', ...
                               'acq', '01');
   use_schema = true;
+  tolerant = false;
   % THEN
-  assertWarning(@()bids.File(name_spec, use_schema), ...
-                'File:requiredEntity');
+  assertExceptionThrown(@()bids.File(name_spec, use_schema, struct(), tolerant), ...
+                        'File:requiredEntity');
 
 end
 
@@ -348,9 +349,10 @@ function test_warning_suffix_in_many_modalities()
   name_spec.entities = struct('sub', '01', ...
                               'task', 'faces');
   use_schema = true;
+  tolerant = false;
   % THEN
-  assertWarning(@()bids.File(name_spec, use_schema), ...
-                'File:manyModalityForsuffix');
+  assertExceptionThrown(@()bids.File(name_spec, use_schema,  struct(), tolerant), ...
+                        'File:manyModalityForsuffix');
 end
 
 % Fixtures
