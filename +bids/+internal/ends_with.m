@@ -6,14 +6,14 @@ function res = ends_with(str, pattern)
   %
   %   res = bids.internal.endsWith(str, pattern)
   %
-  % :param str: 
+  % :param str:
   % :type str: character array
-  % :param pattern: 
+  % :param pattern:
   % :type pattern: character array
   %
   %
   % Based on the equivalent function from SPM12
-  % 
+  %
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
   % (C) Copyright 2018 BIDS-MATLAB developers
