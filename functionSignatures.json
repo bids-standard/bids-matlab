@@ -5,7 +5,27 @@
 				"name": "root",
 				"kind": "required",
 				"type": "folder"
-			}
+			},
+			{
+				"name": "use_schema",
+				"kind": "positional",
+				"type": "boolean"
+			},			
+			{
+				"name": "index_derivatives",
+				"kind": "positional",
+				"type": "boolean"
+			},
+			{
+				"name": "tolerant",
+				"kind": "positional",
+				"type": "boolean"
+			},		
+			{
+				"name": "verbose",
+				"kind": "positional",
+				"type": "boolean"
+			}				
 		]
 	},
 	"bids.query": {
@@ -20,7 +40,7 @@
 				"kind": "required",
 				"type": [
 					"char",
-					"choices={'data','metadata','sessions','subjects','runs','tasks','types','modalities'}"
+					"choices={'data','metadata','metadata','sessions','prefixes','extensions','subjects','runs','tasks','types','modalities'}"
 				]
 			}
 		]
