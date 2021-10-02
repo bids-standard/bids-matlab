@@ -4,7 +4,11 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   %
   % USAGE::
   %
-  %   BIDS = bids.layout(root = pwd, use_schema = false, tolerant = true, verbose = false+)
+  %   BIDS = bids.layout(root = pwd, ...
+  %                      use_schema = false, ...
+  %                      index_derivatives = false, ...
+  %                      tolerant = true, ...
+  %                      verbose = false+)
   %
   % :param root:       directory of the dataset formated according to BIDS [default: ``pwd``]
   % :type  root:       string
@@ -15,7 +19,8 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   %                    If a folder path is provided, then the schema contained
   %                    in that folder will be used for parsing.
   % :type  use_schema: boolean
-  % :param index_derivatives:
+  % :param index_derivatives: if ``true`` this will index the content of the
+  %                           any ``derivatives`` folder in the BIDS dataset.
   % :type  index_derivatives: boolean
   % :param tolerant: Set to ``true`` to turn validation errors into warnings
   %                  [default: ``true``]

@@ -2,6 +2,13 @@ classdef Schema
   %
   % Class to interact with the BIDS schema
   %
+  % USAGE::
+  %
+  %   schema = bids.Schema(use_schema)
+  %
+  % use_schema: boolean
+  %
+  %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   properties
@@ -19,12 +26,7 @@ classdef Schema
 
     function obj = Schema(use_schema)
       %
-      %
-      % USAGE::
-      %
-      %   schema = bids.Schema(use_schema)
-      %
-      % use_schema: boolean
+      % Constructor
       %
 
       obj.content = [];

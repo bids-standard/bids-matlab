@@ -17,6 +17,7 @@ function metalist = get_meta_list(filename, pattern)
   %
   %
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   if nargin == 1

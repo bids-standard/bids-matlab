@@ -5,18 +5,20 @@ function [sts, msg] = validate(root)
   %
   %         [sts, msg] = bids.validate(root)
   %
-  % root    - directory formatted according to BIDS [Default: pwd]
-  % sts     - 0 if successful
-  % msg     - warning and error messages
+  % :param root: directory formatted according to BIDS [Default: pwd]
+  % :type strig:
+  %
+  % :returns:
+  %
+  % - :sts: ``0`` if successful
+  % - :msg: warning and error messages
   %
   % Command line version of the BIDS-Validator:
-  %   https://github.com/bids-standard/bids-validator
+  % https://github.com/bids-standard/bids-validator
   %
   % Web version:
-  %   https://bids-standard.github.io/bids-validator/
+  % https://bids-standard.github.io/bids-validator/
   %
-  % See also:
-  % bids
   %
   %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging

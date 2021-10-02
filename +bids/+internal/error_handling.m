@@ -1,5 +1,20 @@
 function error_handling(varargin)
   %
+  % USAGE::
+  %
+  %     error_handling(function_name, id, msg, tolerant, verbose)
+  %
+  % :param function_name: default = ``bidsMatlab``
+  % :type function_name:
+  % :param id: default = ``unspecified``
+  % :type id: string
+  % :param msg: default = ``unspecified``
+  % :type msg: string
+  % :param tolerant:
+  % :type tolerant: boolean
+  % :param verbose:
+  % :type verbose:  boolean
+  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   default_function_name = 'bidsMatlab';

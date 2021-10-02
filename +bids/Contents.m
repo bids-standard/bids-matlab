@@ -6,9 +6,8 @@
 %   validate            - BIDS Validator
 %   report              - Create a short summary of the acquisition parameters of a BIDS dataset
 %   copy_to_derivative  - Copy selected data from BIDS layout to given derivatives folder,
-%   create_filename     - Creates a BIDS compatible filename
-%   create_path         - Creates a relative path based on the content of a BIDS filename.
-%   Description - Class to deal with dataset_description files.
+%   File                - Class to handle BIDS filenames.
+%   Description         - Class to deal with dataset_description files.
 %   init                - Initialize dataset with README, description, folder structure...
 %   derivatives_json    - Creates dummy content for a given BIDS derivative file.
 %   Schema              - Class to interact with the BIDS schema

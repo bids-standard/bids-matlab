@@ -3,6 +3,10 @@ function sub_idx = return_subject_index(BIDS, filename)
   % For a given filename, it returns the subject index in BIDS structure so
   % that: ``BIDS.subjects(sub_idx)``
   %
+  % USAGE::
+  %
+  %   sub_idx = return_subject_index(BIDS, filename)
+  %
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 

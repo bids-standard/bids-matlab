@@ -30,13 +30,7 @@ function test_derivatives_json_force()
 
   json = bids.derivatives_json(filename, force);
 
-  content = struct('Description', 'RECOMMENDED');
-  content.Sources = {{'OPTIONAL'}};
-  content.RawSources = {{'OPTIONAL'}};
-  content.SpatialReference = {{ ['REQUIRED if no space entity', ...
-                                 'or if non standard space RECOMMENDED otherwise'] }};
-
-  expected.content = content;
+  expected.content = expected_content();
   expected.filename = 'sub-01_task-faceRecognition_bold.json';
 
   assertEqual(json, expected);
@@ -49,11 +43,7 @@ function test_derivatives_json_preproc()
 
   json = bids.derivatives_json(filename);
 
-  content = struct('Description', 'RECOMMENDED');
-  content.Sources = {{'OPTIONAL'}};
-  content.RawSources = {{'OPTIONAL'}};
-  content.SpatialReference = {{ ['REQUIRED if no space entity', ...
-                                 'or if non standard space RECOMMENDED otherwise'] }};
+  content = expected_content();
 
   content.Resolution = {{ struct('hi', 'REQUIRED if "res" entity') }};
   content.Density = {{ struct('lo', 'REQUIRED if "den" entity') }};
@@ -72,11 +62,7 @@ function test_derivatives_json_segmentation()
 
   json = bids.derivatives_json(filename);
 
-  content = struct('Description', 'RECOMMENDED');
-  content.Sources = {{'OPTIONAL'}};
-  content.RawSources = {{'OPTIONAL'}};
-  content.SpatialReference = {{ ['REQUIRED if no space entity', ...
-                                 'or if non standard space RECOMMENDED otherwise'] }};
+  content = expected_content();
   content.Manual = {{'OPTIONAL'}};
   content.Atlas = {{'OPTIONAL'}};
 
@@ -94,11 +80,8 @@ function test_derivatives_json_mask()
 
   json = bids.derivatives_json(filename);
 
-  content = struct('Description', 'RECOMMENDED');
-  content.Sources = {{'OPTIONAL'}};
+  content = expected_content();
   content.RawSources = {{'REQUIRED'}};
-  content.SpatialReference = {{ ['REQUIRED if no space entity', ...
-                                 'or if non standard space RECOMMENDED otherwise'] }};
   content.Atlas = {{'OPTIONAL'}};
   content.Type = {{'OPTIONAL'}};
 
@@ -107,5 +90,15 @@ function test_derivatives_json_mask()
 
   assertEqual(json.filename, expected.filename);
   assertEqual(json.content, expected.content);
+
+end
+
+function content = expected_content()
+
+  content = struct('Description', 'RECOMMENDED');
+  content.Sources = {{'OPTIONAL'}};
+  content.RawSources = {{'OPTIONAL'}};
+  content.SpatialReference = {{ ['REQUIRED if no space entity ', ...
+                                 'or if non standard space RECOMMENDED otherwise'] }};
 
 end
