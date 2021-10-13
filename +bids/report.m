@@ -37,8 +37,8 @@ function report(varargin)
   % - add a dataset description (ethics, grant, scanner details...)
 
   default_BIDS = pwd;
-  default_sub = false;
-  default_ses = false;
+  default_sub = '';
+  default_ses = '';
   default_output_path = '';
   default_read_nifti = true;
   default_verbose = false;
@@ -448,10 +448,10 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
   % -Try to read the relevant NIfTI file to get more info from it
   % --------------------------------------------------------------------------
   if read_gz
-    fprintf(' Opening file - %s.\n\n', filename{1});
+    fprintf(' Opening file - %s.\n\n', filename);
     try
       % read the header of the NIfTI file
-      hdr = spm_vol(filename{1});
+      hdr = spm_vol(filename);
 
       % nb volumes
       acq_param.n_vols  = num2str(numel(hdr));
@@ -474,7 +474,7 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
 
     catch
 
-      msg = sprintf('Could not read the header from file %s.\n', filename{1});
+      msg = sprintf('Could not read the header from file %s.\n', filename);
       bids.internal.error_handling(mfilename, 'cannotReadHeader', msg, true, verbose);
 
     end
@@ -592,6 +592,7 @@ function print_to_output(text, file_id, verbose)
   if verbose && file_id ~= 1
     fprintf(1, text);
   end
+  
 end
 
 function text = add_word_wrap(text)

@@ -17,10 +17,15 @@ function test_report_basic()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = fullfile(pth_bids_example, 'ds000117'); % ds000117 ds001 asl001 synthetic
+  datasets = {'ds000117' 'ds001' 'asl001' 'synthetic'};
 
-  BIDS = bids.layout(BIDS);
+  for i = 1:numel(datasets)
+  
+    BIDS = fullfile(pth_bids_example, datasets{i}); 
 
-  bids.report(BIDS, sub, ses, output_path, 'read_nifti', read_nifti, 'verbose', verbose);
+    BIDS = bids.layout(BIDS);
 
+    bids.report(BIDS, sub, ses, output_path, 'read_nifti', read_nifti, 'verbose', verbose);
+
+  end
 end
