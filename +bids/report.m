@@ -6,14 +6,18 @@ function report(varargin)
   %
   % USAGE::
   %
-  %     bids.report(BIDS, sub, ses, output_path, 'read_nifti', read_nifti, 'verbose', verbose);
+  %     bids.report(BIDS, 
+  %                 'sub' ses
+  %                 'ses', sub
+  %                 'output_path', output_path
+  %                 'read_nifti', read_nifti, 
+  %                 'verbose', verbose);
   %
-  % :param BIDS:  Path to BIDS dataset or output of bids.layout [Default: pwd]
+  % :param BIDS:  Path to BIDS dataset or output of bids.layout [Default = pwd]
   % :type  BIDS:  string or structure
-  % :param sub:   Specifies which the subject label to take as template.
-  %               [Default is the first subject]
+  % :param sub:   Specifies which the subject label to take as template. [Default = '']
   % :type  sub:   string
-  % :param ses:   Specifies which the session label to take as template.
+  % :param ses:   Specifies which the session label to take as template. [Default = '']
   % :type  ses:   string
   % :param output_path:  Folder where the report should be printed. If empty
   %                      (default) then the output is sent to the prompt.
@@ -22,6 +26,9 @@ function report(varargin)
   %                     NIfTI file to get more information. This relies on the
   %                     ``spm_vol.m`` function from SPM.
   % :type  read_nifti:  boolean
+  % :param read_nifti:  If set to ``false`` (default) the function does not 
+  %                     output anything to the prompt.
+  % :type  read_nifti:  boolean  
   %
   %
   % (C) Copyright 2018 BIDS-MATLAB developers
@@ -46,13 +53,13 @@ function report(varargin)
   p = inputParser;
 
   charOrStruct = @(x) ischar(x) || isstruct(x);
+  
   addOptional(p, 'BIDS', default_BIDS, charOrStruct);
-  addOptional(p, 'sub', default_sub, @ischar);
-  addOptional(p, 'ses', default_ses, @ischar);
-  addOptional(p, 'output_path', default_output_path, @ischar);
-
-  %   addOptional(p, 'filter', default_filter, @isstruct);
-
+  
+  addParameter(p, 'sub', default_sub, @ischar);
+  addParameter(p, 'ses', default_ses, @ischar);
+  addParameter(p, 'output_path', default_output_path, @ischar);
+%   addParameter(p, 'filter', default_filter, @isstruct);
   addParameter(p, 'read_nifti', default_read_nifti);
   addParameter(p, 'verbose', default_verbose);
 
