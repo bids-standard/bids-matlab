@@ -20,8 +20,8 @@ function test_report_basic()
   datasets = {'ds000117' 'ds001' 'asl001' 'synthetic'};
 
   for i = 1:numel(datasets)
-  
-    BIDS = fullfile(pth_bids_example, datasets{i}); 
+
+    BIDS = fullfile(pth_bids_example, datasets{i});
 
     BIDS = bids.layout(BIDS);
 

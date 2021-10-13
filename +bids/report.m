@@ -592,7 +592,7 @@ function print_to_output(text, file_id, verbose)
   if verbose && file_id ~= 1
     fprintf(1, text);
   end
-  
+
 end
 
 function text = add_word_wrap(text)
