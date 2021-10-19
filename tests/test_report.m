@@ -9,10 +9,9 @@ end
 function test_report_basic()
 
   output_path = fullfile(fileparts(mfilename('fullpath')), 'output');
-  verbose = false;
+  cfg = set_test_cfg();
 
   pth_bids_example = get_test_data_dir();
-
   datasets = {'ds000117' 'ds001' 'asl001' 'synthetic'};
 
   for i = 1:numel(datasets)
@@ -21,20 +20,16 @@ function test_report_basic()
 
     BIDS = bids.layout(BIDS);
 
-    bids.report(BIDS, 'verbose', verbose);
+    bids.report(BIDS, 'verbose', cfg.verbose);
 
   end
-end  
-  
-  
+end
+
 function test_report_all_param()
 
   read_nifti = false;
   output_path = fullfile(fileparts(mfilename('fullpath')), 'output');
-  verbose = false;
-
-  sub = '';
-  ses = '';
+  cfg = set_test_cfg();
 
   pth_bids_example = get_test_data_dir();
 
@@ -46,8 +41,7 @@ function test_report_all_param()
 
     BIDS = bids.layout(BIDS);
 
-    bids.report(BIDS, 'sub', sub, 'ses', ses, ...
-        'output_path', output_path, 'read_nifti', read_nifti, 'verbose', verbose);
+    bids.report(BIDS, 'output_path', output_path, 'read_nifti', read_nifti, 'verbose', cfg.verbose);
 
   end
 end

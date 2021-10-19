@@ -6,11 +6,11 @@ function report(varargin)
   %
   % USAGE::
   %
-  %     bids.report(BIDS, 
+  %     bids.report(BIDS,
   %                 'sub' ses
   %                 'ses', sub
   %                 'output_path', output_path
-  %                 'read_nifti', read_nifti, 
+  %                 'read_nifti', read_nifti,
   %                 'verbose', verbose);
   %
   % :param BIDS:  Path to BIDS dataset or output of bids.layout [Default = pwd]
@@ -26,9 +26,9 @@ function report(varargin)
   %                     NIfTI file to get more information. This relies on the
   %                     ``spm_vol.m`` function from SPM.
   % :type  read_nifti:  boolean
-  % :param read_nifti:  If set to ``false`` (default) the function does not 
+  % :param read_nifti:  If set to ``false`` (default) the function does not
   %                     output anything to the prompt.
-  % :type  read_nifti:  boolean  
+  % :type  read_nifti:  boolean
   %
   %
   % (C) Copyright 2018 BIDS-MATLAB developers
@@ -44,22 +44,18 @@ function report(varargin)
   % - add a dataset description (ethics, grant, scanner details...)
 
   default_BIDS = pwd;
-  default_sub = '';
-  default_ses = '';
+  default_filter = struct('sub', '', 'ses', '');
   default_output_path = '';
-  default_read_nifti = true;
+  default_read_nifti = false;
   default_verbose = false;
 
   p = inputParser;
 
   charOrStruct = @(x) ischar(x) || isstruct(x);
-  
+
   addOptional(p, 'BIDS', default_BIDS, charOrStruct);
-  
-  addParameter(p, 'sub', default_sub, @ischar);
-  addParameter(p, 'ses', default_ses, @ischar);
   addParameter(p, 'output_path', default_output_path, @ischar);
-%   addParameter(p, 'filter', default_filter, @isstruct);
+  addParameter(p, 'filter', default_filter, @isstruct);
   addParameter(p, 'read_nifti', default_read_nifti);
   addParameter(p, 'verbose', default_verbose);
 
@@ -70,215 +66,215 @@ function report(varargin)
     BIDS = bids.layout(p.Results.BIDS);
   end
 
-  sub = select_subject(BIDS, p);
+  filter = check_filter(BIDS, p);
 
-  [ses, nb_ses] = select_session(BIDS, p, sub);
+  nb_sub = numel(filter.sub);
+  nb_ses = numel(filter.ses);
 
   read_nii = p.Results.read_nifti & exist('spm_vol', 'file') == 2;
 
   file_id = open_output_file(BIDS, p.Results.output_path, p.Results.verbose);
 
-  for iSess = 1:nb_ses
+  for i_sub = 1:nb_sub
 
-    clear filter;
+    this_filter = filter;
+    this_filter.sub = filter.sub{i_sub};
 
-    filter.sub = sub;
+    for i_sess = 1:nb_ses
 
-    if ~isempty(ses)
-      filter.ses = ses{iSess};
+      this_filter.ses = filter.ses{i_sub};
 
       if nb_ses > 1
-        text = sprintf('\n Working on session: %s\n', ses{iSess});
+        text = sprintf('\n Working on session: %s\n', this_filter.ses);
         print_to_output(text, file_id, p.Results.verbose);
       end
 
-    end
+      suffixes = bids.query(BIDS, 'suffixes', this_filter);
 
-    suffixes = bids.query(BIDS, 'suffixes', filter);
+      for iType = 1:numel(suffixes)
 
-    for iType = 1:numel(suffixes)
+        this_filter.suffix = suffixes{iType};
 
-      filter.suffix = suffixes{iType};
+        tasks = bids.query(BIDS, 'tasks', this_filter);
+        this_filter = remove_task_filter(this_filter);
 
-      tasks = bids.query(BIDS, 'tasks', filter);
-      filter = update_filter_with_task_label(BIDS, filter);
+        boilerplate_text = get_boilerplate(suffixes{iType});
 
-      boilerplate_text = get_boilerplate(suffixes{iType});
-
-      switch suffixes{iType}
-
-        % TODO
-        % use schema to identify suffixes
-        case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
-
-          fprintf(file_id, '\nANATOMICAL REPORT\n\n');
-
-          [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
-
-          [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
-          boilerplate_text = replace_placeholders(boilerplate_text, metadata);
-
-          acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
-
-          text = sprintf(boilerplate_text, ...
-                         acq_param.n_slices, ...
-                         acq_param.te, ...
-                         acq_param.fov, ...
-                         acq_param.ms, ...
-                         acq_param.vs);
-
-          print_base_report(file_id, metadata, p.Results.verbose);
-          print_to_output(text, file_id, p.Results.verbose);
+        switch suffixes{iType}
 
           % TODO
-          % should cover all functional suffixes
-        case 'bold'
+          % use schema to identify suffixes
+          case {'T1w' 'inplaneT2' 'T1map' 'FLASH'}
 
-          fprintf(file_id, '\nFUNCTIONAL REPORT\n\n');
+            print_to_output('\nANATOMICAL REPORT\n\n', file_id, p.Results.verbose);
 
-          for iTask = 1:numel(tasks)
-
-            filter.task = tasks{iTask};
-            [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
-
-            [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
-            boilerplate_text = replace_placeholders(boilerplate_text, metadata);
-
-            acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
-
+            [this_filter, nb_runs] = update_filter_with_run_label(BIDS, this_filter);
             acq_param.n_runs = num2str(nb_runs);
 
-            % set run duration
-            %             if ~strcmp(acq_param.tr, '[XXtrXX]') && ...
-            %                     ~strcmp(acq_param.n_vols, '[XXn_volsXX]')
-            %
-            %               acq_param.length = ...
-            %                   num2str(str2double(acq_param.tr) / 1000 * ...
-            %                           str2double(acq_param.n_vols) / 60);
-            %
-            %             end
+            [filename, metadata] = get_filemane_and_metadata(BIDS, this_filter);
+            boilerplate_text = replace_placeholders(boilerplate_text, metadata);
+
+            acq_param = get_acq_param(BIDS, this_filter, read_nii, p.Results.verbose);
 
             text = sprintf(boilerplate_text, ...
-                           acq_param.n_runs, ...
+                           acq_param.n_slices, ...
+                           acq_param.te, ...
+                           acq_param.fov, ...
+                           acq_param.ms, ...
+                           acq_param.vs);
+
+            print_base_report(file_id, metadata, p.Results.verbose);
+            print_to_output(text, file_id, p.Results.verbose);
+
+            % TODO
+            % should cover all functional suffixes
+          case 'bold'
+
+            print_to_output('\nFUNCTIONAL REPORT\n\n', file_id, p.Results.verbose);
+
+            for iTask = 1:numel(tasks)
+
+              this_filter.task = tasks{iTask};
+              [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
+              acq_param.n_runs = num2str(nb_runs);
+
+              [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
+              boilerplate_text = replace_placeholders(boilerplate_text, metadata);
+
+              acq_param = get_acq_param(BIDS, this_filter, read_nii, p.Results.verbose);
+
+              % set run duration
+              %             if ~strcmp(acq_param.tr, '[XXtrXX]') && ...
+              %                     ~strcmp(acq_param.n_vols, '[XXn_volsXX]')
+              %
+              %               acq_param.length = ...
+              %                   num2str(str2double(acq_param.tr) / 1000 * ...
+              %                           str2double(acq_param.n_vols) / 60);
+              %
+              %             end
+
+              text = sprintf(boilerplate_text, ...
+                             acq_param.n_runs, ...
+                             acq_param.n_slices, ...
+                             acq_param.so_str, ...
+                             acq_param.te, ...
+                             acq_param.fov, ...
+                             acq_param.ms, ...
+                             acq_param.vs, ...
+                             acq_param.mb_str, ...
+                             acq_param.pr_str, ...
+                             acq_param.length, ...
+                             acq_param.n_vols);
+
+              print_base_report(file_id, metadata, p.Results.verbose);
+              print_to_output(text, file_id, p.Results.verbose);
+
+            end
+
+            % TODO
+            % should cover all fmap suffixes
+          case 'phasediff'
+
+            print_to_output('\nFIELD MAP REPORT\n\n', file_id, p.Results.verbose);
+
+            [this_filter, nb_runs] = update_filter_with_run_label(BIDS, this_filter);
+            acq_param.n_runs = num2str(nb_runs);
+
+            [filename, metadata] = get_filemane_and_metadata(BIDS, this_filter);
+            boilerplate_text = replace_placeholders(boilerplate_text, metadata);
+
+            acq_param = get_acq_param(BIDS, this_filter, read_nii, p.Results.verbose);
+
+            %           acq_param.for = sprintf('for %i runs of %s, ', nb_runs, this_task);
+
+            acq_param.for = 'TODO';
+
+            text = sprintf(boilerplate_text, ...
+                           acq_param.n_slices, ...
+                           acq_param.te, ...
+                           acq_param.fov, ...
+                           acq_param.ms, ...
+                           acq_param.vs, ...
+                           acq_param.for);
+
+            print_base_report(file_id, metadata, p.Results.verbose);
+            print_to_output(text, file_id, p.Results.verbose);
+          case 'dwi'
+
+            print_to_output('\nDWI REPORT\n\n', file_id, p.Results.verbose);
+
+            [this_filter, nb_runs] = update_filter_with_run_label(BIDS, this_filter);
+            acq_param.n_runs = num2str(nb_runs);
+
+            [filename, metadata] = get_filemane_and_metadata(BIDS, this_filter);
+            boilerplate_text = replace_placeholders(boilerplate_text, metadata);
+
+            acq_param = get_acq_param(BIDS, this_filter, read_nii, p.Results.verbose);
+
+            % dirty hack to try to look into the BIDS structure as bids.query does not
+            % support querying directly for bval and bvec
+            try
+              acq_param.n_vecs = num2str(size(BIDS.subjects(sub).dwi.bval, 2));
+              %             acq_param.bval_str = ???
+            catch
+              msg = 'Could not read the bval & bvec values.';
+              bids.internal.error_handling(mfilename, ...
+                                           'cannotReadBvalBvec', ...
+                                           msg, ...
+                                           true, ...
+                                           p.Results.verbose);
+            end
+
+            text = sprintf(boilerplate_text, ...
                            acq_param.n_slices, ...
                            acq_param.so_str, ...
                            acq_param.te, ...
                            acq_param.fov, ...
                            acq_param.ms, ...
                            acq_param.vs, ...
-                           acq_param.mb_str, ...
-                           acq_param.pr_str, ...
-                           acq_param.length, ...
-                           acq_param.n_vols);
+                           acq_param.bval_str, ...
+                           acq_param.n_vecs, ...
+                           acq_param.mb_str);
 
             print_base_report(file_id, metadata, p.Results.verbose);
             print_to_output(text, file_id, p.Results.verbose);
-
-          end
-
-          % TODO
-          % should cover all fmap suffixes
-        case 'phasediff'
-
-          fprintf(file_id, '\nFIELD MAP REPORT\n\n');
-
-          [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
-
-          [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
-          boilerplate_text = replace_placeholders(boilerplate_text, metadata);
-
-          acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
-
-          %           acq_param.for = sprintf('for %i runs of %s, ', nb_runs, this_task);
-
-          acq_param.for = 'TODO';
-
-          text = sprintf(boilerplate_text, ...
-                         acq_param.n_slices, ...
-                         acq_param.te, ...
-                         acq_param.fov, ...
-                         acq_param.ms, ...
-                         acq_param.vs, ...
-                         acq_param.for);
-
-          print_base_report(file_id, metadata, p.Results.verbose);
-          print_to_output(text, file_id, p.Results.verbose);
-
-        case 'dwi'
-
-          fprintf(file_id, '\nDWI REPORT\n\n');
-
-          [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
-
-          [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
-          boilerplate_text = replace_placeholders(boilerplate_text, metadata);
-
-          acq_param = get_acq_param(BIDS, filter, read_nii, p.Results.verbose);
-
-          % dirty hack to try to look into the BIDS structure as bids.query does not
-          % support querying directly for bval and bvec
-          try
-            acq_param.n_vecs = num2str(size(BIDS.subjects(sub).dwi.bval, 2));
-            %             acq_param.bval_str = ???
-          catch
-            msg = 'Could not read the bval & bvec values.';
+          case 'physio'
+            msg = 'physio not supported yet';
             bids.internal.error_handling(mfilename, ...
-                                         'cannotReadBvalBvec', ...
+                                         'physioNotSupported', ...
                                          msg, ...
                                          true, ...
                                          p.Results.verbose);
-          end
+          case {'meg' 'eeg'}
 
-          text = sprintf(boilerplate_text, ...
-                         acq_param.n_slices, ...
-                         acq_param.so_str, ...
-                         acq_param.te, ...
-                         acq_param.fov, ...
-                         acq_param.ms, ...
-                         acq_param.vs, ...
-                         acq_param.bval_str, ...
-                         acq_param.n_vecs, ...
-                         acq_param.mb_str);
+            for iTask = 1:numel(tasks)
 
-          print_base_report(file_id, metadata, p.Results.verbose);
-          print_to_output(text, file_id, p.Results.verbose);
+              this_filter.task = tasks{iTask};
+              [this_filter, nb_runs] = update_filter_with_run_label(BIDS, this_filter);
+              acq_param.n_runs = num2str(nb_runs);
 
-        case 'physio'
-          msg = 'physio not supported yet';
-          bids.internal.error_handling(mfilename, ...
-                                       'physioNotSupported', ...
-                                       msg, ...
-                                       true, ...
-                                       p.Results.verbose);
+              [filename, metadata] = get_filemane_and_metadata(BIDS, this_filter);
+              boilerplate_text = replace_placeholders(boilerplate_text, metadata);
 
-        case {'meg' 'eeg'}
+              print_base_report(file_id, metadata, p.Results.verbose);
 
-          for iTask = 1:numel(tasks)
+            end
+          case 'events'
+            msg = 'events not supported yet';
+            bids.internal.error_handling(mfilename, ...
+                                         'eventsNotSupported', ...
+                                         msg, ...
+                                         true, ...
+                                         p.Results.verbose);
 
-            filter.task = tasks{iTask};
-            [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
+          otherwise
+            % 'channels' 'headshape'
 
-            [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
-            boilerplate_text = replace_placeholders(boilerplate_text, metadata);
+        end
 
-            print_base_report(file_id, metadata, p.Results.verbose);
-
-          end
-
-        case 'events'
-          msg = 'events not supported yet';
-          bids.internal.error_handling(mfilename, ...
-                                       'eventsNotSupported', ...
-                                       msg, ...
-                                       true, ...
-                                       p.Results.verbose);
-
-        otherwise
-          % 'channels' 'headshape'
+        print_to_output('\n', file_id, p.Results.verbose);
 
       end
-
-      print_to_output('\n', file_id, p.Results.verbose);
 
     end
 
@@ -288,30 +284,21 @@ function report(varargin)
 
 end
 
-function sub = select_subject(BIDS, p)
+function filter = check_filter(BIDS, p)
 
-  sub = p.Results.sub;
-  if isempty(p.Results.sub)
+  filter = p.Results.filter;
+  if isempty(filter.sub)
     subjects = bids.query(BIDS, 'subjects');
-    sub = subjects{1};
+    filter.sub = subjects(1);
   end
 
-end
-
-function [ses, nb_ses] = select_session(BIDS, p, sub)
-
-  ses = p.Results.ses;
-  sessions = bids.query(BIDS, 'sessions', 'sub', sub);
-  if isempty(ses) || ~ismember(ses, sessions)
-    ses = sessions;
-  end
-  if ischar(ses)
-    ses = {ses};
-  end
-
-  nb_ses = numel(ses);
-  if nb_ses < 1
-    nb_ses = 1;
+  if isempty(filter.ses)
+    sessions = bids.query(BIDS, 'sessions', ...
+                          'sub', filter.sub);
+    if isempty(sessions)
+      sessions = {''};
+    end
+    filter.ses = sessions;
   end
 
 end
@@ -350,7 +337,7 @@ function file_id = open_output_file(BIDS, output_path, verbose)
 
 end
 
-function filter = update_filter_with_task_label(BIDS, filter)
+function filter = remove_task_filter(filter)
 
   if isfield(filter, 'task')
     filter = rmfield(filter, 'task');
@@ -389,7 +376,7 @@ function template = get_boilerplate(type)
     case 'bold'
       file = 'func.tmp';
 
-    case   'phasediff'
+    case 'phasediff'
       file = 'fmap.tmp';
 
     case 'dwi'
@@ -543,6 +530,7 @@ function acq_param = convert_field_to_str(acq_param)
 end
 
 function acq_param = convert_field_to_millisecond(acq_param, fields_list)
+  % TODO
 
   for iField = 1:numel(fields_list)
     if isnumeric(acq_param.(fields_list{iField}))
@@ -593,10 +581,12 @@ function print_to_output(text, file_id, verbose)
 
   text = add_word_wrap(text);
 
-  fprintf(file_id,  text);
+  if file_id ~= 1
+    fprintf(file_id,  text);
+  end
 
   % Print to screen
-  if verbose && file_id ~= 1
+  if verbose
     fprintf(1, text);
   end
 
