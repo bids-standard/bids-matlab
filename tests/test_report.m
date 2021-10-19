@@ -18,8 +18,6 @@ function test_report_basic()
 
     BIDS = fullfile(pth_bids_example, datasets{i});
 
-    BIDS = bids.layout(BIDS);
-
     bids.report(BIDS, 'verbose', cfg.verbose);
 
   end
@@ -38,8 +36,6 @@ function test_report_all_param()
   for i = 1:numel(datasets)
 
     BIDS = fullfile(pth_bids_example, datasets{i});
-
-    BIDS = bids.layout(BIDS);
 
     bids.report(BIDS, 'output_path', output_path, 'read_nifti', read_nifti, 'verbose', cfg.verbose);
 
