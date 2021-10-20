@@ -1,0 +1,3 @@
+{{PulseSequenceType}} {{ScanningSequence}} {{SequenceVariant}} structural MRI data were collected (%s slices;
+repetition time, TR= {{RepetitionTime}} ms; echo time, TE= %s ms; flip angle, FA= {{FlipAngle}} deg;
+field of view, FOV= %s mm; matrix size= %s; voxel size= %s mm)

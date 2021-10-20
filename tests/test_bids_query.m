@@ -6,6 +6,24 @@ function test_suite = test_bids_query %#ok<*STOUT>
   initTestSuite;
 end
 
+% function test_query_impossible_suffix_should_return_empty()
+%
+%   pth_bids_example = get_test_data_dir();
+%
+%   BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+%
+%   % no suffix bold in anat
+%   filter = struct('sub', '01', ...
+%          'ses', '01', ...
+%     'modality', {'anat'}, ...
+%       'suffix', 'bold');
+%
+%   data = bids.query(BIDS, 'tasks', filter);
+%
+%   assertEqual(data, {''});
+%
+% end
+
 function test_query_events_tsv_in_root()
 
   pth_bids_example = get_test_data_dir();
