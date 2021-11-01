@@ -1,6 +1,6 @@
 function cfg = set_test_cfg()
 
-  cfg.verbose = false;
+  cfg.verbose = true;
   cfg.use_schema = true;
 
 end

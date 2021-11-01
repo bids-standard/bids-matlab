@@ -1,4 +1,4 @@
-function report(varargin)
+function filename = report(varargin)
   %
   % Create a short summary of the acquisition parameters of a BIDS dataset.
   %
@@ -39,6 +39,7 @@ function report(varargin)
   % --------------------------------------------------------------------------
   % - deal with DWI bval/bvec values not read by bids.query
   % - enhance with "EEG" / "MEG"
+  % - add task description
   % - deal with "events": compute some summary statistics as suggested in COBIDAS report
   % - report summary statistics on participants as suggested in COBIDAS report
   % - check if all subjects have the same content?
@@ -79,6 +80,10 @@ function report(varargin)
     this_filter.sub = filter.sub{i_sub};
 
     sessions = bids.query(BIDS, 'sessions', this_filter);
+    
+    if isempty(sessions)
+        sessions = {''};
+    end
 
     for i_sess = 1:numel(sessions)
 
@@ -111,13 +116,13 @@ function report(varargin)
             report_meeg(BIDS, this_filter, p.Results.verbose, file_id);
 
           case {'perf'}
-            report_perf(BIDS, filter, read_nii, verbose, file_id);
+            report_perf(BIDS, this_filter, read_nii, p.Results.verbose, file_id);
 
           case  {'dwi'}
             report_dwi(BIDS, this_filter, read_nii, p.Results.verbose, file_id);
 
           case {'fmap'}
-            report_fmap(BIDS, this_filter, read_nii, verbose, file_id);
+            report_fmap(BIDS, this_filter, read_nii, p.Results.verbose, file_id);
 
           case  {'pet', 'beh'}
             not_supported(this_filter.modality{1}, p.Results.verbose);
@@ -138,6 +143,8 @@ function report(varargin)
   print_credit(file_id, p.Results.verbose);
 
 end
+
+% TODO refactor the different reports
 
 function report_fmap(BIDS, filter, read_nii, verbose, file_id)
 
@@ -435,7 +442,7 @@ function filter = set_sessions(filter, BIDS, sessions)
   filter.ses = sessions;
 end
 
-function file_id = open_output_file(BIDS, output_path, verbose)
+function [file_id, filename] = open_output_file(BIDS, output_path, verbose)
 
   file_id = 1;
 
@@ -461,7 +468,7 @@ function file_id = open_output_file(BIDS, output_path, verbose)
     else
 
       text = sprintf('Dataset description saved in:  %s\n\n', filename);
-      print_to_output(text, file_id, verbose);
+      print_to_output(text, 1, verbose);
 
     end
 
@@ -494,11 +501,8 @@ function template = get_boilerplate(type, verbose)
     case {'institution', 'device_info', 'func', 'anat', 'fmap', 'dwi', 'credit'}
       file = [type '.tmp'];
 
-    case {'meg', 'eeg', 'ieeg'}
-      file = 'meeg.tmp';
-
     case {'events', 'physio', 'channels', 'headshape'}
-      % TO DO
+      % TODO
       template = '';
       not_supported(type, verbose);
 
@@ -749,19 +753,21 @@ function boilerplate_text = replace_placeholders(boilerplate_text, metadata)
             ~isempty(metadata.(this_placeholder))
 
       text_to_insert = metadata.(this_placeholder);
+      
+      if isnumeric(text_to_insert)
+          text_to_insert = num2str(text_to_insert);
+      end
+      
+      boilerplate_text = strrep(boilerplate_text, ...
+          this_placeholder,  ...
+          text_to_insert);
 
     else
-      text_to_insert = ['XXX' placeholders{i}{1} 'XXX'];
+%       text_to_insert = ['XXX' placeholders{i}{1} 'XXX'];
 
     end
 
-    if isnumeric(text_to_insert)
-      text_to_insert = num2str(text_to_insert);
-    end
 
-    boilerplate_text = strrep(boilerplate_text, ...
-                              this_placeholder,  ...
-                              text_to_insert);
 
   end
 

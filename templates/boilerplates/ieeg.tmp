@@ -1,4 +1,4 @@
-For the {{TaskName}}, %s run(s) of {{Modality}} data were collected.
+For the {{TaskName}}, %s run(s) of iEEG data were collected.
 
 Power line and sampling frequencies were {{PowerLineFrequency}} Hz and {{SamplingFrequency}} Hz, respectively.
 

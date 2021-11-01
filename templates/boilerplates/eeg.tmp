@@ -1,0 +1,6 @@
+For the {{TaskName}}, %s run(s) of EEG data were collected.
+
+Power line and sampling frequencies were {{PowerLineFrequency}} Hz and {{SamplingFrequency}} Hz, respectively.
+
+Data was collected with {{ChannelCount}} {{Modality}} channels, {{EOGChannelCount}} EOG channels,
+{{ECGChannelCount}} ECG channels and {{EMGChannelCount}} EMG channels recorded simultaneously.
