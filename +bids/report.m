@@ -72,7 +72,7 @@ function filename = report(varargin)
 
   read_nii = p.Results.read_nifti & exist('spm_vol', 'file') == 2;
 
-  file_id = open_output_file(BIDS, p.Results.output_path, p.Results.verbose);
+  [file_id, filename] = open_output_file(BIDS, p.Results.output_path, p.Results.verbose);
 
   for i_sub = 1:nb_sub
 
@@ -80,9 +80,9 @@ function filename = report(varargin)
     this_filter.sub = filter.sub{i_sub};
 
     sessions = bids.query(BIDS, 'sessions', this_filter);
-    
+
     if isempty(sessions)
-        sessions = {''};
+      sessions = {''};
     end
 
     for i_sess = 1:numel(sessions)
@@ -445,6 +445,7 @@ end
 function [file_id, filename] = open_output_file(BIDS, output_path, verbose)
 
   file_id = 1;
+  filename = '';
 
   if ~isempty(output_path)
 
@@ -753,21 +754,19 @@ function boilerplate_text = replace_placeholders(boilerplate_text, metadata)
             ~isempty(metadata.(this_placeholder))
 
       text_to_insert = metadata.(this_placeholder);
-      
+
       if isnumeric(text_to_insert)
-          text_to_insert = num2str(text_to_insert);
+        text_to_insert = num2str(text_to_insert);
       end
-      
+
       boilerplate_text = strrep(boilerplate_text, ...
-          this_placeholder,  ...
-          text_to_insert);
+                                this_placeholder,  ...
+                                text_to_insert);
 
     else
-%       text_to_insert = ['XXX' placeholders{i}{1} 'XXX'];
+      %       text_to_insert = ['XXX' placeholders{i}{1} 'XXX'];
 
     end
-
-
 
   end
 
