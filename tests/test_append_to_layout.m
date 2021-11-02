@@ -10,7 +10,7 @@ function test_append_to_layout_schema_unknown_entity()
 
   if ~is_octave()
 
-    [subject, modality, schema, previous] = setUp('meg');
+    [subject, modality, schema, previous] = set_up('meg');
 
     file = 'sub-16_task-bar_foo-bar_meg.ds';
 
@@ -26,7 +26,7 @@ function test_append_to_layout_schema_unknown_extension()
 
   if ~is_octave()
 
-    [subject, modality, schema, previous] = setUp('meg');
+    [subject, modality, schema, previous] = set_up('meg');
 
     file = 'sub-16_task-bar_meg.foo';
 
@@ -40,7 +40,7 @@ end
 
 function test_append_to_layout_basic()
 
-  [subject, modality, schema, previous] = setUp('anat');
+  [subject, modality, schema, previous] = set_up('anat');
 
   file = 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   subject = bids.internal.append_to_layout(file, subject, modality, schema, previous);
@@ -71,7 +71,7 @@ end
 function test_append_to_layout_schema_missing_required_entity()
 
   if ~is_octave()
-    [subject, modality, schema, previous] = setUp('func');
+    [subject, modality, schema, previous] = set_up('func');
 
     % func with missing task entity
     file = 'sub-16_bold.nii.gz';
@@ -86,7 +86,7 @@ end
 
 function test_append_to_structure_basic_test()
 
-  [subject, modality, schema, previous] = setUp('anat');
+  [subject, modality, schema, previous] = set_up('anat');
 
   file = 'sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   [subject, ~, previous] = bids.internal.append_to_layout(file, subject, ...
@@ -141,7 +141,7 @@ end
 function test_append_to_layout_schemaless()
 
   use_schema = false;
-  [subject, modality, schema, previous] = setUp('newmod', use_schema);
+  [subject, modality, schema, previous] = set_up('newmod', use_schema);
 
   file = 'sub-16_schema-less_anything-goes_newsuffix.EXT';
   subject = bids.internal.append_to_layout(file, subject, modality, schema, previous);
@@ -169,7 +169,7 @@ end
 
 %% Fixture
 
-function [subject, modality, schema, previous] = setUp(modality, use_schema)
+function [subject, modality, schema, previous] = set_up(modality, use_schema)
 
   if ~exist('use_schema', 'var')
     use_schema = true;
