@@ -7,22 +7,38 @@ function test_suite = test_bids_query %#ok<*STOUT>
 end
 
 % function test_query_impossible_suffix_should_return_empty()
-%
+% 
 %   pth_bids_example = get_test_data_dir();
-%
+% 
 %   BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
-%
+% 
 %   % no suffix bold in anat
 %   filter = struct('sub', '01', ...
 %          'ses', '01', ...
 %     'modality', {'anat'}, ...
 %       'suffix', 'bold');
-%
+% 
 %   data = bids.query(BIDS, 'tasks', filter);
-%
+% 
 %   assertEqual(data, {''});
-%
+% 
 % end
+
+function test_query_suffixes()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
+
+  suffixes = {'T1w', 'pet'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+  
+  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+  
+  suffixes = {'T1w'};
+  assertEqual(bids.query(BIDS, 'suffixes', 'modality', 'anat'), suffixes);
+
+end
 
 function test_query_events_tsv_in_root()
 
@@ -188,17 +204,6 @@ function test_query_sessions()
   BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
 
   assert(isempty(bids.query(BIDS, 'sessions')));
-
-end
-
-function test_query_suffixes()
-
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
-
-  suffixes = {'T1w'    'pet'};
-  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end
 

@@ -17,7 +17,7 @@ function status = keep_file_for_query(file_struct, options)
       field_name = 'ext';
     end
 
-    if any(strcmp(field_name, {'suffix', 'ext', 'prefix'})) && ...
+    if any(strcmp(field_name, {'modality', 'suffix', 'ext', 'prefix'})) && ...
              ~ismember(file_struct.(field_name), options{l, 2})
       status = false;
       return
@@ -34,7 +34,7 @@ function status = keep_file_for_query(file_struct, options)
   % work on the the entities
   for l = 1:size(options, 1)
 
-    if ~any(strcmp(options{l, 1}, {'suffix', 'extension', 'prefix'}))
+    if ~any(strcmp(options{l, 1}, {'modality', 'suffix', 'extension', 'prefix'}))
 
       file_has_entity = ismember(options{l, 1}, fieldnames(file_struct.entities));
       exclude_entity = numel(options{l, 2}) == 1 && strcmp(options{l, 2}, {''});
