@@ -30,9 +30,9 @@ function test_report_basic()
                            'read_nifti', cfg.read_nifti, ...
                            'verbose', cfg.verbose);
 
-      % content = get_report_content(report);
-      % expected = get_expected_content(cfg, datasets{i}, modalities{j})
-      % assertEqual(content, expected);
+      content = get_report_content(report);
+      expected = get_expected_content(cfg, datasets{i}, modalities{j});
+      assertEqual(content, expected);
 
     end
   end
@@ -43,7 +43,9 @@ function test_report_asl()
 
   cfg = set_up();
 
-  BIDS = fullfile(cfg.pth_bids_example, 'asl003');
+  datasets = 'asl003';
+
+  BIDS = fullfile(cfg.pth_bids_example, datasets);
 
   BIDS = bids.layout(BIDS, true);
 
@@ -54,14 +56,9 @@ function test_report_asl()
                        'output_path', cfg.output_path, ...
                        'verbose', cfg.verbose);
 
-  %     content = get_report_content(report);
-
-  %     expected = fullfile(cfg.this_path, 'data', ...
-  % 'reports', ...
-  % [datasets{i} '_' modalities{j} '.md']);
-  %     expected = get_report_content(expected);
-
-  %     assertEqual(content, expected);
+  content = get_report_content(report);
+  expected = get_expected_content(cfg, datasets, filter.modality);
+  assertEqual(content, expected);
 
 end
 
@@ -69,7 +66,9 @@ function test_report_pet()
 
   cfg = set_up();
 
-  BIDS = fullfile(cfg.pth_bids_example, 'pet001');
+  datasets = 'pet001';
+
+  BIDS = fullfile(cfg.pth_bids_example, datasets);
 
   BIDS = bids.layout(BIDS, true);
 
@@ -80,14 +79,9 @@ function test_report_pet()
                        'output_path', cfg.output_path, ...
                        'verbose', cfg.verbose);
 
-  %     content = get_report_content(report);
-
-  %     expected = fullfile(cfg.this_path, 'data', ...
-  % 'reports', ...
-  % [datasets{i} '_' modalities{j} '.md']);
-  %     expected = get_report_content(expected);
-
-  %     assertEqual(content, expected);
+  content = get_report_content(report);
+  expected = get_expected_content(cfg, datasets, filter.modality);
+  assertEqual(content, expected);
 
 end
 
@@ -106,14 +100,10 @@ function test_report_moae_data()
                        'read_nifti', cfg.read_nifti, ...
                        'verbose', cfg.verbose);
 
-  %     content = get_report_content(report);
+  content = get_report_content(report);
+  expected = get_expected_content(cfg, 'MoAE', 'all');
 
-  %     expected = fullfile(cfg.this_path, 'data', ...
-  % 'reports', ...
-  % [datasets{i} '_' modalities{j} '.md']);
-  %     expected = get_report_content(expected);
-
-  %     assertEqual(content, expected);
+  assertEqual(content, expected);
 
 end
 

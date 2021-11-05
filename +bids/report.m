@@ -35,7 +35,6 @@ function filename = report(varargin)
   % TODO
   % --------------------------------------------------------------------------
   % - deal with DWI bval/bvec values not read by bids.query
-  % - add task description
   % - deal with "events": compute some summary statistics as suggested in COBIDAS report
   % - report summary statistics on participants as suggested in COBIDAS report
   % - check if all subjects have the same content?
@@ -129,11 +128,9 @@ function filename = report(varargin)
 
   end
 
-  print_credit(file_id, p.Results.verbose);
+  print_text('credit', file_id, p.Results.verbose);
 
 end
-
-% TODO refactor the different reports
 
 function report_nifti(BIDS, filter, read_nii, verbose, file_id)
 
@@ -187,13 +184,13 @@ function report_nifti(BIDS, filter, read_nii, verbose, file_id)
 
     end
 
-    print_institution_info(file_id, metadata, verbose);
+    print_text('institution', file_id, verbose, metadata);
 
     if strcmp(filter.modality{1}, 'pet')
       % TODO task for pet
-      print_pet_info(file_id, metadata, verbose);
+      print_text('pet_info', file_id, verbose, metadata);
     else
-      print_mri_info(file_id, metadata, verbose);
+      print_text('mri_info', file_id, verbose, metadata);
     end
 
     print_to_output(text, file_id, verbose);
@@ -235,21 +232,17 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
       acq_param = get_acq_param(BIDS, this_filter, read_nii, verbose);
       acq_param.nb_runs = num2str(nb_runs);
 
-      % set run duration
-      if isfield(acq_param, 'nb_vols') && ~isempty(acq_param.nb_vols)
-        acq_param.length = metadata.RepetitionTime * str2double(acq_param.nb_vols);
-        acq_param.length = num2str(acq_param.length / 60);
-      end
+      acq_param = set_run_duration(acq_param, metadata);
 
       text = bids.internal.replace_placeholders(boilerplate, acq_param);
 
-      print_institution_info(file_id, metadata, verbose);
+      print_text('institution', file_id, verbose, metadata);
 
-      print_mri_info(file_id, metadata, verbose);
+      print_text('mri_info', file_id, verbose, metadata);
 
       print_to_output(text, file_id, verbose);
 
-      print_task_info(file_id, acq_param, verbose);
+      print_text('task', file_id, verbose, acq_param);
 
       print_events_info(file_id, BIDS, filter, verbose);
 
@@ -298,12 +291,19 @@ function report_meeg(BIDS, filter, verbose, file_id)
 
       print_to_output(text, file_id, verbose);
 
-      print_task_info(file_id, acq_param, verbose);
+      print_text('task', file_id, verbose, acq_param);
 
       print_events_info(file_id, BIDS, filter, verbose);
 
     end
 
+  end
+end
+
+function param = set_run_duration(param, metadata)
+  if isfield(param, 'nb_vols') && ~isempty(param.nb_vols)
+    param.length = metadata.RepetitionTime * str2double(param.nb_vols);
+    param.length = num2str(param.length / 60);
   end
 end
 
@@ -410,59 +410,34 @@ end
 
 function template = get_boilerplate(type, verbose)
 
-  file = '';
+  % TODO {'physio', 'channels', 'headshape'}
 
-  switch type
+  file = [type '.tmp'];
 
-    case {'institution', ...
-          'device_info', ...
-          'mri_info', ...
-          'pet_info', ...
-          'blood', ...
-          'func', ...
-          'anat', ...
-          'fmap', ...
-          'perf', ...
-          'dwi', ...
-          'pet', ...
-          'task', ...
-          'events', ...
-          'credit'}
-      file = [type '.tmp'];
-
-    case {'meg', 'eeg', 'ieeg'}
-      file = 'meeg.tmp';
-
-    case {'physio', 'channels', 'headshape'}
-      % TODO
-      template = '';
-      not_supported(type, verbose);
-
-    otherwise
-
-      template = '';
-      not_supported(type, verbose);
-
-      return
-
+  if ismember(type, {'meg', 'eeg', 'ieeg'})
+    file = 'meeg.tmp';
   end
 
-  if ~isempty(file)
-    fid = fopen(fullfile(fileparts(mfilename('fullpath')), '..', ...
-                         'templates', 'boilerplates', file));
-    C = textscan(fid, '%s');
-    fclose(fid);
-    template = strjoin(C{1}, ' ');
+  fid = fopen(fullfile(fileparts(mfilename('fullpath')), '..', ...
+                       'templates', 'boilerplates', file));
+  if fid == -1
+    template = '';
+    not_supported(type, verbose);
+    return
   end
+
+  C = textscan(fid, '%s');
+  fclose(fid);
+  template = strjoin(C{1}, ' ');
 
 end
 
-function acq_param = get_acq_param(BIDS, filter, read_gz, verbose)
+function param = get_acq_param(BIDS, filter, read_gz, verbose)
   % Will get info from acquisition parameters from the BIDS structure or from
   % the NIfTI files
 
   %   acq_param = set_default_acq_param();
-  acq_param = struct();
+  param = struct();
 
   [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
 
@@ -476,27 +451,27 @@ function acq_param = get_acq_param(BIDS, filter, read_gz, verbose)
                  'for_str', 'IntendedFor'
                 };
 
-  acq_param = get_parameter(acq_param, metadata, fields_list);
+  param = get_parameter(param, metadata, fields_list);
 
   bidsFile = bids.File(filename{1});
-  acq_param.suffix = bidsFile.suffix;
+  param.suffix = bidsFile.suffix;
 
   if isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
-    acq_param.echo_time = [metadata.EchoTime1 metadata.EchoTime2];
+    param.echo_time = [metadata.EchoTime1 metadata.EchoTime2];
   end
 
   % TODO
   % acq_param = convert_field_to_millisecond(acq_param, {'te'});
 
   if isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
-    acq_param.echo_time = sprintf('%0.2f / %0.2f', acq_param.echo_time);
+    param.echo_time = sprintf('%0.2f / %0.2f', param.echo_time);
   end
 
-  acq_param = convert_field_to_str(acq_param);
+  param = convert_field_to_str(param);
 
-  acq_param = define_slice_timing(acq_param);
+  param = define_slice_timing(param);
 
-  acq_param = read_nifti(read_gz, filename{1}, acq_param, verbose);
+  param = read_nifti(read_gz, filename{1}, param, verbose);
 
 end
 
@@ -505,8 +480,10 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
   % -Try to read the relevant NIfTI file to get more info from it
   % --------------------------------------------------------------------------
   if read_gz
-    fprintf('\n Opening file - %s.\n', filename);
     try
+      if verbose
+        fprintf('\n Opening file - %s.\n', filename);
+      end
       % read the header of the NIfTI file
       hdr = spm_vol(filename);
 
@@ -644,38 +621,8 @@ function text = add_word_wrap(text)
 end
 
 function print_base_report(file_id, metadata, verbose)
-  print_institution_info(file_id, metadata, verbose);
-  print_device_info(file_id, metadata, verbose);
-end
-
-function print_institution_info(file_id, metadata, verbose)
-  boilerplate_text = get_boilerplate('institution', verbose);
-  boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
-  print_to_output(boilerplate_text, file_id, verbose);
-end
-
-function print_device_info(file_id, metadata, verbose)
-  boilerplate_text = get_boilerplate('device_info', verbose);
-  boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
-  print_to_output(boilerplate_text, file_id, verbose);
-end
-
-function print_pet_info(file_id, metadata, verbose)
-  boilerplate_text = get_boilerplate('pet_info', verbose);
-  boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
-  print_to_output(boilerplate_text, file_id, verbose);
-end
-
-function print_mri_info(file_id, metadata, verbose)
-  boilerplate_text = get_boilerplate('mri_info', verbose);
-  boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
-  print_to_output(boilerplate_text, file_id, verbose);
-end
-
-function print_task_info(file_id, metadata, verbose)
-  boilerplate = get_boilerplate('task', verbose);
-  boilerplate_text = bids.internal.replace_placeholders(boilerplate, metadata);
-  print_to_output(boilerplate_text, file_id, verbose);
+  print_text('institution', file_id, verbose, metadata);
+  print_text('device_info', file_id, verbose, metadata);
 end
 
 function print_events_info(file_id, BIDS, filter, verbose)
@@ -683,9 +630,7 @@ function print_events_info(file_id, BIDS, filter, verbose)
   filter.suffix = 'events';
   [~, metadata] = get_filemane_and_metadata(BIDS, filter);
   if isfield(metadata, 'StimulusPresentation')
-    boilerplate = get_boilerplate('events', verbose);
-    boilerplate_text = bids.internal.replace_placeholders(boilerplate, metadata);
-    print_to_output(boilerplate_text, file_id, verbose);
+    print_text('events', file_id, verbose, metadata);
   end
   if isfield(metadata, 'trial_type')
     % TODO
@@ -694,7 +639,13 @@ function print_events_info(file_id, BIDS, filter, verbose)
 
 end
 
-function print_credit(file_id, verbose)
-  boilerplate_text = get_boilerplate('credit', verbose);
+function print_text(template_name, file_id, verbose, metadata)
+  if nargin < 4
+    metadata = struct([]);
+  end
+  boilerplate_text = get_boilerplate(template_name, verbose);
+  if ~isempty(metadata)
+    boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
+  end
   print_to_output(boilerplate_text, file_id, verbose);
 end
