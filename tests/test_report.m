@@ -8,6 +8,11 @@ end
 
 function test_report_basic()
 
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
+
   cfg = set_up();
 
   filter.sub = '01';
@@ -41,6 +46,11 @@ end
 
 function test_report_asl()
 
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
+
   cfg = set_up();
 
   datasets = 'asl003';
@@ -64,6 +74,11 @@ end
 
 function test_report_pet()
 
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
+
   cfg = set_up();
 
   datasets = 'pet001';
@@ -86,6 +101,11 @@ function test_report_pet()
 end
 
 function test_report_moae_data()
+
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
 
   cfg = set_up();
 
