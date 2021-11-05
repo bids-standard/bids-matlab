@@ -72,6 +72,7 @@ function result = query(BIDS, query, varargin)
                    'modalities', ...
                    'tasks', ...
                    'runs', ...
+                   'entities', ...
                    'suffixes', ...
                    'data', ...
                    'metadata', ...
@@ -122,7 +123,7 @@ function result = query(BIDS, query, varargin)
         result = result';
       end
 
-    case {'tasks', 'runs', 'suffixes', 'extensions', 'prefixes'}
+    case {'tasks', 'entities', 'runs', 'suffixes', 'extensions', 'prefixes'}
       result = unique(result);
       result(cellfun('isempty', result)) = [];
   end
@@ -267,6 +268,12 @@ function result = update_result(query, options, result, this_subject, this_modal
 
         case 'modalities'
           result = unique(cat(1, result, {this_modality}));
+
+        case 'entities'
+          entities = this_subject.(this_modality)(k).entities;
+          fields = fieldnames(entities);
+          non_empty_fields = ~structfun(@isempty, entities);
+          result = unique(cat(1, result, fields(non_empty_fields)));
 
         case 'data'
           result{end + 1} = fullfile(this_subject.path, this_modality, d(k).filename);
