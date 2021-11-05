@@ -68,13 +68,13 @@ classdef Schema
         schema_dir = use_schema;
         obj.is_bids_schema = false;
       else
-        schema_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'schema');
+        schema_dir = fullfile(bids.internal.root_dir(), 'schema');
         obj.is_bids_schema = true;
       end
 
       if ~exist(schema_dir, 'dir')
         msg = sprintf('The schema directory %s does not exist.', schema_dir);
-        bids.internal.error_handling(function_name, 'missingDirectory', msg, false, true);
+        bids.internal.error_handling(mfilename(), 'missingDirectory', msg, false, true);
       end
 
       [json_file_list, dirs] = bids.internal.file_utils('FPList', schema_dir, '^.*.json$');
@@ -94,7 +94,7 @@ classdef Schema
 
           for j = 1:numel(mods)
 
-            suffix_grps = obj.content.datatypes.(mods{j});
+            suffix_grps = obj.content.rules.datatypes.(mods{j});
             % need to use a tmp variable to avoid some errors in continuous
             % integration to avoid some errors with octave
             updated_suffix_grps = struct('suffixes', [], ...
@@ -109,7 +109,7 @@ classdef Schema
               updated_suffix_grps(k, 1) = this_suffix_group;
             end
 
-            obj.content.datatypes.(mods{j}) = updated_suffix_grps;
+            obj.content.rules.datatypes.(mods{j}) = updated_suffix_grps;
 
           end
         end
@@ -127,7 +127,7 @@ classdef Schema
                                                       'dir', ...
                                                       '.*'));
       else
-        modalities = obj.content.modalities.(modality_group).datatypes;
+        modalities = obj.content.rules.modalities.(modality_group).datatypes;
 
       end
     end
@@ -140,8 +140,8 @@ classdef Schema
       %
 
       groups = {nan()};
-      if ~isempty(obj.content) && isfield(obj.content, 'modalities')
-        groups = fieldnames(obj.content.modalities);
+      if ~isempty(obj.content) && isfield(obj.content.objects, 'modalities')
+        groups = fieldnames(obj.content.objects.modalities);
       end
     end
 
@@ -154,7 +154,7 @@ classdef Schema
       entity_names = fieldnames(suffix_group.entities);
 
       for i = 1:size(entity_names, 1)
-        entities{1, i} = obj.content.entities.(entity_names{i}).entity; %#ok<*AGROW>
+        entities{1, i} = obj.content.objects.entities.(entity_names{i}).entity; %#ok<*AGROW>
       end
 
     end
@@ -247,11 +247,11 @@ classdef Schema
         return
       end
 
-      datatypes_list = fieldnames(obj.content.datatypes);
+      datatypes_list = fieldnames(obj.content.rules.datatypes);
 
       for i = 1:size(datatypes_list, 1)
 
-        this_datatype = obj.content.datatypes.(datatypes_list{i});
+        this_datatype = obj.content.rules.datatypes.(datatypes_list{i});
         this_datatype = obj.ci_check(this_datatype);
 
         suffix_list = cat(1, this_datatype.suffixes);
@@ -373,18 +373,25 @@ classdef Schema
         if obj.load_schema_metadata || ...
                 ~strcmp(bids.internal.file_utils(directory, 'basename'), 'metadata')
 
-          [json_file_list, dirs] = bids.internal.file_utils('FPList', directory, '^.*.json$');
+          dirs = bids.internal.file_utils('FPList', directory, 'dir', '.*');
 
+          field_name = bids.internal.file_utils(directory, 'basename');
+          structure.(field_name) = struct();
+
+          json_file_list = bids.internal.file_utils('FPList', directory, '^.*.json$');
           if ~isempty(json_file_list)
-            field_name = bids.internal.file_utils(directory, 'basename');
-            structure.(field_name) = struct();
             structure.(field_name) = obj.append_json_to_schema(structure.(field_name), ...
                                                                json_file_list);
           end
 
-        end
+          structure.(field_name) = obj.inspect_subdir(obj, structure.(field_name), dirs);
 
-        structure = obj.inspect_subdir(obj, structure, dirs);
+          % clean up empty fields
+          if isempty(fieldnames(structure.(field_name)))
+            structure = rmfield(structure, field_name);
+          end
+
+        end
 
       end
     end

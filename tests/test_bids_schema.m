@@ -6,32 +6,6 @@ function test_suite = test_bids_schema %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_metadata_loading()
-
-  schema = bids.Schema();
-  assert(~isfield(schema.content, 'metadata'));
-
-  schema = bids.Schema;
-  schema.load_schema_metadata = true;
-  schema = schema.load();
-  assert(isfield(schema.content, 'metadata'));
-  assert(isstruct(schema.content.metadata));
-
-end
-
-function test_return_required_entities
-
-  schema = bids.Schema();
-
-  suffix_group = schema.content.datatypes.func(1);
-  required_entities = schema.required_entities_for_suffix_group(suffix_group);
-
-  expected_output = {'sub', 'task'};
-
-  assertEqual(required_entities, expected_output);
-
-end
-
 function test_load()
 
   use_schema = fullfile(fileparts(mfilename('fullpath')), 'schema');
@@ -42,10 +16,21 @@ function test_load()
   assert(isfield(schema.content, 'subfolder_1'));
   assert(isfield(schema.content.subfolder_1, 'sub'));
   assert(~isfield(schema.content, 'subfolder_4'));
+  assert(isfield(schema.content.subfolder_2, 'subfolder_3'));
+  assert(isfield(schema.content.subfolder_2.subfolder_3, 'sub'));
 
-  % some recursive aspects are not implemented yet
-  %     assert(isfield(schema.subfolder_2, 'subfolder_3'));
-  %     assert(isfield(schema.subfolder_2.subfolder_3, 'sub'));
+end
+
+function test_metadata_loading()
+
+  schema = bids.Schema();
+  assert(~isfield(schema.content, 'metadata'));
+
+  schema = bids.Schema();
+  schema.load_schema_metadata = true;
+  schema = schema.load();
+  assert(isfield(schema.content.objects, 'metadata'));
+  assert(isstruct(schema.content.objects.metadata));
 
 end
 
@@ -56,6 +41,19 @@ function test_schemaless()
   schema = bids.Schema(use_schema);
 
   assertEqual(schema.content, struct([]));
+
+end
+
+function test_return_required_entities
+
+  schema = bids.Schema();
+
+  suffix_group = schema.content.rules.datatypes.func(1);
+  required_entities = schema.required_entities_for_suffix_group(suffix_group);
+
+  expected_output = {'sub', 'task'};
+
+  assertEqual(required_entities, expected_output);
 
 end
 
@@ -80,7 +78,7 @@ function test_return_modality_suffixes_regex
 
   schema = bids.Schema();
 
-  suffix_group = schema.content.datatypes.func(1);
+  suffix_group = schema.content.rules.datatypes.func(1);
   suffixes = schema.return_modality_suffixes_regex(suffix_group);
   assertEqual(suffixes, '_(bold|cbv|sbref){1}');
 
@@ -90,7 +88,7 @@ function test_return_modality_extensions_regex
 
   schema = bids.Schema();
 
-  suffix_group = schema.content.datatypes.func(1);
+  suffix_group = schema.content.rules.datatypes.func(1);
   extensions = schema.return_modality_extensions_regex(suffix_group);
   assertEqual(extensions, '(.nii.gz|.nii){1}');
 
@@ -100,7 +98,7 @@ function test_return_modality_regex
 
   schema = bids.Schema();
 
-  suffix_group = schema.content.datatypes.anat(1);
+  suffix_group = schema.content.rules.datatypes.anat(1);
   regular_expression = schema.return_modality_regex(suffix_group);
 
   expected_expression = ['^%s.*', ...
@@ -123,7 +121,7 @@ function test_return_modality_entities_basic
 
   schema = bids.Schema();
 
-  suffix_group = schema.content.datatypes.func(1);
+  suffix_group = schema.content.rules.datatypes.func(1);
   entities = schema.return_entities_for_suffix_group(suffix_group);
 
   expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
