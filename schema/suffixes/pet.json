@@ -1,4 +1,0 @@
-{
-  "name": "Positron Emission Tomography",
-  "description": "PET imaging data SHOULD be stored in 4D\n(or 3D, if only one volume was acquired) NIfTI files with the `_pet` suffix.\nVolumes MUST be stored in chronological order\n(the order they were acquired in).\n"
-}

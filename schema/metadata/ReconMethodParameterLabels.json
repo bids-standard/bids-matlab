@@ -1,8 +1,0 @@
-{
-  "name": "ReconMethodParameterLabels",
-  "description": "Names of reconstruction parameters (for example, `[\"subsets\", \"iterations\"]`).\n",
-  "type": "array",
-  "items": {
-    "type": "string"
-  }
-}

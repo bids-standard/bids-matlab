@@ -1,7 +1,0 @@
-{
-  "name": "AcquisitionDuration",
-  "description": "Duration (in seconds) of volume acquisition.\nCorresponds to DICOM Tag 0018, 9073 `Acquisition Duration`.\nThis field is mutually exclusive with RepetitionTime.\n",
-  "type": "number",
-  "exclusiveMinimum": 0,
-  "unit": "s"
-}

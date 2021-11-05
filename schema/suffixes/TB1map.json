@@ -1,5 +1,0 @@
-{
-  "name": "RF transmit field image",
-  "description": "In arbitrary units (arbitrary).\nRadio frequency (RF) transmit (B1+) field maps are REQUIRED to use this\nsuffix regardless of the method used to generate them.\nTB1map intensity values are RECOMMENDED to be represented as percent\nmultiplicative factors such that FlipAngle<sub>effective</sub> =\nB1+<sub>intensity</sub>\\*FlipAngle<sub>nominal</sub> .\n",
-  "unit": "arbitrary"
-}

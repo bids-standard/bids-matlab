@@ -1,6 +1,0 @@
-{
-  "name": "ImageDecayCorrectionTime",
-  "description": "Point in time from which the decay correction was applied with respect to\nTimeZero in the default unit seconds.\n",
-  "type": "number",
-  "unit": "s"
-}

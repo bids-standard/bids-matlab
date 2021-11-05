@@ -1,4 +1,0 @@
-{
-  "name": "TB1TFL",
-  "description": "The result of a Siemens `tfl_b1_map` product sequence.\nThis sequence produces two images.\nThe first image appears like an anatomical image and the second output is a\nscaled flip angle map.\n"
-}

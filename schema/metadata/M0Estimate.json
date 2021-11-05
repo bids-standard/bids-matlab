@@ -1,6 +1,0 @@
-{
-  "name": "M0Estimate",
-  "description": "A single numerical whole-brain M0 value (referring to the M0 of blood),\nonly if obtained externally\n(for example retrieved from CSF in a separate measurement).\n",
-  "type": "number",
-  "exclusiveMinimum": 0
-}

@@ -1,6 +1,0 @@
-{
-  "name": "Genetics.Database",
-  "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nof database where the dataset is hosted.\n",
-  "type": "string",
-  "format": "uri"
-}

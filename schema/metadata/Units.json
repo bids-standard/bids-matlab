@@ -1,6 +1,0 @@
-{
-  "name": "Units",
-  "description": "Measurement units for the associated file.\nSI units in CMIXF formatting are RECOMMENDED\n(see [Units](/02-common-principles.html#units)).\n",
-  "type": "string",
-  "format": "unit"
-}

@@ -1,6 +1,0 @@
-{
-  "name": "CogPOID",
-  "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nof the corresponding [CogPO](http://www.cogpo.org/) term.\n",
-  "type": "string",
-  "format": "uri"
-}
