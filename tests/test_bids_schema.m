@@ -129,3 +129,45 @@ function test_return_modality_entities_basic
   assertEqual(entities, expected_output);
 
 end
+
+function test_return_entity_order
+
+  schema = bids.Schema();
+
+  entity_list_to_order = {'description'
+                          'run'
+                          'subject'};
+
+  order = schema.entity_order(entity_list_to_order);
+
+  expected = {'subject'
+              'run'
+              'description'};
+
+  assertEqual(order, expected);
+
+end
+
+function test_return_entity_order_new_entity
+
+  schema = bids.Schema();
+
+  %
+  order = schema.entity_order('foo');
+  assertEqual(order, {'foo'});
+
+  %
+  entity_list_to_order = {'description'
+                          'run'
+                          'subject'
+                          'foo'};
+
+  order = schema.entity_order(entity_list_to_order);
+
+  expected = {'subject'
+              'run'
+              'description'
+              'foo'};
+  assertEqual(order, expected);
+
+end

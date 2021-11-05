@@ -49,12 +49,6 @@ classdef Schema
       %   schema = schema.load
       %
 
-      % TODO:
-      %  - folders that do not contain json files themselves but contain
-      %  subfolders that do, are not reflected in the output structure (they are
-      %  skipped). This can lead to "name conflicts". See "silenced" unit tests
-      %  for more info.
-
       if nargin < 2
         use_schema = true();
       end
@@ -133,6 +127,21 @@ classdef Schema
     end
 
     % ----------------------------------------------------------------------- %
+    %% ENTITIES
+    function order = entity_order(obj, entity_list)
+
+      if ischar(entity_list)
+        entity_list = cellstr(entity_list);
+      end
+
+      order = obj.content.rules.entities;
+      is_in_schema = ismember(order, entity_list);
+      is_not_in_schema = ~ismember(entity_list, order);
+      order = order(is_in_schema);
+      order = cat(1, order, entity_list(is_not_in_schema));
+
+    end
+
     %% MODALITIES
     function groups = return_modality_groups(obj)
       %
