@@ -198,8 +198,12 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
     filter.suffix = suffixes{iType};
     boilerplate = get_boilerplate(filter.modality{1}, verbose);
 
-    if ismember(filter.suffix, {'events', 'physio'})
+    if ismember(filter.suffix, {'physio'})
       not_supported(filter.suffix, verbose);
+      continue
+    end
+
+    if ismember(filter.suffix, {'events'})
       continue
     end
 
@@ -231,6 +235,10 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
 
       print_to_output(text, file_id, verbose);
 
+      print_task_info(file_id, acq_param, verbose);
+
+      print_events_info(file_id, BIDS, filter, verbose);
+
     end
 
   end
@@ -247,8 +255,12 @@ function report_meeg(BIDS, filter, verbose, file_id)
 
     boilerplate = get_boilerplate(filter.modality{1}, verbose);
 
-    if ismember(filter.suffix, {'events', 'physio', 'channels', 'headshape'})
+    if ismember(filter.suffix, {'physio', 'channels', 'headshape'})
       not_supported(filter.suffix, verbose);
+      continue
+    end
+
+    if ismember(filter.suffix, {'events'})
       continue
     end
 
@@ -268,7 +280,12 @@ function report_meeg(BIDS, filter, verbose, file_id)
       text = bids.internal.replace_placeholders(boilerplate, acq_param);
 
       print_base_report(file_id, metadata, verbose);
+
       print_to_output(text, file_id, verbose);
+
+      print_task_info(file_id, acq_param, verbose);
+
+      print_events_info(file_id, BIDS, filter, verbose);
 
     end
 
@@ -389,13 +406,15 @@ function template = get_boilerplate(type, verbose)
           'anat', ...
           'fmap', ...
           'dwi', ...
+          'task', ...
+          'events', ...
           'credit'}
       file = [type '.tmp'];
 
     case {'meg', 'eeg', 'ieeg'}
       file = 'meeg.tmp';
 
-    case {'events', 'physio', 'channels', 'headshape'}
+    case {'physio', 'channels', 'headshape'}
       % TODO
       template = '';
       not_supported(type, verbose);
@@ -626,6 +645,28 @@ function print_mri_info(file_id, metadata, verbose)
   boilerplate_text = get_boilerplate('mri_info', verbose);
   boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
   print_to_output(boilerplate_text, file_id, verbose);
+end
+
+function print_task_info(file_id, metadata, verbose)
+  boilerplate = get_boilerplate('task', verbose);
+  boilerplate_text = bids.internal.replace_placeholders(boilerplate, metadata);
+  print_to_output(boilerplate_text, file_id, verbose);
+end
+
+function print_events_info(file_id, BIDS, filter, verbose)
+
+  filter.suffix = 'events';
+  [~, metadata] = get_filemane_and_metadata(BIDS, filter);
+  if isfield(metadata, 'StimulusPresentation')
+    boilerplate = get_boilerplate('events', verbose);
+    boilerplate_text = bids.internal.replace_placeholders(boilerplate, metadata);
+    print_to_output(boilerplate_text, file_id, verbose);
+  end
+  if isfield(metadata, 'trial_type')
+    % TODO
+    not_supported('trial_type description', verbose);
+  end
+
 end
 
 function print_credit(file_id, verbose)
