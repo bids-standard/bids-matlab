@@ -207,7 +207,7 @@ function [modalities, options] = get_modalities(BIDS, options)
 
   if any(ismember(options(:, 1), 'modality'))
     modalities = options{ismember(options(:, 1), 'modality'), 2};
-    options(ismember(options(:, 1), 'modality'), :) = [];
+
   else
     hasmod = arrayfun(@(y) structfun(@(x) isstruct(x) & ~isempty(x), y), ...
                       BIDS.subjects, 'UniformOutput', false);
@@ -277,6 +277,7 @@ function result = update_result(query, options, result, this_subject, this_modal
   for k = 1:numel(d)
 
     % status is kept true only if this file matches the options of the query
+    d(k).modality = this_modality;
     status = bids.internal.keep_file_for_query(d(k), options);
 
     if status
@@ -356,6 +357,7 @@ function result = update_result_with_root_content(query, options, result, BIDS)
   for k = 1:numel(d)
 
     % status is kept true only if this file matches the options of the query
+    d(k).modality = '';
     status = bids.internal.keep_file_for_query(d(k), options);
 
     if status

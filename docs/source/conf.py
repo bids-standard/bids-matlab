@@ -31,7 +31,7 @@ author = 'BIDS-MATLAB developers'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinxcontrib.matlab', 
+    'sphinxcontrib.matlab',
     'sphinx.ext.autodoc']
 matlab_src_dir = os.path.dirname(os.path.abspath('../../+bids'))
 primary_domain = 'mat'

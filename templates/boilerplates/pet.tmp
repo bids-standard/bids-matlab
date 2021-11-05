@@ -1,0 +1,3 @@
+The imaging was done using {{TracerRadionuclide}} labelled {{TracerName}} admnistered by {{ModeOfAdministration}}.
+
+The acquisiton parameters were: field of view, FOV= {{fov}} mm; matrix size= {{mat_size}}; voxel size= {{vox_size}} mm.

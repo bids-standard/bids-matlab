@@ -8,19 +8,147 @@ end
 
 function test_report_basic()
 
-  read_nifti = false;
-  output_path = fullfile(fileparts(mfilename('fullpath')), 'output');
-  verbose = false;
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
 
-  sub = '';
-  ses = '';
+  cfg = set_up();
 
-  pth_bids_example = get_test_data_dir();
+  filter.sub = '01';
 
-  BIDS = fullfile(pth_bids_example, 'ds000117'); % ds000117 ds001 asl001 synthetic
+  datasets = {'ds000117'};
+  modalities = {'func', 'anat', 'dwi', 'fmap', 'meg'};
 
-  BIDS = bids.layout(BIDS);
+  for i = 1:numel(datasets)
 
-  bids.report(BIDS, sub, ses, output_path, 'read_nifti', read_nifti, 'verbose', verbose);
+    BIDS = fullfile(cfg.pth_bids_example, datasets{i});
+    BIDS = bids.layout(BIDS, true);
 
+    for j = 1:numel(modalities)
+
+      filter.modality =  modalities{j};
+
+      report = bids.report(BIDS, ...
+                           'filter', filter, ...
+                           'output_path', cfg.output_path, ...
+                           'read_nifti', cfg.read_nifti, ...
+                           'verbose', cfg.verbose);
+
+      content = get_report_content(report);
+      expected = get_expected_content(cfg, datasets{i}, modalities{j});
+      assertEqual(content, expected);
+
+    end
+  end
+
+end
+
+function test_report_asl()
+
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
+
+  cfg = set_up();
+
+  datasets = 'asl003';
+
+  BIDS = fullfile(cfg.pth_bids_example, datasets);
+
+  BIDS = bids.layout(BIDS, true);
+
+  filter.modality = 'perf';
+
+  report = bids.report(BIDS, ...
+                       'filter', filter, ...
+                       'output_path', cfg.output_path, ...
+                       'verbose', cfg.verbose);
+
+  content = get_report_content(report);
+  expected = get_expected_content(cfg, datasets, filter.modality);
+  assertEqual(content, expected);
+
+end
+
+function test_report_pet()
+
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
+
+  cfg = set_up();
+
+  datasets = 'pet001';
+
+  BIDS = fullfile(cfg.pth_bids_example, datasets);
+
+  BIDS = bids.layout(BIDS, true);
+
+  filter.modality = 'pet';
+
+  report = bids.report(BIDS, ...
+                       'filter', filter, ...
+                       'output_path', cfg.output_path, ...
+                       'verbose', cfg.verbose);
+
+  content = get_report_content(report);
+  expected = get_expected_content(cfg, datasets, filter.modality);
+  assertEqual(content, expected);
+
+end
+
+function test_report_moae_data()
+
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
+
+  cfg = set_up();
+
+  cfg.read_nifti = true;
+
+  BIDS = fullfile(bids.internal.root_dir(), 'examples', 'MoAEpilot');
+
+  BIDS = bids.layout(BIDS, true);
+
+  report = bids.report(BIDS, ...
+                       'output_path', cfg.output_path, ...
+                       'read_nifti', cfg.read_nifti, ...
+                       'verbose', cfg.verbose);
+
+  content = get_report_content(report);
+  expected = get_expected_content(cfg, 'MoAE', 'all');
+
+  assertEqual(content, expected);
+
+end
+
+function expected = get_expected_content(cfg, dataset, modality)
+  expected = fullfile(cfg.this_path, 'data', ...
+                      'reports', ...
+                      [dataset '_' modality '.md']);
+  expected = get_report_content(expected);
+end
+
+function cfg = set_up()
+
+  cfg = set_test_cfg();
+
+  cfg.this_path = fileparts(mfilename('fullpath'));
+  cfg.output_path = fullfile(cfg.this_path, 'output');
+
+  cfg.read_nifti = false;
+
+  cfg.pth_bids_example = get_test_data_dir();
+
+end
+
+function content = get_report_content(file)
+  fid = fopen(file);
+  content = fscanf(fid, '%s');
+  fclose(fid);
 end

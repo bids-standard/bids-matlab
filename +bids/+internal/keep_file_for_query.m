@@ -17,7 +17,7 @@ function status = keep_file_for_query(file_struct, options)
       field_name = 'ext';
     end
 
-    if any(strcmp(field_name, {'suffix', 'ext', 'prefix'})) && ...
+    if any(strcmp(field_name, {'modality','suffix', 'ext', 'prefix'})) && ...
              check_label_with_regex(file_struct.(field_name), options{i, 2})
       status = false;
       return
@@ -33,6 +33,7 @@ function status = keep_file_for_query(file_struct, options)
 
   % work on the the entities
   for j = 1:size(options, 1)
+
 
     this_entity = options{j, 1};
     label_lists = options{j, 2};

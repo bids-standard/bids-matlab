@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: ['*']
 
+env:
+  OCTFLAGS: --no-gui --no-window-system --silent
+
 jobs:
   build:
 
@@ -21,7 +24,7 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install octave liboctave-dev
 
-    - name: Clone bids-matlab         
+    - name: Clone bids-matlab
       uses: actions/checkout@v2
       with:
         submodules: true
@@ -32,35 +35,20 @@ jobs:
          git clone git://github.com/gllmflndn/JSONio.git --depth 1
          cd JSONio
          mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
-         cd ..
 
     - name: Install bids-example and data
       run: |
+         octave $OCTFLAGS --eval "addpath(pwd); bids.internal.download_moae_ds()"
          cd tests
-         git clone git://github.com/bids-standard/bids-examples.git --depth 1 
-         cd utils
-         octave $OCTFLAGS --eval "download_moae_ds"
-         cd ../..
+         git clone git://github.com/bids-standard/bids-examples.git --depth 1
 
-        # ------------------------------ 
-        # if tests on real data are needed 
-        #
-        #  sudo apt-get -y install datalad
-        #  mkdir data; cd data
-        #  datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
-        #  datalad get ds000001/sub-01/func
-        #  datalad clone https://github.com/OpenNeuroDatasets/ds000117.git
-        #  datalad get ds000117/sub-01/ses-mri/func/*run-0[13]*
-        #  datalad get ds000117/sub-01/ses-mri/fmap/  
-        #  cd ..
-        
     - name: MOxUnit Action
       uses: joergbrech/moxunit-action@master
       with:
         tests: tests # files or directories containing the MOxUnit test cases
-        src: +bids   # directories to be added to the Octave search path before running the tests. 
+        src: +bids   # directories to be added to the Octave search path before running the tests.
         ext: JSONio tests/utils # External resources to add to the search put (excluded from coverage)
-        # data: # Directory for test data  
+        # data: # Directory for test data
         with_coverage: true
         cover_xml_file: coverage.xml
 

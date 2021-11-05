@@ -1,2 +1,1 @@
 bids-validator@1.5.8
-

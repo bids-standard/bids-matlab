@@ -1,0 +1,16 @@
+# cancel previous unfinished workflows when new commit are pushed
+# https://github.com/marketplace/actions/cancel-workflow-action#advanced-pull-requests-from-forks
+
+name: cancel
+on:
+  workflow_run:
+    workflows: ["tests"]
+    types:
+      - requested
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: styfle/cancel-workflow-action@0.9.1
+      with:
+        workflow_id: ${{ github.event.workflow.id }}

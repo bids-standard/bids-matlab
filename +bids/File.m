@@ -276,10 +276,10 @@ classdef File
       end
 
       if isempty(obj.suffix)
-        obj.bidsFile_error('emptySuffix');
+        obj.bids_file_error('emptySuffix');
       end
       if isempty(obj.ext)
-        obj.bidsFile_error('emptyExtension');
+        obj.bids_file_error('emptyExtension');
       end
 
       output = [obj.prefix, obj.concatenate_entities(), '_', obj.suffix, obj.ext];
@@ -361,7 +361,7 @@ classdef File
       %
 
       if isempty(obj.schema)
-        obj.bidsFile_error('schemaMissing');
+        obj.bids_file_error('schemaMissing');
         return
       end
 
@@ -384,7 +384,7 @@ classdef File
       %
 
       if isempty(obj.schema)
-        obj.bidsFile_error('schemaMissing');
+        obj.bids_file_error('schemaMissing');
         return
       end
 
@@ -410,14 +410,14 @@ classdef File
       %
 
       if isempty(obj.schema)
-        obj.bidsFile_error('schemaMissing');
+        obj.bids_file_error('schemaMissing');
         return
       end
 
       obj.modality = obj.schema.return_datatypes_for_suffix(obj.suffix);
 
       if numel(obj.modality) > 1
-        obj.bidsFile_error('manyModalityForsuffix');
+        obj.bids_file_error('manyModalityForsuffix');
 
       else
         % convert to char
@@ -444,7 +444,7 @@ classdef File
       entity_names = fieldnames(obj.entities);
 
       if isempty(entity_names)
-        obj.bidsFile_error('noEntity');
+        obj.bids_file_error('noEntity');
         return
       end
 
@@ -482,12 +482,12 @@ classdef File
         msg = sprintf('Entities ''%s'' cannot not be empty for the suffix ''%s''', ...
                       strjoin(obj.required_entities(missing_required_entity), ', '), ...
                       obj.suffix);
-        obj.bidsFile_error('requiredEntity', msg);
+        obj.bids_file_error('requiredEntity', msg);
       end
 
     end
 
-    function bidsFile_error(obj, id, msg)
+    function bids_file_error(obj, id, msg)
 
       if nargin < 2
         msg = '';

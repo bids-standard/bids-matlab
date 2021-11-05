@@ -1,17 +1,18 @@
-function output_dir = download_moae_ds(downloadData)
+function output_dir = download_moae_ds(download_data, output_dir)
   %
   % Will download the lightweight "Mother of all experiment" dataset from the
   %  SPM website.
   %
-  % Copyright (C) 2021--, BIDS-MATLAB developers
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   if nargin < 1
-    downloadData = true();
+    download_data = true();
+  end
+  if nargin < 2
+    output_dir = fullfile(bids.internal.root_dir(), 'examples');
   end
 
-  output_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'data');
-
-  if downloadData
+  if download_data
 
     % URL of the data set to download
     URL = 'http://www.fil.ion.ucl.ac.uk/spm/download/data/MoAEpilot/MoAEpilot.bids.zip';

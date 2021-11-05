@@ -9,7 +9,7 @@ datasets conforming to the BIDS (Brain Imaging Data Structure) format.
 
 For more information about BIDS, visit `the BIDS website <https://bids.neuroimaging.io/>`_.
 
-To see how to install BIDS-Matlab, please check 
+To see how to install BIDS-Matlab, please check
 `the github repository <https://github.com/bids-standard/bids-matlab>`_.
 
 .. toctree::
@@ -21,7 +21,7 @@ To see how to install BIDS-Matlab, please check
    function_description
    utility_functions
    schema
-   
+
 
 Indices and tables
 ==================

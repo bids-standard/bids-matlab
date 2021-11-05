@@ -8,7 +8,7 @@ end
 
 function test_tsvread_basic()
 
-  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
+  pth = bids.internal.download_moae_ds();
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
@@ -29,7 +29,7 @@ end
 
 function test_tsvread_subset()
 
-  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
+  pth = bids.internal.download_moae_ds();
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
