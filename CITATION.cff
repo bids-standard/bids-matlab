@@ -15,10 +15,9 @@ message: "If you use this software, please cite it as below."
 authors:
   - family-names: Gau
     given-names:  Rémi
-    orcid: 
+    orcid: https://orcid.org/0000-0002-1535-9767 
   - family-names: Flandin
-    given-names:  Guillaume   
-    orcid:        
+    given-names:  Guillaume           
   - family-names: Janke
     given-names:  Andrew     
   - alias: tanguyduval    
