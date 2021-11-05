@@ -35,27 +35,12 @@ jobs:
          git clone git://github.com/gllmflndn/JSONio.git --depth 1
          cd JSONio
          mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
-         cd ..
 
     - name: Install bids-example and data
       run: |
+         octave $OCTFLAGS --eval "addpath(pwd); bids.internal.download_moae_ds()"
          cd tests
          git clone git://github.com/bids-standard/bids-examples.git --depth 1
-         cd utils
-         octave $OCTFLAGS --eval "download_moae_ds"
-         cd ../..
-
-        # ------------------------------
-        # if tests on real data are needed
-        #
-        #  sudo apt-get -y install datalad
-        #  mkdir data; cd data
-        #  datalad clone https://github.com/OpenNeuroDatasets/ds000001.git
-        #  datalad get ds000001/sub-01/func
-        #  datalad clone https://github.com/OpenNeuroDatasets/ds000117.git
-        #  datalad get ds000117/sub-01/ses-mri/func/*run-0[13]*
-        #  datalad get ds000117/sub-01/ses-mri/fmap/
-        #  cd ..
 
     - name: MOxUnit Action
       uses: joergbrech/moxunit-action@master

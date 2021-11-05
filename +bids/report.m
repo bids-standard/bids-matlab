@@ -600,6 +600,8 @@ end
 
 function text = add_word_wrap(text)
 
+    % TODO make optional?
+
   linelength = 80;
 
   space = strfind(text, ' ');
