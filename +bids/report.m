@@ -600,7 +600,7 @@ end
 
 function text = add_word_wrap(text)
 
-    % TODO make optional?
+  % TODO make optional?
 
   linelength = 80;
 
