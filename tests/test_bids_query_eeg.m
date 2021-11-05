@@ -19,9 +19,7 @@ function test_bids_query_eeg_basic()
   modalities = {'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  suffixes = {'channels', 'eeg', 'events'};
-  % Missing: 'electrodes'
-  % skipped as it contains a task entity and thus does not match the schema
+  suffixes = {'channels', 'eeg', 'electrodes', 'events'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   %%

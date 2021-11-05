@@ -12,7 +12,7 @@ function test_replace_placeholders_basic
   metadata.SoftwareVersions = 'v0.1.0';
   boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
 
-  expected = 'XXXManufacturerXXX and XXXManufacturersModelNameXXX and v0.1.0';
+  expected = '{{Manufacturer}} and {{ManufacturersModelName}} and v0.1.0';
 
   assertEqual(boilerplate_text, expected);
 
