@@ -30,16 +30,64 @@ function test_report_basic()
                            'read_nifti', cfg.read_nifti, ...
                            'verbose', cfg.verbose);
 
-      %     content = get_report_content(report);
-      %
-      %     expected = fullfile(cfg.this_path, 'data', ...
-      % 'reports', [datasets{i} '_' modalities{j} '.md']);
-      %     expected = get_report_content(expected);
-
-      %     assertEqual(content, expected);
+      % content = get_report_content(report);
+      % expected = get_expected_content(cfg, datasets{i}, modalities{j})
+      % assertEqual(content, expected);
 
     end
   end
+
+end
+
+function test_report_asl()
+
+  cfg = set_up();
+
+  BIDS = fullfile(cfg.pth_bids_example, 'asl003');
+
+  BIDS = bids.layout(BIDS, true);
+
+  filter.modality = 'perf';
+
+  report = bids.report(BIDS, ...
+                       'filter', filter, ...
+                       'output_path', cfg.output_path, ...
+                       'verbose', cfg.verbose);
+
+  %     content = get_report_content(report);
+
+  %     expected = fullfile(cfg.this_path, 'data', ...
+  % 'reports', ...
+  % [datasets{i} '_' modalities{j} '.md']);
+  %     expected = get_report_content(expected);
+
+  %     assertEqual(content, expected);
+
+end
+
+function test_report_pet()
+
+  cfg = set_up();
+
+  BIDS = fullfile(cfg.pth_bids_example, 'pet001');
+
+  BIDS = bids.layout(BIDS, true);
+
+  filter.modality = 'pet';
+
+  report = bids.report(BIDS, ...
+                       'filter', filter, ...
+                       'output_path', cfg.output_path, ...
+                       'verbose', cfg.verbose);
+
+  %     content = get_report_content(report);
+
+  %     expected = fullfile(cfg.this_path, 'data', ...
+  % 'reports', ...
+  % [datasets{i} '_' modalities{j} '.md']);
+  %     expected = get_report_content(expected);
+
+  %     assertEqual(content, expected);
 
 end
 
@@ -67,6 +115,13 @@ function test_report_moae_data()
 
   %     assertEqual(content, expected);
 
+end
+
+function expected = get_expected_content(cfg, dataset, modality)
+  expected = fullfile(cfg.this_path, 'data', ...
+                      'reports', ...
+                      [dataset '_' modality '.md']);
+  expected = get_report_content(expected);
 end
 
 function cfg = set_up()

@@ -70,6 +70,10 @@ function filename = report(varargin)
 
   [file_id, filename] = open_output_file(BIDS, p.Results.output_path, p.Results.verbose);
 
+  if p.Results.verbose
+    fprintf(1, '\n%s\n', repmat('-', 80, 1));
+  end
+
   for i_sub = 1:nb_sub
 
     this_filter = filter;
@@ -102,8 +106,8 @@ function filename = report(varargin)
 
         switch this_filter.modality{1}
 
-          case  {'anat', 'perf', 'dwi', 'fmap'}
-            report_mri(BIDS, this_filter, read_nii, p.Results.verbose, file_id);
+          case  {'anat', 'perf', 'dwi', 'fmap', 'pet'}
+            report_nifti(BIDS, this_filter, read_nii, p.Results.verbose, file_id);
 
           case  {'func'}
             report_func(BIDS, this_filter, read_nii, p.Results.verbose, file_id);
@@ -111,7 +115,7 @@ function filename = report(varargin)
           case  {'eeg', 'meg', 'ieeg'}
             report_meeg(BIDS, this_filter, p.Results.verbose, file_id);
 
-          case  {'pet', 'beh'}
+          case  {'beh'}
             not_supported(this_filter.modality{1}, p.Results.verbose);
 
           otherwise
@@ -131,7 +135,7 @@ end
 
 % TODO refactor the different reports
 
-function report_mri(BIDS, filter, read_nii, verbose, file_id)
+function report_nifti(BIDS, filter, read_nii, verbose, file_id)
 
   suffixes = bids.query(BIDS, 'suffixes', filter);
 
@@ -140,6 +144,11 @@ function report_mri(BIDS, filter, read_nii, verbose, file_id)
     filter.suffix = suffixes{iType};
     boilerplate = get_boilerplate(filter.modality{1}, verbose);
 
+    if ismember(filter.suffix, {'blood', 'asllabeling'})
+      not_supported(filter.suffix, verbose);
+      continue
+    end
+
     [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
     [~, metadata] = get_filemane_and_metadata(BIDS, filter);
@@ -147,11 +156,10 @@ function report_mri(BIDS, filter, read_nii, verbose, file_id)
 
     acq_param = get_acq_param(BIDS, filter, read_nii, verbose);
     acq_param.nb_runs = num2str(nb_runs);
-    acq_param.suffix = filter.suffix;
 
     switch filter.modality{1}
 
-      case {'anat', 'perf', 'fmap'}
+      case {'anat', 'perf', 'fmap', 'pet'}
 
         % for fmap acq_param.for = sprintf('for %i runs of %s, ', nb_runs, this_task);
         acq_param.for = 'TODO';
@@ -181,7 +189,12 @@ function report_mri(BIDS, filter, read_nii, verbose, file_id)
 
     print_institution_info(file_id, metadata, verbose);
 
-    print_mri_info(file_id, metadata, verbose);
+    if strcmp(filter.modality{1}, 'pet')
+      % TODO task for pet
+      print_pet_info(file_id, metadata, verbose);
+    else
+      print_mri_info(file_id, metadata, verbose);
+    end
 
     print_to_output(text, file_id, verbose);
 
@@ -203,6 +216,7 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
       continue
     end
 
+    % events are taken care of as part by print_events_info below
     if ismember(filter.suffix, {'events'})
       continue
     end
@@ -260,6 +274,7 @@ function report_meeg(BIDS, filter, verbose, file_id)
       continue
     end
 
+    % events are taken care of as part by print_events_info below
     if ismember(filter.suffix, {'events'})
       continue
     end
@@ -402,10 +417,14 @@ function template = get_boilerplate(type, verbose)
     case {'institution', ...
           'device_info', ...
           'mri_info', ...
+          'pet_info', ...
+          'blood', ...
           'func', ...
           'anat', ...
           'fmap', ...
+          'perf', ...
           'dwi', ...
+          'pet', ...
           'task', ...
           'events', ...
           'credit'}
@@ -448,7 +467,7 @@ function acq_param = get_acq_param(BIDS, filter, read_gz, verbose)
   [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
 
   if verbose
-    fprintf('\n Getting parameters - %s\n\n', filename{1});
+    fprintf('\n Getting parameters - %s\n\n', bids.internal.file_utils(filename{1}, 'filename'));
   end
 
   fields_list = { ...
@@ -637,6 +656,12 @@ end
 
 function print_device_info(file_id, metadata, verbose)
   boilerplate_text = get_boilerplate('device_info', verbose);
+  boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
+  print_to_output(boilerplate_text, file_id, verbose);
+end
+
+function print_pet_info(file_id, metadata, verbose)
+  boilerplate_text = get_boilerplate('pet_info', verbose);
   boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
   print_to_output(boilerplate_text, file_id, verbose);
 end
