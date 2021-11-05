@@ -82,13 +82,15 @@ classdef Schema
 
         mod_grps = obj.return_modality_groups();
 
+        datatypes = obj.get_datatypes();
+
         for i = 1:numel(mod_grps)
 
           mods = obj.return_modalities([], mod_grps{i});
 
           for j = 1:numel(mods)
 
-            suffix_grps = obj.content.rules.datatypes.(mods{j});
+            suffix_grps = datatypes.(mods{j});
             % need to use a tmp variable to avoid some errors in continuous
             % integration to avoid some errors with octave
             updated_suffix_grps = struct('suffixes', [], ...
@@ -103,10 +105,13 @@ classdef Schema
               updated_suffix_grps(k, 1) = this_suffix_group;
             end
 
-            obj.content.rules.datatypes.(mods{j}) = updated_suffix_grps;
+            datatypes.(mods{j}) = updated_suffix_grps;
 
           end
         end
+
+        obj = obj.set_datatypes(datatypes);
+
       end
 
     end
@@ -127,6 +132,15 @@ classdef Schema
     end
 
     % ----------------------------------------------------------------------- %
+    %% DATATYPES
+    function datatypes = get_datatypes(obj)
+      datatypes = obj.content.rules.datatypes;
+    end
+
+    function obj = set_datatypes(obj, datatypes)
+      obj.content.rules.datatypes = datatypes;
+    end
+
     %% ENTITIES
     function order = entity_order(obj, entity_list)
 
@@ -220,8 +234,9 @@ classdef Schema
 
       % the following loop could probably be improved with some cellfun magic
       %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
-      for i = 1:size(obj.content.datatypes.(modality), 1)
-        this_suffix_group = obj.content.datatypes.(modality)(i);
+      datatypes = obj.get_datatypes();
+      for i = 1:size(datatypes.(modality), 1)
+        this_suffix_group = datatypes.(modality)(i);
         this_suffix_group = obj.ci_check(this_suffix_group);
         if any(strcmp(suffix, this_suffix_group.suffixes))
           idx = i;
@@ -256,17 +271,18 @@ classdef Schema
         return
       end
 
-      datatypes_list = fieldnames(obj.content.rules.datatypes);
+      all_datatypes = obj.get_datatypes();
+      datatypes_names = fieldnames(all_datatypes);
 
-      for i = 1:size(datatypes_list, 1)
+      for i = 1:numel(datatypes_names)
 
-        this_datatype = obj.content.rules.datatypes.(datatypes_list{i});
+        this_datatype = all_datatypes.(datatypes_names{i});
         this_datatype = obj.ci_check(this_datatype);
 
         suffix_list = cat(1, this_datatype.suffixes);
 
         if any(ismember(suffix_list, suffix))
-          datatypes{end + 1} = datatypes_list{i};
+          datatypes{end + 1} = datatypes_names{i};
         end
 
       end
@@ -283,8 +299,10 @@ classdef Schema
 
       idx = obj.find_suffix_group(modality, suffix);
 
+      datatypes = obj.get_datatypes();
+
       if ~isempty(idx)
-        this_suffix_group = obj.content.datatypes.(modality)(idx);
+        this_suffix_group = datatypes.(modality)(idx);
       end
 
       if ~isempty(idx)

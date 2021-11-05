@@ -171,3 +171,34 @@ function test_return_entity_order_new_entity
   assertEqual(order, expected);
 
 end
+
+function test_find_suffix_group()
+
+  schema = bids.Schema();
+  idx = schema.find_suffix_group('anat', 'T1w');
+
+  assertEqual(idx, 1);
+
+end
+
+function test_find_suffix_error()
+
+  schema = bids.Schema();
+  schema.verbose = true;
+  assertWarning(@()schema.find_suffix_group('anat', 'foo'), 'Schema:noMatchingSuffix');
+
+end
+
+function test_return_entities_for_suffix_modality()
+
+  schema = bids.Schema();
+  [entities, required] = schema.return_entities_for_suffix_modality('bold', 'func');
+
+  expected_entities = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
+  assertEqual(entities, expected_entities);
+
+  expected_required = {'sub', 'task'};
+
+  assertEqual(required, expected_required);
+
+end
