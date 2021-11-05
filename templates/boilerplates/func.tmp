@@ -1,7 +1,10 @@
-For the {{TaskName}}, %s run(s) of {{PulseSequenceType}} {{ScanningSequence}} {{SequenceVariant}} 
-fMRI data were collected (%s slices acquired in 
-a %s fashion; repetition time, TR= {{RepetitionTime}} ms; echo time, TE= %s ms;  
-flip angle, FA= {{FlipAngle}} deg; field of view, FOV= %s mm; matrix size= %s; 
-voxel size= %s mm; multiband factor= %s; 
-in-plane acceleration factor= %s). 
-Each run was %s minutes in length, during which %s functional volumes were acquired.
+For the {{TaskName}} task, {{nb_runs}} run(s) of {{suffix}} {{PulseSequenceType}} {{ScanningSequence}} {{SequenceVariant}} 
+fMRI data were collected.
+
+The acquisiton parameters were: {{nb_slices}} slices acquired in 
+a {{so_str}} fashion; repetition time, TR= {{RepetitionTime}} s; echo time, TE= {{echo_time}} ms;  
+flip angle, FA= {{FlipAngle}} deg; field of view, FOV= {{fov}} mm; matrix size= {{mat_size}}; 
+voxel size= {{vox_size}} mm; multiband factor= {{mb_str}}; 
+in-plane acceleration factor= {pr_str}}. 
+
+Each run was {{length}} minutes in length, during which {{nb_vols}} functional volumes were acquired.

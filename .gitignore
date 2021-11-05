@@ -3,6 +3,11 @@ octave-workspace
 *.*~
 *.swp
 
+tmp*
+examples/brainstorm
+examples/MoAEpilot
+
+
 # virtual env
 env/*
 

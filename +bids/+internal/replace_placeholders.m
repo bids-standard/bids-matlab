@@ -16,10 +16,10 @@ function boilerplate_text = replace_placeholders(boilerplate_text, metadata)
       if isnumeric(text_to_insert)
         text_to_insert = num2str(text_to_insert);
       end
-                            
+
       boilerplate_text = regexprep(boilerplate_text, ...
                                    ['{{' this_placeholder '}}'],  ...
-                                   text_to_insert);                            
+                                   text_to_insert);
 
     end
 

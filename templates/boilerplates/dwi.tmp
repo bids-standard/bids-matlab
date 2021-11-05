@@ -1,6 +1,6 @@
-One run of {{PulseSequenceType}} {{ScanningSequence}} {{SequenceVariant}}  diffusion-weighted (dMRI) data were collected 
-(%s  slices %s ; repetition time, TR= {{RepetitionTime}} ms 
-echo time, TE= %s ms; flip angle, FA= {{FlipAngle}} deg; field of view, 
-FOV= %s mm; matrix size= %s ; voxel size= %s mm 
-b-values of %s acquired; %s diffusion directions; 
-multiband factor= %s ).
+{{nb_runs}} run of {{PulseSequenceType}} {{ScanningSequence}} {{SequenceVariant}}  
+diffusion-weighted-imaging ({{suffix}}) data were collected ({{nb_slices}} slices ; 
+repetition time, TR= {{RepetitionTime}} s; echo time, TE= {{echo_time}} ms; 
+flip angle, FA= {{FlipAngle}} deg; field of view, FOV= {{fov}} mm; matrix size= {{mat_size}} ; 
+voxel size= {{vox_size}} mm ; b-values of XXX acquired; XXX diffusion directions; 
+multiband factor= {{mb_str}} ).
