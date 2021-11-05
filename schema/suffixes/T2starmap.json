@@ -1,5 +1,0 @@
-{
-  "name": "Observed transverse relaxation time image",
-  "description": "In seconds (s).\nT2-star maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\n",
-  "unit": "s"
-}

@@ -1,4 +1,0 @@
-{
-  "name": "TB1DAM",
-  "description": "The double-angle B1<sup>+</sup> method\n([Insko and Bolinger 1993](https://doi.org/10.1006/jmra.1993.1133)) is based\non the calculation of the actual angles from signal ratios,\ncollected by two acquisitions at different nominal excitation flip angles.\nCommon sequence types for this application include spin echo and echo planar\nimaging.\n"
-}

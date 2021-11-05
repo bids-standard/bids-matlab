@@ -1,5 +1,0 @@
-{
-  "name": "MetaboliteAvail",
-  "description": "Boolean that specifies if metabolite measurements are available.\nIf `true`, the `metabolite_parent_fraction` column MUST be present in the\ncorresponding `*_blood.tsv` file.\n",
-  "type": "boolean"
-}

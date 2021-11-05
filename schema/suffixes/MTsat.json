@@ -1,5 +1,0 @@
-{
-  "name": "Magnetization transfer saturation image",
-  "description": "In arbitrary units (arbitrary).\nMTsat maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\n",
-  "unit": "arbitrary"
-}

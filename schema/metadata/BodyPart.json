@@ -1,5 +1,0 @@
-{
-  "name": "BodyPart",
-  "description": "Body part of the organ / body region scanned.\nCorresponds to DICOM Tag 0018, 0015 `Body Part Examined`.\n",
-  "type": "string"
-}

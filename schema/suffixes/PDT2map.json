@@ -1,5 +1,0 @@
-{
-  "name": "Combined PD/T2 image",
-  "description": "In arbitrary units (arbitrary).\nCombined PD/T2 maps are REQUIRED to use this suffix regardless of the method\nused to generate them.\n",
-  "unit": "arbitrary"
-}

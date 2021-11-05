@@ -1,5 +1,0 @@
-{
-  "name": "DeviceSerialNumber",
-  "description": "The serial number of the equipment that produced the measurements.\nA pseudonym can also be used to prevent the equipment from being\nidentifiable, so long as each pseudonym is unique within the dataset.\n",
-  "type": "string"
-}

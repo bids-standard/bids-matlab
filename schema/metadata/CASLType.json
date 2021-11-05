@@ -1,9 +1,0 @@
-{
-  "name": "CASLType",
-  "description": "Describes if a separate coil is used for labeling:\n`\"single-coil\"` or `\"double-coil\"`.\n",
-  "type": "string",
-  "enum": [
-    "single-coil",
-    "double-coil"
-  ]
-}

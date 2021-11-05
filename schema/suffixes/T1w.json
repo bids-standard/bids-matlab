@@ -1,5 +1,0 @@
-{
-  "name": "T1-weighted image",
-  "description": "In arbitrary units (arbitrary).\nThe contrast of these images is mainly determined by spatial variations in\nthe longitudinal relaxation time of the imaged specimen.\nIn spin-echo sequences this contrast is achieved at relatively short\nrepetition and echo times.\nTo achieve this weighting in gradient-echo images, again, short repetition\nand echo times are selected; however, at relatively large flip angles.\nAnother common approach to increase T1 weighting in gradient-echo images is\nto add an inversion preparation block to the beginning of the imaging\nsequence (for example, `TurboFLASH` or `MP-RAGE`).\n",
-  "unit": "arbitrary"
-}

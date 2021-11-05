@@ -1,4 +1,0 @@
-{
-  "name": "Multi-echo Spin Echo",
-  "description": "The MESE method involves multiple spin echo images acquired at different echo\ntimes and is primarily used for T2 mapping.\nPlease note that this suffix is not intended for the logical grouping of\nimages acquired using an Echo Planar Imaging (EPI) readout.\n"
-}

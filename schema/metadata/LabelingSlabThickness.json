@@ -1,7 +1,0 @@
-{
-  "name": "LabelingSlabThickness",
-  "description": "Thickness of the labeling slab in millimeters.\nFor non-selective FAIR a zero is entered.\nCorresponds to DICOM Tag 0018, 9254 `ASL Slab Thickness`.\n",
-  "type": "number",
-  "exclusiveMinimum": 0,
-  "unit": "mm"
-}

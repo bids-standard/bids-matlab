@@ -1,6 +1,0 @@
-{
-  "name": "PharmaceuticalDoseUnits",
-  "description": "Unit format relating to pharmaceutical dose\n(for example, `\"mg\"` or `\"mg/kg\"`).\n",
-  "type": "string",
-  "format": "unit"
-}

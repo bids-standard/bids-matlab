@@ -1,5 +1,0 @@
-{
-  "name": "License",
-  "description": "The license for the dataset.\nThe use of license name abbreviations is RECOMMENDED for specifying a license\n(see [Appendix II](/99-appendices/02-licenses.html)).\nThe corresponding full license text MAY be specified in an additional\n`LICENSE` file.\n",
-  "type": "string"
-}

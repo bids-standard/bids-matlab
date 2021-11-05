@@ -1,5 +1,0 @@
-{
-  "name": "InstitutionAddress",
-  "description": "The address of the institution in charge of the equipment that produced the\nmeasurements.\n",
-  "type": "string"
-}

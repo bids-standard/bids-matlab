@@ -1,8 +1,0 @@
-{
-  "name": "Columns",
-  "description": "Names of columns in file.\n",
-  "type": "array",
-  "items": {
-    "type": "string"
-  }
-}

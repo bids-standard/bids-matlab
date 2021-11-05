@@ -1,5 +1,0 @@
-{
-  "name": "MatrixCoilMode",
-  "description": "(If used)\nA method for reducing the number of independent channels by combining in\nanalog the signals from multiple coil elements.\nThere are typically different default modes when using un-accelerated or\naccelerated (for example, `\"GRAPPA\"`, `\"SENSE\"`) imaging.\n",
-  "type": "string"
-}

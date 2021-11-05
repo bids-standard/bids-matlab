@@ -1,6 +1,0 @@
-{
-  "name": "InjectedMassPerWeightUnits",
-  "description": "Unit format of the injected mass per kilogram bodyweight\n(for example, `\"ug/kg\"`).\n",
-  "type": "string",
-  "format": "unit"
-}
