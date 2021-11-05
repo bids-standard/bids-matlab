@@ -10,7 +10,7 @@
 				"name": "use_schema",
 				"kind": "positional",
 				"type": "boolean"
-			},			
+			},
 			{
 				"name": "index_derivatives",
 				"kind": "positional",
@@ -20,12 +20,12 @@
 				"name": "tolerant",
 				"kind": "positional",
 				"type": "boolean"
-			},		
+			},
 			{
 				"name": "verbose",
 				"kind": "positional",
 				"type": "boolean"
-			}				
+			}
 		]
 	},
 	"bids.query": {

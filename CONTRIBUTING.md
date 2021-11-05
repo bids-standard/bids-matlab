@@ -171,7 +171,7 @@ For more information about MISS_HIT see its
 There is a [pre-commit hook](https://pre-commit.com/) that you can use to
 reformat files as you commit them.
 
-Install pre-commit by using our `requirements.txt` file 
+Install pre-commit by using our `requirements.txt` file
 ```bash
 pip install -r requirements.txt
 ```

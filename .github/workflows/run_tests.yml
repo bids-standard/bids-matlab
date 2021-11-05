@@ -24,7 +24,7 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install octave liboctave-dev
 
-    - name: Clone bids-matlab         
+    - name: Clone bids-matlab
       uses: actions/checkout@v2
       with:
         submodules: true
@@ -40,13 +40,13 @@ jobs:
     - name: Install bids-example and data
       run: |
          cd tests
-         git clone git://github.com/bids-standard/bids-examples.git --depth 1 
+         git clone git://github.com/bids-standard/bids-examples.git --depth 1
          cd utils
          octave $OCTFLAGS --eval "download_moae_ds"
          cd ../..
 
-        # ------------------------------ 
-        # if tests on real data are needed 
+        # ------------------------------
+        # if tests on real data are needed
         #
         #  sudo apt-get -y install datalad
         #  mkdir data; cd data
@@ -54,24 +54,24 @@ jobs:
         #  datalad get ds000001/sub-01/func
         #  datalad clone https://github.com/OpenNeuroDatasets/ds000117.git
         #  datalad get ds000117/sub-01/ses-mri/func/*run-0[13]*
-        #  datalad get ds000117/sub-01/ses-mri/fmap/  
+        #  datalad get ds000117/sub-01/ses-mri/fmap/
         #  cd ..
-        
+
     - name: MOxUnit Action
       uses: joergbrech/moxunit-action@master
       with:
         tests: tests # files or directories containing the MOxUnit test cases
-        src: +bids   # directories to be added to the Octave search path before running the tests. 
+        src: +bids   # directories to be added to the Octave search path before running the tests.
         ext: JSONio tests/utils # External resources to add to the search put (excluded from coverage)
-        # data: # Directory for test data  
+        # data: # Directory for test data
         with_coverage: true
         cover_xml_file: coverage.xml
 
     - name: Upload coverage
-      uses: actions/upload-artifact@v1 
-      with: 
-        name: coverage_file 
-        path: coverage.xml         
+      uses: actions/upload-artifact@v1
+      with:
+        name: coverage_file
+        path: coverage.xml
 
     - name: Code coverage
       uses: codecov/codecov-action@v1
@@ -79,5 +79,4 @@ jobs:
        file:  coverage.xml # optional
        flags: unittests # optional
        name: codecov-umbrella # optional
-       fail_ci_if_error: true # optional (default = false)        
-
+       fail_ci_if_error: true # optional (default = false)

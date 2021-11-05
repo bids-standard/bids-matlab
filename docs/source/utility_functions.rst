@@ -8,5 +8,5 @@ Utility functions
 
 .. autofunction:: tsvread
 .. autofunction:: tsvwrite
-    
+
 .. autofunction:: mkdir

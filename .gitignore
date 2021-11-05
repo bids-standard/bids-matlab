@@ -19,7 +19,7 @@ data/*
 derivatives/*
 tests/*.tsv
 
-# coverage 
+# coverage
 coverage_html
 
 # styling
