@@ -19,6 +19,7 @@ function result = query(BIDS, query, varargin)
   %     - ``'tasks'``
   %     - ``'runs'``
   %     - ``'suffixes'``
+  %     - ``'entities'``
   %     - ``'data'``
   %     - ``'metadata'``
   %     - ``'metafiles'``
@@ -27,14 +28,27 @@ function result = query(BIDS, query, varargin)
   %     - ``'prefixes'``
   %
   %
+  % .. warning:: Note that all the query types are plurals.
+  %
   % Queries can "filtered" by passing more arguments key-value pairs as a list of
-  % strings or as a cell or a structure
+  % strings or as a cell or a structure.
+  %
+  % Note that for the entities listed below can be queried using integers:
+  %
+  %     - ``'run'``
+  %     - ``'flip'``
+  %     - ``'inv'``
+  %     - ``'split'``
+  %     - ``'echo'``
+  %
+  % ---
   %
   % Example 1::
   %
   %    data = bids.query(BIDS, 'data', ...
   %                            'sub', '01', ...
   %                            'task', 'stopsignalwithpseudowordnaming', ...
+  %                            'run', 1:5, ...
   %                            'extension', '.nii.gz', ...
   %                            'suffix', 'bold');
   %
@@ -43,6 +57,7 @@ function result = query(BIDS, query, varargin)
   %
   %     filters = struct('sub', '01', ...
   %                      'task', 'stopsignalwithpseudowordnaming', ...
+  %                      'run', 1:5, ...
   %                      'extension', '.nii.gz', ...
   %                      'suffix', 'bold');
   %
@@ -53,6 +68,7 @@ function result = query(BIDS, query, varargin)
   %
   %     filters = {'sub', '01'; ...
   %                'task', 'stopsignalwithpseudowordnaming'; ...
+  %                'run', 1:5; ...
   %                'extension', '.nii.gz'; ...
   %                'suffix', 'bold'};
   %
