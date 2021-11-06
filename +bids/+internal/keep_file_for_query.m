@@ -44,21 +44,21 @@ function status = keep_file_for_query(file_struct, options)
 
       if ~file_has_entity && ~exclude_entity
         status = false;
-        break
+        return
       end
 
       this_label = file_struct.entities.(this_entity);
 
-      if file_has_entity && ~exclude_entity && ...
-              check_label(this_entity, this_label, label_lists)
-        status = false;
-        break
-      end
-
       if file_has_entity && exclude_entity && ...
               ~isempty(this_label)
         status = false;
-        break
+        return
+      end
+
+      if file_has_entity && ~exclude_entity && ...
+              check_label(this_entity, this_label, label_lists)
+        status = false;
+        return
       end
 
     end
@@ -101,11 +101,29 @@ function label_lists = convert_to_num(label_lists)
 
 end
 
+% TODO  performace issue ???
+% the options could be converted to regex only once
+% and not for every call to keep_file
+
 function status = check_label_with_regex(label, option)
   if numel(option) == 1
+    option = prepare_regex(option);
     keep = regexp(label, option, 'match');
-    status = isempty(keep{1});
+    status = isempty(keep) || isempty(keep{1});
   else
     status = ~ismember(label, option);
+  end
+end
+
+function option = prepare_regex(option)
+  option = option{1};
+  if strcmp(option, '')
+    return
+  end
+  if ~strcmp(option(1), '^')
+    option = ['^' option];
+  end
+  if ~strcmp(option(end), '$')
+    option = [option '$'];
   end
 end

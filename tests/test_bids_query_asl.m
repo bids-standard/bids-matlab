@@ -24,7 +24,9 @@ function test_bids_query_asl_basic_asl002()
 
   assert(~isempty(BIDS.subjects.perf(1).dependencies.explicit));
 
-  dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl$');
+  bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'asl');
+
+  dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl');
   assert(any(ismember( ...
                       bids.internal.file_utils(dependencies.group, 'filename'), ...
                       'sub-Sub103_aslcontext.tsv')));
@@ -47,13 +49,13 @@ function test_bids_query_asl_basic_asl001()
 
   BIDS.subjects(1).perf(1);
 
-  filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'asl$');
+  filename = bids.query(BIDS, 'data', 'sub', 'Sub103', 'suffix', 'asl');
   basename = bids.internal.file_utils(filename, 'basename');
   assertEqual(basename, {'sub-Sub103_asl.nii'});
 
   meta = bids.query(BIDS, 'metadata', 'sub', 'Sub103', 'suffix', 'asl');
 
-  dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl$');
+  dependencies = bids.query(BIDS, 'dependencies', 'sub', 'Sub103', 'suffix', 'asl');
   assert(any(ismember( ...
                       bids.internal.file_utils(dependencies.group, 'filename'), ...
                       'sub-Sub103_asllabeling.jpg')));
