@@ -7,6 +7,31 @@ function test_suite = test_keep_file %#ok<*STOUT>
 
 end
 
+function test_keep_file_regex()
+
+  cfg = set_test_cfg();
+
+  file_struct = struct('suffix', 'bold', ...
+                       'ext', '.nii.gz', ...
+                       'entities', struct('sub', '02', ...
+                                          'task', 'foo', ...
+                                          'run', '01', ...
+                                          'space', 'myMNI2009'));
+
+  options_and_expected_result = {
+                                 {'task',  {'^f.*'}},     true; ...
+                                 {'space', {'.*MNI.*'}},  true ...
+                                };
+
+  for iTest = 1:size(options_and_expected_result, 1)
+    options = options_and_expected_result{iTest, 1};
+    expected_result = options_and_expected_result{iTest, 2};
+    status = bids.internal.keep_file_for_query(file_struct, options);
+    assertEqual(status, expected_result);
+  end
+
+end
+
 function test_keep_file_regex_suffix_ext_prefix()
 
   cfg = set_test_cfg();
@@ -35,7 +60,7 @@ end
 
 function test_keep_file_indices()
 
-  %  {'run', 'flip', 'inv', 'split', 'echo'}
+  %  for {'run', 'flip', 'inv', 'split', 'echo'}
 
   cfg = set_test_cfg();
 

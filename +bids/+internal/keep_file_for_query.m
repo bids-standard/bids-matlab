@@ -18,7 +18,7 @@ function status = keep_file_for_query(file_struct, options)
     end
 
     if any(strcmp(field_name, {'suffix', 'ext', 'prefix'})) && ...
-             check_prefix_suffix_ext(file_struct.(field_name), options{i, 2})
+             check_label_with_regex(file_struct.(field_name), options{i, 2})
       status = false;
       return
     end
@@ -70,35 +70,42 @@ end
 function status = check_label(this_entity, label, label_lists)
 
   if ismember(this_entity, {'run', 'flip', 'inv', 'split', 'echo'})
+
     if ischar(label)
       label = str2double(label);
     end
 
-    % TODO to speed up the query this could be done only once at the
-    % beginning of bids.query??
+    % TODO to speed up the query this could be done only once
+    % at the beginning of bids.query??
     label_lists = convert_to_num(label_lists);
 
-  end
+    status = ~ismember(label, label_lists);
 
-  status = ~ismember(label, label_lists);
+  else
+
+    status = check_label_with_regex(label, label_lists);
+
+  end
 
 end
 
 function label_lists = convert_to_num(label_lists)
 
   is_char = cellfun(@(x) ischar(x), label_lists);
+
   tmp1 = label_lists(is_char);
   tmp1 = cellfun(@(x) str2double(x), tmp1);
   tmp2 = [label_lists{~is_char}];
+
   label_lists = cat(2, tmp1, tmp2);
 
 end
 
-function status = check_prefix_suffix_ext(field_name, option)
+function status = check_label_with_regex(label, option)
   if numel(option) == 1
-    keep = regexp(field_name, option, 'match');
+    keep = regexp(label, option, 'match');
     status = isempty(keep{1});
   else
-    status = ~ismember(field_name, option);
+    status = ~ismember(label, option);
   end
 end
