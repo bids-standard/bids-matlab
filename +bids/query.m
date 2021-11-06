@@ -244,7 +244,8 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
     this_subject = BIDS.subjects(i);
 
     % Only continue if this subject is one of those filtered
-    if ~ismember(this_subject.name(5:end), subjects)
+    keep = regexp(this_subject.name(5:end), subjects, 'match');
+    if all(cellfun('isempty', keep))
       continue
     end
 
