@@ -28,4 +28,7 @@ function test_function_signatures_basic()
                                     fullfile(root_dir, 'functionSignatures.json'));
   assert(isstruct(signatures));
 
+  % only works with 2018b
+  % validateFunctionSignaturesJSON
+
 end

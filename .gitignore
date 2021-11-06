@@ -6,8 +6,9 @@ octave-workspace
 # virtual env
 env/*
 
-# bids-specification repo (necessary for convert_schema.py)
+# other bids repos
 bids-specification/*
+bids-examples
 
 # input and output data involved in tests
 data/*
