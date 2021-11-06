@@ -10,15 +10,15 @@ function status = keep_file_for_query(file_struct, options)
 
   % prefix, suffix, extensions are treated separately
   % as they are not one of the entities
-  for l = 1:size(options, 1)
+  for i = 1:size(options, 1)
 
-    field_name = options{l, 1};
+    field_name = options{i, 1};
     if strcmp(field_name, 'extension')
       field_name = 'ext';
     end
 
     if any(strcmp(field_name, {'suffix', 'ext', 'prefix'})) && ...
-             ~ismember(file_struct.(field_name), options{l, 2})
+             check_prefix_suffix_ext(file_struct.(field_name), options{i, 2})
       status = false;
       return
     end
@@ -32,12 +32,12 @@ function status = keep_file_for_query(file_struct, options)
   end
 
   % work on the the entities
-  for l = 1:size(options, 1)
+  for j = 1:size(options, 1)
 
-    this_entity = options{l, 1};
-    label_lists = options{l, 2};
+    this_entity = options{j, 1};
+    label_lists = options{j, 2};
 
-    if ~any(strcmp(this_entity, {'suffix', 'extension', 'prefix'}))
+    if ~any(strcmp(this_entity, {'suffix', 'extension', 'ext', 'prefix'}))
 
       file_has_entity = ismember(this_entity, fieldnames(file_struct.entities));
       exclude_entity = numel(label_lists) == 1 && isempty(label_lists{1});
@@ -92,4 +92,13 @@ function label_lists = convert_to_num(label_lists)
   tmp2 = [label_lists{~is_char}];
   label_lists = cat(2, tmp1, tmp2);
 
+end
+
+function status = check_prefix_suffix_ext(field_name, option)
+  if numel(option) == 1
+    keep = regexp(field_name, option, 'match');
+    status = isempty(keep{1});
+  else
+    status = ~ismember(field_name, option);
+  end
 end
