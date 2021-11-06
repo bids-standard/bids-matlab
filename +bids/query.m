@@ -159,6 +159,10 @@ function options = parse_query(options)
       options{i, 2} = cellstr(options{i, 2});
     end
 
+    if isnumeric(options{i, 2})
+      options{i, 2} = {options{i, 2}};
+    end
+
     for j = 1:numel(options{i, 2})
       if iscellstr(options{i, 2})
         options{i, 2}{j} = regexprep(options{i, 2}{j}, sprintf('^%s-', options{i, 1}), '');

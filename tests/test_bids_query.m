@@ -6,6 +6,19 @@ function test_suite = test_bids_query %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_query_with_indices()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds105'));
+
+  data_1 = bids.query(BIDS, 'data', 'sub', '1', 'run', {3, 5, '7', '01'}, 'suffix', 'bold');
+  data_2 = bids.query(BIDS, 'data', 'sub', '1', 'run', 1:2:7, 'suffix', 'bold');
+
+  assertEqual(data_1, data_2);
+
+end
+
 function test_query_entities()
 
   pth_bids_example = get_test_data_dir();

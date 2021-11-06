@@ -34,24 +34,29 @@ function status = keep_file_for_query(file_struct, options)
   % work on the the entities
   for l = 1:size(options, 1)
 
-    if ~any(strcmp(options{l, 1}, {'suffix', 'extension', 'prefix'}))
+    this_entity = options{l, 1};
+    label_lists = options{l, 2};
 
-      file_has_entity = ismember(options{l, 1}, fieldnames(file_struct.entities));
-      exclude_entity = numel(options{l, 2}) == 1 && strcmp(options{l, 2}, {''});
+    if ~any(strcmp(this_entity, {'suffix', 'extension', 'prefix'}))
+
+      file_has_entity = ismember(this_entity, fieldnames(file_struct.entities));
+      exclude_entity = numel(label_lists) == 1 && isempty(label_lists{1});
 
       if ~file_has_entity && ~exclude_entity
         status = false;
         break
       end
 
+      this_label = file_struct.entities.(this_entity);
+
       if file_has_entity && ~exclude_entity && ...
-              ~ismember(file_struct.entities.(options{l, 1}), options{l, 2})
+              check_label(this_entity, this_label, label_lists)
         status = false;
         break
       end
 
       if file_has_entity && exclude_entity && ...
-              ~isempty(file_struct.entities.(options{l, 1}))
+              ~isempty(this_label)
         status = false;
         break
       end
@@ -59,5 +64,32 @@ function status = keep_file_for_query(file_struct, options)
     end
 
   end
+
+end
+
+function status = check_label(this_entity, label, label_lists)
+
+  if ismember(this_entity, {'run', 'flip', 'inv', 'split', 'echo'})
+    if ischar(label)
+      label = str2double(label);
+    end
+
+    % TODO to speed up the query this could be done only once at the
+    % beginning of bids.query??
+    label_lists = convert_to_num(label_lists);
+
+  end
+
+  status = ~ismember(label, label_lists);
+
+end
+
+function label_lists = convert_to_num(label_lists)
+
+  is_char = cellfun(@(x) ischar(x), label_lists);
+  tmp1 = label_lists(is_char);
+  tmp1 = cellfun(@(x) str2double(x), tmp1);
+  tmp2 = [label_lists{~is_char}];
+  label_lists = cat(2, tmp1, tmp2);
 
 end
