@@ -16,21 +16,9 @@ function meta = get_metadata(metafile)
   %    add explanation on how the inheritance principle is implemented.
   %
   %
-  % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
   % (C) Copyright 2018 BIDS-MATLAB developers
-
-  % assume most files are of the form *_suffix.json
-  % add an exception for files with no suffix, like participants.tsv
-  if nargin == 1
-    pattern = '^.*_%s\\.json$';
-    if ~ismember('_', filename)
-        pattern = '^.*%s\\.json$';
-    end
-  end
-
-  pth = fileparts(filename);
-  p = bids.internal.parse_filename(filename);
 
   meta = struct();
   metafile = cellstr(metafile);
