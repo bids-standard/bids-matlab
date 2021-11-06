@@ -41,3 +41,5 @@ function varargout = jsonencode(varargin)
     % TODO: jsonwrite should probably be moved to +internal
     [varargout{1:nargout}] = bids.util.jsonwrite(varargin{:}); % JSONio copy - always exist
   end
+
+end
