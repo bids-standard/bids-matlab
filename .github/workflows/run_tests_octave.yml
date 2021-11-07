@@ -1,4 +1,4 @@
-name: tests
+name: tests_octave
 
 on:
   push:
@@ -7,10 +7,7 @@ on:
       - main
       - dev
   pull_request:
-    branches: '*'
-
-env:
-  OCTFLAGS: --no-gui --no-window-system --silent
+    branches: ['*']
 
 jobs:
   build:
@@ -80,4 +77,3 @@ jobs:
        flags: unittests # optional
        name: codecov-umbrella # optional
        fail_ci_if_error: true # optional (default = false)        
-
