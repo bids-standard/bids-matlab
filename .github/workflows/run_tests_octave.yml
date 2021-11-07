@@ -7,7 +7,7 @@ on:
       - main
       - dev
   pull_request:
-    branches: '*'
+    branches: ['*']
 
 jobs:
   build:
