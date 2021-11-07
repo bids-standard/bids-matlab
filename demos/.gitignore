@@ -7,5 +7,5 @@ output
 
 bids-examples
 
-brainstorm
-spm
+brainstorm/**
+spm/**

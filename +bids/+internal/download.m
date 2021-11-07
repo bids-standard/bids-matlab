@@ -20,6 +20,7 @@ function filename = download(URL, output_dir, verbose)
       urlwrite(URL, filename);
     end
 
+    movefile(filename, output_dir);
     filename = fullfile(output_dir, filename);
 
   else

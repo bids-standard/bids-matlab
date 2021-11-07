@@ -4,7 +4,7 @@ function tsvwrite(f, var)
   %
   % USAGE::
   %
-  %   tsvwrite(f, var)
+  %   bids.util.tsvwrite(f, var)
   %
   % :param f: filename
   % :type f: string

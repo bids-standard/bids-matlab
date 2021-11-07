@@ -1,6 +1,10 @@
 *.swp
+
 tmp*
-pub
+
+pub/%
+
+*.zip
 
 # virtual env
 env/*

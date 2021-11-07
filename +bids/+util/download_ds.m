@@ -1,22 +1,29 @@
 function out_path = download_ds(varargin)
   %
-  % output_dir = download_moae_ds(download_data, output_dir)
+  % Downloads a BIDS data for a demo from a given source
   %
-  % bids.util.download_ds('force', true, 'out_path', pwd)
+  % USAGE::
   %
-  % bids.util.download_ds('source', 'spm', 'demo', 'moae')
-  % bids.util.download_ds('source', 'spm', 'demo', 'facerep')
-  % bids.util.download_ds('source', 'spm', 'demo', 'eeg')
+  %   output_dir = download_moae_ds(...
+  %                                     'source', 'spm', ...
+  %                                     'demo', 'moae', ...
+  %                                     'out_path', fullfile(bids.internal.root_dir(), 'demos'), ...
+  %                                     'force', false, ...
+  %                                     'verbose', true);
   %
-  % bids.util.download_ds('source', 'brainstorm', 'demo', 'ieeg')
   %
+  % SPM::
   %
-  % Brainstorm
+  %     bids.util.download_ds('source', 'spm', 'demo', 'moae')
+  %     bids.util.download_ds('source', 'spm', 'demo', 'facerep')
+  %     bids.util.download_ds('source', 'spm', 'demo', 'eeg')
   %
-  % ecog: SEEG+ECOG+MRI: 897 Mb
+  % ---
   %
-  %     https://neuroimage.usc.edu/brainstorm/Tutorials/ECoG
-  %     ftp://neuroimage.usc.edu/pub/tutorials/sample_ecog.zip
+  % BRAINSTORM::
+  %
+  %     bids.util.download_ds('source', 'brainstorm', 'demo', 'ieeg')
+  %     bids.util.download_ds('source', 'brainstorm', 'demo', 'meg')
   %
   % ieeg: SEEG+MRI: 190 Mb
   %
@@ -28,6 +35,11 @@ function out_path = download_ds(varargin)
   %     https://neuroimage.usc.edu/brainstorm/Tutorials/FemMedianNerve
   %     ftp://neuroimage.usc.edu/pub/tutorials/sample_fem.zip
   %
+  % ecog: SEEG+ECOG+MRI: 897 Mb
+  %
+  %     https://neuroimage.usc.edu/brainstorm/Tutorials/ECoG
+  %     ftp://neuroimage.usc.edu/pub/tutorials/sample_ecog.zip
+  %
   % meg_rest: MEG resting-state: 5.2 Gb
   %
   %     https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega
@@ -35,8 +47,6 @@ function out_path = download_ds(varargin)
   %
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
-
-  % output_dir = download_moae_ds(download_data, output_dir)
 
   % TODO
   %
@@ -90,20 +100,23 @@ function out_path = download_ds(varargin)
   filename = bids.internal.download(URL, bids.internal.root_dir(), verbose);
 
   % Unzipping dataset
-  [~, ~, ext] = fileparts(filename);
+  [~, basename, ext] = fileparts(filename);
   if strcmp(ext, '.zip')
+
     msg = sprintf('Unzipping dataset:\n %s\n\n', filename);
     print_to_screen(msg, verbose);
+
     unzip(filename);
     delete(filename);
+
+    switch basename
+      case 'MoAEpilot.bids'
+        movefile('MoAEpilot', fullfile(out_path));
+      otherwise
+        movefile(basename, fullfile(out_path));
+    end
+
   end
-
-  % spm
-  %     movefile('MoAEpilot', fullfile(out_path));
-  %     movefile('EEG', fullfile(out_path));
-
-  % tutorial_epimap_bids
-  % sample_fem
 
 end
 
@@ -135,6 +148,7 @@ function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
     % spm
     case 'moae'
       demo_path = '/MoAEpilot/MoAEpilot.bids.zip';
+
     case 'eeg'
       demo_path = '/mmfaces/multimodal_eeg.zip';
 
@@ -147,13 +161,11 @@ function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
       demo_path = '/pub/tutorials/sample_ecog.zip';
 
     case 'meg_rest'
-
       demo_path = '/pub/tutorials/sample_omega.zip';
 
     case 'meg'
-
       demo_path = '/pub/tutorials/sample_fem.zip';
-      %             208 Mb
+      ds_size = '210 Mb';
 
     otherwise
       msg  =  sprintf('Unknown demo.\nPossible demos are:\n\t%s', ...

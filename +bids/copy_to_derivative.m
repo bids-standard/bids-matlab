@@ -47,6 +47,9 @@ function copy_to_derivative(varargin)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  % TODO
+  % - should return output dir
+
   default_out_path = '';
   default_filter = struct();
 

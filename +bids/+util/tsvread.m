@@ -4,7 +4,7 @@ function file_content = tsvread(filename, field_to_return, hdr)
   %
   % USAGE::
   %
-  %   file_content = tsvread(filename, field_to_return, hdr)
+  %   file_content = bids.util.tsvread(filename, field_to_return, hdr)
   %
   % :param filename: filename (can be gzipped) {txt,mat,csv,tsv,json}ename
   % :type filename: string
