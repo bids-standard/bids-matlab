@@ -57,7 +57,7 @@ function out_path = download_ds(varargin)
   default_source = 'spm';
   default_demo = 'moae';
 
-  default_out_path = fullfile(bids.internal.root_dir, 'demos');
+  default_out_path = '';
   default_force = false;
   default_verbose = true;
 
@@ -71,10 +71,15 @@ function out_path = download_ds(varargin)
 
   parse(p, varargin{:});
 
-  out_path = p.Results.out_path;
   verbose = p.Results.verbose;
 
-  out_path = fullfile(out_path, p.Results.source, p.Results.demo);
+  out_path = p.Results.out_path;
+  if isempty(out_path)
+    out_path = fullfile(bids.internal.root_dir, 'demos');
+    out_path = fullfile(out_path, p.Results.source, p.Results.demo);
+  elseif ~exist(out_path, 'dir')
+    bids.util.mkdir(out_path);
+  end
 
   % clean previous runs
   if exist(out_path, 'dir')

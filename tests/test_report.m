@@ -111,7 +111,7 @@ function test_report_moae_data()
 
   cfg.read_nifti = true;
 
-  BIDS = fullfile(bids.internal.root_dir(), 'examples', 'MoAEpilot');
+  BIDS = bids.util.download_ds('verbose', cfg.verbose);
 
   BIDS = bids.layout(BIDS, true);
 

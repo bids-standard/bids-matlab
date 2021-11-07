@@ -15,7 +15,11 @@ function filename = download(URL, output_dir, verbose)
   if strcmp(protocol, 'http:')
 
     if isunix()
-      system(sprintf('wget %s', URL));
+      if verbose
+        system(sprintf('wget %s', URL));
+      else
+        system(sprintf('wget -q %s', URL));
+      end
     else
       urlwrite(URL, filename);
     end

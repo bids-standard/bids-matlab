@@ -9,22 +9,29 @@ end
 
 function test_downloads()
 
-  pth = bids.util.download_ds();
+  cfg = set_test_cfg();
+
+  pth = bids.util.download_ds('verbose', cfg.verbose);
   rmdir(pth, 's');
 
-  pth = bids.util.download_ds('out_path', pwd);
+  pth = bids.util.download_ds('out_path', fullfile(pwd, 'output'), ...
+                              'verbose', cfg.verbose);
   rmdir(pth, 's');
 
 end
 
 function test_downloads_spm_facerep()
 
-  if ~is_github_ci()
+  cfg = set_test_cfg();
+
+  if ~bids.internal.is_github_ci()
 
     bids.internal.ds_spm_face_rep(pwd);
     rmdir(fullfile(pwd, 'facerep'), 's');
 
-    pth = bids.util.download_ds('source', 'spm', 'demo', 'facerep');
+    pth = bids.util.download_ds('source', 'spm', ...
+                                'demo', 'facerep', ...
+                                'verbose', cfg.verbose);
     rmdir(pth, 's');
 
   end

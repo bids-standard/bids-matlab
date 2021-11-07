@@ -213,7 +213,7 @@ function [BIDS, out_path, filters, cfg] = fixture(dataset)
 
     case 'MoAEpilot'
 
-      BIDS = bids.internal.download_moae_ds(true);
+      BIDS = bids.util.download_ds('verbose', cfg.verbose);
 
       gzip(fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii'));
       delete(fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii'));

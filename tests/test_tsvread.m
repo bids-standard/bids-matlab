@@ -8,7 +8,9 @@ end
 
 function test_tsvread_basic()
 
-  pth = bids.internal.download_moae_ds();
+  cfg = set_test_cfg();
+
+  pth = bids.util.download_ds('verbose', cfg .verbose);
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
@@ -29,7 +31,9 @@ end
 
 function test_tsvread_subset()
 
-  pth = bids.internal.download_moae_ds();
+  cfg = set_test_cfg();
+
+  pth = bids.util.download_ds('verbose', cfg .verbose);
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
