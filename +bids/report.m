@@ -588,7 +588,14 @@ function print_to_output(text, file_id, verbose)
   text = add_word_wrap(text);
 
   if file_id ~= 1
-    fprintf(file_id,  text);
+    if is_octave()
+      bids.internal.error_handling(mfilename(), ...
+                                   'notImplemented', ...
+                                   'saving to file not implement for Ocatve', ...
+                                   true, verbose);
+    else
+      fprintf(file_id,  text);
+    end
   end
 
   % Print to screen

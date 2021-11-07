@@ -6,12 +6,35 @@ function test_suite = test_report %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_report_basic()
+function test_report_asl()
+
+  cfg = set_up();
+
+  datasets = 'asl003';
+
+  BIDS = fullfile(cfg.pth_bids_example, datasets);
+
+  BIDS = bids.layout(BIDS, true);
+
+  filter.modality = 'perf';
+
+  report = bids.report(BIDS, ...
+                       'filter', filter, ...
+                       'output_path', cfg.output_path, ...
+                       'verbose', cfg.verbose);
+
+  content = get_report_content(report);
+  expected = get_expected_content(cfg, datasets, filter.modality);
 
   % TODO make it work on Octave
   if is_octave()
     return
   end
+  assertEqual(content, expected);
+
+end
+
+function test_report_basic()
 
   cfg = set_up();
 
@@ -37,6 +60,12 @@ function test_report_basic()
 
       content = get_report_content(report);
       expected = get_expected_content(cfg, datasets{i}, modalities{j});
+
+      % TODO make it work on Octave
+      if is_octave()
+        return
+      end
+
       assertEqual(content, expected);
 
     end
@@ -44,40 +73,7 @@ function test_report_basic()
 
 end
 
-function test_report_asl()
-
-  % TODO make it work on Octave
-  if is_octave()
-    return
-  end
-
-  cfg = set_up();
-
-  datasets = 'asl003';
-
-  BIDS = fullfile(cfg.pth_bids_example, datasets);
-
-  BIDS = bids.layout(BIDS, true);
-
-  filter.modality = 'perf';
-
-  report = bids.report(BIDS, ...
-                       'filter', filter, ...
-                       'output_path', cfg.output_path, ...
-                       'verbose', cfg.verbose);
-
-  content = get_report_content(report);
-  expected = get_expected_content(cfg, datasets, filter.modality);
-  assertEqual(content, expected);
-
-end
-
 function test_report_pet()
-
-  % TODO make it work on Octave
-  if is_octave()
-    return
-  end
 
   cfg = set_up();
 
@@ -96,16 +92,16 @@ function test_report_pet()
 
   content = get_report_content(report);
   expected = get_expected_content(cfg, datasets, filter.modality);
-  assertEqual(content, expected);
-
-end
-
-function test_report_moae_data()
 
   % TODO make it work on Octave
   if is_octave()
     return
   end
+  assertEqual(content, expected);
+
+end
+
+function test_report_moae_data()
 
   cfg = set_up();
 
@@ -123,6 +119,10 @@ function test_report_moae_data()
   content = get_report_content(report);
   expected = get_expected_content(cfg, 'MoAE', 'all');
 
+  % TODO make it work on Octave
+  if is_octave()
+    return
+  end
   assertEqual(content, expected);
 
 end
