@@ -1,5 +1,5 @@
 function filename = download(URL, output_dir, verbose)
-
+  % (C) Copyright 2021 BIDS-MATLAB developers
   if nargin < 2
     output_dir = pwd;
   end

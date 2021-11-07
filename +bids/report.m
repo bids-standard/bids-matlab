@@ -86,6 +86,8 @@ function filename = report(varargin)
 
     for i_sess = 1:numel(sessions)
 
+      this_filter = filter;
+      this_filter.sub = filter.sub{i_sub};
       this_filter.ses = sessions{i_sess};
 
       if numel(sessions) > 1
@@ -242,7 +244,7 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
 
       print_to_output(text, file_id, verbose);
 
-      print_text('task', file_id, verbose, acq_param);
+      print_text('task', file_id, verbose, metadata);
 
       print_events_info(file_id, BIDS, filter, verbose);
 
@@ -280,6 +282,7 @@ function report_meeg(BIDS, filter, verbose, file_id)
       [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
 
       [~, metadata] = get_filemane_and_metadata(BIDS, filter);
+
       boilerplate = bids.internal.replace_placeholders(boilerplate, metadata);
 
       acq_param = get_acq_param(BIDS, filter, false, verbose);
@@ -291,7 +294,7 @@ function report_meeg(BIDS, filter, verbose, file_id)
 
       print_to_output(text, file_id, verbose);
 
-      print_text('task', file_id, verbose, acq_param);
+      print_text('task', file_id, verbose, metadata);
 
       print_events_info(file_id, BIDS, filter, verbose);
 
@@ -414,10 +417,6 @@ function template = get_boilerplate(type, verbose)
 
   file = [type '.tmp'];
 
-  if ismember(type, {'meg', 'eeg', 'ieeg'})
-    file = 'meeg.tmp';
-  end
-
   fid = fopen(fullfile(fileparts(mfilename('fullpath')), '..', ...
                        'templates', 'boilerplates', file));
   if fid == -1
@@ -436,13 +435,13 @@ function param = get_acq_param(BIDS, filter, read_gz, verbose)
   % Will get info from acquisition parameters from the BIDS structure or from
   % the NIfTI files
 
-  %   acq_param = set_default_acq_param();
   param = struct();
 
   [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
 
   if verbose
-    fprintf('\n Getting parameters - %s\n\n', bids.internal.file_utils(filename{1}, 'filename'));
+    fprintf('\n Getting parameters - %s\n\n', ...
+            bids.internal.file_utils(filename, 'filename'));
   end
 
   fields_list = { ...
@@ -453,7 +452,7 @@ function param = get_acq_param(BIDS, filter, read_gz, verbose)
 
   param = get_parameter(param, metadata, fields_list);
 
-  bidsFile = bids.File(filename{1});
+  bidsFile = bids.File(filename);
   param.suffix = bidsFile.suffix;
 
   if isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
@@ -471,54 +470,74 @@ function param = get_acq_param(BIDS, filter, read_gz, verbose)
 
   param = define_slice_timing(param);
 
-  param = read_nifti(read_gz, filename{1}, param, verbose);
+  filter.extension = '.nii';
+  filename  = get_filemane_and_metadata(BIDS, filter);
+  param = read_nifti(read_gz, filename, param, verbose);
 
 end
 
 function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
-
   % -Try to read the relevant NIfTI file to get more info from it
   % --------------------------------------------------------------------------
-  if read_gz
-    try
-      if verbose
-        fprintf('\n Opening file - %s.\n', filename);
-      end
-      % read the header of the NIfTI file
-      hdr = spm_vol(filename);
 
-      % nb volumes
-      acq_param.nb_vols  = num2str(numel(hdr));
+  if isempty(filename)
+    return
+  end
 
-      hdr = hdr(1);
-      dim = abs(hdr.dim);
+  if ~(strcmp(bids.internal.file_utils(filename, 'ext'), '.nii') || read_gz)
+    return
+  end
 
-      % nb slices
-      acq_param.nb_slices = sprintf('%i', dim(3));
+  if verbose
+    fprintf('\n Opening file - %s.\n', filename);
+  end
 
-      % matrix size
-      acq_param.mat_size = sprintf('%i X %i', dim(1), dim(2));
+  try
 
-      % voxel size
-      vs = abs(diag(hdr.mat));
-      acq_param.vox_size = sprintf('%.2f X %.2f X %.2f', vs(1), vs(2), vs(3));
+    % read the header of the NIfTI file
+    hdr = spm_vol(filename);
 
-      % field of view
-      acq_param.fov = sprintf('%.2f X %.2f', vs(1) * dim(1), vs(2) * dim(2));
+    % nb volumes
+    acq_param.nb_vols  = num2str(numel(hdr));
 
-    catch
+    hdr = hdr(1);
+    dim = abs(hdr.dim);
 
-      msg = sprintf('Could not read the header from file %s.\n', filename);
-      bids.internal.error_handling(mfilename, 'cannotReadHeader', msg, true, verbose);
+    % nb slices
+    acq_param.nb_slices = sprintf('%i', dim(3));
 
-    end
+    % matrix size
+    acq_param.mat_size = sprintf('%i X %i', dim(1), dim(2));
+
+    % voxel size
+    vs = abs(diag(hdr.mat));
+    acq_param.vox_size = sprintf('%.2f X %.2f X %.2f', vs(1), vs(2), vs(3));
+
+    % field of view
+    acq_param.fov = sprintf('%.2f X %.2f', vs(1) * dim(1), vs(2) * dim(2));
+
+  catch
+
+    msg = sprintf('Could not read the header from file %s.\n', filename);
+    bids.internal.error_handling(mfilename, 'cannotReadHeader', msg, true, verbose);
+
   end
 
 end
 
 function [filename, metadata] = get_filemane_and_metadata(BIDS, filter)
+
   filename = bids.query(BIDS, 'data', filter);
   metadata = bids.query(BIDS, 'metadata', filter);
+
+  default_file = 1;
+  if iscell(filename) && ~isempty(filename)
+    filename = filename{default_file};
+  end
+  if iscell(metadata) && ~isempty(metadata)
+    metadata = metadata{default_file};
+  end
+
 end
 
 function acq_param = get_parameter(acq_param, metadata, fields_list)

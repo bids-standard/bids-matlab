@@ -51,7 +51,7 @@ function ds_spm_face_rep(output_dir)
   spm_mkdir(output_dir);
 
   %% Get data
-  filename = bids.internal.download(URL, pwd(), true);
+  filename = bids.internal.download(URL, bids.internal.root_dir(), true);
 
   fprintf('%-10s:', 'Unzipping dataset...');
   unzip(filename);
