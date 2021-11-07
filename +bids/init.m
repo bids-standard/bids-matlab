@@ -85,7 +85,9 @@ end
 
 function folder_list = create_folder_names(p, folder_level)
 
-  folder_list =  p.Results.folders.(folder_level);
+  folders = p.Results.folders;
+
+  folder_list = folders.(folder_level);
   if ~iscell(folder_list)
     folder_list = {folder_list};
   end
@@ -97,9 +99,9 @@ function folder_list = create_folder_names(p, folder_level)
       prefix = 'ses-';
   end
 
-  if ~isempty(p.Results.folders.(folder_level))
+  if ~isempty(folder_list)
     folder_list = cellfun(@(x) [prefix x], ...
-                          p.Results.folders.(folder_level), ...
+                          folder_list, ...
                           'UniformOutput', false);
   end
 

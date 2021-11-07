@@ -24,7 +24,7 @@ end
 
 function test_folders()
 
-  folders.subjects = {'01', '02'};
+  folders.subjects = '02';
   folders.sessions = {'test', 'retest'};
   folders.modalities = {'anat', 'func'};
 

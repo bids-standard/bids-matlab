@@ -1,5 +1,5 @@
 % (C) Copyright 2021 Remi Gau
-% (C) Copyright 2014 Guillaume Flandin
+% (C) Copyright 2014 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 
 clear;
 
@@ -85,37 +85,48 @@ f = bids.query(BIDS, 'data', ...
 
 % Realign
 % --------------------------------------------------------------------------
-matlabbatch{1}.spm.spatial.realign.estwrite.data = {cellstr(f)};
-matlabbatch{1}.spm.spatial.realign.estwrite.roptions.which = [0 1];
+estwrite.data = {cellstr(f)};
+estwrite.roptions.which = [0 1];
+
+matlabbatch{1}.spm.spatial.realign.estwrite = estwrite;
 
 % Coregister
 % --------------------------------------------------------------------------
-matlabbatch{2}.spm.spatial.coreg.estimate.ref = cellstr(spm_file(f, 'prefix', 'mean'));
-matlabbatch{2}.spm.spatial.coreg.estimate.source = cellstr(a);
+estimate.ref = cellstr(spm_file(f, 'prefix', 'mean'));
+estimate.source = cellstr(a);
+
+matlabbatch{2}.spm.spatial.coreg.estimate = estimate;
 
 % Segment
 % --------------------------------------------------------------------------
-matlabbatch{3}.spm.spatial.preproc.channel.vols  = cellstr(a);
-matlabbatch{3}.spm.spatial.preproc.channel.write = [0 1];
-matlabbatch{3}.spm.spatial.preproc.warp.write    = [0 1];
+preproc.channel.vols  = cellstr(a);
+preproc.channel.write = [0 1];
+preproc.warp.write    = [0 1];
+
+matlabbatch{3}.spm.spatial.preproc = preproc;
 
 % Normalise: Write
 % --------------------------------------------------------------------------
-matlabbatch{4}.spm.spatial.normalise.write.subj.def = cellstr(spm_file(a, 'prefix', 'y_', ...
-                                                                       'ext', 'nii'));
-matlabbatch{4}.spm.spatial.normalise.write.subj.resample = cellstr(f);
-matlabbatch{4}.spm.spatial.normalise.write.woptions.vox  = [3 3 3];
+write.subj.def = cellstr(spm_file(a, 'prefix', 'y_', ...
+                                  'ext', 'nii'));
+write.subj.resample = cellstr(f);
+write.woptions.vox  = [3 3 3];
 
-matlabbatch{5}.spm.spatial.normalise.write.subj.def = cellstr(spm_file(a, 'prefix', 'y_', ...
-                                                                       'ext', 'nii'));
-matlabbatch{5}.spm.spatial.normalise.write.subj.resample = cellstr(spm_file(a, 'prefix', 'm', ...
-                                                                            'ext', 'nii'));
-matlabbatch{5}.spm.spatial.normalise.write.woptions.vox  = [1 1 3];
+matlabbatch{4}.spm.spatial.normalise.write = write;
+
+write.subj.def = cellstr(spm_file(a, 'prefix', 'y_', ...
+                                  'ext', 'nii'));
+write.subj.resample = cellstr(spm_file(a, 'prefix', 'm', ...
+                                       'ext', 'nii'));
+write.woptions.vox  = [1 1 3];
+
+matlabbatch{45}.spm.spatial.normalise.write = write;
 
 % Smooth
 % --------------------------------------------------------------------------
-matlabbatch{6}.spm.spatial.smooth.data = cellstr(spm_file(f, 'prefix', 'w'));
-matlabbatch{6}.spm.spatial.smooth.fwhm = [6 6 6];
+smooth.data = cellstr(spm_file(f, 'prefix', 'w'));
+smooth.fwhm = [6 6 6];
+matlabbatch{6}.spm.spatial.smooth = smooth;
 
 spm_jobman('run', matlabbatch);
 
@@ -143,6 +154,7 @@ events = bids.query(BIDS, 'data', ...
 events = spm_load(events{1});
 
 subj_stats_pth = fullfile(stats_pth, ['sub-' subject_label], 'stats');
+SPM_mat = fullfile(stats_pth, ['sub-' subject_label], 'stats', 'SPM.mat');
 
 clear matlabbatch;
 
@@ -160,11 +172,11 @@ matlabbatch{1}.spm.stats.fmri_spec = fmri_spec;
 
 % Model Estimation
 % --------------------------------------------------------------------------
-matlabbatch{2}.spm.stats.fmri_est.spmmat = cellstr(fullfile(subj_stats_pth, 'SPM.mat'));
+matlabbatch{2}.spm.stats.fmri_est.spmmat = cellstr(SPM_mat);
 
 % Contrasts
 % --------------------------------------------------------------------------
-con.spmmat = cellstr(fullfile(subj_stats_pth, 'SPM.mat'));
+con.spmmat = cellstr(SPM_mat);
 con.consess{1}.tcon.name = 'Listening > Rest';
 con.consess{1}.tcon.weights = [1 0];
 con.consess{2}.tcon.name = 'Rest > Listening';
@@ -174,7 +186,7 @@ matlabbatch{3}.spm.stats.con = con;
 
 % Inference Results
 % --------------------------------------------------------------------------
-results.spmmat = cellstr(fullfile(subj_stats_pth, 'SPM.mat'));
+results.spmmat = cellstr(SPM_mat);
 results.conspec.contrasts = 1;
 results.conspec.threshdesc = 'FWE';
 results.conspec.thresh = 0.05;
@@ -187,7 +199,7 @@ matlabbatch{4}.spm.stats.results = results;
 % --------------------------------------------------------------------------
 surface = fullfile(spm('Dir'), 'canonical', 'cortex_20484.surf.gii');
 display.rendfile = {surface};
-display.conspec.spmmat = cellstr(fullfile(subj_stats_pth, 'SPM.mat'));
+display.conspec.spmmat = cellstr(SPM_mat);
 display.conspec.contrasts = 1;
 display.conspec.threshdesc = 'FWE';
 display.conspec.thresh = 0.05;

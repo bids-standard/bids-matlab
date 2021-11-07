@@ -112,6 +112,8 @@ function out_path = download_ds(varargin)
     switch basename
       case 'MoAEpilot.bids'
         movefile('MoAEpilot', fullfile(out_path));
+      case 'multimodal_eeg'
+        movefile('EEG', fullfile(out_path));
       otherwise
         movefile(basename, fullfile(out_path));
     end
@@ -157,15 +159,15 @@ function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
       demo_path = '/pub/tutorials/tutorial_epimap_bids.zip';
       ds_size = '190 Mb';
 
+    case 'meg'
+      demo_path = '/pub/tutorials/sample_fem.zip';
+      ds_size = '210 Mb';
+
     case 'ecog'
       demo_path = '/pub/tutorials/sample_ecog.zip';
 
     case 'meg_rest'
       demo_path = '/pub/tutorials/sample_omega.zip';
-
-    case 'meg'
-      demo_path = '/pub/tutorials/sample_fem.zip';
-      ds_size = '210 Mb';
 
     otherwise
       msg  =  sprintf('Unknown demo.\nPossible demos are:\n\t%s', ...

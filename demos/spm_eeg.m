@@ -1,5 +1,4 @@
 % (C) Copyright 2021 Remi Gau
-% (C) Copyright 2014 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 
 force = true;
 verbose =  true;
@@ -9,7 +8,7 @@ pipeline_name = 'bids_matlab';
 
 %%
 pth = bids.util.download_ds('source', 'spm', ...
-                            'demo', 'facerep', ...
+                            'demo', 'eeg', ...
                             'force', force, ...
                             'verbose', verbose);
 
@@ -34,11 +33,10 @@ BIDS = bids.layout(fullfile(pth, 'derivatives', pipeline_name), ...
                    verbose);
 
 mkdir(fullfile(pth, 'derivatives', pipeline_name, 'log'));
+
 bids.report(BIDS, ...
             'output_path', fullfile(pth, 'derivatives', pipeline_name, 'log'), ...
             'read_nifti', true, ...
             'verbose', verbose);
 
 %%
-bids.query(BIDS, 'data', 'suffix', 'T1w');
-bids.query(BIDS, 'data', 'suffix', 'bold');
