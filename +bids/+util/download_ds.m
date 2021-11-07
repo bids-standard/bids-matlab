@@ -2,20 +2,47 @@ function out_path = download_ds(varargin)
   %
   % output_dir = download_moae_ds(download_data, output_dir)
   %
+  % bids.util.download_ds('force', true, 'out_path', pwd)
+  %
+  % bids.util.download_ds('source', 'spm', 'demo', 'moae')
+  % bids.util.download_ds('source', 'spm', 'demo', 'facerep')
+  % bids.util.download_ds('source', 'spm', 'demo', 'eeg')
+  %
+  % bids.util.download_ds('source', 'brainstorm', 'demo', 'ieeg')
+  %
+  %
+  % Brainstorm
+  %
+  % ecog: SEEG+ECOG+MRI: 897 Mb
+  %
+  %     https://neuroimage.usc.edu/brainstorm/Tutorials/ECoG
+  %     ftp://neuroimage.usc.edu/pub/tutorials/sample_ecog.zip
+  %
+  % ieeg: SEEG+MRI: 190 Mb
+  %
+  %     https://neuroimage.usc.edu/brainstorm/Tutorials/Epileptogenicity
+  %     ftp://neuroimage.usc.edu/pub/tutorials/tutorial_epimap_bids.zip
+  %
+  % meg: MEG+MRI+DWI: 208 Mb
+  %
+  %     https://neuroimage.usc.edu/brainstorm/Tutorials/FemMedianNerve
+  %     ftp://neuroimage.usc.edu/pub/tutorials/sample_fem.zip
+  %
+  % meg_rest: MEG resting-state: 5.2 Gb
+  %
+  %     https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega
+  %     ftp://neuroimage.usc.edu/pub/tutorials/sample_omega.zip
+  %
+  %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   % output_dir = download_moae_ds(download_data, output_dir)
 
   % TODO
   %
-  % SPM face
   % Brainstorm
   % Fieldtrip
   % EEGlab ?
-
-  % returns if data is already there if no force is used
-
-  % display URL downloaded (and ETA ?)
 
   default_source = 'spm';
   default_demo = 'moae';
@@ -37,65 +64,112 @@ function out_path = download_ds(varargin)
   out_path = p.Results.out_path;
   verbose = p.Results.verbose;
 
-  % URL of the data set to download
-  URL = 'http://www.fil.ion.ucl.ac.uk/spm/download/data/MoAEpilot/MoAEpilot.bids.zip';
-
-  out_path = fullfile(out_path, 'MoAE');
+  out_path = fullfile(out_path, p.Results.source, p.Results.demo);
 
   % clean previous runs
   if exist(out_path, 'dir')
-      if p.Results.force
-        rmdir(out_path, 's');
-      else
-        bids.internal.error_handling(mfilename(), 'dataAlredyHere', ...
-            'The dataset is already present. Use "force, true" to overwrite.', ...
-             true, verbose)
-        return
-      end
+    if p.Results.force
+      rmdir(out_path, 's');
+    else
+      bids.internal.error_handling(mfilename(), 'dataAlreadyHere', ...
+                                   ['The dataset is already present.' ...
+                                    'Use "force, true" to overwrite.'], ...
+                                   true, verbose);
+      return
+    end
   end
 
-  filename = download(URL, verbose);
+  if strcmp(p.Results.source, 'spm')
+    if strcmp(p.Results.demo, 'facerep')
+      bids.internal.ds_spm_face_rep(fileparts(out_path));
+      return
+    end
+  end
+
+  [URL] = get_URL(p.Results.source, p.Results.demo, verbose);
+  filename = bids.internal.download(URL, bids.internal.root_dir(), verbose);
 
   % Unzipping dataset
-  unzip(filename);
-  delete(filename);
-  movefile('MoAEpilot', fullfile(out_path));
+  [~, ~, ext] = fileparts(filename);
+  if strcmp(ext, '.zip')
+    msg = sprintf('Unzipping dataset:\n %s\n\n', filename);
+    print_to_screen(msg, verbose);
+    unzip(filename);
+    delete(filename);
+  end
 
-%   SEEG+ECOG+MRI:
-% https://neuroimage.usc.edu/brainstorm/Tutorials/ECoG
-% ftp://neuroimage.usc.edu/pub/tutorials/sample_ecog.zip
-% SEEG+MRI:
-% https://neuroimage.usc.edu/brainstorm/Tutorials/Epileptogenicity
-% ftp://neuroimage.usc.edu/pub/tutorials/tutorial_epimap.zip
-% MEG+MRI+DWI:
-% https://neuroimage.usc.edu/brainstorm/Tutorials/FemMedianNerve
-% ftp://neuroimage.usc.edu/pub/tutorials/sample_fem.zip
-% MEG resting-state:
-% https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega
-% ftp://neuroimage.usc.edu/pub/tutorials/sample_omega.zip
+  % spm
+  %     movefile('MoAEpilot', fullfile(out_path));
+  %     movefile('EEG', fullfile(out_path));
+
+  % tutorial_epimap_bids
+  % sample_fem
 
 end
 
-function filename = download(URL, verbose)
+function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
 
-  msg = sprintf('Downloading dataset from\n %s\n\n', URL);
-  print_to_screen(msg, verbose)
+  sources = {'spm', 'brainstorm'};
+  demos = {'moae', 'facep', 'eeg', ...
+           'ieeg', 'ecog', 'meg', 'meg_rest'};
 
-  filename = bids.internal.file_utils(URL, 'filename');
+  switch source
 
-  try
-      if isunix()
-          system(sprintf('wget %s', URL));
-      else
-        urlwrite(URL, filename);
-      end
-  catch
+    case 'spm'
+      base_url = 'http://www.fil.ion.ucl.ac.uk/spm/download/data';
+
+    case 'brainstorm'
+      ftp_server = 'neuroimage.usc.edu';
+      base_url = ['ftp://' ftp_server];
+
+    otherwise
+      msg  =  sprintf('Unknown demo source.\nPossible sources are:\n\t%s', ...
+                      strjoin(sources, ', '));
+      bids.internal.error_handling(mfilename(), 'unknownSource', ...
+                                   msg, ...
+                                   false, verbose);
   end
+
+  switch demo
+
+    % spm
+    case 'moae'
+      demo_path = '/MoAEpilot/MoAEpilot.bids.zip';
+    case 'eeg'
+      demo_path = '/mmfaces/multimodal_eeg.zip';
+
+      % brainstorm
+    case 'ieeg'
+      demo_path = '/pub/tutorials/tutorial_epimap_bids.zip';
+      ds_size = '190 Mb';
+
+    case 'ecog'
+      demo_path = '/pub/tutorials/sample_ecog.zip';
+
+    case 'meg_rest'
+
+      demo_path = '/pub/tutorials/sample_omega.zip';
+
+    case 'meg'
+
+      demo_path = '/pub/tutorials/sample_fem.zip';
+      %             208 Mb
+
+    otherwise
+      msg  =  sprintf('Unknown demo.\nPossible demos are:\n\t%s', ...
+                      strjoin(demos, ', '));
+      bids.internal.error_handling(mfilename(), 'unknownDemos', ...
+                                   msg, ...
+                                   false, verbose);
+
+  end
+
+  URL = [base_url, demo_path];
 
 end
 
 function print_to_screen(msg, verbose)
-    if verbose
-        fprintf(1, msg);
-    end
+  if verbose
+    fprintf(1, msg);
+  end
 end

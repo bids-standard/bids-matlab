@@ -18,6 +18,14 @@ function init(varargin)
   % :param is_datalad_ds:
   % :type  is_derivative: boolean
   %
+  % EXAMPLE::
+  %
+  %    folders = struct('subjects',  {{'001', '002'}}, ...
+  %                    'sessions',   {{'01'}}, ...
+  %                    'modalities', {{'anat', 'func'}});
+  %
+  %    bids.init(pwd, folders, true, true);
+  %
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
@@ -40,7 +48,10 @@ function init(varargin)
   parse(p, varargin{:});
 
   subjects = create_folder_names(p, 'subjects');
-  sessions = create_folder_names(p, 'sessions');
+  sessions = '';
+  if isfield(p.Results.folders, 'sessions')
+    sessions = create_folder_names(p, 'sessions');
+  end
 
   %% Folder structure
   bids.util.mkdir(p.Results.pth, ...
