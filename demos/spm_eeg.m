@@ -1,5 +1,7 @@
 % (C) Copyright 2021 Remi Gau
 
+clear;
+
 force = true;
 verbose =  true;
 use_schema =  true;

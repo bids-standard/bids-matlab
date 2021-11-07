@@ -7,6 +7,7 @@ force = true;
 verbose =  true;
 use_schema =  true;
 tolerant = false;
+
 preproc_pipeline_name = 'spm12-preproc';
 stats_pipeline_name = 'spm12-stats';
 
@@ -51,7 +52,7 @@ BIDS = bids.layout(fullfile(pth, 'derivatives', preproc_pipeline_name), ...
                    verbose);
 
 % write the report in the log folder
-mkdir(fullfile(pth, 'derivatives', preproc_pipeline_name, 'log'));
+mkdir(BIDS.pth, 'log'));
 bids.report(BIDS, ...
             'output_path', fullfile(pth, 'derivatives', preproc_pipeline_name, 'log'), ...
             'read_nifti', true, ...
@@ -153,8 +154,8 @@ events = bids.query(BIDS, 'data', ...
 
 events = spm_load(events{1});
 
-subj_stats_pth = fullfile(stats_pth, ['sub-' subject_label], 'stats');
-SPM_mat = fullfile(stats_pth, ['sub-' subject_label], 'stats', 'SPM.mat');
+subj_stats_pth = fullfile(BIDS.pth, ['sub-' subject_label], 'stats');
+SPM_mat = fullfile(subj_stats_pth, 'SPM.mat');
 
 clear matlabbatch;
 
