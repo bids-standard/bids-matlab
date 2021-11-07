@@ -123,6 +123,36 @@ classdef File2
       obj.changed = false;
     end
 
+    function obj = reorder_entities(obj, entity_order)
+      
+      order = obj.entity_order;
+
+      if nargin > 1 && ~isempty(entity_order)
+        order = entity_order;
+
+      elseif ~isempty(obj.schema)
+        obj = get_entity_order_from_schema(obj);
+        order = obj.entity_order;
+      end
+
+      if size(order, 2) > 1
+        order = order';
+      end
+      entity_names = fieldnames(obj.entities);
+      idx = ismember(entity_names, order);
+      obj.entity_order = cat(1, order, entity_names(~idx));
+
+      % reorder obj.entities
+      tmp = struct();
+      for i = 1:numel(obj.entity_order)
+        this_entity = obj.entity_order{i};
+        if isfield(obj.entities, this_entity)
+          tmp.(this_entity) = obj.entities.(this_entity);
+        end
+      end
+      obj.entities = tmp;
+
+    end
   end
 
 
