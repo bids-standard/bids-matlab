@@ -5,10 +5,16 @@ classdef File2
     extension = ''; % file extension
     suffix = '';    % file suffix
     entities = [];  % list of entities
+    modality = '';  % name of file modality
 
     bids_path = ''; % path within dataset
     filename = '';  % bidsified name
     json_filename = ''; % bidsified name for json file
+
+    entity_required = {}; % Required entities
+    entity_order = {};  % Expected order of entities
+    schema = [];    % Schema used for given modality
+
   end
 
   properties (SetAccess = private)
@@ -17,13 +23,34 @@ classdef File2
 
   methods
 
+    function value = get.bids_path(obj)
+      if obj.changed
+        obj = obj.Update();
+      end
+      value = obj.bids_path;
+    end
+
+    function value = get.filename(obj)
+      if obj.changed
+        obj = obj.Update();
+      end
+      value = obj.filename;
+    end
+
+    function value = get.json_filename(obj)
+      if obj.changed
+        obj = obj.Update();
+      end
+      value = obj.json_filename;
+    end
+
     function obj = set.prefix(obj, prefix)
       obj.validatePrefix(prefix);
       obj.prefix = prefix;
       obj.changed = true;
     end
 
-    function obj = set.extention(obj, extension)
+    function obj = set.extension(obj, extension)
       obj.validateExtension(extension);
       obj.extension = extension;
       obj.changed = true;
@@ -57,16 +84,32 @@ classdef File2
       obj.changed = true;
     end
 
+    function obj = set.modality(obj, modality)
+      obj.validateString(modality, 'Modality', '^[-\w]+$');
+      obj.modality = modality;
+      obj.changed = true;
+    end
+
+    function obj = SetEntity(obj, label, value)
+      obj.validateWord(label, 'Entity label');
+      obj.validateWord(value, 'Entity value');
+
+      obj.entities.(label) = value;
+      obj.changed = true;
+    end
+
     function obj = File2(varargin)
       args = inputParser;
       charOrStruct = @(x) isstruct(x) || ischar(x);
 
       args.addRequired('input_file', charOrStruct);
+      args.addParameter('use_schema', false, @islogical);
+      args.addParameter('tolerant', true, @islogical);
 
       args.parse(varargin{:});
 
       if ischar(args.Results.input_file)
-        f_struct = bids.internal.parse_filename(args.Results.input_file)
+        f_struct = bids.internal.parse_filename(args.Results.input_file);
       else
         f_struct = args.Results.input_file;
       end
@@ -76,7 +119,7 @@ classdef File2
       end
 
       if isfield(f_struct, 'ext')
-        obj.extention = f_struct.ext;
+        obj.extension = f_struct.ext;
       end
 
       if isfield(f_struct, 'suffix')
@@ -116,7 +159,7 @@ classdef File2
         filename = [filename obj.suffix];
       end
 
-      obj.filename = [filename obj.extention];
+      obj.filename = [filename obj.extension];
       obj.json_filename = [filename '.json'];
       obj.bids_path = path;
 
@@ -151,8 +194,10 @@ classdef File2
         end
       end
       obj.entities = tmp;
+      obj.Update();
 
     end
+
   end
 
 
@@ -169,26 +214,25 @@ classdef File2
       if ~isempty(str)
         res = regexp(str, pattern);
         if isempty(res)
-          error('%s: %s do not satisfy pattern %s', type, str, patttern);
+          error('%s: %s do not satisfy pattern %s', type, str, pattern);
         end
       end
+    end
 
+    function validateExtension(extension)
+      bids.File2.validateString(extension, 'Extension', '^\.[.A-Za-z0-9]+$');
+    end
+
+    function validateWord(extension, type)
+      bids.File2.validateString(extension, type, '^[A-Za-z0-9]+$');
     end
 
     function validatePrefix(prefix)
-      File2.validateString(prefix, 'Prefix', '^[-_A-Za-z0-9]+$');
+      bids.File2.validateString(prefix, 'Prefix', '^[-_A-Za-z0-9]+$');
       res = regexp(prefix, 'sub-');
       if ~isempty(res)
         error('Prefix ''%s'' contains ''sub-''', prefix);
       end
     end
-
-    function validateWord(word, type)
-      if ~exist('type', 'var')
-        type = 'Word';
-      end
-      File2.validateString(word, type, '^\.[.A-Za-z0-9]+$');
-    end
-
   end
 end
