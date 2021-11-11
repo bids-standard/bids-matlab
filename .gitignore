@@ -3,6 +3,11 @@ octave-workspace
 *.*~
 *.swp
 
+tmp*
+examples/brainstorm
+examples/MoAEpilot
+
+
 # virtual env
 env/*
 
@@ -15,7 +20,7 @@ data/*
 derivatives/*
 tests/*.tsv
 
-# coverage 
+# coverage
 coverage_html
 
 # styling

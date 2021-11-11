@@ -17,7 +17,7 @@ function status = keep_file_for_query(file_struct, options)
       field_name = 'ext';
     end
 
-    if any(strcmp(field_name, {'suffix', 'ext', 'prefix'})) && ...
+    if any(strcmp(field_name, {'modality', 'suffix', 'ext', 'prefix'})) && ...
              check_label_with_regex(file_struct.(field_name), options{i, 2})
       status = false;
       return
@@ -37,7 +37,7 @@ function status = keep_file_for_query(file_struct, options)
     this_entity = options{j, 1};
     label_lists = options{j, 2};
 
-    if ~any(strcmp(this_entity, {'suffix', 'extension', 'ext', 'prefix'}))
+    if ~any(strcmp(this_entity, {'modality', 'suffix', 'extension', 'ext', 'prefix'}))
 
       file_has_entity = ismember(this_entity, fieldnames(file_struct.entities));
       exclude_entity = numel(label_lists) == 1 && isempty(label_lists{1});

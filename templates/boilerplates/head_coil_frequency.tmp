@@ -1,1 +1,0 @@
-Head localisation coils used frequencies of {% for f in HeadCoilFrequency %}{{f}} Hz{% if loop.last -1 %} and {% elif not loop.last %}, {% endif %}{% endfor %}.

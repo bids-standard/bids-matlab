@@ -1,7 +1,7 @@
 BIDS file handling
 ******************
 
-.. automodule:: +bids 
+.. automodule:: +bids
 
 .. autoclass:: File
     :members:

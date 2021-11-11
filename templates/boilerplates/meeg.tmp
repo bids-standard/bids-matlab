@@ -1,0 +1,5 @@
+For the {{TaskName}} task, {{nb_runs}} run(s) of {{suffix}} data were collected.
+
+Power line and sampling frequencies were {{PowerLineFrequency}} Hz and {{SamplingFrequency}} Hz, respectively.
+
+Data was collected with {{ChannelCount}} {{suffix}} channels, {{EOGChannelCount}} EOG channels, {{ECGChannelCount}} ECG channels and {{EMGChannelCount}} EMG channels recorded simultaneously.
