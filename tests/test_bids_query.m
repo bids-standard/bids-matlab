@@ -6,7 +6,6 @@ function test_suite = test_bids_query %#ok<*STOUT>
   initTestSuite;
 end
 
-<<<<<<< HEAD
 function test_query_impossible_suffix_should_return_empty()
 
   pth_bids_example = get_test_data_dir();
@@ -38,7 +37,9 @@ function test_query_suffixes()
 
   suffixes = {'T1w'};
   assertEqual(bids.query(BIDS, 'suffixes', 'modality', 'anat'), suffixes);
-=======
+
+end
+
 function test_query_subjects()
 
   pth_bids_example = get_test_data_dir();
@@ -101,7 +102,6 @@ function test_query_entities()
               'sub'};
 
   assertEqual(entities, expected);
->>>>>>> dev
 
 end
 

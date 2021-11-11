@@ -17,7 +17,6 @@ function status = keep_file_for_query(file_struct, options)
       field_name = 'ext';
     end
 
-
     if any(strcmp(field_name, {'modality', 'suffix', 'ext', 'prefix'})) && ...
              check_label_with_regex(file_struct.(field_name), options{i, 2})
       status = false;
