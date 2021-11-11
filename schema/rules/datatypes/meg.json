@@ -1,0 +1,155 @@
+[
+  {
+    "suffixes": [
+      "meg"
+    ],
+    "extensions": [
+      "/",
+      ".ds/",
+      ".json",
+      ".fif",
+      ".sqd",
+      ".con",
+      ".raw",
+      ".ave",
+      ".mrk",
+      ".kdf",
+      ".mhd"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "required",
+      "acquisition": "optional",
+      "run": "optional",
+      "processing": "optional",
+      "split": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "meg"
+    ],
+    "extensions": [
+      ".dat"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "acquisition": {
+        "requirement": "required",
+        "type": "string",
+        "enum": [
+          "calibration"
+        ]
+      }
+    }
+  },
+  {
+    "suffixes": [
+      "meg"
+    ],
+    "extensions": [
+      ".fif"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "acquisition": {
+        "requirement": "required",
+        "type": "string",
+        "enum": [
+          "crosstalk"
+        ]
+      }
+    }
+  },
+  {
+    "suffixes": [
+      "headshape"
+    ],
+    "extensions": [
+      "*"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "acquisition": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "markers"
+    ],
+    "extensions": [
+      ".sqd",
+      ".mrk"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "optional",
+      "acquisition": "optional",
+      "space": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "coordsystem"
+    ],
+    "extensions": [
+      ".json"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "acquisition": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "channels"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "required",
+      "acquisition": "optional",
+      "run": "optional",
+      "processing": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "events"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "required",
+      "acquisition": "optional",
+      "run": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "photo"
+    ],
+    "extensions": [
+      ".jpg"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "acquisition": "optional"
+    }
+  }
+]

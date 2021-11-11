@@ -1,7 +1,0 @@
-{
-  "name": "LabelingPulseDuration",
-  "description": "Duration of the individual labeling pulses, in milliseconds.\n",
-  "type": "number",
-  "exclusiveMinimum": 0,
-  "unit": "ms"
-}

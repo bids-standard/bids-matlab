@@ -1,4 +1,0 @@
-{
-  "name": "MEG Sensor Coil Positions",
-  "description": "Another manufacturer-specific detail pertains to the KIT/Yokogawa/Ricoh\nsystem, which saves the MEG sensor coil positions in a separate file with two\npossible filename extensions  (`.sqd`, `.mrk`).\nFor these files, the `markers` suffix MUST be used.\nFor example: `sub-01_task-nback_markers.sqd`\n"
-}

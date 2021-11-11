@@ -1,5 +1,0 @@
-{
-  "name": "BolusCutOffFlag",
-  "description": "Boolean indicating if a bolus cut-off technique is used.\nCorresponds to DICOM Tag 0018, 925C `ASL Bolus Cut-off Flag`.\n",
-  "type": "boolean"
-}

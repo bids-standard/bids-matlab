@@ -1,5 +1,0 @@
-{
-  "name": "Quantitative susceptibility map (QSM)",
-  "description": "In parts per million (ppm).\nQSM allows for determining the underlying magnetic susceptibility of tissue\n(Chi)\n([Wang & Liu, 2014](https://onlinelibrary.wiley.com/doi/10.1002/mrm.25358)).\nChi maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\n",
-  "unit": "ppm"
-}

@@ -1,28 +1,46 @@
 function varargout = jsonwrite(varargin)
   %
   % Serialize a JSON (JavaScript Object Notation) structure
-  % FORMAT jsonwrite(filename,json)
-  % filename - JSON filename
-  % json     - JSON structure
   %
-  % FORMAT S = jsonwrite(json)
-  % json     - JSON structure
-  % S        - serialized JSON structure (string)
+  % USAGE::
   %
-  % FORMAT [...] = jsonwrite(...,opts)
-  % opts    - structure or list of name/value pairs of optional parameters:
-  %             prettyPrint: indent output [Default: true]
-  %             replacementStyle: string to control how non-alphanumeric
-  %               characters are replaced {'underscore','hex','delete','nop'}
-  %               [Default: 'underscore']
-  %             convertInfAndNaN: encode NaN, Inf and -Inf as "null"
-  %               [Default: true]
+  %     jsonwrite(filename, json)
+  %
+  % :param filename:  JSON filename
+  % :type filename:   string
+  % :param json:  JSON structure
+  % :type json:   structure
+  %
+  % USAGE::
+  %
+  %     S = jsonwrite(json)
+  %
+  % :param json:  JSON structure
+  % :type json:   structure
+  %
+  % :returns: S - serialized JSON structure (string)
+  %
+  % USAGE::
+  %
+  %     [...] = jsonwrite(..., opts)
+  %
+  % :type opts: structure  or list
+  % :param opts: name/value pairs of optional parameters.
+  %
+  %   - ``'prettyPrint'``: indent output [Default: ``true``]
+  %   - ``'replacementStyle'``: string to control how non-alphanumeric
+  %     characters are replaced ``{'underscore', 'hex', 'delete', 'nop'}``
+  %     [Default: ``'underscore'``]
+  %   - ``'convertInfAndNaN'``: encode ``NaN``, ``Inf`` and ``-Inf`` as "null"
+  %     [Default: true]
   %
   % References:
-  %   JSON Standard: https://www.json.org/
-  %   jsonencode: https://www.mathworks.com/help/matlab/ref/jsonencode.html
+  %
+  %  - `JSON Standard <https://www.json.org/>`_
+  %  - `jsonencode <https://www.mathworks.com/help/matlab/ref/jsonencode.html>`_
   %
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
   % $Id: spm_jsonwrite.m 8031 2020-12-10 13:37:00Z guillaume $
 
   % -Input parameters

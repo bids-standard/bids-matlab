@@ -1,6 +1,0 @@
-{
-  "name": "InjectionEnd",
-  "description": "Time of end of injection with respect to `TimeZero` in the default unit\nseconds.\n",
-  "type": "number",
-  "unit": "s"
-}

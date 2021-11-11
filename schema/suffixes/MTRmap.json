@@ -1,7 +1,0 @@
-{
-  "name": "Magnetization transfer ratio image",
-  "description": "In arbitrary units (arbitrary).\nMTR maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\nMTRmap intensity values are RECOMMENDED to be represented in percentage in\nthe range of 0-100%.\n",
-  "unit": "arbitrary",
-  "minValue": 0,
-  "maxValue": 100
-}

@@ -1,5 +1,0 @@
-{
-  "name": "MetaboliteRecoveryCorrectionApplied",
-  "description": "Metabolite recovery correction from the HPLC, for tracers where it changes\nwith time postinjection.\nIf `true`, the `hplc_recovery_fractions` column MUST be present in the\ncorresponding `*_blood.tsv` file.\n",
-  "type": "boolean"
-}

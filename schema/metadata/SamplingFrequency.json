@@ -1,6 +1,0 @@
-{
-  "name": "SamplingFrequency",
-  "description": "Sampling frequency (in Hz) of all the data in the recording,\nregardless of their type (for example, `2400`).\n",
-  "type": "number",
-  "unit": "Hz"
-}

@@ -1,6 +1,0 @@
-{
-  "name": "StartTime",
-  "description": "Start time in seconds in relation to the start of acquisition of the first\ndata sample in the corresponding neural dataset (negative values are allowed).\n",
-  "type": "number",
-  "unit": "s"
-}

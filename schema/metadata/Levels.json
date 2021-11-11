@@ -1,8 +1,0 @@
-{
-  "name": "Levels",
-  "description": "For categorical variables: An object of possible values (keys) and their\ndescriptions (values).\n",
-  "type": "object",
-  "additionalProperties": {
-    "type": "string"
-  }
-}

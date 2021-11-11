@@ -1,7 +1,0 @@
-{
-  "name": "EchoTime",
-  "description": "The time (in seconds) when the echo corresponding to this map was acquired.\n",
-  "type": "number",
-  "unit": "s",
-  "exclusiveMinimum": 0
-}

@@ -19,6 +19,7 @@ function result = query(BIDS, query, varargin)
   %     - ``'tasks'``
   %     - ``'runs'``
   %     - ``'suffixes'``
+  %     - ``'entities'``
   %     - ``'data'``
   %     - ``'metadata'``
   %     - ``'metafiles'``
@@ -27,14 +28,29 @@ function result = query(BIDS, query, varargin)
   %     - ``'prefixes'``
   %
   %
+  % .. warning:: Note that all the query types are plurals.
+  %
   % Queries can "filtered" by passing more arguments key-value pairs as a list of
-  % strings or as a cell or a structure
+  % strings or as a cell or a structure.
+  %
+  % Note that for the entities listed below can be queried using integers:
+  %
+  %     - ``'run'``
+  %     - ``'flip'``
+  %     - ``'inv'``
+  %     - ``'split'``
+  %     - ``'echo'``
+  %
+  % It is also possible to use regular expressions in the value.
+  %
+  % ---
   %
   % Example 1::
   %
   %    data = bids.query(BIDS, 'data', ...
   %                            'sub', '01', ...
   %                            'task', 'stopsignalwithpseudowordnaming', ...
+  %                            'run', 1:5, ...
   %                            'extension', '.nii.gz', ...
   %                            'suffix', 'bold');
   %
@@ -43,6 +59,7 @@ function result = query(BIDS, query, varargin)
   %
   %     filters = struct('sub', '01', ...
   %                      'task', 'stopsignalwithpseudowordnaming', ...
+  %                      'run', 1:5, ...
   %                      'extension', '.nii.gz', ...
   %                      'suffix', 'bold');
   %
@@ -51,9 +68,10 @@ function result = query(BIDS, query, varargin)
   %
   % Example 3::
   %
-  %     filters = {'sub', '01'; ...
-  %                'task', 'stopsignalwithpseudowordnaming'; ...
-  %                'extension', '.nii.gz'; ...
+  %     filters = {'sub', '0[1-5]'; ...
+  %                'task', 'stopsignal.*'; ...
+  %                'run', 1:5; ...
+  %                'extension', '.nii.*'; ...
   %                'suffix', 'bold'};
   %
   %     data = bids.query(BIDS, 'data', filters);
@@ -72,6 +90,7 @@ function result = query(BIDS, query, varargin)
                    'modalities', ...
                    'tasks', ...
                    'runs', ...
+                   'entities', ...
                    'suffixes', ...
                    'data', ...
                    'metadata', ...
@@ -122,7 +141,7 @@ function result = query(BIDS, query, varargin)
         result = result';
       end
 
-    case {'tasks', 'runs', 'suffixes', 'extensions', 'prefixes'}
+    case {'tasks', 'entities', 'runs', 'suffixes', 'extensions', 'prefixes'}
       result = unique(result);
       result(cellfun('isempty', result)) = [];
   end
@@ -156,6 +175,10 @@ function options = parse_query(options)
 
     if ischar(options{i, 2})
       options{i, 2} = cellstr(options{i, 2});
+    end
+
+    if isnumeric(options{i, 2})
+      options{i, 2} = {options{i, 2}};
     end
 
     for j = 1:numel(options{i, 2})
@@ -223,7 +246,8 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
     this_subject = BIDS.subjects(i);
 
     % Only continue if this subject is one of those filtered
-    if ~ismember(this_subject.name(5:end), subjects)
+    keep = regexp(this_subject.name(5:end), subjects, 'match');
+    if all(cellfun('isempty', keep))
       continue
     end
 
@@ -268,6 +292,12 @@ function result = update_result(query, options, result, this_subject, this_modal
 
         case 'modalities'
           result = unique(cat(1, result, {this_modality}));
+
+        case 'entities'
+          entities = this_subject.(this_modality)(k).entities;
+          fields = fieldnames(entities);
+          non_empty_fields = ~structfun(@isempty, entities);
+          result = unique(cat(1, result, fields(non_empty_fields)));
 
         case 'data'
           result{end + 1} = fullfile(this_subject.path, this_modality, d(k).filename);

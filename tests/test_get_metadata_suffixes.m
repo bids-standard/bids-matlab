@@ -28,7 +28,6 @@ function test_get_metadata_suffixes_basic()
   metadata = bids.internal.get_metadata(metalist);
 
   expected_metadata = bids.util.jsondecode(side_car);
-
   assertEqual(metadata, expected_metadata);
 
   file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');

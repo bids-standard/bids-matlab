@@ -1,8 +1,0 @@
-{
-  "name": "ScaleFactor",
-  "description": "Scale factor for each frame.\n",
-  "type": "array",
-  "items": {
-    "type": "number"
-  }
-}

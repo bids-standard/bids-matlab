@@ -1,7 +1,0 @@
-{
-  "name": "EffectiveEchoSpacing",
-  "description": "The \"effective\" sampling interval, specified in seconds,\nbetween lines in the phase-encoding direction,\ndefined based on the size of the reconstructed image in the phase direction.\nIt is frequently, but incorrectly, referred to as \"dwell time\"\n(see `DwellTime` parameter below for actual dwell time).\nIt is required for unwarping distortions using field maps.\nNote that beyond just in-plane acceleration,\na variety of other manipulations to the phase encoding need to be accounted\nfor properly, including partial fourier, phase oversampling,\nphase resolution, phase field-of-view and interpolation.\n",
-  "type": "number",
-  "exclusiveMinimum": 0,
-  "unit": "s"
-}

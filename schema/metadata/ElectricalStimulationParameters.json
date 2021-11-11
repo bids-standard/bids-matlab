@@ -1,5 +1,0 @@
-{
-  "name": "ElectricalStimulationParameters",
-  "description": "Free form description of stimulation parameters, such as frequency or shape.\nSpecific onsets can be specified in the events.tsv file.\nSpecific shapes can be described here in freeform text.\n",
-  "type": "string"
-}
