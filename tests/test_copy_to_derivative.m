@@ -6,6 +6,33 @@ function test_suite = test_copy_to_derivative %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_copy_to_derivative_exclude_with_regex()
+
+  [BIDS, out_path, filters, cfg] = fixture('ds002');
+
+  pipeline_name = 'bids-matlab';
+  unzip = false;
+  verbose = cfg.verbose;
+
+  filters.sub = '0[1-9]'; % only include subjects with label that start with 0
+  filters.task = '(?!mixed).*'; % exclude tasks that start with mixed
+
+  bids.copy_to_derivative(BIDS, pipeline_name, ...
+                          out_path, ...
+                          filters, ...
+                          'unzip', unzip, ...
+                          'verbose', verbose);
+
+  BIDSder = bids.layout(fullfile(out_path, pipeline_name));
+  subjects = bids.query(BIDSder, 'subjects');
+  assertEqual(numel(subjects), 9);
+  tasks = bids.query(BIDSder, 'tasks');
+  assertEqual(numel(tasks), 2);
+
+  teardown(out_path);
+
+end
+
 function test_copy_to_derivative_GeneratedBy()
 
   [BIDS, out_path, ~, cfg] = fixture('qmri_vfa');
