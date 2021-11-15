@@ -45,6 +45,7 @@ function test_parsing()
   filename.suffix = 'bold';
   filename.ext = '.nii';
   filename.entities = entities;
+  file = bids.File2(filename, 'use_schema', false);
   assertEqual(file.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
 end
 
