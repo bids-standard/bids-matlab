@@ -55,44 +55,44 @@ classdef File2
         obj.entities = f_struct.entities;
       end
 
-      obj = obj.Update();
+      obj = obj.update();
     end
 
     function value = get.bids_path(obj)
       if obj.changed
-        obj = obj.Update();
+        obj = obj.update();
       end
       value = obj.bids_path;
     end
 
     function value = get.filename(obj)
       if obj.changed
-        obj = obj.Update();
+        obj = obj.update();
       end
       value = obj.filename;
     end
 
     function value = get.json_filename(obj)
       if obj.changed
-        obj = obj.Update();
+        obj = obj.update();
       end
       value = obj.json_filename;
     end
 
     function obj = set.prefix(obj, prefix)
-      obj.validatePrefix(prefix);
+      obj.validate_prefix(prefix);
       obj.prefix = prefix;
       obj.changed = true;
     end
 
     function obj = set.extension(obj, extension)
-      obj.validateExtension(extension);
+      obj.validate_extension(extension);
       obj.extension = extension;
       obj.changed = true;
     end
 
     function obj = set.suffix(obj, suffix)
-      obj.validateWord(suffix, 'Suffix');
+      obj.validate_word(suffix, 'Suffix');
       obj.suffix = suffix;
       obj.changed = true;
     end
@@ -108,32 +108,32 @@ classdef File2
       fn = fieldnames(entities);
       for ifn = 1:size(fn, 1)
         key = fn{ifn};
-        obj.validateWord(key, 'Entity label');
+        obj.validate_word(key, 'Entity label');
         val = entities.(key);
         if isempty(val)
           continue;
         end
-        obj.validateWord(val, 'Entity value');
+        obj.validate_word(val, 'Entity value');
       end
       obj.entities = entities;
       obj.changed = true;
     end
 
     function obj = set.modality(obj, modality)
-      obj.validateString(modality, 'Modality', '^[-\w]+$');
+      obj.validate_string(modality, 'Modality', '^[-\w]+$');
       obj.modality = modality;
       obj.changed = true;
     end
 
-    function obj = SetEntity(obj, label, value)
-      obj.validateWord(label, 'Entity label');
-      obj.validateWord(value, 'Entity value');
+    function obj = set_entity(obj, label, value)
+      obj.validate_word(label, 'Entity label');
+      obj.validate_word(value, 'Entity value');
 
       obj.entities.(label) = value;
       obj.changed = true;
     end
 
-    function obj = Update(obj)
+    function obj = update(obj)
       filename = obj.prefix;
       path = '';
 
@@ -194,7 +194,7 @@ classdef File2
         end
       end
       obj.entities = tmp;
-      obj.Update();
+      obj.update();
 
     end
 
@@ -202,7 +202,7 @@ classdef File2
 
 
   methods(Static)
-    function validateString(str, type, pattern)
+    function validate_string(str, type, pattern)
       if ~ischar(str)
         error('%s is not chararray', type);
       end
@@ -219,16 +219,16 @@ classdef File2
       end
     end
 
-    function validateExtension(extension)
-      bids.File2.validateString(extension, 'Extension', '^\.[.A-Za-z0-9]+$');
+    function validate_extension(extension)
+      bids.File2.validate_string(extension, 'Extension', '^\.[.A-Za-z0-9]+$');
     end
 
-    function validateWord(extension, type)
-      bids.File2.validateString(extension, type, '^[A-Za-z0-9]+$');
+    function validate_word(extension, type)
+      bids.File2.validate_string(extension, type, '^[A-Za-z0-9]+$');
     end
 
-    function validatePrefix(prefix)
-      bids.File2.validateString(prefix, 'Prefix', '^[-_A-Za-z0-9]+$');
+    function validate_prefix(prefix)
+      bids.File2.validate_string(prefix, 'Prefix', '^[-_A-Za-z0-9]+$');
       res = regexp(prefix, 'sub-');
       if ~isempty(res)
         error('Prefix ''%s'' contains ''sub-''', prefix);

@@ -7,20 +7,20 @@ function test_suite = test_bids_file %#ok<*STOUT>
 end
 
 function test_validation()
-  assertExceptionThrown(@() bids.File2.validateString([2 3], 'Error', '.*'), '');
-  assertExceptionThrown(@() bids.File2.validateString(['.nii'; '.abc'], 'Error', '.*'), '');
-  assertExceptionThrown(@() bids.File2.validateString('abc', 'Error', 'abcde'), '');
-  bids.File2.validateString('', 'Error', '.*');
+  assertExceptionThrown(@() bids.File2.validate_string([2 3], 'Error', '.*'), '');
+  assertExceptionThrown(@() bids.File2.validate_string(['.nii'; '.abc'], 'Error', '.*'), '');
+  assertExceptionThrown(@() bids.File2.validate_string('abc', 'Error', 'abcde'), '');
+  bids.File2.validate_string('', 'Error', '.*');
 
-  assertExceptionThrown(@() bids.File2.validateExtension('nii'), '');
-  assertExceptionThrown(@() bids.File2.validateExtension('.nii-'), '');
-  assertExceptionThrown(@() bids.File2.validateExtension('.nii_'), '');
+  assertExceptionThrown(@() bids.File2.validate_extension('nii'), '');
+  assertExceptionThrown(@() bids.File2.validate_extension('.nii-'), '');
+  assertExceptionThrown(@() bids.File2.validate_extension('.nii_'), '');
 
-  assertExceptionThrown(@() bids.File2.validatePrefix('abc/def'), '');
-  assertExceptionThrown(@() bids.File2.validatePrefix('abcsub-def'), '');
+  assertExceptionThrown(@() bids.File2.validate_prefix('abc/def'), '');
+  assertExceptionThrown(@() bids.File2.validate_prefix('abcsub-def'), '');
 
-  assertExceptionThrown(@() bids.File2.validateWord('abc/def', 'Word'), '');
-  assertExceptionThrown(@() bids.File2.validateWord('abc-def', 'Word'), '');
+  assertExceptionThrown(@() bids.File2.validate_word('abc/def', 'Word'), '');
+  assertExceptionThrown(@() bids.File2.validate_word('abc-def', 'Word'), '');
 end
 
 
@@ -60,7 +60,7 @@ function test_change()
 
   % Explicit update
   file.extension = '.a';
-  file = file.Update();
+  file = file.update();
   assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_run-02_test.a');
 
   % Setting entities
@@ -68,8 +68,8 @@ function test_change()
   assertEqual(file.bids_path, 'sub-02');
   assertEqual(file.filename, 'sub-02_task-doNothing_acq-abc_test.a');
 
-  file = file.SetEntity('task', 'faceRecognition');
-  file = file.SetEntity('run', '01');
+  file = file.set_entity('task', 'faceRecognition');
+  file = file.set_entity('run', '01');
   assertEqual(file.filename, 'sub-02_task-faceRecognition_acq-abc_run-01_test.a');
 end
 
