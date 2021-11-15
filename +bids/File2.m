@@ -23,6 +23,41 @@ classdef File2
 
   methods
 
+    function obj = File2(varargin)
+      args = inputParser;
+      charOrStruct = @(x) isstruct(x) || ischar(x);
+
+      args.addRequired('input_file', charOrStruct);
+      args.addParameter('use_schema', false, @islogical);
+      args.addParameter('tolerant', true, @islogical);
+
+      args.parse(varargin{:});
+
+      if ischar(args.Results.input_file)
+        f_struct = bids.internal.parse_filename(args.Results.input_file);
+      else
+        f_struct = args.Results.input_file;
+      end
+
+      if isfield(f_struct, 'prefix')
+        obj.prefix = f_struct.prefix;
+      end
+
+      if isfield(f_struct, 'ext')
+        obj.extension = f_struct.ext;
+      end
+
+      if isfield(f_struct, 'suffix')
+        obj.suffix = f_struct.suffix;
+      end
+
+      if isfield(f_struct, 'entities')
+        obj.entities = f_struct.entities;
+      end
+
+      obj = obj.Update();
+    end
+
     function value = get.bids_path(obj)
       if obj.changed
         obj = obj.Update();
@@ -96,41 +131,6 @@ classdef File2
 
       obj.entities.(label) = value;
       obj.changed = true;
-    end
-
-    function obj = File2(varargin)
-      args = inputParser;
-      charOrStruct = @(x) isstruct(x) || ischar(x);
-
-      args.addRequired('input_file', charOrStruct);
-      args.addParameter('use_schema', false, @islogical);
-      args.addParameter('tolerant', true, @islogical);
-
-      args.parse(varargin{:});
-
-      if ischar(args.Results.input_file)
-        f_struct = bids.internal.parse_filename(args.Results.input_file);
-      else
-        f_struct = args.Results.input_file;
-      end
-
-      if isfield(f_struct, 'prefix')
-        obj.prefix = f_struct.prefix;
-      end
-
-      if isfield(f_struct, 'ext')
-        obj.extension = f_struct.ext;
-      end
-
-      if isfield(f_struct, 'suffix')
-        obj.suffix = f_struct.suffix;
-      end
-
-      if isfield(f_struct, 'entities')
-        obj.entities = f_struct.entities;
-      end
-
-      obj = obj.Update();
     end
 
     function obj = Update(obj)
