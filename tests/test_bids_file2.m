@@ -1,4 +1,4 @@
-function test_suite = test_bids_file %#ok<*STOUT>
+function test_suite = test_bids_file2 %#ok<*STOUT>
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine
@@ -23,13 +23,12 @@ function test_validation()
   assertExceptionThrown(@() bids.File2.validateWord('abc-def', 'Word'), '');
 end
 
-
 function test_parsing()
 
   filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
   file = bids.File2(filename, 'use_schema', false);
 
-  entities = struct('sub', '01', 'ses', 'test',...
+  entities = struct('sub', '01', 'ses', 'test', ...
                     'task', 'faceRecognition', 'run', '02');
 
   assertEqual(file.prefix, 'wua');

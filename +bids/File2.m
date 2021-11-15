@@ -1,24 +1,24 @@
 classdef File2
 
   properties
-    prefix = '';    % bids prefix
-    extension = ''; % file extension
-    suffix = '';    % file suffix
-    entities = [];  % list of entities
-    modality = '';  % name of file modality
+    prefix = ''     % bids prefix
+    extension = ''  % file extension
+    suffix = ''     % file suffix
+    entities = []   % list of entities
+    modality = ''   % name of file modality
 
-    bids_path = ''; % path within dataset
-    filename = '';  % bidsified name
-    json_filename = ''; % bidsified name for json file
+    bids_path = ''  % path within dataset
+    filename = ''   % bidsified name
+    json_filename = ''  % bidsified name for json file
 
-    entity_required = {}; % Required entities
-    entity_order = {};  % Expected order of entities
-    schema = [];    % Schema used for given modality
+    entity_required = {}  % Required entities
+    entity_order = {}   % Expected order of entities
+    schema = []     % Schema used for given modality
 
   end
 
   properties (SetAccess = private)
-    changed = false;
+    changed = false
   end
 
   methods
@@ -67,7 +67,7 @@ classdef File2
       if isempty(entities)
         obj.entities = [];
         obj.changed = true;
-        return;
+        return
       end
 
       fn = fieldnames(entities);
@@ -76,7 +76,7 @@ classdef File2
         obj.validateWord(key, 'Entity label');
         val = entities.(key);
         if isempty(val)
-          continue;
+          continue
         end
         obj.validateWord(val, 'Entity value');
       end
@@ -142,7 +142,7 @@ classdef File2
         key = fn{i};
         val = obj.entities.(key);
         if isempty(val)
-          continue;
+          continue
         end
         filename = [filename key '-' val '_'];
 
@@ -167,7 +167,7 @@ classdef File2
     end
 
     function obj = reorder_entities(obj, entity_order)
-      
+
       order = obj.entity_order;
 
       if nargin > 1 && ~isempty(entity_order)
@@ -200,8 +200,8 @@ classdef File2
 
   end
 
+  methods (Static)
 
-  methods(Static)
     function validateString(str, type, pattern)
       if ~ischar(str)
         error('%s is not chararray', type);
@@ -234,5 +234,6 @@ classdef File2
         error('Prefix ''%s'' contains ''sub-''', prefix);
       end
     end
+
   end
 end
