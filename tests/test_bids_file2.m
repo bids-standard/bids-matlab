@@ -46,6 +46,20 @@ function test_parsing()
   filename.entities = entities;
   file = bids.File2(filename, 'use_schema', false);
   assertEqual(file.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
+  
+end
+
+
+function test_parsing_no_extension()
+    
+    % Should this throw at least a warning?
+    
+    % WHEN
+  filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold';
+  % WHEN
+  file = bids.File2(filename, 'use_schema', false);
+  % THEN
+  assertEqual(file.extension, '');
 end
 
 function test_change()
@@ -76,5 +90,18 @@ function test_reorder()
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
   file = bids.File2(filename, 'use_schema', false);
   file = file.reorder_entities({'sub', 'ses'});
+  
+  assertEqual(file.entity_order, {'sub'; 'ses'; 'task'; 'run'});
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+end
+
+function test_reorder_by_property()
+    
+  % This fails but not sure we want to do things that way anyway
+    
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File2(filename, 'use_schema', false);
+  file.set_entity_order = {'ses', 'sub', 'task', 'run'};
+  file.reorder_entities();
+  assertEqual(file.json_filename, 'wuases-test_sub-01_task-faceRecognition_run-02_bold.json');
 end
