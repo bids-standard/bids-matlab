@@ -198,6 +198,126 @@ classdef File2
 
     end
 
+    %% schema related methods
+
+    function obj = use_schema(obj)
+      %
+      % Loads BIDS schema into instance and tries to update properties:
+      %
+      %   - ``file.modality``
+      %   - ``file.required_entity``
+      %   - ``file.entity_order``
+      %   - ``file.relative_pth``
+      %
+      % USAGE::
+      %
+      %   file = file.use_schema();
+      %
+
+      obj.schema = bids.Schema();
+      obj = obj.get_required_entities();
+      obj = obj.get_entity_order_from_schema();
+      obj = obj.reorder_entities(obj.entity_order);
+
+    end
+
+    function [obj, required] = get_required_entities(obj)
+      %
+      % USAGE::
+      %
+      %   [file, required_entities] = file.get_required_entities()
+      %
+
+      if isempty(obj.schema)
+        obj.bidsFile_error('schemaMissing');
+      end
+
+      obj = obj.get_modality_from_schema();
+      if isempty(obj.modality) || iscell(obj.modality)
+        return
+      end
+
+      [~, required] = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
+                                                                     obj.modality);
+      obj.entity_required = required;
+
+    end
+
+    function [obj, modality] = get_modality_from_schema(obj)
+      %
+      % USAGE::
+      %
+      %   [file, modality] = file.get_modality_from_schema()
+      %
+
+      if isempty(obj.schema)
+        obj.bidsFile_error('schemaMissing');
+      end
+
+      modality = obj.schema.return_datatypes_for_suffix(obj.suffix);
+
+      if numel(modality) > 1
+        msg = sprintf(['The suffix %s exist for several modalities: %s.', ...
+                       '\nSpecify which one in name_spec.modality'], ...
+                      obj.suffix, ...
+                      strjoin(modality, ', '));
+        bids.internal.error_handling(mfilename, 'manyModalityForsuffix', msg, obj.tolerant, obj.verbose);
+
+      elseif ~isempty(modality)
+        % convert to char
+        modality = modality{1};
+
+      end
+
+      obj.modality = modality;
+
+    end
+
+    function [obj, entity_order] = get_entity_order_from_schema(obj)
+      %
+      % USAGE::
+      %
+      %   [file, entity_order] = file.get_entity_order_from_schema()
+      %
+
+      if isempty(obj.schema)
+        obj.bidsFile_error('schemaMissing');
+      end
+
+      obj = obj.get_modality_from_schema();
+      if isempty(obj.modality) || iscell(obj.modality)
+        return
+      end
+
+      schema_entities = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
+                                                                       obj.modality);
+      for i = 1:numel(schema_entities)
+        obj.entity_order{i, 1} = schema_entities{i};
+      end
+      entity_order = obj.entity_order;
+
+    end
+
+    function check_required_entities(obj)
+      %
+      % USAGE::
+      %
+      %   file.check_required_entities()
+      %
+
+      if isempty(obj.entity_required)
+        return
+      end
+      missing_required_entity = ~ismember(obj.entity_required, fieldnames(obj.entities));
+
+      if any(missing_required_entity)
+        msg = sprintf('Entities ''%s'' cannot not be empty for the suffix ''%s''', ...
+                      strjoin(obj.entity_required(missing_required_entity), ', '), ...
+                      obj.suffix);
+        obj.bidsFile_error('requiredEntity', msg);
+      end
+
+    end
   end
 
   methods (Static)

@@ -104,4 +104,59 @@ function test_reorder_by_property()
   file.set_entity_order = {'ses', 'sub', 'task', 'run'};
   file.reorder_entities();
   assertEqual(file.json_filename, 'wuases-test_sub-01_task-faceRecognition_run-02_bold.json');
+%% SCHEMA
+
+function test_bids_file_parsing_filename_schema_based()
+
+  % GIVEN
+  filename = 'sub-01_task-foo_run-1_bold.nii.gz';
+  use_schema = true;
+
+  % WHEN
+  file = bids.File2(filename, 'use_schema', use_schema);
+
+  % THEN
+  assert(~isempty(file.schema));
+  assertEqual(file.modality, 'func');
+  assertEqual(file.entity_required, {'sub', 'task'});
+  assertEqual(file.entity_order, ...
+              {'sub'
+               'ses'
+               'task'
+               'acq'
+               'ce'
+               'rec'
+               'dir'
+               'run'
+               'echo'
+               'part'});
+
+  assertEqual(file.prefix, '');
+  assertEqual(file.suffix, 'bold');
+  assertEqual(file.extension, '.nii.gz');
+  assertEqual(file.entities, struct('sub', '01', 'task', 'foo', 'run', '1'));
+  assertEqual(file.filename, 'sub-01_task-foo_run-1_bold.nii.gz');
+  assertEqual(file.json_filename, 'sub-01_task-foo_run-1_bold.json');
+  assertEqual(file.bids_path, fullfile('sub-01', 'func'));
+
+end
+
+function test_bids_file_parsing_structure_schema_based()
+  % entities given in any order, should be reordered according to schema
+
+  % GIVEN
+  filename.suffix = 'bold';
+  filename.ext = '.nii';
+  filename.entities = struct('sub', '01', ...
+                             'run', '02', ...
+                             'task', 'faceRecognition');
+
+  % WHEN
+  file = bids.File2(filename, 'use_schema', true);
+
+  % THEN
+  assertEqual(file.filename, 'sub-01_task-faceRecognition_run-02_bold.nii');
+
+end
+
 end
