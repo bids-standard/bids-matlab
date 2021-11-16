@@ -46,23 +46,11 @@ function test_parsing()
   filename.entities = entities;
   file = bids.File2(filename, 'use_schema', false);
   assertEqual(file.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
-  
-end
 
-
-function test_parsing_no_extension()
-    
-    % Should this throw at least a warning?
-    
-    % WHEN
-  filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold';
-  % WHEN
-  file = bids.File2(filename, 'use_schema', false);
-  % THEN
-  assertEqual(file.extension, '');
 end
 
 function test_change()
+
   filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
   file = bids.File2(filename, 'use_schema', false);
 
@@ -84,26 +72,75 @@ function test_change()
   file = file.set_entity('task', 'faceRecognition');
   file = file.set_entity('run', '01');
   assertEqual(file.filename, 'sub-02_task-faceRecognition_acq-abc_run-01_test.a');
+
+end
+
+function test_bids_file_remove_entities()
+
+  % GIVEN
+  filename = 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  file = bids.File2(filename, 'use_schema', false);
+  % WHEN
+  file.entities.run = '';
+  % THEN
+  assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_bold.nii');
+
 end
 
 function test_reorder()
+
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
   file = bids.File2(filename, 'use_schema', false);
   file = file.reorder_entities({'sub', 'ses'});
-  
+
   assertEqual(file.entity_order, {'sub'; 'ses'; 'task'; 'run'});
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+
 end
 
 function test_reorder_by_property()
-    
+
   % This fails but not sure we want to do things that way anyway
-    
+
+  % GIVEN
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
   file = bids.File2(filename, 'use_schema', false);
   file.set_entity_order = {'ses', 'sub', 'task', 'run'};
+  % WHEN
   file.reorder_entities();
+  % THEN
   assertEqual(file.json_filename, 'wuases-test_sub-01_task-faceRecognition_run-02_bold.json');
+
+end
+
+function test_bids_file_derivatives_2()
+
+  % GIVEN
+  filename = 'sub-01_ses-test_T1w.nii';
+  file = bids.File2(filename, 'use_schema', false);
+  % WHEN
+  file.modality = 'roi';
+  file.suffix = 'mask';
+  file.entities.label = 'brain';
+  % THEN
+  assertEqual(file.filename, 'sub-01_ses-test_label-brain_mask.nii');
+  assertEqual(file.bids_path, fullfile('sub-01', 'ses-test', 'roi'));
+
+end
+
+function test_bids_file_derivatives()
+
+  % GIVEN
+  filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  file = bids.File2(filename, 'use_schema', false);
+  % WHEN
+  file.prefix = '';
+  file.entities.desc = 'preproc';
+  % THEN
+  assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii');
+
+end
+
 %% SCHEMA
 
 function test_bids_file_parsing_filename_schema_based()
@@ -159,4 +196,51 @@ function test_bids_file_parsing_structure_schema_based()
 
 end
 
+%% ERRORS
+
+function test_error_required_entity()
+  % GIVEN
+  filename.suffix = 'bold';
+  filename.ext = '.nii';
+  filename.entities = struct( ...
+                             'run', '02', ...
+                             'acq', '01');
+  % THEN
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', true, 'tolerant', false), ...
+                        'File2:requiredEntity');
+
+end
+
+function test_error_suffix_in_many_modalities()
+  % GIVEN
+  filename.suffix = 'events';
+  filename.ext = '.tsv';
+  filename.entities = struct('sub', '01', ...
+                             'task', 'faces');
+  % THEN
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
+                        'File2:manyModalityForsuffix');
+end
+
+function test_error_no_suffix()
+  % GIVEN
+  filename.entities = struct('sub', '01', ...
+                             'task', 'faces');
+  % THEN
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', false,  'tolerant', false), ...
+                        'File2:emptySuffix');
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
+                        'File2:emptySuffix');
+end
+
+function test_error_no_extension()
+  % GIVEN
+  filename.suffix = 'bold';
+  filename.entities = struct('sub', '01', ...
+                             'task', 'faces');
+  % THEN
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', false,  'tolerant', false), ...
+                        'File2:emptyExtension');
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
+                        'File2:emptyExtension');
 end

@@ -19,6 +19,8 @@ classdef File2
 
   properties (SetAccess = private)
     changed = false
+    verbose
+    tolerant
   end
 
   methods
@@ -30,6 +32,7 @@ classdef File2
       args.addRequired('input_file', charOrStruct);
       args.addParameter('use_schema', false, @islogical);
       args.addParameter('tolerant', true, @islogical);
+      args.addParameter('verbose', true, @islogical);
 
       args.parse(varargin{:});
 
@@ -38,6 +41,9 @@ classdef File2
       else
         f_struct = args.Results.input_file;
       end
+
+      obj.verbose = args.Results.verbose;
+      obj.tolerant = args.Results.tolerant;
 
       if isfield(f_struct, 'prefix')
         obj.prefix = f_struct.prefix;
@@ -53,6 +59,10 @@ classdef File2
 
       if isfield(f_struct, 'entities')
         obj.entities = f_struct.entities;
+      end
+
+      if args.Results.use_schema
+        obj = obj.use_schema();
       end
 
       obj = obj.update();
@@ -82,7 +92,7 @@ classdef File2
     function obj = set.prefix(obj, prefix)
       obj.validate_prefix(prefix);
       obj.prefix = prefix;
-      obj.changed = true;
+      obj.changed = true; %#ok<*MCSUP>
     end
 
     function obj = set.extension(obj, extension)
@@ -134,7 +144,7 @@ classdef File2
     end
 
     function obj = update(obj)
-      filename = obj.prefix;
+      filename = obj.prefix; %#ok<*PROP>
       path = '';
 
       fn = fieldnames(obj.entities);
@@ -155,12 +165,25 @@ classdef File2
         end
       end
 
-      if ~isempty(obj.suffix)
+      obj.check_required_entities();
+
+      if isempty(obj.suffix)
+        obj.bidsFile_error('emptySuffix');
+      else
         filename = [filename obj.suffix];
       end
 
-      obj.filename = [filename obj.extension];
+      if isempty(obj.extension)
+        obj.bidsFile_error('emptyExtension');
+      else
+        obj.filename = [filename obj.extension];
+      end
+
       obj.json_filename = [filename '.json'];
+
+      if ~isempty(obj.modality)
+        path = fullfile(path, obj.modality);
+      end
       obj.bids_path = path;
 
       obj.changed = false;
@@ -318,6 +341,33 @@ classdef File2
       end
 
     end
+
+    %% Things that might go private
+
+    function bidsFile_error(obj, id, msg)
+
+      if nargin < 2
+        msg = '';
+      end
+
+      switch id
+        case 'noEntity'
+          msg = 'No entity-label pairs.';
+
+        case 'schemaMissing'
+          msg = 'no schema specified: run file.use_schema()';
+
+        case 'emptySuffix'
+          msg = 'no suffix specified';
+
+        case 'emptyExtension'
+          msg = 'no extension specified';
+
+      end
+
+      bids.internal.error_handling(mfilename, id, msg, obj.tolerant, obj.verbose);
+    end
+
   end
 
   methods (Static)
@@ -332,7 +382,7 @@ classdef File2
       end
 
       if ~isempty(str)
-        res = regexp(str, pattern);
+        res = regexp(str, pattern, 'once');
         if isempty(res)
           error('%s: %s do not satisfy pattern %s', type, str, pattern);
         end
@@ -349,11 +399,12 @@ classdef File2
 
     function validate_prefix(prefix)
       bids.File2.validate_string(prefix, 'Prefix', '^[-_A-Za-z0-9]+$');
-      res = regexp(prefix, 'sub-');
+      res = regexp(prefix, 'sub-', 'once');
       if ~isempty(res)
         error('Prefix ''%s'' contains ''sub-''', prefix);
       end
     end
 
   end
+
 end
