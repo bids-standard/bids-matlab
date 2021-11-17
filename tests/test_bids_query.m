@@ -51,6 +51,22 @@ function test_query_subjects()
 
 end
 
+function test_query_regex_subjects_no_regex_by_default()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, '..', 'data', 'dummy', 'raw'));
+
+  data = bids.query(BIDS, 'subjects', 'sub', '01');
+
+  assertEqual(size(data, 1), 1);
+
+  data = bids.query(BIDS, 'subjects', 'sub', '*01');
+
+  assertEqual(size(data, 1), 3);
+
+end
+
 function test_query_regex_subjects()
 
   pth_bids_example = get_test_data_dir();

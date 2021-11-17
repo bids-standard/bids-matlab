@@ -32,8 +32,7 @@ jobs:
       - name: Install bids example
         run: |
           cd tests
-          git clone git://github.com/bids-standard/bids-examples.git --depth 1 
-          cd ..
+          make data
 
       - name: Install Moxunit and MOcov
         run: |
