@@ -49,7 +49,7 @@ function result = query(BIDS, query, varargin)
   %     data = bids.query(BIDS, 'data', 'sub', '01')
   %     data = bids.query(BIDS, 'data', 'sub', '^01$')
   %
-  %     % But the following would return all the data for all subjects 
+  %     % But the following would return all the data for all subjects
   %     % whose label ends in '01'
   %     data = bids.query(BIDS, 'data', 'sub', '.*01')
   %
