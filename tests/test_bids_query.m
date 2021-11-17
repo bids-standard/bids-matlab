@@ -59,12 +59,11 @@ function test_query_regex_subjects_no_regex_by_default()
 
   data = bids.query(BIDS, 'subjects', 'sub', '01');
 
-  assertEqual(size(data, 1), 1);
+  assertEqual(numel(data), 1);
 
   data = bids.query(BIDS, 'subjects', 'sub', '*01');
 
-  assertEqual(size(data, 1), 3);
-
+  assertEqual(numel(data), 3);
 end
 
 function test_query_regex_subjects()
