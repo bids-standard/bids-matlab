@@ -85,18 +85,40 @@ classdef File2
     end
 
     function obj = set.prefix(obj, prefix)
+      if ~isempty(prefix)
+        module = 'bids:File2';
+        id = 'prefixDefined';
+        msg = 'BIDS do not allow prefixes';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
+      end
+
       obj.validate_prefix(prefix);
       obj.prefix = prefix;
       obj.changed = true;
+
     end
 
     function obj = set.extension(obj, extension)
+      if isempty(extension)
+        module = 'bids:File2';
+        id = 'emptyExtension';
+        msg = 'no extension specified';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
+      end
+
       obj.validate_extension(extension);
       obj.extension = extension;
       obj.changed = true;
     end
 
     function obj = set.suffix(obj, suffix)
+      if isempty(suffix)
+        module = 'bids:File2';
+        id = 'emptySuffix';
+        msg = 'no suffix specified';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
+      end
+
       obj.validate_word(suffix, 'Suffix');
       obj.suffix = suffix;
       obj.changed = true;
@@ -111,6 +133,7 @@ classdef File2
       end
 
       fn = fieldnames(entities);
+      contain_value = false;
       for ifn = 1:size(fn, 1)
         key = fn{ifn};
         obj.validate_word(key, 'Entity label');
@@ -118,8 +141,17 @@ classdef File2
         if isempty(val)
           continue
         end
+        contain_value = true;
         obj.validate_word(val, 'Entity value');
       end
+
+      if ~contain_value
+        module = 'bids:File2';
+        id = 'noEntity';
+        msg = 'No entity-label pairs';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
+      end
+
       obj.entities = entities;
       obj.changed = true;
     end
@@ -139,7 +171,7 @@ classdef File2
     end
 
     function obj = update(obj)
-      filename = '';
+      filename = obj.prefix;
       path = '';
 
       fn = fieldnames(obj.entities);
@@ -160,38 +192,9 @@ classdef File2
         end
       end
 
-      if isempty(filename)
-        module = 'bids:File2';
-        id = 'noEntity';
-        msg = 'No entity-label pairs';
-        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
-      end
+      filename = [filename obj.suffix];
 
-      if ~isempty(obj.prefix)
-        module = 'bids:File2';
-        id = 'prefixDefined';
-        msg = 'BIDS do not allow prefixes';
-        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
-        filename = [obj.prefix filename];
-      end
-
-      if ~isempty(obj.suffix)
-        filename = [filename obj.suffix];
-      else
-        module = 'bids:File2';
-        id = 'emptySuffix';
-        msg = 'no suffix specified';
-        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
-      end
-
-      if ~isempty(obj.extension)
-        obj.filename = [filename obj.extension];
-      else
-        module = 'bids:File2';
-        id = 'emptyExtension';
-        msg = 'no extension specified';
-        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
-      end
+      obj.filename = [filename obj.extension];
 
       obj.json_filename = [filename '.json'];
       obj.bids_path = path;
