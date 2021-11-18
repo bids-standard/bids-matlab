@@ -168,22 +168,23 @@ classdef File2
       obj.validate_word(label, 'Entity label');
       obj.validate_word(value, 'Entity value');
 
-      obj.entities.(label) = value;
+      obj.entities(1).(label) = value;
       obj.changed = true;
     end
 
     function obj = update(obj)
-      fname = obj.prefix;
+      fname = '';
       path = '';
 
       fn = fieldnames(obj.entities);
+
       for i = 1:size(fn, 1)
         key = fn{i};
         val = obj.entities.(key);
         if isempty(val)
           continue
         end
-        fname = [fname key '-' val '_']; %#ok<AGROW>
+        fname = [fname '_' key '-' val]; %#ok<AGROW>
 
         if strcmp(key, 'sub')
           path = fullfile(path, [key '-' val]);
@@ -193,8 +194,14 @@ classdef File2
           path = fullfile(path, [key '-' val]);
         end
       end
+      if ~isempty(obj.suffix)
+        fname = [fname '_' obj.suffix];
+      end
 
-      fname = [fname obj.suffix];
+      if ~isempty(fname)
+        fname = fname(2:end);
+      end
+      fname = [obj.prefix fname];
 
       obj.filename = [fname obj.extension];
 

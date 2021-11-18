@@ -56,6 +56,16 @@ function test_parsing()
   filename.entities = entities;
   file = bids.File2(filename, 'use_schema', false);
   assertEqual(file.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
+
+  % testing empty file name
+  file = bids.File2('');
+  file.suffix = 'bold';
+  file.extension = '.nii';
+  assertEqual(file.filename, 'bold.nii');
+
+  file = file.set_entity('sub', 'abc');
+  file.suffix = '';
+  assertEqual(file.filename, 'sub-abc.nii');
 end
 
 function test_change()
