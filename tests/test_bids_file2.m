@@ -7,20 +7,30 @@ function test_suite = test_bids_file2 %#ok<*STOUT>
 end
 
 function test_validation()
-  assertExceptionThrown(@() bids.File2.validate_string([2 3], 'Error', '.*'), '');
-  assertExceptionThrown(@() bids.File2.validate_string(['.nii'; '.abc'], 'Error', '.*'), '');
-  assertExceptionThrown(@() bids.File2.validate_string('abc', 'Error', 'abcde'), '');
-  bids.File2.validate_string('', 'Error', '.*');
+  assertExceptionThrown(@() bids.File2.validate_string([2 3], 'String', '.*'),...
+                        'bids:File2:InvalidString');
+  assertExceptionThrown(@() bids.File2.validate_string(['.nii'; '.abc'], 'String', '.*'),...
+                        'bids:File2:InvalidString');
+  assertExceptionThrown(@() bids.File2.validate_string('abc', 'String', 'abcde'),...
+                        'bids:File2:InvalidString');
+  bids.File2.validate_string('', 'String', '.*');
 
-  assertExceptionThrown(@() bids.File2.validate_extension('nii'), '');
-  assertExceptionThrown(@() bids.File2.validate_extension('.nii-'), '');
-  assertExceptionThrown(@() bids.File2.validate_extension('.nii_'), '');
+  assertExceptionThrown(@() bids.File2.validate_extension('nii'),...
+                        'bids:File2:InvalidExtension');
+  assertExceptionThrown(@() bids.File2.validate_extension('.nii-'),...
+                        'bids:File2:InvalidExtension');
+  assertExceptionThrown(@() bids.File2.validate_extension('.nii_'),...
+                        'bids:File2:InvalidExtension');
 
-  assertExceptionThrown(@() bids.File2.validate_prefix('abc/def'), '');
-  assertExceptionThrown(@() bids.File2.validate_prefix('abcsub-def'), '');
+  assertExceptionThrown(@() bids.File2.validate_prefix('abc/def'),...
+                        'bids:File2:InvalidPrefix');
+  assertExceptionThrown(@() bids.File2.validate_prefix('abcsub-def'),...
+                        'bids:File2:InvalidPrefix');
 
-  assertExceptionThrown(@() bids.File2.validate_word('abc/def', 'Word'), '');
-  assertExceptionThrown(@() bids.File2.validate_word('abc-def', 'Word'), '');
+  assertExceptionThrown(@() bids.File2.validate_word('abc/def', 'Word'),...
+                        'bids:File2:InvalidWord');
+  assertExceptionThrown(@() bids.File2.validate_word('abc-def', 'Word'),...
+                        'bids:File2:InvalidWord');
 end
 
 function test_parsing()

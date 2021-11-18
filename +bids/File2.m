@@ -204,17 +204,26 @@ classdef File2
 
     function validate_string(str, type, pattern)
       if ~ischar(str)
-        error('%s is not chararray', type);
+        module = 'bids:File2';
+        id = ['Invalid' type];
+        msg = 'not chararray';
+        bids.internal.error_handling(module, id, msg, false, true);
       end
 
       if size(str, 1) > 1
-        error('%s: %s contains several lines', type, str);
+        module = 'bids:File2';
+        id = ['Invalid' type];
+        msg = sprintf('%s contains several lines', str);
+        bids.internal.error_handling(module, id, msg, false, true);
       end
 
       if ~isempty(str)
         res = regexp(str, pattern);
         if isempty(res)
-          error('%s: %s do not satisfy pattern %s', type, str, pattern);
+          module = 'bids:File2';
+          id = ['Invalid' type];
+          msg = sprintf('%s do not satisfy pattern %s', str, pattern);
+          bids.internal.error_handling(module, id, msg, false, true);
         end
       end
     end
@@ -231,7 +240,10 @@ classdef File2
       bids.File2.validate_string(prefix, 'Prefix', '^[-_A-Za-z0-9]+$');
       res = regexp(prefix, 'sub-');
       if ~isempty(res)
-        error('Prefix ''%s'' contains ''sub-''', prefix);
+        module = 'bids:File2';
+        id = 'InvalidPrefix';
+        msg = sprintf('%s contains ''sub-''', prefix);
+        bids.internal.error_handling(module, id, msg, false, true);
       end
     end
 
