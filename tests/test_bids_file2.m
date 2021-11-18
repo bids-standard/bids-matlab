@@ -88,3 +88,21 @@ function test_reorder()
   file = file.reorder_entities({'sub', 'ses'});
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 end
+
+function test_name_validation()
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  assertExceptionThrown(@() bids.File2(filename, 'tolerant', false), ...
+                        'bids:File2:prefixDefined');
+
+  filename = 'bold.nii';
+  assertExceptionThrown(@() bids.File2(filename, 'tolerant', false), ...
+                        'bids:File2:noEntity');
+
+  filename = 'sub-01_task-faceRecognition_ses-test_run-02_bold';
+  assertExceptionThrown(@() bids.File2(filename, 'tolerant', false), ...
+                        'bids:File2:emptyExtension');
+
+  filename = 'sub-01_task-faceRecognition_ses-test_run-02.nii';
+  assertExceptionThrown(@() bids.File2(filename, 'tolerant', false), ...
+                        'bids:File2:emptySuffix');
+end

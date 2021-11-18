@@ -14,11 +14,12 @@ classdef File2
     entity_required = {}  % Required entities
     entity_order = {}   % Expected order of entities
     schema = []     % Schema used for given modality
-
   end
 
   properties (SetAccess = private)
     changed = false
+    tolerant = true
+    verbose = false
   end
 
   methods
@@ -29,9 +30,13 @@ classdef File2
 
       args.addRequired('input_file', charOrStruct);
       args.addParameter('use_schema', false, @islogical);
-      args.addParameter('tolerant', true, @islogical);
+      args.addParameter('tolerant', obj.tolerant, @islogical);
+      args.addParameter('verbose', obj.verbose, @islogical);
 
       args.parse(varargin{:});
+
+      obj.tolerant = args.Results.tolerant;
+      obj.verbose = args.Results.verbose;
 
       if ischar(args.Results.input_file)
         f_struct = bids.internal.parse_filename(args.Results.input_file);
@@ -134,7 +139,7 @@ classdef File2
     end
 
     function obj = update(obj)
-      filename = obj.prefix;
+      filename = '';
       path = '';
 
       fn = fieldnames(obj.entities);
@@ -155,11 +160,39 @@ classdef File2
         end
       end
 
-      if ~isempty(obj.suffix)
-        filename = [filename obj.suffix];
+      if isempty(filename)
+        module = 'bids:File2';
+        id = 'noEntity';
+        msg = 'No entity-label pairs';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
       end
 
-      obj.filename = [filename obj.extension];
+      if ~isempty(obj.prefix)
+        module = 'bids:File2';
+        id = 'prefixDefined';
+        msg = 'BIDS do not allow prefixes';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
+        filename = [obj.prefix filename];
+      end
+
+      if ~isempty(obj.suffix)
+        filename = [filename obj.suffix];
+      else
+        module = 'bids:File2';
+        id = 'emptySuffix';
+        msg = 'no suffix specified';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
+      end
+
+      if ~isempty(obj.extension)
+        obj.filename = [filename obj.extension];
+      else
+        module = 'bids:File2';
+        id = 'emptyExtension';
+        msg = 'no extension specified';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
+      end
+
       obj.json_filename = [filename '.json'];
       obj.bids_path = path;
 
