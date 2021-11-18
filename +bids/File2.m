@@ -4,7 +4,7 @@ classdef File2
     prefix = ''     % bids prefix
     extension = ''  % file extension
     suffix = ''     % file suffix
-    entities = []   % list of entities
+    entities = struct([])   % list of entities
     modality = ''   % name of file modality
 
     bids_path = ''  % path within dataset
@@ -38,10 +38,12 @@ classdef File2
       obj.tolerant = args.Results.tolerant;
       obj.verbose = args.Results.verbose;
 
-      if ischar(args.Results.input_file)
-        f_struct = bids.internal.parse_filename(args.Results.input_file);
-      else
-        f_struct = args.Results.input_file;
+      if isempty(args.Results.input_file)
+        f_struct = struct([]);
+      elseif ischar(args.Results.input_file)
+          f_struct = bids.internal.parse_filename(args.Results.input_file);
+      elseif isstruct(args.Results.input_file)
+          f_struct = args.Results.input_file;
       end
 
       if isfield(f_struct, 'prefix')
@@ -127,7 +129,7 @@ classdef File2
     function obj = set.entities(obj, entities)
 
       if isempty(entities)
-        obj.entities = [];
+        obj.entities = struct([]);
         obj.changed = true;
         return
       end
@@ -171,7 +173,7 @@ classdef File2
     end
 
     function obj = update(obj)
-      filename = obj.prefix;
+      fname = obj.prefix;
       path = '';
 
       fn = fieldnames(obj.entities);
@@ -181,7 +183,7 @@ classdef File2
         if isempty(val)
           continue
         end
-        filename = [filename key '-' val '_'];
+        fname = [fname key '-' val '_']; %#ok<AGROW>
 
         if strcmp(key, 'sub')
           path = fullfile(path, [key '-' val]);
@@ -192,11 +194,11 @@ classdef File2
         end
       end
 
-      filename = [filename obj.suffix];
+      fname = [fname obj.suffix];
 
-      obj.filename = [filename obj.extension];
+      obj.filename = [fname obj.extension];
 
-      obj.json_filename = [filename '.json'];
+      obj.json_filename = [fname '.json'];
       obj.bids_path = path;
 
       obj.changed = false;
@@ -254,7 +256,7 @@ classdef File2
       end
 
       if ~isempty(str)
-        res = regexp(str, pattern);
+        res = regexp(str, pattern, 'ONCE');
         if isempty(res)
           module = 'bids:File2';
           id = ['Invalid' type];
@@ -274,7 +276,7 @@ classdef File2
 
     function validate_prefix(prefix)
       bids.File2.validate_string(prefix, 'Prefix', '^[-_A-Za-z0-9]+$');
-      res = regexp(prefix, 'sub-');
+      res = regexp(prefix, 'sub-', 'ONCE');
       if ~isempty(res)
         module = 'bids:File2';
         id = 'InvalidPrefix';
