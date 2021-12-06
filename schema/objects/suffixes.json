@@ -253,7 +253,7 @@
   },
   "dwi": {
     "name": "Diffusion-weighted image",
-    "description": "Diffusion-weighted imaging contrast (specialized T2\\* weighting).\n"
+    "description": "Diffusion-weighted imaging contrast (specialized T2 weighting).\n"
   },
   "eeg": {
     "name": "Electroencephalography",
