@@ -3,6 +3,8 @@ function status = keep_file_for_query(file_struct, options)
   % USAGE::
   %
   %   status = keep_file_for_query(file_struct, options)
+  %  
+  %   returns ``false`` if the file is to be kept when running ``bids.query``
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
@@ -46,6 +48,11 @@ function status = keep_file_for_query(file_struct, options)
         status = false;
         return
       end
+      
+      if ~file_has_entity && exclude_entity
+        status = true;
+        return
+      end      
 
       this_label = file_struct.entities.(this_entity);
 
