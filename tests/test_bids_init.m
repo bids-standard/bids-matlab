@@ -22,6 +22,14 @@ function test_basic()
 
 end
 
+function test_no_folder_smoke_test()
+
+  bids.init('dummy_ds', struct(), true);
+
+  clean_up();
+
+end
+
 function test_folders()
 
   folders.subjects = {'01', '02'};
