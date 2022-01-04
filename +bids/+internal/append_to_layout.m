@@ -31,11 +31,11 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
     % - <match>_events.tsv
     % - <match>_events.mat
     %
-    if ~isempty(schema.content) && ...
+    if ~isempty(schema) && ...
             ~any(ismember(file(previous.data.len:end), ...
                           previous.allowed_ext))
       [msg, id] = error_message('unknownExtension', file, file(previous.data.len:end));
-      bids.internal.error_handling(mfilename, id, msg, true, schema.verbose);
+      bids.internal.error_handling(mfilename, id, msg, true, true);
       status = 0;
       return
     end
@@ -59,25 +59,22 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       return
     end
 
-    if ~isempty(schema.content)
+    if ~isempty(schema)
+      idx = [modality, '_', p.sffix];
 
-      idx = schema.find_suffix_group(modality, p.suffix);
-
-      if isempty(idx)
+      if ~isKey(idx)
         [msg, id] = error_message('unknownSuffix', file, p.suffix);
-        bids.internal.error_handling(mfilename, id, msg, true, schema.verbose);
+        bids.internal.error_handling(mfilename, id, msg, true, true);
         status = 0;
         return
       end
 
-      datatypes = schema.get_datatypes();
-
-      this_suffix_group = datatypes.(modality)(idx);
+      this_suffix_group = schema.content(idx);
 
       allowed_extensions = this_suffix_group.extensions;
 
-      schema_entities = schema.return_entities_for_suffix_group(this_suffix_group);
-      required_entities = schema.required_entities_for_suffix_group(this_suffix_group);
+      schema_entities = this_suffix_group.entities;
+      required_entities = this_suffix_group.required;
 
       present_entities = fieldnames(p.entities);
       missing_entities = ~ismember(required_entities, present_entities);

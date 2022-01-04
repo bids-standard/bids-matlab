@@ -112,8 +112,11 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
     error('No subjects found in BIDS directory.');
   end
 
-  schema = bids.Schema(use_schema);
-  schema.verbose = verbose;
+  if use_schema
+    schema = bids.Schema_imp();
+  else
+    schema = [];
+  end
 
   for iSub = 1:numel(subjects)
     sessions = cellstr(bids.internal.file_utils('List', ...
@@ -218,27 +221,30 @@ function subject = parse_subject(pth, subjname, sesname, schema, verbose)
                                            subject.path,  ...
                                            ['^' subjname, '.*_scans.tsv' '$']);
 
-  modality_groups = schema.return_modality_groups();
 
-  for iGroup = 1:numel(modality_groups)
-
-    modalities = schema.return_modalities(subject, modality_groups{iGroup});
-
-    % if we go schema-less, we pass an empty schema.content to all the parsing functions
-    % so the parsing is unconstrained
-    for iModality = 1:numel(modalities)
-      switch modalities{iModality}
-        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf'}
-          subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
-        otherwise
-          % in case we are going schemaless
-          % and the modality is not one of the usual suspect
-          subject.(modalities{iModality}) = struct([]);
-          subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
-      end
-    end
-
+  if ~empty(schema)
+    modalities = schema.modalities;
+  else
+    modalities = cellstr(bids.internal.file_utils('List', ...
+                                                  subject.path, ...
+                                                  'dir', ...
+                                                  '.*'));
   end
+
+  % if we go schema-less, we pass an empty schema.content to all the parsing functions
+  % so the parsing is unconstrained
+  for iModality = 1:numel(modalities)
+    switch modalities{iModality}
+      case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf'}
+        subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
+      otherwise
+        % in case we are going schemaless
+        % and the modality is not one of the usual suspect
+        subject.(modalities{iModality}) = struct([]);
+        subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
+    end
+  end
+
 
 end
 
@@ -374,7 +380,7 @@ function file_list = return_file_list(modality, subject, schema)
   % this does not cover coordsystem.json
 
   % prefix only for shemaless data
-  if isempty(schema.content)
+  if isempty(schema)
     prefix = '^([a-zA-Z0-9_]*)';
   else
     prefix = '^';
@@ -393,7 +399,7 @@ function file_list = return_file_list(modality, subject, schema)
   pattern = [pattern '([a-zA-Z0-9]+\.){1}'];
 
   % extension
-  if ~isempty(schema.content)
+  if ~isempty(schema)
     pattern = [pattern '(?!json)'];
   end
   pattern = [pattern '([a-zA-Z0-9.]+){1}$'];

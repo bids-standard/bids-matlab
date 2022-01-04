@@ -1,0 +1,610 @@
+{
+  "func_bold": {
+    "datatype": "func",
+    "suffixes": [
+      "bold",
+      "cbv",
+      "phase",
+      "sbref"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "ce",
+      "rec",
+      "dir",
+      "run",
+      "echo"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "func_events": {
+    "datatype": "func",
+    "suffixes": [
+      "events"
+    ],
+    "extensions": [
+      ".tsv",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "ce",
+      "rec",
+      "dir",
+      "run",
+      "echo"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "func_physio": {
+    "datatype": "func",
+    "suffixes": [
+      "physio",
+      "stim"
+    ],
+    "extensions": [
+      ".tsv.gz",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "rec",
+      "run",
+      "recording"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "meg": {
+    "datatype": "meg",
+    "suffixes": [
+      "meg"
+    ],
+    "extensions": [
+      "/",
+      ".ds/",
+      ".json",
+      ".fif",
+      ".sqd",
+      ".con",
+      ".raw",
+      ".ave",
+      ".mrk",
+      ".kdf",
+      ".mhd"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "run",
+      "proc",
+      "split"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "meg_headshape": {
+    "datatype": "meg",
+    "suffixes": [
+      "headshape"
+    ],
+    "extensions": [
+      ".pos",
+      ".txt"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq",
+      "space"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "meg_markers": {
+    "datatype": "meg",
+    "suffixes": [
+      "markers"
+    ],
+    "extensions": [
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "space"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "dwi": {
+    "datatype": "dwi",
+    "suffixes": [
+      "dwi"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json",
+      ".bvec",
+      ".bval"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq",
+      "dir",
+      "run"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "dwi_sbref": {
+    "datatype": "dwi",
+    "suffixes": [
+      "sbref"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq",
+      "dir",
+      "run"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "beh_stim": {
+    "datatype": "beh",
+    "suffixes": [
+      "stim",
+      "physio"
+    ],
+    "extensions": [
+      ".tsv.gz",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "run",
+      "recording"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "beh_events": {
+    "datatype": "beh",
+    "suffixes": [
+      "events",
+      "beh"
+    ],
+    "extensions": [
+      ".tsv",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "anat_T1w": {
+    "datatype": "anat",
+    "suffixes": [
+      "T1w",
+      "T2w",
+      "T1rho",
+      "T1map",
+      "T2map",
+      "T2star",
+      "FLAIR",
+      "FLASH",
+      "PD",
+      "PDmap",
+      "PDT2",
+      "inplaneT1",
+      "inplaneT2",
+      "angio"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "run",
+      "acq",
+      "ce",
+      "rec"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "anat_defacemask": {
+    "datatype": "anat",
+    "suffixes": [
+      "defacemask"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "run",
+      "acq",
+      "ce",
+      "rec",
+      "mod"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "fmap_phasediff": {
+    "datatype": "fmap",
+    "suffixes": [
+      "phasediff",
+      "phase1",
+      "phase2",
+      "magnitude1",
+      "magnitude2",
+      "magnitude",
+      "fieldmap"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq",
+      "run"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "fmap_epi": {
+    "datatype": "fmap",
+    "suffixes": [
+      "epi"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq",
+      "ce",
+      "dir",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "dir"
+    ]
+  },
+  "ieeg": {
+    "datatype": "ieeg",
+    "suffixes": [
+      "ieeg"
+    ],
+    "extensions": [
+      ".mefd/",
+      ".json",
+      ".edf",
+      ".vhdr",
+      ".eeg",
+      ".vmrk",
+      ".set",
+      ".fdt",
+      ".nwb"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "eeg": {
+    "datatype": "eeg",
+    "suffixes": [
+      "eeg"
+    ],
+    "extensions": [
+      ".json",
+      ".edf",
+      ".vhdr",
+      ".vmrk",
+      ".eeg",
+      ".set",
+      ".fdt",
+      ".bdf"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "acq",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "eeg_electrodes": {
+    "datatype": "eeg",
+    "suffixes": [
+      "electrodes"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq",
+      "space"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "ieeg_electrodes": {
+    "datatype": "ieeg",
+    "suffixes": [
+      "electrodes"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq",
+      "space"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "meg_channels": {
+    "datatype": "meg",
+    "suffixes": [
+      "channels"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "eeg_channels": {
+    "datatype": "eeg",
+    "suffixes": [
+      "channels"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "ieeg_channels": {
+    "datatype": "ieeg",
+    "suffixes": [
+      "channels"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "meg_events": {
+    "datatype": "meg",
+    "suffixes": [
+      "events"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "eeg_events": {
+    "datatype": "eeg",
+    "suffixes": [
+      "events"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "ieeg_events": {
+    "datatype": "ieeg",
+    "suffixes": [
+      "events"
+    ],
+    "extensions": [
+      ".json",
+      ".tsv"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "task",
+      "run"
+    ],
+    "required": [
+      "sub",
+      "task"
+    ]
+  },
+  "meg_photo": {
+    "datatype": "meg",
+    "suffixes": [
+      "photo"
+    ],
+    "extensions": [
+      ".jpg"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "eeg_photo": {
+    "datatype": "eeg",
+    "suffixes": [
+      "photo"
+    ],
+    "extensions": [
+      ".jpg"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq"
+    ],
+    "required": [
+      "sub"
+    ]
+  },
+  "ieeg_photo": {
+    "datatype": "ieeg",
+    "suffixes": [
+      "photo"
+    ],
+    "extensions": [
+      ".jpg"
+    ],
+    "entities": [
+      "sub",
+      "ses",
+      "acq"
+    ],
+    "required": [
+      "sub"
+    ]
+  }
+}
