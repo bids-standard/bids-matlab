@@ -109,7 +109,10 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   % ==========================================================================
   subjects = cellstr(bids.internal.file_utils('List', BIDS.pth, 'dir', '^sub-.*$'));
   if isequal(subjects, {''})
-    error('No subjects found in BIDS directory.');
+    msg = sprintf('No subjects found in BIDS directory: ''%s''', ...
+                  BIDS.pth);
+    bids.internal.error_handling(mfilename, 'noSubject', msg, tolerant, verbose);
+    return
   end
 
   schema = bids.Schema(use_schema);
