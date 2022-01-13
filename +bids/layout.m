@@ -112,11 +112,7 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
     error('No subjects found in BIDS directory.');
   end
 
-  if use_schema
-    schema = bids.Schema_imp();
-  else
-    schema = [];
-  end
+  schema = bids.Schema_imp('', use_schema);
 
   for iSub = 1:numel(subjects)
     sessions = cellstr(bids.internal.file_utils('List', ...
@@ -222,7 +218,7 @@ function subject = parse_subject(pth, subjname, sesname, schema, verbose)
                                            ['^' subjname, '.*_scans.tsv' '$']);
 
 
-  if ~empty(schema)
+  if schema.has_schema()
     modalities = schema.modalities;
   else
     modalities = cellstr(bids.internal.file_utils('List', ...
@@ -380,7 +376,7 @@ function file_list = return_file_list(modality, subject, schema)
   % this does not cover coordsystem.json
 
   % prefix only for shemaless data
-  if isempty(schema)
+  if ~schema.has_schema()
     prefix = '^([a-zA-Z0-9_]*)';
   else
     prefix = '^';
@@ -399,7 +395,7 @@ function file_list = return_file_list(modality, subject, schema)
   pattern = [pattern '([a-zA-Z0-9]+\.){1}'];
 
   % extension
-  if ~isempty(schema)
+  if schema.has_schema()
     pattern = [pattern '(?!json)'];
   end
   pattern = [pattern '([a-zA-Z0-9.]+){1}$'];

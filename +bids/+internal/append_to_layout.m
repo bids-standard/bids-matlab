@@ -34,7 +34,8 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
     if ~isempty(schema) && ...
             ~any(ismember(file(previous.data.len:end), ...
                           previous.allowed_ext))
-      [msg, id] = error_message('unknownExtension', file, file(previous.data.len:end));
+      id = 'unknownExtension';
+      msg = sprintf('%s: Unknown extension %s', file, file(previous.data.len:end));
       bids.internal.error_handling(mfilename, id, msg, true, true);
       status = 0;
       return
@@ -59,65 +60,22 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
       return
     end
 
-    if ~isempty(schema)
-      idx = [modality, '_', p.sffix];
+    [status, content] = schema.test_name(p, modality);
+    if ~status
+      id = 'incorrectName';
+      msg = sprintf('%s: Name do not follow BIDS', file);
+      bids.internal.error_handling(mfilename, id, msg, true, true);
+      return;
+    end
 
-      if ~isKey(idx)
-        [msg, id] = error_message('unknownSuffix', file, p.suffix);
-        bids.internal.error_handling(mfilename, id, msg, true, true);
-        status = 0;
-        return
-      end
-
-      this_suffix_group = schema.content(idx);
-
-      allowed_extensions = this_suffix_group.extensions;
-
-      schema_entities = this_suffix_group.entities;
-      required_entities = this_suffix_group.required;
-
-      present_entities = fieldnames(p.entities);
-      missing_entities = ~ismember(required_entities, present_entities);
-      unknown_entity = present_entities(~ismember(present_entities, schema_entities));
-
-      extension = p.ext;
-      % in case we are dealing with a folder
-      % (can be the case for some MEG formats: .ds)
-      if exist(fullfile(pth, p.filename), 'dir')
-        extension = [extension '/'];
-      end
-
-      %% Checks that this file is BIDS compliant
-      if ~ismember('*', allowed_extensions) && ...
-              ~ismember(extension, allowed_extensions)
-        [msg, id] = error_message('unknownExtension', file, extension);
-      end
-
-      if ~isempty(unknown_entity)
-        [msg, id] = error_message('unknownEntity', file, ...
-                                  strjoin(cellstr(unknown_entity), ' '));
-      end
-
-      if any(missing_entities)
-        missing_entities = required_entities(missing_entities);
-        [msg, id] = error_message('missingRequiredEntity', file, ...
-                                  strjoin(cellstr(missing_entities), ' '));
-      end
-
-      if exist('id', 'var')
-        bids.internal.error_handling(mfilename, id, msg, true, schema.verbose);
-        status = 0;
-        return
-      end
-
-      p = bids.internal.parse_filename(file, schema_entities);
+    if schema.has_schema()
+      p = bids.internal.parse_filename(file, content.entities);
       if isempty(p)
         status = 0;
         return
       end
 
-      previous.allowed_ext = allowed_extensions;
-
+      previous.allowed_ext = content.extensions;
     end
 
     p.metafile = bids.internal.get_meta_list(fullfile(subject.path, modality, file));
@@ -139,8 +97,6 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
 
     end
 
-    status = 1;
-
   end
 
 end
@@ -148,27 +104,5 @@ end
 function status = same_data(file, previous)
 
   status = strncmp(previous.data.base, file, previous.data.len);
-
-end
-
-function [msg, msg_id] = error_message(msg_id, file, extra)
-
-  msg = sprintf('Skipping file %s.\n', file);
-
-  switch msg_id
-
-    case 'unknownExtension'
-      msg = sprintf('%s Unknown extension %s', msg, extra);
-
-    case 'missingRequiredEntity'
-      msg = sprintf('%s Missing REQUIRED entity: %s', msg, extra);
-
-    case 'unknownEntity'
-      msg = sprintf('%s Unknown entities: %s', msg, extra);
-
-    case 'unknownSuffix'
-      msg = sprintf('%s Unknown suffix: %s', msg, extra);
-
-  end
 
 end
