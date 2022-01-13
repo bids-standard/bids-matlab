@@ -56,7 +56,8 @@ classdef Schema_imp
       res = (~isempty(obj.content));
     end
 
-    function res = test_name(obj, p, modality)
+    function [res, rules] = test_name(obj, p, modality)
+      rules = [];
       if isempty(obj.content)
         res = true;
         return;
@@ -72,7 +73,7 @@ classdef Schema_imp
       
       if isempty(modality)
         for iMod = 1:length(obj.modalities)
-          res = obj.test_name(p, obj.modalities{iMod});
+          [res, rules] = obj.test_name(p, obj.modalities{iMod});
           if res
             break;
           end
@@ -90,6 +91,7 @@ classdef Schema_imp
       end
 
       this_suffix_group = obj.content(idx);
+      rules = this_suffix_group;
 
       allowed_extensions = this_suffix_group.extensions;
 
