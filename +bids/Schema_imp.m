@@ -18,7 +18,7 @@ classdef Schema_imp
   end
 
   methods
-    function obj = Schema_imp(vesion, use_schema)
+    function obj = Schema_imp(version, use_schema)
       if isempty(version)
         obj.version = bids.Schema_imp.get_last_version();
       else
@@ -26,7 +26,7 @@ classdef Schema_imp
       end
 
       if ~use_schema
-        return obj
+        return
       end
 
       schema_path = bids.Schema_imp.get_shema_path(obj.version);
@@ -35,12 +35,12 @@ classdef Schema_imp
 
       s_struct = bids.util.jsondecode(schema_path);
       keys = fieldnames(s_struct);
-      mdalities = {};
+      modalities = {};
 
       for ikey = 1:size(keys, 1)
         schema = s_struct.(keys{ikey});
         id = schema.datatype;
-        modalities{end+1} = id;
+        modalities{end+1} = id; %#ok<AGROW>
         rules.extensions = schema.extensions;
         rules.entities = schema.entities;
         rules.required = schema.required;
@@ -100,7 +100,8 @@ classdef Schema_imp
 
       present_entities = fieldnames(p.entities);
       missing_entities = ~ismember(required_entities, present_entities);
-      unknown_entity = present_entities(~ismember(present_entities, schema_entities));
+      unknown_entity = present_entities(~ismember(present_entities,...
+                                        schema_entities));
 
       extension = p.ext;
       % in case we are dealing with a folder
@@ -124,15 +125,14 @@ classdef Schema_imp
 
       if any(missing_entities)
         missing_entities = required_entities(missing_entities);
-        [msg, id] = error_message('missingRequiredEntity', file, ...
-                                  strjoin(cellstr(missing_entities), ' '));
         id = 'missingRequiredEntity';
         msg = sprintf('%s: Missing REQUIRED entity %s', p.filename,...
                       strjoin(cellstr(missing_entities), ' '));
       end
 
       if exist('id', 'var')
-        bids.internal.error_handling(mfilename, id, msg, false, obj.verbose);
+        bids.internal.error_handling(mfilename, id, msg,...
+                                     false, obj.verbose);
         return;
       end
 
@@ -142,7 +142,6 @@ classdef Schema_imp
 
   methods (Static)
     function ver = get_last_version()
-      ver = '';
       schema_dir = fullfile(bids.internal.root_dir(), 'schema');
       schema_files = bids.internal.file_utils('List', schema_dir,...
                                               '^schema_entities_v[0-9.]+\.json$');
@@ -157,7 +156,9 @@ classdef Schema_imp
       fpath = fullfile(schema_dir, schema_file);
       if ~exist(schema_path, 'file')
         msg = sprintf('Unsupported schema version: %s', version);
-        bids.internal.error_handling(mfilename(), 'missingFile', msg, false, true);
+        bids.internal.error_handling(mfilename(), 'missingFile', msg,...
+                                     false, true);
       end
     end
+  end
 end
