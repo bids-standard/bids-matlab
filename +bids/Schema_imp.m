@@ -25,13 +25,13 @@ classdef Schema_imp
         obj.version = version;
       end
 
+      obj.content = containers.Map('keyType', 'char', 'ValueType', 'any');
+
       if ~use_schema
         return
       end
 
-      schema_path = bids.Schema_imp.get_shema_path(obj.version);
-
-      obj.content = containers.Map('keyType', 'char', 'ValueType', 'any');
+      schema_path = bids.Schema_imp.get_schema_path(obj.version);
 
       s_struct = bids.util.jsondecode(schema_path);
       keys = fieldnames(s_struct);
@@ -40,7 +40,7 @@ classdef Schema_imp
       for ikey = 1:size(keys, 1)
         schema = s_struct.(keys{ikey});
         id = schema.datatype;
-        modalities{end+1} = id; %#ok<AGROW>
+        modalities{end+1, 1} = id; %#ok<AGROW>
         rules.extensions = schema.extensions;
         rules.entities = schema.entities;
         rules.required = schema.required;
@@ -67,25 +67,20 @@ classdef Schema_imp
       if ischar(p)
         p = bids.internal.parse_filename(p);
       end
+
       if isempty(p)
-        return;
-      end
-      
-      if isempty(modality)
-        for iMod = 1:length(obj.modalities)
-          [res, rules] = obj.test_name(p, obj.modalities{iMod});
-          if res
-            break;
-          end
-        end
+        id = 'emptyFileStructure';
+        msg = sprintf('File structure is empty');
+        bids.internal.error_handling(mfilename, id, msg, false, true);
         return;
       end
 
-      idx = [modality, '_', p.sffix];
+      idx = [modality, '_', p.suffix];
 
-      if ~isKey(idx)
+      if ~obj.content.isKey(idx)
         id = 'unknownSuffix';
-        msg = sprintf('%s: Unknown suffix %s', p.filename, p.suffix);
+        msg = sprintf('%s: Unknown suffix %s for modality %s',...
+                      p.filename, p.suffix, modality);
         bids.internal.error_handling(mfilename, id, msg, false, true);
         return
       end
@@ -104,11 +99,6 @@ classdef Schema_imp
                                         schema_entities));
 
       extension = p.ext;
-      % in case we are dealing with a folder
-      % (can be the case for some MEG formats: .ds)
-      if exist(fullfile(pth, p.filename), 'dir')
-        extension = [extension '/'];
-      end
 
       %% Checks that this file is BIDS compliant
       if ~ismember('*', allowed_extensions) && ...
@@ -132,7 +122,7 @@ classdef Schema_imp
 
       if exist('id', 'var')
         bids.internal.error_handling(mfilename, id, msg,...
-                                     false, obj.verbose);
+                                     false, true);
         return;
       end
 
@@ -146,19 +136,33 @@ classdef Schema_imp
       schema_files = bids.internal.file_utils('List', schema_dir,...
                                               '^schema_entities_v[0-9.]+\.json$');
       schema_files = cellstr(sortrows(schema_files));
-      ver = schema_files{end}(length('schema_entities_v') + 1:...
-                              end - lenth('.json'));
+      ver = bids.Schema_imp.get_version_from_name(schema_files{end});
     end
 
-    function fpath = get_shema_path(version)
+    function fpath = get_schema_path(version)
       schema_dir = fullfile(bids.internal.root_dir(), 'schema');
       schema_file = ['schema_entities_v', version, '.json'];
       fpath = fullfile(schema_dir, schema_file);
-      if ~exist(schema_path, 'file')
+      if exist(fpath, 'file') ~= 2
         msg = sprintf('Unsupported schema version: %s', version);
         bids.internal.error_handling(mfilename(), 'missingFile', msg,...
                                      false, true);
       end
+    end
+
+    function versions = get_version_list()
+      schema_dir = fullfile(bids.internal.root_dir(), 'schema');
+      schema_files = bids.internal.file_utils('List', schema_dir,...
+                                              '^schema_entities_v[0-9.]+\.json$');
+      schema_files = cellstr(sortrows(schema_files));
+      versions = cellfun(@bids.Schema_imp.get_version_from_name, schema_files, ...
+                         'UniformOutput',false);   
+    end
+
+    function ver = get_version_from_name(name)
+      prefix_len = length('schema_entities_v');
+      ext_len = length('json');
+      ver = name(prefix_len + 1: end - ext_len - 1);
     end
   end
 end
