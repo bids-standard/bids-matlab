@@ -1,5 +1,0 @@
-{
-  "name": "TracerSNOMED",
-  "description": "ID of the tracer compound from the SNOMED Ontology\n(subclass of Radioactive isotope).\n",
-  "type": "string"
-}

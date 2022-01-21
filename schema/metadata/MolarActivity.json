@@ -1,5 +1,0 @@
-{
-  "name": "MolarActivity",
-  "description": "Molar activity of compound injected.\nCorresponds to DICOM Tag 0018, 1077 `Radiopharmaceutical Specific Activity`.\n",
-  "type": "number"
-}

@@ -8,7 +8,12 @@ end
 
 function test_tsvread_basic()
 
-  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
+  if ~is_octave() && bids.internal.is_github_ci()
+    % TODO fix downloading of test data when testing with matlab in CI
+    return
+  else
+    pth = bids.internal.download_moae_ds();
+  end
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
@@ -29,7 +34,12 @@ end
 
 function test_tsvread_subset()
 
-  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'MoAEpilot');
+  if ~is_octave() && bids.internal.is_github_ci()
+    % TODO fix downloading of test data when testing with matlab in CI
+    return
+  else
+    pth = bids.internal.download_moae_ds();
+  end
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];

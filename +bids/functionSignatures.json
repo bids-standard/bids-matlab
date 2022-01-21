@@ -1,0 +1,155 @@
+{
+	"_schemaVersion": "1.0.0",
+	"layout": {
+		"inputs": [
+			{
+				"name": "root",
+				"kind": "required",
+				"type": "folder"
+			},
+			{
+				"name": "use_schema",
+				"kind": "positional",
+				"type": "boolean"
+			},
+			{
+				"name": "index_derivatives",
+				"kind": "positional",
+				"type": "boolean"
+			},
+			{
+				"name": "tolerant",
+				"kind": "positional",
+				"type": "boolean"
+			},
+			{
+				"name": "verbose",
+				"kind": "positional",
+				"type": "boolean"
+			}
+		]
+	},
+	"query": {
+		"inputs": [
+			{
+				"name": "BIDS",
+				"kind": "required",
+				"type": "struct"
+			},
+			{
+				"name": "query",
+				"kind": "required",
+				"type": [
+					"char",
+					"choices={'data','metadata','sessions','entities','prefixes','extensions','subjects','runs','tasks','suffixes','modalities','dependencies'}"
+				]
+			}
+		]
+	},
+	"validate": {
+		"inputs": [
+			{
+				"name": "root",
+				"kind": "required",
+				"type": "folder"
+			}
+		]
+	},
+	"report": {
+		"inputs": [
+			{
+				"name": "BIDS",
+				"kind": "required",
+				"type": [
+					[
+						"folder"
+					],
+					[
+						"struct"
+					]
+				]
+			},
+			{
+				"name": "ReadNII",
+				"kind": "positional",
+				"type": "boolean"
+			}
+		]
+	},
+	"init": {
+		"inputs": [
+			{
+				"name": "pth",
+				"kind": "positional",
+				"type": "folder"
+			},
+			{
+				"name": "folders",
+				"kind": "positional",
+				"type": "struct"
+			},
+			{
+				"name": "is_derivative",
+				"kind": "positional",
+				"type": "boolean"
+			},
+			{
+				"name": "is_datalad_ds",
+				"kind": "positional",
+				"type": "boolean"
+			}
+		]
+	},
+	"copy_to_derivative": {
+		"inputs": [
+			{
+				"name": "BIDS",
+				"kind": "required",
+				"type": [
+					"folder",
+					"struct"
+				]
+			},
+			{
+				"name": "pipeline_name",
+				"kind": "required",
+				"type": "string"
+			},
+			{
+				"name": "out_path",
+				"kind": "positional",
+				"type": "folder"
+			},
+			{
+				"name": "filter",
+				"kind": "positional",
+				"type": "struct"
+			},
+			{
+				"name": "unzip",
+				"kind": "namevalue",
+				"type": "boolean"
+			},
+			{
+				"name": "force",
+				"kind": "namevalue",
+				"type": "boolean"
+			},
+			{
+				"name": "skip_dep",
+				"kind": "namevalue",
+				"type": "boolean"
+			},
+			{
+				"name": "use_schema",
+				"kind": "namevalue",
+				"type": "boolean"
+			},
+			{
+				"name": "verbose",
+				"kind": "namevalue",
+				"type": "boolean"
+			}
+		]
+	}
+}

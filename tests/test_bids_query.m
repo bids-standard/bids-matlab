@@ -6,6 +6,105 @@ function test_suite = test_bids_query %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_query_impossible_suffix_should_return_empty()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+
+  % no suffix bold in anat
+  filter = struct('sub', '01', ...
+                  'ses', '01', ...
+                  'modality', {'anat'}, ...
+                  'suffix', 'bold');
+
+  data = bids.query(BIDS, 'tasks', filter);
+
+  assert(isempty(data));
+
+end
+
+function test_query_suffixes()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
+
+  suffixes = {'T1w', 'pet'};
+  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+
+  suffixes = {'T1w'};
+  assertEqual(bids.query(BIDS, 'suffixes', 'modality', 'anat'), suffixes);
+
+end
+
+function test_query_subjects()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ieeg_visual'));
+
+  subjs = arrayfun(@(x) sprintf('%02d', x), 1:2, 'UniformOutput', false);
+  assertEqual(bids.query(BIDS, 'subjects'), subjs);
+
+end
+
+function test_query_regex_subjects()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000247'));
+
+  data = bids.query(BIDS, 'data', 'sub', '.*', 'suffix', 'T1w');
+
+  assertEqual(size(data, 1), 5);
+
+  data = bids.query(BIDS, 'data', 'sub', '000[36]', 'suffix', 'T1w');
+
+  assertEqual(size(data, 1), 2);
+
+end
+
+function test_query_with_indices()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds105'));
+
+  data_1 = bids.query(BIDS, 'data', 'sub', '1', 'run', {3, 5, '7', '01'}, 'suffix', 'bold');
+  data_2 = bids.query(BIDS, 'data', 'sub', '1', 'run', 1:2:7, 'suffix', 'bold');
+
+  assertEqual(data_1, data_2);
+
+end
+
+function test_query_entities()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_qsm'));
+
+  entities = bids.query(BIDS, 'entities');
+
+  expected = {'part'
+              'sub'};
+
+  assertEqual(entities, expected);
+
+  %%
+  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
+
+  entities = bids.query(BIDS, 'entities', 'suffix', 'pet');
+
+  expected = {'ses'
+              'sub'};
+
+  assertEqual(entities, expected);
+
+end
+
 function test_query_events_tsv_in_root()
 
   pth_bids_example = get_test_data_dir();
@@ -147,17 +246,6 @@ function test_query_modalities()
 
 end
 
-function test_query_subjects()
-
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ieeg_visual'));
-
-  subjs = arrayfun(@(x) sprintf('%02d', x), 1:2, 'UniformOutput', false);
-  assertEqual(bids.query(BIDS, 'subjects'), subjs);
-
-end
-
 function test_query_sessions()
 
   pth_bids_example = get_test_data_dir();
@@ -170,17 +258,6 @@ function test_query_sessions()
   BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
 
   assert(isempty(bids.query(BIDS, 'sessions')));
-
-end
-
-function test_query_suffixes()
-
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
-
-  suffixes = {'T1w'    'pet'};
-  assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
 end
 

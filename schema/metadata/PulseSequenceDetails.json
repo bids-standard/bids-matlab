@@ -1,5 +1,0 @@
-{
-  "name": "PulseSequenceDetails",
-  "description": "Information beyond pulse sequence type that identifies the specific pulse\nsequence used (for example,\n`\"Standard Siemens Sequence distributed with the VB17 software\"`,\n`\"Siemens WIP ### version #.##,\"` or\n`\"Sequence written by X using a version compiled on MM/DD/YYYY\"`).\n",
-  "type": "string"
-}

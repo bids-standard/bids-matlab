@@ -39,14 +39,20 @@ function init(varargin)
 
   parse(p, varargin{:});
 
-  subjects = create_folder_names(p, 'subjects');
-  sessions = create_folder_names(p, 'sessions');
-
   %% Folder structure
-  bids.util.mkdir(p.Results.pth, ...
-                  subjects, ...
-                  sessions, ...
-                  p.Results.folders.modalities);
+  if ~isempty(fieldnames(p.Results.folders))
+
+      subjects = create_folder_names(p, 'subjects');
+      sessions = create_folder_names(p, 'sessions');
+
+
+      bids.util.mkdir(p.Results.pth, ...
+                      subjects, ...
+                      sessions, ...
+                      p.Results.folders.modalities);
+  else
+    bids.util.mkdir(p.Results.pth);        
+  end
 
   %% README
   pth_to_readmes = fullfile(fileparts(mfilename('fullpath')), '..', 'templates');

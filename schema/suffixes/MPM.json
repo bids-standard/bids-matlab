@@ -1,4 +1,0 @@
-{
-  "name": "Multi-parametric Mapping",
-  "description": "The MPM approaches (a.k.a hMRI) involves the acquisition of highly-similar\nanatomical images that differ in terms of application of a magnetization\ntransfer RF pulse (MTon or MToff), flip angle and (optionally) echo time and\nmagnitue/phase parts\n([Weiskopf et al. 2013](https://doi.org/10.3389/fnins.2013.00095)).\nSee [here](https://owncloud.gwdg.de/index.php/s/iv2TOQwGy4FGDDZ) for\nsuggested MPM acquisition protocols.\n"
-}

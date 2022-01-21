@@ -18,7 +18,15 @@ function test_basic()
   ds_metadata = bids.util.jsondecode(dataset_description);
   assertEqual(ds_metadata.DatasetType, 'raw');
 
-  cleanUp();
+  clean_up();
+
+end
+
+function test_no_folder_smoke_test()
+
+  bids.init('dummy_ds', struct(), true);
+
+  clean_up();
 
 end
 
@@ -31,7 +39,7 @@ function test_folders()
   bids.init('dummy_ds', folders);
   assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'ses-retest', 'func'), 'dir'), 7);
 
-  cleanUp();
+  clean_up();
 
 end
 
@@ -55,11 +63,11 @@ function test_derivatives()
   is_datalad_ds = true;
   bids.init('dummy_ds', folders, is_derivative, is_datalad_ds);
 
-  cleanUp();
+  clean_up();
 
 end
 
-function cleanUp()
+function clean_up()
 
   pause(1);
 

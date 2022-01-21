@@ -70,7 +70,9 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
         return
       end
 
-      this_suffix_group = schema.content.datatypes.(modality)(idx);
+      datatypes = schema.get_datatypes();
+
+      this_suffix_group = datatypes.(modality)(idx);
 
       allowed_extensions = this_suffix_group.extensions;
 

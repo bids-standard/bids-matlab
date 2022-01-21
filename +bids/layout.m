@@ -8,7 +8,7 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   %                      use_schema = false, ...
   %                      index_derivatives = false, ...
   %                      tolerant = true, ...
-  %                      verbose = false+)
+  %                      verbose = false)
   %
   % :param root:       directory of the dataset formated according to BIDS [default: ``pwd``]
   % :type  root:       string
@@ -109,7 +109,10 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   % ==========================================================================
   subjects = cellstr(bids.internal.file_utils('List', BIDS.pth, 'dir', '^sub-.*$'));
   if isequal(subjects, {''})
-    error('No subjects found in BIDS directory.');
+    msg = sprintf('No subjects found in BIDS directory: ''%s''', ...
+                  BIDS.pth);
+    bids.internal.error_handling(mfilename, 'noSubject', msg, tolerant, verbose);
+    return
   end
 
   schema = bids.Schema(use_schema);

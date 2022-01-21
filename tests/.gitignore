@@ -2,8 +2,6 @@
 *.tsv
 *.json
 
-bids-examples
-
 dummy_ds
 output
 

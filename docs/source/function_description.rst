@@ -1,7 +1,7 @@
 Function description
 ********************
 
-.. automodule:: +bids 
+.. automodule:: +bids
 
 .. autofunction:: derivatives_json
 

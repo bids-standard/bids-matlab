@@ -49,12 +49,6 @@ classdef Schema
       %   schema = schema.load
       %
 
-      % TODO:
-      %  - folders that do not contain json files themselves but contain
-      %  subfolders that do, are not reflected in the output structure (they are
-      %  skipped). This can lead to "name conflicts". See "silenced" unit tests
-      %  for more info.
-
       if nargin < 2
         use_schema = true();
       end
@@ -68,13 +62,13 @@ classdef Schema
         schema_dir = use_schema;
         obj.is_bids_schema = false;
       else
-        schema_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'schema');
+        schema_dir = fullfile(bids.internal.root_dir(), 'schema');
         obj.is_bids_schema = true;
       end
 
       if ~exist(schema_dir, 'dir')
         msg = sprintf('The schema directory %s does not exist.', schema_dir);
-        bids.internal.error_handling(function_name, 'missingDirectory', msg, false, true);
+        bids.internal.error_handling(mfilename(), 'missingDirectory', msg, false, true);
       end
 
       [json_file_list, dirs] = bids.internal.file_utils('FPList', schema_dir, '^.*.json$');
@@ -88,13 +82,15 @@ classdef Schema
 
         mod_grps = obj.return_modality_groups();
 
+        datatypes = obj.get_datatypes();
+
         for i = 1:numel(mod_grps)
 
           mods = obj.return_modalities([], mod_grps{i});
 
           for j = 1:numel(mods)
 
-            suffix_grps = obj.content.datatypes.(mods{j});
+            suffix_grps = datatypes.(mods{j});
             % need to use a tmp variable to avoid some errors in continuous
             % integration to avoid some errors with octave
             updated_suffix_grps = struct('suffixes', [], ...
@@ -109,10 +105,13 @@ classdef Schema
               updated_suffix_grps(k, 1) = this_suffix_group;
             end
 
-            obj.content.datatypes.(mods{j}) = updated_suffix_grps;
+            datatypes.(mods{j}) = updated_suffix_grps;
 
           end
         end
+
+        obj = obj.set_datatypes(datatypes);
+
       end
 
     end
@@ -127,12 +126,36 @@ classdef Schema
                                                       'dir', ...
                                                       '.*'));
       else
-        modalities = obj.content.modalities.(modality_group).datatypes;
+        modalities = obj.content.rules.modalities.(modality_group).datatypes;
 
       end
     end
 
     % ----------------------------------------------------------------------- %
+    %% DATATYPES
+    function datatypes = get_datatypes(obj)
+      datatypes = obj.content.rules.datatypes;
+    end
+
+    function obj = set_datatypes(obj, datatypes)
+      obj.content.rules.datatypes = datatypes;
+    end
+
+    %% ENTITIES
+    function order = entity_order(obj, entity_list)
+
+      if ischar(entity_list)
+        entity_list = cellstr(entity_list);
+      end
+
+      order = obj.content.rules.entities;
+      is_in_schema = ismember(order, entity_list);
+      is_not_in_schema = ~ismember(entity_list, order);
+      order = order(is_in_schema);
+      order = cat(1, order, entity_list(is_not_in_schema));
+
+    end
+
     %% MODALITIES
     function groups = return_modality_groups(obj)
       %
@@ -140,8 +163,8 @@ classdef Schema
       %
 
       groups = {nan()};
-      if ~isempty(obj.content) && isfield(obj.content, 'modalities')
-        groups = fieldnames(obj.content.modalities);
+      if ~isempty(obj.content) && isfield(obj.content.objects, 'modalities')
+        groups = fieldnames(obj.content.objects.modalities);
       end
     end
 
@@ -154,7 +177,7 @@ classdef Schema
       entity_names = fieldnames(suffix_group.entities);
 
       for i = 1:size(entity_names, 1)
-        entities{1, i} = obj.content.entities.(entity_names{i}).entity; %#ok<*AGROW>
+        entities{1, i} = obj.content.objects.entities.(entity_names{i}).entity; %#ok<*AGROW>
       end
 
     end
@@ -211,8 +234,9 @@ classdef Schema
 
       % the following loop could probably be improved with some cellfun magic
       %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
-      for i = 1:size(obj.content.datatypes.(modality), 1)
-        this_suffix_group = obj.content.datatypes.(modality)(i);
+      datatypes = obj.get_datatypes();
+      for i = 1:size(datatypes.(modality), 1)
+        this_suffix_group = datatypes.(modality)(i);
         this_suffix_group = obj.ci_check(this_suffix_group);
         if any(strcmp(suffix, this_suffix_group.suffixes))
           idx = i;
@@ -247,17 +271,18 @@ classdef Schema
         return
       end
 
-      datatypes_list = fieldnames(obj.content.datatypes);
+      all_datatypes = obj.get_datatypes();
+      datatypes_names = fieldnames(all_datatypes);
 
-      for i = 1:size(datatypes_list, 1)
+      for i = 1:numel(datatypes_names)
 
-        this_datatype = obj.content.datatypes.(datatypes_list{i});
+        this_datatype = all_datatypes.(datatypes_names{i});
         this_datatype = obj.ci_check(this_datatype);
 
         suffix_list = cat(1, this_datatype.suffixes);
 
         if any(ismember(suffix_list, suffix))
-          datatypes{end + 1} = datatypes_list{i};
+          datatypes{end + 1} = datatypes_names{i};
         end
 
       end
@@ -274,8 +299,10 @@ classdef Schema
 
       idx = obj.find_suffix_group(modality, suffix);
 
+      datatypes = obj.get_datatypes();
+
       if ~isempty(idx)
-        this_suffix_group = obj.content.datatypes.(modality)(idx);
+        this_suffix_group = datatypes.(modality)(idx);
       end
 
       if ~isempty(idx)
@@ -373,18 +400,25 @@ classdef Schema
         if obj.load_schema_metadata || ...
                 ~strcmp(bids.internal.file_utils(directory, 'basename'), 'metadata')
 
-          [json_file_list, dirs] = bids.internal.file_utils('FPList', directory, '^.*.json$');
+          dirs = bids.internal.file_utils('FPList', directory, 'dir', '.*');
 
+          field_name = bids.internal.file_utils(directory, 'basename');
+          structure.(field_name) = struct();
+
+          json_file_list = bids.internal.file_utils('FPList', directory, '^.*.json$');
           if ~isempty(json_file_list)
-            field_name = bids.internal.file_utils(directory, 'basename');
-            structure.(field_name) = struct();
             structure.(field_name) = obj.append_json_to_schema(structure.(field_name), ...
                                                                json_file_list);
           end
 
-        end
+          structure.(field_name) = obj.inspect_subdir(obj, structure.(field_name), dirs);
 
-        structure = obj.inspect_subdir(obj, structure, dirs);
+          % clean up empty fields
+          if isempty(fieldnames(structure.(field_name)))
+            structure = rmfield(structure, field_name);
+          end
+
+        end
 
       end
     end

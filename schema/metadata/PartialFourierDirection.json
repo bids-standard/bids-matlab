@@ -1,5 +1,0 @@
-{
-  "name": "PartialFourierDirection",
-  "description": "The direction where only partial Fourier information was collected.\nCorresponds to DICOM Tag 0018, 9036 `Partial Fourier Direction`.\n",
-  "type": "string"
-}

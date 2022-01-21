@@ -1,5 +1,0 @@
-{
-  "name": "Proton density image",
-  "description": "Ambiguous, may refer to a parametric image or to a conventional image.\n**Change:** Replaced by `PDw` or `PDmap`.\n",
-  "unit": "arbitrary"
-}

@@ -1,6 +1,0 @@
-{
-  "name": "InjectedRadioactivityUnits",
-  "description": "Unit format of the specified injected radioactivity (for example, `\"MBq\"`).\n",
-  "type": "string",
-  "format": "unit"
-}

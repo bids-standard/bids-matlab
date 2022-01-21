@@ -3,18 +3,24 @@ octave-workspace
 *.*~
 *.swp
 
+tmp*
+examples/brainstorm
+examples/MoAEpilot
+
+
 # virtual env
 env/*
 
-# bids-specification repo (necessary for convert_schema.py)
+# other bids repos
 bids-specification/*
+bids-examples
 
 # input and output data involved in tests
 data/*
 derivatives/*
 tests/*.tsv
 
-# coverage 
+# coverage
 coverage_html
 
 # styling

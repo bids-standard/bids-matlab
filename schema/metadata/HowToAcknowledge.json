@@ -1,5 +1,0 @@
-{
-  "name": "HowToAcknowledge",
-  "description": "Text containing instructions on how researchers using this dataset should\nacknowledge the original authors.\nThis field can also be used to define a publication that should be cited in\npublications that use the dataset.\n",
-  "type": "string"
-}

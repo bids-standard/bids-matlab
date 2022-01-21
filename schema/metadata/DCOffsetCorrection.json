@@ -1,5 +1,0 @@
-{
-  "name": "DCOffsetCorrection",
-  "description": "A description of the method (if any) used to correct for a DC offset.\nIf the method used was subtracting the mean value for each channel,\nuse \"mean\".\n",
-  "type": "string"
-}

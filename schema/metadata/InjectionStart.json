@@ -1,6 +1,0 @@
-{
-  "name": "InjectionStart",
-  "description": "Time of start of injection with respect to `TimeZero` in the default unit\nseconds.\nThis corresponds to DICOM Tag 0018, 1042 `Contrast/Bolus Start Time`\nconverted to seconds relative to `TimeZero`.\n",
-  "type": "number",
-  "unit": "s"
-}

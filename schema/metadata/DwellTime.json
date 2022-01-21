@@ -1,6 +1,0 @@
-{
-  "name": "DwellTime",
-  "description": "Actual dwell time (in seconds) of the receiver per point in the readout\ndirection, including any oversampling.\nFor Siemens, this corresponds to DICOM field 0019, 1018 (in ns).\nThis value is necessary for the optional readout distortion correction of\nanatomicals in the HCP Pipelines.\nIt also usefully provides a handle on the readout bandwidth,\nwhich isn't captured in the other metadata tags.\nNot to be confused with `EffectiveEchoSpacing`, and the frequent mislabeling\nof echo spacing (which is spacing in the phase encoding direction) as\n\"dwell time\" (which is spacing in the readout direction).\n",
-  "type": "number",
-  "unit": "s"
-}

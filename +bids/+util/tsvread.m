@@ -1,21 +1,21 @@
-function fileContent = tsvread(filename, fieldToReturn, hdr)
+function file_content = tsvread(filename, field_to_return, hdr)
   %
   % Load text and numeric data from tab-separated-value or other file.
   %
   % USAGE::
   %
-  %   fileContent = tsvread(filename, fieldToReturn, hdr)
+  %   file_content = tsvread(filename, field_to_return, hdr)
   %
   % :param filename: filename (can be gzipped) {txt,mat,csv,tsv,json}ename
   % :type filename: string
-  % :param fieldToReturn: name of field to return if data stored in a structure
+  % :param field_to_return: name of field to return if data stored in a structure
   %                       [default: ``''``]; or index of column if data stored as an array
-  % :type fieldToReturn:
+  % :type field_to_return:
   % :param hdr: detect the presence of a header row for csv/tsv [default: ``true``]
   % :type hdr: boolean
   %
   %
-  % :returns: - :fileContent: corresponding data array or structure
+  % :returns: - :file_content: corresponding data array or structure
   %
   %
   % Based on spm_load.m from SPM12.
@@ -35,7 +35,7 @@ function fileContent = tsvread(filename, fieldToReturn, hdr)
   end
 
   if nargin < 2
-    fieldToReturn = '';
+    field_to_return = '';
   end
   if nargin < 3
     hdr = true;
@@ -46,22 +46,22 @@ function fileContent = tsvread(filename, fieldToReturn, hdr)
   [~, ~, ext] = fileparts(filename);
   switch ext(2:end)
     case 'txt'
-      fileContent = load(filename, '-ascii');
+      file_content = load(filename, '-ascii');
     case 'mat'
-      fileContent = load(filename, '-mat');
+      file_content = load(filename, '-mat');
     case 'csv'
       % x = csvread(f); % numeric data only
-      fileContent = dsv_read(filename, ',', hdr);
+      file_content = dsv_read(filename, ',', hdr);
     case 'tsv'
       % x = dlmread(f,'\t'); % numeric data only
-      fileContent = dsv_read(filename, '\t', hdr);
+      file_content = dsv_read(filename, '\t', hdr);
     case 'json'
-      fileContent = bids.util.jsondecode(filename);
+      file_content = bids.util.jsondecode(filename);
     case 'gz'
       fz = gunzip(filename, tempname);
       sts = true;
       try
-        fileContent = bids.util.tsvread(fz{1});
+        file_content = bids.util.tsvread(fz{1});
       catch err
         sts = false;
         err_msg = err.message;
@@ -73,56 +73,56 @@ function fileContent = tsvread(filename, fieldToReturn, hdr)
       end
     otherwise
       try
-        fileContent = load(filename);
+        file_content = load(filename);
       catch
         error('Cannot read file ''%s'': Unknown file format.', filename);
       end
   end
 
-  fileContent = return_subset(fileContent, fieldToReturn);
+  file_content = return_subset(file_content, field_to_return);
 
 end
 
-function fileContent = return_subset(fileContent, fieldToReturn)
+function file_content = return_subset(file_content, field_to_return)
 
   % -Return relevant subset of the data if required
   % --------------------------------------------------------------------------
-  if isstruct(fileContent)
-    if isempty(fieldToReturn)
-      fieldsList = fieldnames(fileContent);
-      if numel(fieldsList) == 1 && isnumeric(fileContent.(fieldsList{1}))
-        fileContent = fileContent.(fieldsList{1});
+  if isstruct(file_content)
+    if isempty(field_to_return)
+      fieldsList = fieldnames(file_content);
+      if numel(fieldsList) == 1 && isnumeric(file_content.(fieldsList{1}))
+        file_content = file_content.(fieldsList{1});
       end
     else
-      if ischar(fieldToReturn)
+      if ischar(field_to_return)
         try
-          fileContent = fileContent.(fieldToReturn);
+          file_content = file_content.(field_to_return);
         catch
-          error('Data do not contain array ''%s''.', fieldToReturn);
+          error('Data do not contain array ''%s''.', field_to_return);
         end
       else
-        fieldsList = fieldnames(fileContent);
+        fieldsList = fieldnames(file_content);
         try
-          fileContent = fileContent.(fieldsList{fieldToReturn});
+          file_content = file_content.(fieldsList{field_to_return});
         catch
           error('Data index out of range: %d (data contains %d fields)', ...
-                fieldToReturn, numel(fieldsList));
+                field_to_return, numel(fieldsList));
         end
       end
     end
-  elseif isnumeric(fileContent)
-    if isnumeric(fieldToReturn)
+  elseif isnumeric(file_content)
+    if isnumeric(field_to_return)
       try
-        fileContent = fileContent(:, fieldToReturn);
+        file_content = file_content(:, field_to_return);
       catch
         error('Data index out of range: %d (data contains $d columns).', ...
-              fieldToReturn, size(fileContent, 2));
+              field_to_return, size(file_content, 2));
       end
-    elseif ~isempty(fieldToReturn)
+    elseif ~isempty(field_to_return)
       error(['Invalid data index. ', ...
              'When data is numeric, index must be numeric or empty. ', ...
              'Got a %s'], ...
-            class(fieldToReturn));
+            class(field_to_return));
     end
   end
 

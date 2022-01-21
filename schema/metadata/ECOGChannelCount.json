@@ -1,6 +1,0 @@
-{
-  "name": "ECOGChannelCount",
-  "description": "Number of ECoG channels.\n",
-  "type": "integer",
-  "minimum": 0
-}

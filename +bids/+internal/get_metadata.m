@@ -41,16 +41,16 @@ end
 % ==========================================================================
 % -Inheritance principle
 % ==========================================================================
-function s1 = update_metadata(s1, s2, file)
-  if isempty(s2)
+function struct_one = update_metadata(struct_one, struct_two, file)
+  if isempty(struct_two)
     return
-  elseif ~isstruct(s2)
+  elseif ~isstruct(struct_two)
     error('Metadata file contents were neither struct nor empty. File: %s', file);
   end
-  fn = fieldnames(s2);
+  fn = fieldnames(struct_two);
   for i = 1:numel(fn)
-    if ~isfield(s1, fn{i})
-      s1.(fn{i}) = s2.(fn{i});
+    if ~isfield(struct_one, fn{i})
+      struct_one.(fn{i}) = struct_two.(fn{i});
     end
   end
 end

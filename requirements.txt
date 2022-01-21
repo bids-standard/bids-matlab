@@ -1,8 +1,7 @@
-miss_hit==0.9.20
+miss_hit==0.9.29
 pre-commit
 ruamel.yaml
 jupyterlab
 octave_kernel
 jinja2
 -r docs/requirements.txt
-

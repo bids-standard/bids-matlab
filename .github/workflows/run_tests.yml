@@ -7,7 +7,7 @@ on:
       - main
       - dev
   pull_request:
-    branches: '*'
+    branches: ['*']
 
 env:
   OCTFLAGS: --no-gui --no-window-system --silent

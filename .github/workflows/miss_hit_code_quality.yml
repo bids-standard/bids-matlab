@@ -10,7 +10,7 @@ on:
       - main
       - dev
   pull_request:
-    branches: '*'
+    branches: ['*']
 
 jobs:
   build:
@@ -34,12 +34,12 @@ jobs:
         python -m pip install --upgrade pip setuptools
         pip3 install -r requirements.txt
 
-    - name: Install bids-example 
+    - name: Install bids-example
     # necessary to avoid errors in miss_hit if the folder is not there
       run: |
          cd tests
          git clone https://github.com/bids-standard/bids-examples.git --depth 1 
-         cd ..        
+         cd ..
 
     - name: MISS_HIT Metrics
       run: |

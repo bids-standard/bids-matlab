@@ -1,6 +1,0 @@
-{
-  "name": "DispersionConstant",
-  "description": "External dispersion time constant resulting from tubing in default unit\nseconds.\n",
-  "type": "number",
-  "unit": "s"
-}

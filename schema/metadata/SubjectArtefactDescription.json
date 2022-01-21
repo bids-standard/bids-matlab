@@ -1,5 +1,0 @@
-{
-  "name": "SubjectArtefactDescription",
-  "description": "Freeform description of the observed subject artefact and its possible cause\n(for example, `\"Vagus Nerve Stimulator\"`, `\"non-removable implant\"`).\nIf this field is set to `\"n/a\"`, it will be interpreted as absence of major\nsource of artifacts except cardiac and blinks.\n",
-  "type": "string"
-}

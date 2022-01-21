@@ -1,6 +1,0 @@
-{
-  "name": "MaxMovement",
-  "description": "Maximum head movement (in mm) detected during the recording,\nas measured by the head localisation coils (for example, 4.8).\n",
-  "type": "number",
-  "unit": "mm"
-}
