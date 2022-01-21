@@ -97,3 +97,20 @@ function test_validations
   assertExceptionThrown(@() schema.test_name(fname, 'func'),...
                         'Schema_imp:missingRequiredEntity');
 end
+
+
+function test_return_datatypes_for_suffix
+
+  schema = bids.Schema_imp('1.6.0', true);
+
+  datatypes = schema.return_datatypes_for_suffix('bold');
+  assertEqual(datatypes, {'func'});
+
+  datatypes = schema.return_datatypes_for_suffix('events');
+  expected_output = {'beh', 'eeg', 'func', 'ieeg', 'meg', 'pet'};
+  assertEqual(datatypes, expected_output);
+
+  datatypes = schema.return_datatypes_for_suffix('m0scan');
+  expected_output = {'fmap', 'perf'};
+  assertEqual(datatypes, expected_output);
+end

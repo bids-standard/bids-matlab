@@ -128,6 +128,19 @@ classdef Schema_imp
 
       res = true;
     end
+
+    function datatypes = return_datatypes_for_suffix(obj, suffix)
+
+      keys = obj.content.keys();
+      datatypes = cellfun(@(x) tokenize(x, '_'),...
+                          keys, 'UniformOutput', false);
+      index = cellfun(@(x) strcmp(x{end}, suffix),...
+                      datatypes, 'UniformOutput', 1);
+      datatypes = datatypes(index);
+      datatypes = cellfun(@(x) strjoin(x(1:end-1), '_'),...
+                          datatypes, 'UniformOutput', false);
+    end
+
   end
 
   methods (Static)
@@ -163,6 +176,15 @@ classdef Schema_imp
       prefix_len = length('schema_entities_v');
       ext_len = length('json');
       ver = name(prefix_len + 1: end - ext_len - 1);
+    end
+
+    function regex = generate_regex(list, type)
+      regex = ['(' strjoin(list, '|') ')'];
+      if strcmp(type, 'suffix')
+        regex = ['_' regex '{1}'];
+      elseif strcmp(type, 'extension')
+        regex = [regex '{1}$']
+      end
     end
   end
 end
