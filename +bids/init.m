@@ -42,16 +42,15 @@ function init(varargin)
   %% Folder structure
   if ~isempty(fieldnames(p.Results.folders))
 
-      subjects = create_folder_names(p, 'subjects');
-      sessions = create_folder_names(p, 'sessions');
+    subjects = create_folder_names(p, 'subjects');
+    sessions = create_folder_names(p, 'sessions');
 
-
-      bids.util.mkdir(p.Results.pth, ...
-                      subjects, ...
-                      sessions, ...
-                      p.Results.folders.modalities);
+    bids.util.mkdir(p.Results.pth, ...
+                    subjects, ...
+                    sessions, ...
+                    p.Results.folders.modalities);
   else
-    bids.util.mkdir(p.Results.pth);        
+    bids.util.mkdir(p.Results.pth);
   end
 
   %% README

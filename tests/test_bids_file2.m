@@ -177,18 +177,18 @@ end
 %% ERRORS
 
 function test_error_schema_missing
-  
+
   bf = bids.File2('sub-01_T1w.nii', 'tolerant', false, 'use_schema', false);
-  
+
   % THEN
   assertExceptionThrown(@()bf.get_required_entities(), ...
                         'bids:File2:schemaMissing');
 
   assertExceptionThrown(@()bf.get_modality_from_schema(), ...
                         'bids:File2:schemaMissing');
-                      
+
   assertExceptionThrown(@()bf.get_entity_order_from_schema(), ...
-                        'bids:File2:schemaMissing');                      
+                        'bids:File2:schemaMissing');
 
 end
 

@@ -1,4 +1,7 @@
 classdef File2
+  %
+  %
+  % (C) Copyright 2021 BIDS-MATLAB developers
 
   properties
     prefix = ''     % bids prefix
@@ -61,7 +64,7 @@ classdef File2
       if isfield(f_struct, 'suffix')
         obj.suffix = f_struct.suffix;
       else
-        obj.bidsFile_error('emptySuffix', 'no suffix specified');
+        obj.bids_file_error('emptySuffix', 'no suffix specified');
       end
 
       if isfield(f_struct, 'entities')
@@ -98,7 +101,7 @@ classdef File2
 
     function obj = set.prefix(obj, prefix)
       if ~isempty(prefix)
-        obj.bidsFile_error('prefixDefined', 'BIDS do not allow prefixes');
+        obj.bids_file_error('prefixDefined', 'BIDS do not allow prefixes');
       end
 
       obj.validate_prefix(prefix);
@@ -108,7 +111,7 @@ classdef File2
 
     function obj = set.extension(obj, extension)
       if isempty(extension)
-        obj.bidsFile_error('emptyExtension', 'no extension specified');
+        obj.bids_file_error('emptyExtension', 'no extension specified');
       end
 
       obj.validate_extension(extension);
@@ -118,7 +121,7 @@ classdef File2
 
     function obj = set.suffix(obj, suffix)
       if isempty(suffix)
-        obj.bidsFile_error('emptySuffix', 'no suffix specified');
+        obj.bids_file_error('emptySuffix', 'no suffix specified');
       end
 
       obj.validate_word(suffix, 'Suffix');
@@ -148,7 +151,7 @@ classdef File2
       end
 
       if ~contain_value
-        obj.bidsFile_error('noEntity', 'No entity-label pairs');
+        obj.bids_file_error('noEntity', 'No entity-label pairs');
       end
 
       obj.entities = entities;
@@ -196,7 +199,7 @@ classdef File2
       obj.check_required_entities();
 
       if isempty(obj.suffix)
-        obj.bidsFile_error('emptySuffix');
+        obj.bids_file_error('emptySuffix');
       else
         fname = [fname '_' obj.suffix];
       end
@@ -209,7 +212,7 @@ classdef File2
       obj.filename = [fname obj.extension];
 
       if isempty(obj.extension)
-        obj.bidsFile_error('emptyExtension');
+        obj.bids_file_error('emptyExtension');
       else
         obj.filename = [fname obj.extension];
       end
@@ -288,7 +291,7 @@ classdef File2
       %
 
       if isempty(obj.schema)
-        obj.bidsFile_error('schemaMissing');
+        obj.bids_file_error('schemaMissing');
       end
 
       obj = obj.get_modality_from_schema();
@@ -310,7 +313,7 @@ classdef File2
       %
 
       if isempty(obj.schema)
-        obj.bidsFile_error('schemaMissing');
+        obj.bids_file_error('schemaMissing');
       end
 
       modality = obj.schema.return_datatypes_for_suffix(obj.suffix);
@@ -320,7 +323,7 @@ classdef File2
                        '\nSpecify which one in name_spec.modality'], ...
                       obj.suffix, ...
                       strjoin(modality, ', '));
-        obj.bidsFile_error('manyModalityForsuffix', msg);
+        obj.bids_file_error('manyModalityForsuffix', msg);
 
       elseif ~isempty(modality)
         % convert to char
@@ -340,7 +343,7 @@ classdef File2
       %
 
       if isempty(obj.schema)
-        obj.bidsFile_error('schemaMissing');
+        obj.bids_file_error('schemaMissing');
       end
 
       obj = obj.get_modality_from_schema();
@@ -373,14 +376,14 @@ classdef File2
         msg = sprintf('Entities ''%s'' cannot not be empty for the suffix ''%s''', ...
                       strjoin(obj.entity_required(missing_required_entity), ', '), ...
                       obj.suffix);
-        obj.bidsFile_error('requiredEntity', msg);
+        obj.bids_file_error('requiredEntity', msg);
       end
 
     end
 
     %% Things that might go private
 
-    function bidsFile_error(obj, id, msg)
+    function bids_file_error(obj, id, msg)
 
       module = 'bids:File2';
 
@@ -410,19 +413,19 @@ classdef File2
     function validate_string(obj, str, type, pattern)
 
       if ~ischar(str)
-        obj.bidsFile_error(['Invalid' type], 'not chararray');
+        obj.bids_file_error(['Invalid' type], 'not chararray');
       end
 
       if size(str, 1) > 1
         msg = sprintf('%s contains several lines', str);
-        obj.bidsFile_error(['Invalid' type], msg);
+        obj.bids_file_error(['Invalid' type], msg);
       end
 
       if ~isempty(str)
         res = regexp(str, pattern, 'once');
         if isempty(res)
           msg = sprintf('%s do not satisfy pattern %s', str, pattern);
-          obj.bidsFile_error(['Invalid' type], msg);
+          obj.bids_file_error(['Invalid' type], msg);
         end
       end
 
@@ -441,7 +444,7 @@ classdef File2
       res = regexp(prefix, 'sub-', 'once');
       if ~isempty(res)
         msg = sprintf('%s contains ''sub-''', prefix);
-        obj.bidsFile_error('InvalidPrefix', msg);
+        obj.bids_file_error('InvalidPrefix', msg);
       end
     end
 
