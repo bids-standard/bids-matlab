@@ -60,6 +60,11 @@ classdef File2
 
       if isfield(f_struct, 'suffix')
         obj.suffix = f_struct.suffix;
+      else
+        module = 'File2';
+        id = 'emptySuffix';
+        msg = 'no suffix specified';
+        bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
       end
 
       if isfield(f_struct, 'entities')
@@ -223,7 +228,7 @@ classdef File2
       if isempty(obj.extension)
         obj.bidsFile_error('emptyExtension');
       else
-        obj.filename = [filename obj.extension];
+        obj.filename = [fname obj.extension];
       end
 
       obj.json_filename = [fname '.json'];

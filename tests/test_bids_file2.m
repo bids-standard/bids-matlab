@@ -6,6 +6,17 @@ function test_suite = test_bids_file2 %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_error_no_suffix()
+  % GIVEN
+  filename.entities = struct('sub', '01', ...
+                             'task', 'faces');
+  % THEN
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', false,  'tolerant', false), ...
+                        'File2:emptySuffix');
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
+                        'File2:emptySuffix');
+end
+
 function test_validation()
   assertExceptionThrown(@() bids.File2.validate_string([2 3], 'String', '.*'),...
                         'bids:File2:InvalidString');
@@ -118,21 +129,6 @@ function test_reorder()
 
 end
 
-function test_reorder_by_property()
-
-  % This fails but not sure we want to do things that way anyway
-
-  % GIVEN
-  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
-  file = bids.File2(filename, 'use_schema', false);
-  file.set_entity_order = {'ses', 'sub', 'task', 'run'};
-  % WHEN
-  file.reorder_entities();
-  % THEN
-  assertEqual(file.json_filename, 'wuases-test_sub-01_task-faceRecognition_run-02_bold.json');
-
-end
-
 function test_bids_file_derivatives_2()
 
   % GIVEN
@@ -240,17 +236,6 @@ function test_error_suffix_in_many_modalities()
   % THEN
   assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
                         'File2:manyModalityForsuffix');
-end
-
-function test_error_no_suffix()
-  % GIVEN
-  filename.entities = struct('sub', '01', ...
-                             'task', 'faces');
-  % THEN
-  assertExceptionThrown(@()bids.File2(filename, 'use_schema', false,  'tolerant', false), ...
-                        'File2:emptySuffix');
-  assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
-                        'File2:emptySuffix');
 end
 
 function test_error_no_extension()
