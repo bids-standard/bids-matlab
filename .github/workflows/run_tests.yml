@@ -32,7 +32,7 @@ jobs:
 
     - name: Install JSONio
       run: |
-         git clone git://github.com/gllmflndn/JSONio.git --depth 1
+         git clone https://github.com/gllmflndn/JSONio.git --depth 1
          cd JSONio
          mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
          cd ..
@@ -40,7 +40,7 @@ jobs:
     - name: Install bids-example and data
       run: |
          cd tests
-         git clone git://github.com/bids-standard/bids-examples.git --depth 1 
+         git clone https://github.com/bids-standard/bids-examples.git --depth 1 
          cd utils
          octave $OCTFLAGS --eval "download_moae_ds"
          cd ../..
