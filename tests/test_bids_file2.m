@@ -6,44 +6,6 @@ function test_suite = test_bids_file2 %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_error_no_suffix()
-  % GIVEN
-  filename.entities = struct('sub', '01', ...
-                             'task', 'faces');
-  % THEN
-  assertExceptionThrown(@()bids.File2(filename, 'use_schema', false,  'tolerant', false), ...
-                        'File2:emptySuffix');
-  assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
-                        'File2:emptySuffix');
-end
-
-function test_validation()
-  assertExceptionThrown(@() bids.File2.validate_string([2 3], 'String', '.*'),...
-                        'bids:File2:InvalidString');
-  assertExceptionThrown(@() bids.File2.validate_string(['.nii'; '.abc'], 'String', '.*'),...
-                        'bids:File2:InvalidString');
-  assertExceptionThrown(@() bids.File2.validate_string('abc', 'String', 'abcde'),...
-                        'bids:File2:InvalidString');
-  bids.File2.validate_string('', 'String', '.*');
-
-  assertExceptionThrown(@() bids.File2.validate_extension('nii'),...
-                        'bids:File2:InvalidExtension');
-  assertExceptionThrown(@() bids.File2.validate_extension('.nii-'),...
-                        'bids:File2:InvalidExtension');
-  assertExceptionThrown(@() bids.File2.validate_extension('.nii_'),...
-                        'bids:File2:InvalidExtension');
-
-  assertExceptionThrown(@() bids.File2.validate_prefix('abc/def'),...
-                        'bids:File2:InvalidPrefix');
-  assertExceptionThrown(@() bids.File2.validate_prefix('abcsub-def'),...
-                        'bids:File2:InvalidPrefix');
-
-  assertExceptionThrown(@() bids.File2.validate_word('abc/def', 'Word'),...
-                        'bids:File2:InvalidWord');
-  assertExceptionThrown(@() bids.File2.validate_word('abc-def', 'Word'),...
-                        'bids:File2:InvalidWord');
-end
-
 function test_parsing()
 
   filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
@@ -223,7 +185,7 @@ function test_error_required_entity()
                              'acq', '01');
   % THEN
   assertExceptionThrown(@()bids.File2(filename, 'use_schema', true, 'tolerant', false), ...
-                        'File2:requiredEntity');
+                        'bids:File2:requiredEntity');
 
 end
 
@@ -235,7 +197,7 @@ function test_error_suffix_in_many_modalities()
                              'task', 'faces');
   % THEN
   assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
-                        'File2:manyModalityForsuffix');
+                        'bids:File2:manyModalityForsuffix');
 end
 
 function test_error_no_extension()
@@ -245,9 +207,9 @@ function test_error_no_extension()
                              'task', 'faces');
   % THEN
   assertExceptionThrown(@()bids.File2(filename, 'use_schema', false,  'tolerant', false), ...
-                        'File2:emptyExtension');
+                        'bids:File2:emptyExtension');
   assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
-                        'File2:emptyExtension');
+                        'bids:File2:emptyExtension');
 end
 
 function test_name_validation()
@@ -266,4 +228,44 @@ function test_name_validation()
   filename = 'sub-01_task-faceRecognition_ses-test_run-02.nii';
   assertExceptionThrown(@() bids.File2(filename, 'tolerant', false), ...
                         'bids:File2:emptySuffix');
+end
+
+function test_error_no_suffix()
+  % GIVEN
+  filename.entities = struct('sub', '01', ...
+                             'task', 'faces');
+  % THEN
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', false,  'tolerant', false), ...
+                        'bids:File2:emptySuffix');
+  assertExceptionThrown(@()bids.File2(filename, 'use_schema', true,  'tolerant', false), ...
+                        'bids:File2:emptySuffix');
+end
+
+function test_validation()
+
+  bf = bids.File2('sub-01_T1w.nii', 'tolerant', false);
+
+  assertExceptionThrown(@() bf.validate_string([2 3], 'String', '.*'), ...
+                        'bids:File2:InvalidString');
+  assertExceptionThrown(@() bf.validate_string(['.nii'; '.abc'], 'String', '.*'), ...
+                        'bids:File2:InvalidString');
+  assertExceptionThrown(@() bf.validate_string('abc', 'String', 'abcde'), ...
+                        'bids:File2:InvalidString');
+
+  assertExceptionThrown(@() bf.validate_extension('nii'), ...
+                        'bids:File2:InvalidExtension');
+  assertExceptionThrown(@() bf.validate_extension('.nii-'), ...
+                        'bids:File2:InvalidExtension');
+  assertExceptionThrown(@() bf.validate_extension('.nii_'), ...
+                        'bids:File2:InvalidExtension');
+
+  assertExceptionThrown(@() bf.validate_prefix('abc/def'), ...
+                        'bids:File2:InvalidPrefix');
+  assertExceptionThrown(@() bf.validate_prefix('abcsub-def'), ...
+                        'bids:File2:InvalidPrefix');
+
+  assertExceptionThrown(@() bf.validate_word('abc/def', 'Word'), ...
+                        'bids:File2:InvalidWord');
+  assertExceptionThrown(@() bf.validate_word('abc-def', 'Word'), ...
+                        'bids:File2:InvalidWord');
 end
