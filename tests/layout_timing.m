@@ -141,10 +141,6 @@ function layout_timing
   % ds000001-fmriprep     NaN
   % schemaless      NaN
 
-  %%
-  use_schema = false;
-  verbose = false;
-
   pth_bids_example = get_test_data_dir();
 
   d = dir(pth_bids_example);
@@ -168,7 +164,7 @@ function layout_timing
     end
 
     tic;
-    bids.layout(fullfile(pth_bids_example, d(i).name), use_schema, verbose);
+    bids.layout(fullfile(pth_bids_example, d(i).name), 'use_schema', false, 'verbose', false);
     T(i) = toc;
 
     fprintf(1, [tab '%0.3f\n'], T(i));
