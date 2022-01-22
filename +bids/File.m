@@ -1,22 +1,93 @@
 classdef File
   %
+  % Class to deal with BIDS files and to help to create BIDS valid names
+  %
+  % USAGE::
+  %
+  %   file = bids.File(input, ...
+  %                    'use_schema', false, ...
+  %                    'tolerant', true,
+  %                    'verbose', false);
+  %
+  % :param input:
+  % :type input: filename or structure
+  % :param use_schema:
+  % :type use_schema: boolean
+  % :param tolerant: turns errors into warning
+  % :type tolerant: boolean
+  % :param verbose: silences warnings
+  % :type verbose: boolean
+  %
+  %
+  % **Initiliaze with a filename**
+  %
+  % EXAMPLE::
+  %
+  %   input = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
+  %   file = bids.File(input);
+  %
+  %
+  % **Initialize with a structure**
+  %
+  % EXAMPLE::
+  %
+  %   input = struct('ext', '.nii', ...
+  %                  'suffix', 'T1w', ...
+  %                  'entities', struct('sub', '01', ...
+  %                                     'ses', '02'));
+  %   file = bids.File(input);
+  %
+  %
+  % **Remove prefixes and add a ``desc-preproc`` entity-label pair**
+  %
+  % EXAMPLE::
+  %
+  %   input = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  %   file = bids.File(input, 'use_schema', false);
+  %   file.prefix = '';
+  %   file.entities.desc = 'preproc';
+  %   disp(file.filename)
+  %
+  %
+  % **Use the BIDS schema to get entities in the right order**
+  %
+  % EXAMPLE::
+  %
+  %   input.suffix = 'bold';
+  %   input.ext = '.nii';
+  %   input.entities = struct('sub', '01', ...
+  %                           'acq', '1pt5', ...
+  %                           'run', '02', ...
+  %                           'task', 'face recognition');
+  %
+  %   file = bids.File(name_spec, 'use_schema', true);
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   properties
+
     prefix = ''     % bids prefix
+
     extension = ''  % file extension
+
     suffix = ''     % file suffix
+
     entities = struct([])   % list of entities
+
     modality = ''   % name of file modality
 
     bids_path = ''  % path within dataset
+
     filename = ''   % bidsified name
+
     json_filename = ''  % bidsified name for json file
 
     entity_required = {}  % Required entities
+
     entity_order = {}   % Expected order of entities
-    schema = []     % Schema used for given modality
+
+    schema = []     % BIDS schema used
+
   end
 
   properties (SetAccess = private)
@@ -32,7 +103,7 @@ classdef File
       args = inputParser;
       charOrStruct = @(x) isstruct(x) || ischar(x);
 
-      args.addRequired('input_file', charOrStruct);
+      args.addRequired('input', charOrStruct);
       args.addParameter('use_schema', false, @islogical);
       args.addParameter('tolerant', obj.tolerant, @islogical);
       args.addParameter('verbose', obj.verbose, @islogical);
@@ -42,12 +113,12 @@ classdef File
       obj.tolerant = args.Results.tolerant;
       obj.verbose = args.Results.verbose;
 
-      if isempty(args.Results.input_file)
+      if isempty(args.Results.input)
         f_struct = struct([]);
-      elseif ischar(args.Results.input_file)
-        f_struct = bids.internal.parse_filename(args.Results.input_file);
-      elseif isstruct(args.Results.input_file)
-        f_struct = args.Results.input_file;
+      elseif ischar(args.Results.input)
+        f_struct = bids.internal.parse_filename(args.Results.input);
+      elseif isstruct(args.Results.input)
+        f_struct = args.Results.input;
       end
 
       obj.verbose = args.Results.verbose;
@@ -78,6 +149,7 @@ classdef File
       obj = obj.update();
     end
 
+    %% Getters
     function value = get.bids_path(obj)
       if obj.changed
         obj = obj.update();
@@ -99,6 +171,7 @@ classdef File
       value = obj.json_filename;
     end
 
+    %% Setters
     function obj = set.prefix(obj, prefix)
       if ~isempty(prefix)
         obj.bids_file_error('prefixDefined', 'BIDS do not allow prefixes');
@@ -172,7 +245,11 @@ classdef File
       obj.changed = true;
     end
 
+    %% other methods
     function obj = update(obj)
+      %
+      % excuted automatically before getting a value
+      %
 
       fname = '';
       path = '';
@@ -229,6 +306,27 @@ classdef File
     end
 
     function obj = reorder_entities(obj, entity_order)
+      %
+      % USAGE::
+      %
+      %   file = file.reorder_entities([entity_order]);
+      %
+      % If the no entity order is provided, it will try to rely on the schema to
+      % find an appropriate order
+      %
+      % EXAMPLE::
+      %
+      %   % filename with ses entity in the wrong position
+      %   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+      %   file = bids.File(filename, 'use_schema', false);
+      %   file = file.reorder_entities({'sub', 'ses'});
+      %
+      %   % use the schema to do the reordering
+      %   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+      %   file = bids.File(filename, 'use_schema', false);
+      %   file = file.use_schema();
+      %   file = file.reorder_entities();
+      %
 
       order = obj.entity_order;
 
@@ -261,7 +359,6 @@ classdef File
     end
 
     %% schema related methods
-
     function obj = use_schema(obj)
       %
       % Loads BIDS schema into instance and tries to update properties:
