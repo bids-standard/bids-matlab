@@ -84,13 +84,14 @@ function test_file_utils_basic()
                                      '^test_file_utils.m$');
   assertEqual(fp_file, [mfilename('fullpath') '.m']);
 
-  mkdir data;
+  dir_to_create = fullfile(this_dir, 'data');
+  mkdir(dir_to_create);
   fp_directory = bids.internal.file_utils('FPList', ...
                                           this_dir, ...
                                           'dir', ...
                                           '^data$');
   assertEqual(fp_directory, ...
               fullfile(this_dir, 'data'));
-  rmdir(fullfile(pwd, 'data'), 's');
+  rmdir(dir_to_create, 's');
 
 end
