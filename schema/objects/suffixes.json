@@ -1,8 +1,32 @@
 {
+  "2PE": {
+    "name": "2-photon excitation microscopy",
+    "description": "2-photon excitation microscopy imaging data\n"
+  },
+  "BF": {
+    "name": "Bright-field microscopy",
+    "description": "Bright-field microscopy imaging data\n"
+  },
   "Chimap": {
     "name": "Quantitative susceptibility map (QSM)",
     "description": "In parts per million (ppm).\nQSM allows for determining the underlying magnetic susceptibility of tissue\n(Chi)\n([Wang & Liu, 2014](https://onlinelibrary.wiley.com/doi/10.1002/mrm.25358)).\nChi maps are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\n",
     "unit": "ppm"
+  },
+  "CARS": {
+    "name": "Coherent anti-Stokes Raman spectroscopy",
+    "description": "Coherent anti-Stokes Raman spectroscopy imaging data\n"
+  },
+  "CONF": {
+    "name": "Confocal microscopy",
+    "description": "Confocal microscopy imaging data\n"
+  },
+  "DIC": {
+    "name": "Differential interference contrast microscopy",
+    "description": "Differential interference contrast microscopy imaging data\n"
+  },
+  "DF": {
+    "name": "Dark-field microscopy",
+    "description": "Dark-field microscopy imaging data\n"
   },
   "FLAIR": {
     "name": "Fluid attenuated inversion recovery image",
@@ -12,6 +36,10 @@
   "FLASH": {
     "name": "Fast-Low-Angle-Shot image",
     "description": "FLASH (Fast-Low-Angle-Shot) is a vendor-specific implementation for spoiled\ngradient echo acquisition.\nIt is commonly used for rapid anatomical imaging and also for many different\nqMRI applications.\nWhen used for a single file, it does not convey any information about the\nimage contrast.\nWhen used in a file collection, it may result in conflicts across filenames of\ndifferent applications.\n**Change:** Removed from suffixes.\n"
+  },
+  "FLUO": {
+    "name": "Fluorescence microscopy",
+    "description": "Fluorescence microscopy imaging data\n"
   },
   "IRT1": {
     "name": "Inversion recovery T1 mapping",
@@ -33,6 +61,10 @@
   "MP2RAGE": {
     "name": "Magnetization Prepared Two Gradient Echoes",
     "description": "The MP2RAGE method is a special protocol that collects several images at\ndifferent flip angles and inversion times to create a parametric T1map by\ncombining the magnitude and phase images\n([Marques et al. 2010](https://doi.org/10.1016/j.neuroimage.2009.10.002)).\n"
+  },
+  "MPE": {
+    "name": "Multi-photon excitation microscopy",
+    "description": "Multi-photon excitation microscopy imaging data\n"
   },
   "MPM": {
     "name": "Multi-parametric Mapping",
@@ -70,6 +102,18 @@
     "minValue": 0,
     "maxValue": 100
   },
+  "NLO": {
+    "name": "Nonlinear optical microscopy",
+    "description": "Nonlinear optical microscopy imaging data\n"
+  },
+  "OCT": {
+    "name": "Optical coherence tomography",
+    "description": "Optical coherence tomography imaging data\n"
+  },
+  "PC": {
+    "name": "Phase-contrast microscopy",
+    "description": "Phase-contrast microscopy imaging data\n"
+  },
   "PD": {
     "name": "Proton density image",
     "description": "Ambiguous, may refer to a parametric image or to a conventional image.\n**Change:** Replaced by `PDw` or `PDmap`.\n",
@@ -94,6 +138,10 @@
     "name": "Proton density (PD) weighted image",
     "description": "In arbitrary units (arbitrary).\nThe contrast of these images is mainly determined by spatial variations in\nthe spin density (1H) of the imaged specimen.\nIn spin-echo sequences this contrast is achieved at short repetition and long\necho times.\nIn a gradient-echo acquisition, PD weighting dominates the contrast at long\nrepetition and short echo times, and at small flip angles.\n",
     "unit": "arbitrary"
+  },
+  "PLI": {
+    "name": "Polarized-light microscopy",
+    "description": "Polarized-light microscopy imaging data\n"
   },
   "R1map": {
     "name": "Longitudinal relaxation rate image",
@@ -122,6 +170,18 @@
   "S0map": {
     "name": "Observed signal amplitude (S0) image",
     "description": "In arbitrary units (arbitrary).\nFor a multi-echo (typically fMRI) sequence, S0 maps index the baseline signal\nbefore exponential (T2-star) signal decay.\nIn other words: the exponential of the intercept for a linear decay model\nacross log-transformed echos. For more information, please see, for example,\n[the tedana documentation](https://tedana.readthedocs.io/en/latest/\\\napproach.html#monoexponential-decay-model-fit).\nS0 maps are RECOMMENDED to use this suffix if derived from an ME-FMRI dataset.\n"
+  },
+  "SEM": {
+    "name": "Scanning electron microscopy",
+    "description": "Scanning electron microscopy imaging data\n"
+  },
+  "SPIM": {
+    "name": "Selective plane illumination microscopy",
+    "description": "Selective plane illumination microscopy imaging data\n"
+  },
+  "SR": {
+    "name": "Super-resolution microscopy",
+    "description": "Super-resolution microscopy imaging data\n"
   },
   "T1map": {
     "name": "Longitudinal relaxation time image",
@@ -199,9 +259,13 @@
     "description": "In arbitrary units (arbitrary).\nRadio frequency (RF) transmit (B1+) field maps are REQUIRED to use this\nsuffix regardless of the method used to generate them.\nTB1map intensity values are RECOMMENDED to be represented as percent\nmultiplicative factors such that FlipAngle<sub>effective</sub> =\nB1+<sub>intensity</sub>\\*FlipAngle<sub>nominal</sub> .\n",
     "unit": "arbitrary"
   },
+  "TEM": {
+    "name": "Transmission electron microscopy",
+    "description": "Transmission electron microscopy imaging data\n"
+  },
   "UNIT1": {
     "name": "Homogeneous (flat) T1-weighted MP2RAGE image",
-    "description": "In arbitrary units (arbitrary).\nUNIT1 images are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\nNote that although this image is T1-weighted, regions without MR signal will\ncontain white salt-and-pepper noise that most segmentation algorithms will\nfail on.\nTherefore, it is important to dissociate it from from `T1w`.\nPlease see [`MP2RAGE` specific notes](/99-appendices/11-qmri.html#unit1-images)\nin the qMRI appendix for further information.\n"
+    "description": "In arbitrary units (arbitrary).\nUNIT1 images are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\nNote that although this image is T1-weighted, regions without MR signal will\ncontain white salt-and-pepper noise that most segmentation algorithms will\nfail on.\nTherefore, it is important to dissociate it from `T1w`.\nPlease see [`MP2RAGE` specific notes](/99-appendices/11-qmri.html#unit1-images)\nin the qMRI appendix for further information.\n"
   },
   "VFA": {
     "name": "Variable flip angle",
@@ -253,7 +317,7 @@
   },
   "dwi": {
     "name": "Diffusion-weighted image",
-    "description": "Diffusion-weighted imaging contrast (specialized T2\\* weighting).\n"
+    "description": "Diffusion-weighted imaging contrast (specialized T2 weighting).\n"
   },
   "eeg": {
     "name": "Electroencephalography",
@@ -347,7 +411,7 @@
   },
   "photo": {
     "name": "Photo File",
-    "description": "Photos of the anatomical landmarks and/or head localization coils\n(`*_photo.jpg`).\n"
+    "description": "Photos of the anatomical landmarks, head localization coils or tissue sample.\n"
   },
   "physio": {
     "name": "Physiological recording",
@@ -360,5 +424,9 @@
   "stim": {
     "name": "Continuous recording",
     "description": "Continuous measures, such as parameters of a film or audio stimulus.\n"
+  },
+  "uCT": {
+    "name": "Micro-CT",
+    "description": "Micro-CT imaging data\n"
   }
 }

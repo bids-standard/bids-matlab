@@ -31,12 +31,16 @@
     "name": "Magnetoencephalography",
     "description": "Magnetoencephalography"
   },
+  "micr": {
+    "name": "Microscopy",
+    "description": "Microscopy"
+  },
   "perf": {
     "name": "Perfusion imaging",
     "description": "Blood perfusion imaging data, including arterial spin labeling (ASL)\n"
   },
   "pet": {
     "name": "Positron Emission Tomography",
-    "description": null
+    "description": "Positron emission tomography data\n"
   }
 }

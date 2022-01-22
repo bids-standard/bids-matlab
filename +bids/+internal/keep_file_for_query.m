@@ -4,6 +4,8 @@ function status = keep_file_for_query(file_struct, options)
   %
   %   status = keep_file_for_query(file_struct, options)
   %
+  %   returns ``false`` if the file is to be kept when running ``bids.query``
+  %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   status = true;
@@ -12,15 +14,20 @@ function status = keep_file_for_query(file_struct, options)
   % as they are not one of the entities
   for i = 1:size(options, 1)
 
-    field_name = options{i, 1};
-    if strcmp(field_name, 'extension')
-      field_name = 'ext';
+    key = options{i, 1};
+    if strcmp(key, 'extension')
+      key = 'ext';
     end
 
-    if any(strcmp(field_name, {'modality', 'suffix', 'ext', 'prefix'})) && ...
-             check_label_with_regex(file_struct.(field_name), options{i, 2})
-      status = false;
-      return
+    values = options{i, 2};
+
+    if any(strcmp(key, {'modality', 'suffix', 'ext', 'prefix'}))
+
+      status = check(status, file_struct, key, values);
+      if status == false
+        return
+      end
+
     end
 
   end
@@ -34,30 +41,14 @@ function status = keep_file_for_query(file_struct, options)
   % work on the the entities
   for j = 1:size(options, 1)
 
-    this_entity = options{j, 1};
-    label_lists = options{j, 2};
+    key = options{j, 1};
 
-    if ~any(strcmp(this_entity, {'modality', 'suffix', 'extension', 'ext', 'prefix'}))
+    values = options{j, 2};
 
-      file_has_entity = ismember(this_entity, fieldnames(file_struct.entities));
-      exclude_entity = numel(label_lists) == 1 && isempty(label_lists{1});
+    if ~any(strcmp(key, {'modality', 'suffix', 'extension', 'ext', 'prefix'}))
 
-      if ~file_has_entity && ~exclude_entity
-        status = false;
-        return
-      end
-
-      this_label = file_struct.entities.(this_entity);
-
-      if file_has_entity && exclude_entity && ...
-              ~isempty(this_label)
-        status = false;
-        return
-      end
-
-      if file_has_entity && ~exclude_entity && ...
-              check_label(this_entity, this_label, label_lists)
-        status = false;
+      status = check(status, file_struct.entities, key, values);
+      if status == false
         return
       end
 
@@ -67,37 +58,68 @@ function status = keep_file_for_query(file_struct, options)
 
 end
 
-function status = check_label(this_entity, label, label_lists)
+function  status = check(status, structure, key, values)
 
-  if ismember(this_entity, {'run', 'flip', 'inv', 'split', 'echo'})
+  % does the file have the entity or does the filename structure has this fieldname ?
+  has_key = ismember(key, fieldnames(structure));
+  % do we want to exclude the file (by passing an empty option) bassed on that key ?
+  exclude = numel(values) == 1 && isempty(values{1});
 
-    if ischar(label)
-      label = str2double(label);
+  if ~has_key && ~exclude
+    status = false;
+    return
+  end
+
+  if ~has_key && exclude
+    return
+  end
+
+  value = structure.(key);
+
+  if has_key && exclude && ...
+          ~isempty(value)
+    status = false;
+    return
+  end
+
+  if has_key && ~exclude && ...
+          check_label(key, value, values)
+    status = false;
+    return
+  end
+end
+
+function status = check_label(key, value, values)
+
+  if ismember(key, {'run', 'flip', 'inv', 'split', 'echo'})
+
+    if ischar(value)
+      value = str2double(value);
     end
 
     % TODO to speed up the query this could be done only once
     % at the beginning of bids.query??
-    label_lists = convert_to_num(label_lists);
+    values = convert_to_num(values);
 
-    status = ~ismember(label, label_lists);
+    status = ~ismember(value, values);
 
   else
 
-    status = check_label_with_regex(label, label_lists);
+    status = check_label_with_regex(value, values);
 
   end
 
 end
 
-function label_lists = convert_to_num(label_lists)
+function values = convert_to_num(values)
 
-  is_char = cellfun(@(x) ischar(x), label_lists);
+  is_char = cellfun(@(x) ischar(x), values);
 
-  tmp1 = label_lists(is_char);
+  tmp1 = values(is_char);
   tmp1 = cellfun(@(x) str2double(x), tmp1);
-  tmp2 = [label_lists{~is_char}];
+  tmp2 = [values{~is_char}];
 
-  label_lists = cat(2, tmp1, tmp2);
+  values = cat(2, tmp1, tmp2);
 
 end
 
@@ -105,13 +127,13 @@ end
 % the options could be converted to regex only once
 % and not for every call to keep_file
 
-function status = check_label_with_regex(label, option)
+function status = check_label_with_regex(value, option)
   if numel(option) == 1
     option = prepare_regex(option);
-    keep = regexp(label, option, 'match');
+    keep = regexp(value, option, 'match');
     status = isempty(keep) || isempty(keep{1});
   else
-    status = ~ismember(label, option);
+    status = ~ismember(value, option);
   end
 end
 
