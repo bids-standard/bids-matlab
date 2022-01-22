@@ -90,7 +90,7 @@ function test_file_utils_basic()
                                           'dir', ...
                                           '^data$');
   assertEqual(fp_directory, ...
-              fullfile(fileparts(mfilename('fullpath')), 'data'));
+              fullfile(this_dir, 'data'));
   rmdir(fullfile(pwd, 'data'), 's');
 
 end

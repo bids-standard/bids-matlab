@@ -98,11 +98,11 @@ function copy_to_derivative(varargin)
     out_path = fullfile(BIDS.pth, 'derivatives');
   end
   if ~exist(out_path, 'dir')
-    mkdir(out_path);
+    bids.util.mkdir(out_path);
   end
   derivatives_folder = fullfile(out_path, args.Results.pipeline_name);
   if ~exist(derivatives_folder, 'dir')
-    mkdir(derivatives_folder);
+    bids.util.mkdir(derivatives_folder);
   end
 
   ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
