@@ -376,7 +376,35 @@ classdef File
       obj.schema = bids.Schema();
       obj = obj.get_required_entities();
       obj = obj.get_entity_order_from_schema();
+      obj.validate_entities();
       obj = obj.reorder_entities(obj.entity_order);
+
+    end
+
+    function validate_entities(obj)
+      %
+      % use entity_order got from schema as a proxy for allowed entity keys
+      %
+      % USAGE::
+      %
+      %    file.validate_entities();
+      %
+
+      % TODO check that entities are in the right order
+
+      if isempty(obj.schema)
+        return
+      end
+
+      present_entities = fieldnames(obj.entities);
+      forbidden_entity = ~ismember(present_entities, obj.entity_order);
+      if any(forbidden_entity)
+        msg = sprintf(['Entitiy ''%s'' not allowed by BIDS schema.', ...
+                       '\nAllowed entities are:\n - %s'], ...
+                      present_entities{forbidden_entity}, ...
+                      strjoin(obj.entity_order, '\n - '));
+        obj.bids_file_error('forbiddenEntity', msg);
+      end
 
     end
 

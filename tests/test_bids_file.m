@@ -6,6 +6,32 @@ function test_suite = test_bids_file %#ok<*STOUT>
   initTestSuite;
 end
 
+%  TODO
+% function test_forbidden_order()
+%
+%   input = 'sub-01_task-nback_ses-02_eeg.bdf';
+%   assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
+%                         'bids:File:wrongEntityOrder');
+%
+% end
+
+function test_forbidden_entity()
+
+  input.suffix = 'eeg';
+  input.ext = '.bdf';
+  input.entities.sub = '01';
+  input.entities.task = 'test';
+  input.entities.rec = 'stuff';
+
+  assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
+                        'bids:File:forbiddenEntity');
+
+  input = 'sub-01_task-test_rec-stuff_eeg.bdf';
+  assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
+                        'bids:File:forbiddenEntity');
+
+end
+
 function test_parsing()
 
   filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
