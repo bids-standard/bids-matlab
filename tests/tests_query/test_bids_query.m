@@ -256,20 +256,11 @@ function test_query_modalities()
   assertEqual(bids.query(BIDS, 'modalities', 'sub', '01'), modalities);
   assertEqual(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', 'rescan'), modalities);
 
-  % this now fails on octave 4.2.2 but not on Matlab
-  %
-  % bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '2')
-  %
-  % ans =
-  % {
-  %   [1,1] = anat
-  %   [1,2] = fmap
-  %   [1,3] = func
-  % }
-  %
-  % when it should return
+  % does this fail on octave?
+  modalities = {'anat', 'dwi', 'fmap', 'func'};
 
-  % assertEqual(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', '2'), mods(2:3)));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'genetics_ukbb'));
+  assertEqual(bids.query(BIDS, 'modalities', 'sub', '02'), modalities);
 
 end
 
@@ -296,6 +287,10 @@ function test_query_sessions_tsv()
 
   assert(~isempty(BIDS.subjects(1).sess));
   assert(~isempty(BIDS.subjects(1).scans));
+
+  % does this fail on octave?
+  modalities = {'fmap', 'func'};
+  assertEqual(bids.query(BIDS, 'modalities', 'sub', '02', 'ses', '2'), modalities);
 
 end
 
