@@ -232,8 +232,19 @@
   },
   "BodyPart": {
     "name": "BodyPart",
-    "description": "Body part of the organ / body region scanned.\nCorresponds to DICOM Tag 0018, 0015 `Body Part Examined`.\n",
+    "description": "Body part of the organ / body region scanned.\n",
     "type": "string"
+  },
+  "BodyPartDetails": {
+    "name": "BodyPartDetails",
+    "description": "Additional details about body part or location (for example: `\"corpus callosum\"`).\n",
+    "type": "string"
+  },
+  "BodyPartDetailsOntology": {
+    "name": "BodyPartDetailsOntology",
+    "description": "[URI](/02-common-principles.html#uniform-resource-indicator) of ontology used for\nBodyPartDetails (for example: `\"https://www.ebi.ac.uk/ols/ontologies/uberon\"`).\n",
+    "type": "string",
+    "format": "uri"
   },
   "BolusCutOffDelayTime": {
     "name": "BolusCutOffDelayTime",
@@ -292,6 +303,48 @@
     "name": "CellType",
     "description": "Describes the type of cell analyzed.\nValues SHOULD come from the\n[cell ontology](http://obofoundry.org/ontology/cl.html).\n",
     "type": "string"
+  },
+  "ChunkTransformationMatrix": {
+    "name": "ChunkTransformationMatrix",
+    "description": "3x3 or 4x4 affine transformation matrix describing spatial chunk transformation,\nfor 2D and 3D respectively (for examples: `[[2, 0, 0], [0, 3, 0], [0, 0, 1]]`\nin 2D for 2x and 3x scaling along the first and second axis respectively; or\n`[[1, 0, 0, 0], [0, 2, 0, 0], [0, 0, 3, 0], [0, 0, 0, 1]]` in 3D for 2x and 3x\nscaling along the second and third axis respectively).\nNote that non-spatial dimensions like time and channel are not included in the\ntransformation matrix.\n",
+    "anyOf": [
+      {
+        "type": "array",
+        "minItems": 3,
+        "maxItems": 3,
+        "items": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      {
+        "type": "array",
+        "minItems": 4,
+        "maxItems": 4,
+        "items": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    ]
+  },
+  "ChunkTransformationMatrixAxis": {
+    "name": "ChunkTransformationMatrixAxis",
+    "description": "Describe the axis of the ChunkTransformationMatrix\n(for examples: `[\"X\", \"Y\"]` or `[\"Z\", \"Y\", \"X\"]`).\n",
+    "type": "array",
+    "items": {
+      "type": "string",
+      "minItems": 2,
+      "maxItems": 3
+    }
   },
   "Code": {
     "name": "Code",
@@ -977,6 +1030,11 @@
     "description": "Text containing instructions on how researchers using this dataset should\nacknowledge the original authors.\nThis field can also be used to define a publication that should be cited in\npublications that use the dataset.\n",
     "type": "string"
   },
+  "ImageAcquisitionProtocol": {
+    "name": "ImageAcquisitionProtocol",
+    "description": "Description of the image acquisition protocol or\n[URI](/02-common-principles.html#uniform-resource-indicator)\n(for example from [protocols.io](https://www.protocols.io/)).\n",
+    "type": "string"
+  },
   "ImageDecayCorrected": {
     "name": "ImageDecayCorrected",
     "description": "Boolean flag specifying whether the image data have been decay-corrected.\n",
@@ -987,6 +1045,11 @@
     "description": "Point in time from which the decay correction was applied with respect to\nTimeZero in the default unit seconds.\n",
     "type": "number",
     "unit": "s"
+  },
+  "Immersion": {
+    "name": "Immersion",
+    "description": "Lens immersion medium. If the file format is OME-TIFF, the value MUST be consistent\nwith the `Immersion` OME metadata field.\n",
+    "type": "string"
   },
   "InfusionRadioactivity": {
     "name": "InfusionRadioactivity",
@@ -1366,6 +1429,12 @@
     "description": "Nominal field strength of MR magnet in Tesla.\nCorresponds to DICOM Tag 0018, 0087 `Magnetic Field Strength`.\n",
     "type": "number"
   },
+  "Magnification": {
+    "name": "Magnification",
+    "description": "Lens magnification (for example: `40`). If the file format is OME-TIFF,\nthe value MUST be consistent with the `NominalMagnification` OME metadata field.\n",
+    "type": "number",
+    "exclusiveMinimum": 0
+  },
   "Manual": {
     "name": "Manual",
     "description": "Indicates if the segmentation was performed manually or via an automated\nprocess.\n",
@@ -1507,9 +1576,20 @@
       }
     ]
   },
+  "NumericalAperture": {
+    "name": "NumericalAperture",
+    "description": "Lens numerical aperture (for example: `1.4`). If the file format is OME-TIFF,\nthe value MUST be consistent with the `LensNA` OME metadata field.\n",
+    "type": "number",
+    "exclusiveMinimum": 0
+  },
   "OperatingSystem": {
     "name": "OperatingSystem",
     "description": "Operating system used to run the stimuli presentation software\n(for formatting recommendations, see examples below this table).\n",
+    "type": "string"
+  },
+  "OtherAcquisitionParameters": {
+    "name": "OtherAcquisitionParameters",
+    "description": "Description of other relevant image acquisition parameters.\n",
     "type": "string"
   },
   "PASLType": {
@@ -1605,6 +1685,27 @@
       "i-",
       "j-",
       "k-"
+    ]
+  },
+  "PixelSize": {
+    "name": "PixelSize",
+    "description": "A 2- or 3-number array of the physical size of a pixel, either `[PixelSizeX, PixelSizeY]`\nor `[PixelSizeX, PixelSizeY, PixelSizeZ]`, where X is the width, Y the height and Z the\ndepth.\nIf the file format is OME-TIFF, these values need to be consistent with `PhysicalSizeX`,\n`PhysicalSizeY` and `PhysicalSizeZ` OME metadata fields, after converting in\n`PixelSizeUnits` according to `PhysicalSizeXunit`, `PhysicalSizeYunit` and\n`PhysicalSizeZunit` OME fields.\n",
+    "type": "array",
+    "minItems": 2,
+    "maxItems": 3,
+    "items": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "PixelSizeUnits": {
+    "name": "PixelSizeUnits",
+    "description": "Unit format of the specified `PixelSize`. MUST be one of: `\"mm\"` (millimeter), `\"um\"`\n(micrometer) or `\"nm\"` (nanometer).\n",
+    "type": "string",
+    "enum": [
+      "mm",
+      "um",
+      "nm"
     ]
   },
   "PlasmaAvail": {
@@ -1857,6 +1958,36 @@
     "type": "integer",
     "minimum": 0
   },
+  "SampleEmbedding": {
+    "name": "SampleEmbedding",
+    "description": "Description of the tissue sample embedding (for example: `\"Epoxy resin\"`).\n",
+    "type": "string"
+  },
+  "SampleEnvironment": {
+    "name": "SampleEnvironment",
+    "description": "Environment in which the sample was imaged. MUST be one of: `\"in vivo\"`, `\"ex vivo\"`\nor `\"in vitro\"`.\n",
+    "type": "string",
+    "enum": [
+      "in vivo",
+      "ex vivo",
+      "in vitro"
+    ]
+  },
+  "SampleExtractionInstitution": {
+    "name": "SampleExtractionInstitution",
+    "description": "The name of the institution in charge of the extraction of the sample,\nif different from the institution in charge of the equipment that produced the image.\n",
+    "type": "string"
+  },
+  "SampleExtractionProtocol": {
+    "name": "SampleExtractionProtocol",
+    "description": "Description of the sample extraction protocol or\n[URI](/02-common-principles.html#uniform-resource-indicator)\n(for example from [protocols.io](https://www.protocols.io/)).\n",
+    "type": "string"
+  },
+  "SampleFixation": {
+    "name": "SampleFixation",
+    "description": "Description of the tissue sample fixation\n(for example: `\"4% paraformaldehyde, 2% glutaraldehyde\"`).\n",
+    "type": "string"
+  },
   "SampleOrigin": {
     "name": "SampleOrigin",
     "description": "Describes from which tissue the genetic information was extracted.\nValues MUST be one of `\"blood\"`, `\"saliva\"`, `\"brain\"`, `\"csf\"`,\n`\"breast milk\"`, `\"bile\"`, `\"amniotic fluid\"`, `\"other biospecimen\"`.\n",
@@ -1870,6 +2001,51 @@
       "bile",
       "amniotic fluid",
       "other biospecimen"
+    ]
+  },
+  "SamplePrimaryAntibody": {
+    "name": "SamplePrimaryAntibody",
+    "description": "Description(s) of the primary antibody used for immunostaining.\nEither an [RRID](https://scicrunch.org/resources) or the name, supplier and catalogue\nnumber of a commercial antibody.\nFor non-commercial antibodies either an [RRID](https://scicrunch.org/resources) or the\nhost-animal and immunogen used (for examples: `\"RRID:AB_2122563\"` or\n`\"Rabbit anti-Human HTR5A Polyclonal Antibody, Invitrogen, Catalog # PA1-2453\"`).\nMAY be an array of strings if different antibodies are used in each channel of the file.\n",
+    "anyOf": [
+      {
+        "type": "string"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    ]
+  },
+  "SampleSecondaryAntibody": {
+    "name": "SampleSecondaryAntibody",
+    "description": "Description(s) of the secondary antibody used for immunostaining.\nEither an [RRID](https://scicrunch.org/resources) or the name, supplier and catalogue\nnumber of a commercial antibody.\nFor non-commercial antibodies either an [RRID](https://scicrunch.org/resources) or the\nhost-animal and immunogen used (for examples: `\"RRID:AB_228322\"` or\n`\"Goat anti-Mouse IgM Secondary Antibody, Invitrogen, Catalog # 31172\"`).\nMAY be an array of strings if different antibodies are used in each channel of the file.\n",
+    "anyOf": [
+      {
+        "type": "string"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    ]
+  },
+  "SampleStaining": {
+    "name": "SampleStaining",
+    "description": "Description(s) of the tissue sample staining (for example: `\"Osmium\"`).\nMAY be an array of strings if different stains are used in each channel of the file\n(for example: `[\"LFB\", \"PLP\"]`).\n",
+    "anyOf": [
+      {
+        "type": "string"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
     ]
   },
   "SamplingFrequency": {
@@ -1983,6 +2159,13 @@
       "j-",
       "k-"
     ]
+  },
+  "SliceThickness": {
+    "name": "SliceThickness",
+    "description": "Slice thickness of the tissue sample in the unit micrometers (`\"um\"`) (for example: `5`).\n",
+    "type": "number",
+    "unit": "um",
+    "exclusiveMinimum": 0
   },
   "SliceTiming": {
     "name": "SliceTiming",
@@ -2181,7 +2364,7 @@
   },
   "StationName": {
     "name": "StationName",
-    "description": "Institution defined name of the machine that produced the measurements.\nCorresponds to DICOM Tag 0008, 1010 `Station Name`.\n",
+    "description": "Institution defined name of the machine that produced the measurements.\n",
     "type": "string"
   },
   "StimulusPresentation": {
@@ -2231,6 +2414,12 @@
     "description": "Time zero to which all scan and/or blood measurements have been adjusted to,\nin the unit \"hh:mm:ss\".\nThis should be equal to `InjectionStart` or `ScanStart`.\n",
     "type": "string",
     "pattern": "^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"
+  },
+  "TissueDeformationScaling": {
+    "name": "TissueDeformationScaling",
+    "description": "Estimated deformation of the tissue, given as a percentage of the original\ntissue size (for examples: for a shrinkage of 3%, the value is `97`;\nand for an expansion of 100%, the value is `200`).\n",
+    "type": "number",
+    "exclusiveMinimum": 0
   },
   "TissueOrigin": {
     "name": "TissueOrigin",
