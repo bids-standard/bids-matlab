@@ -11,9 +11,9 @@ function test_bids_query_microscopy_basic()
   pth_bids_example = get_test_data_dir();
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'micr_SEM'));
-  
+
   BIDS = bids.layout(fullfile(pth_bids_example, 'micr_SPIM'));
-  
+
   % TODO add query for sample and chunks
 
 end
