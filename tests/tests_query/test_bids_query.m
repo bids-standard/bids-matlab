@@ -51,6 +51,33 @@ function test_query_subjects()
 
 end
 
+function test_query_regex_subjects_no_regex_by_default()
+
+  if is_octave()
+    return
+    %
+    %   failure: regexp: nothing to repeat at position 1 of expression
+    %   query>check_label_with_regex:414 (/github/workspace/+bids/query.m)
+    %   query>perform_query:259 (/github/workspace/+bids/query.m)
+    %   query:130 (/github/workspace/+bids/query.m)
+    %   test_bids_query>test_query_regex_subjects_no_regex_by_default:64
+    %       (/github/workspace/tests/tests_query/test_bids_query.m)
+    %
+  end
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, '..', 'data', 'dummy', 'raw'));
+
+  data = bids.query(BIDS, 'subjects', 'sub', '01');
+
+  assertEqual(numel(data), 1);
+
+  data = bids.query(BIDS, 'subjects', 'sub', '*01');
+
+  assertEqual(numel(data), 3);
+end
+
 function test_query_regex_subjects()
 
   pth_bids_example = get_test_data_dir();

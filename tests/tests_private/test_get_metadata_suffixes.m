@@ -9,7 +9,7 @@ end
 function test_get_metadata_suffixes_basic()
   % ensures that "similar" suffixes are distinguished
 
-  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  data_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'data', 'surface_data');
 
   file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.shape.gii');
   side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.json');

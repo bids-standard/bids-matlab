@@ -43,6 +43,16 @@ function result = query(BIDS, query, varargin)
   %
   % It is also possible to use regular expressions in the value.
   %
+  %  Regex example::
+  %
+  %     % The following 2 will return the same thing
+  %     data = bids.query(BIDS, 'data', 'sub', '01')
+  %     data = bids.query(BIDS, 'data', 'sub', '^01$')
+  %
+  %     % But the following would return all the data for all subjects
+  %     % whose label ends in '01'
+  %     data = bids.query(BIDS, 'data', 'sub', '.*01')
+  %
   % ---
   %
   % Example 1::
@@ -246,8 +256,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
     this_subject = BIDS.subjects(i);
 
     % Only continue if this subject is one of those filtered
-    keep = regexp(this_subject.name(5:end), subjects, 'match');
-    if all(cellfun('isempty', keep))
+    if check_label_with_regex(this_subject.name(5:end), subjects)
       continue
     end
 
@@ -392,5 +401,32 @@ function result = update_result_with_root_content(query, options, result, BIDS)
       end
 
     end
+  end
+end
+
+% TODO  performace issue ???
+% the options could be converted to regex only once
+% and not for every call to keep_file
+
+function status = check_label_with_regex(label, option)
+  if numel(option) == 1
+    option = prepare_regex(option);
+    keep = regexp(label, option, 'match');
+    status = isempty(keep) || isempty(keep{1});
+  else
+    status = ~ismember(label, option);
+  end
+end
+
+function option = prepare_regex(option)
+  option = option{1};
+  if strcmp(option, '')
+    return
+  end
+  if ~strcmp(option(1), '^')
+    option = ['^' option];
+  end
+  if ~strcmp(option(end), '$')
+    option = [option '$'];
   end
 end

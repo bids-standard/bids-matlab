@@ -4,17 +4,23 @@ function init(varargin)
   %
   % USAGE::
   %
-  %   bids.init(pth, folders, is_derivative, is_datalad_ds)
+  %   bids.init(pth, ...
+  %             'folders', folders, ,...
+  %             'is_derivative', false,...
+  %             'is_datalad_ds', false)
   %
   % :param pth: directory where to create the dataset
   % :type  pth: string
+  %
   % :param folders: define the folder structure to create.
   %                 ``folders.subjects``
   %                 ``folders.sessions``
   %                 ``folders.modalities``
   % :type  folders: structure
+  %
   % :param is_derivative:
   % :type  is_derivative: boolean
+  %
   % :param is_datalad_ds:
   % :type  is_derivative: boolean
   %
@@ -33,25 +39,24 @@ function init(varargin)
   p = inputParser;
 
   addOptional(p, 'pth', default.pth, @ischar);
-  addOptional(p, 'folders', default.folders, @isstruct);
-  addOptional(p, 'is_derivative', default.is_derivative);
-  addOptional(p, 'is_datalad_ds', default.is_datalad_ds);
+  addParameter(p, 'folders', default.folders, @isstruct);
+  addParameter(p, 'is_derivative', default.is_derivative);
+  addParameter(p, 'is_datalad_ds', default.is_datalad_ds);
 
   parse(p, varargin{:});
 
   %% Folder structure
   if ~isempty(fieldnames(p.Results.folders))
 
-      subjects = create_folder_names(p, 'subjects');
-      sessions = create_folder_names(p, 'sessions');
+    subjects = create_folder_names(p, 'subjects');
+    sessions = create_folder_names(p, 'sessions');
 
-
-      bids.util.mkdir(p.Results.pth, ...
-                      subjects, ...
-                      sessions, ...
-                      p.Results.folders.modalities);
+    bids.util.mkdir(p.Results.pth, ...
+                    subjects, ...
+                    sessions, ...
+                    p.Results.folders.modalities);
   else
-    bids.util.mkdir(p.Results.pth);        
+    bids.util.mkdir(p.Results.pth);
   end
 
   %% README

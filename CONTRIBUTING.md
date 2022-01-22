@@ -12,17 +12,34 @@ If you have any questions that aren't discussed below, please let us know by
 Been here before? Already know what you're looking for in this guide? Jump to
 the following sections:
 
--   [Joining the community](#joining-the-community)
--   [Contributing through GitHub](#contributing-through-github)
--   [Understanding issues](#understanding-issues)
--   [Style guide](#style-guide)
-    -   [Writing in markdown](#writing-in-markdown)
-    -   [Matlab code style guide and quality](#matlab-code-style-guide-and-quality)
--   [Making a change with a pull request](#making-a-change-with-a-pull-request)
--   [Example pull request](#example-pull-request)
--   [Commenting on a pull request](#commenting-on-a-pull-request)
--   [Accepting suggestion from a review](#accepting-suggestion-from-a-review)
--   [Recognizing contributions](#recognizing-contributions)
+- [Contributing to BIDS-MATLAB](#contributing-to-bids-matlab)
+    - [Table of contents](#table-of-contents)
+    - [Joining the community](#joining-the-community)
+    - [Contributing through GitHub](#contributing-through-github)
+    - [Understanding issues](#understanding-issues)
+        - [Issue labels](#issue-labels)
+    - [Style guide](#style-guide)
+        - [Writing in markdown](#writing-in-markdown)
+        - [Matlab code style guide and quality](#matlab-code-style-guide-and-quality)
+            - [pre-commit hook: reformating your code when committing](#pre-commit-hook-reformating-your-code-when-committing)
+        - [Running tests on the code](#running-tests-on-the-code)
+    - [Making a change with a pull request](#making-a-change-with-a-pull-request)
+            - [1. Comment on an existing issue or open a new issue referencing your addition](#1-comment-on-an-existing-issue-or-open-a-new-issue-referencing-your-addition)
+            - [2. Fork [this repository](https://github.com/bids-standard/BIDS-MATLAB) to your profile](#2-fork-this-repository-to-your-profile)
+            - [3. Make the changes you've discussed](#3-make-the-changes-youve-discussed)
+            - [4. Submit a pull request](#4-submit-a-pull-request)
+    - [Example pull request](#example-pull-request)
+    - [Commenting on a pull request](#commenting-on-a-pull-request)
+        - [Navigating to open pull requests](#navigating-to-open-pull-requests)
+        - [Pull request description](#pull-request-description)
+        - [Generally commenting on a pull request](#generally-commenting-on-a-pull-request)
+        - [Specific comments on a pull request](#specific-comments-on-a-pull-request)
+            - [Suggesting text](#suggesting-text)
+    - [Accepting suggestion from a review](#accepting-suggestion-from-a-review)
+    - [How the decision to merge a pull request is made?](#how-the-decision-to-merge-a-pull-request-is-made)
+    - [Recognizing contributions](#recognizing-contributions)
+    - [Updating the bids-schema](#updating-the-bids-schema)
+    - [Thank you!](#thank-you)
 
 <!--
 TODO: sections to add
@@ -30,7 +47,6 @@ TODO: sections to add
   - setting up an octave jupyter notebook
 - binder
 - continuous integration
-  - travis
   - github actions
 -->
 
@@ -391,6 +407,8 @@ BIDS-MATLAB follows the
 specification, so we welcome and recognize all contributions from documentation
 to testing to code development. You can see a list of current contributors in
 the [README](./README.md).
+
+Also make sure you add your information to the [CITATION.cff file](./CITATION.cff).
 
 If you have made any type of contributions to BIDS-MATLAB, our team will add you
 as a contributor (or ask to be added if we forgot).
