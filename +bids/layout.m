@@ -233,7 +233,7 @@ function subject = parse_subject(pth, subjname, sesname, schema, verbose)
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
-        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf'}
+        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf', 'micr'}
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
         otherwise
           % in case we are going schemaless
