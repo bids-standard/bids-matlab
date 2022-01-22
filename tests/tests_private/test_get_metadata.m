@@ -7,23 +7,12 @@ function test_suite = test_get_metadata %#ok<*STOUT>
 end
 
 function test_get_metadata_basic()
-  % Test metadata and the inheritance principle
-  % __________________________________________________________________________
-  %
-  % BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
-  %   The brain imaging data structure, a format for organizing and
-  %   describing outputs of neuroimaging experiments.
-  %   K. J. Gorgolewski et al, Scientific Data, 2016.
-  % __________________________________________________________________________
-
-  % Copyright (C) 2019, Remi Gau
-  % Copyright (C) 2019--, BIDS-MATLAB developers
 
   % Small test to ensure that metadata are reported correctly
   % also tests inheritance principle: metadata are passed on to lower levels
   % unless they are overriden by metadate already present at lower levels
 
-  pth = fullfile(fileparts(mfilename('fullpath')), 'data', 'synthetic');
+  pth = fullfile(fileparts(mfilename('fullpath')), '..', 'data', 'synthetic');
 
   % define the expected output from bids query metadata
   func.RepetitionTime = 7;

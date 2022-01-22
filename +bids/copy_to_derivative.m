@@ -5,38 +5,45 @@ function copy_to_derivative(varargin)
   %
   % USAGE::
   %
-  %   bids.copy_to_derivative(BIDS, pipeline_name...
-  %                               out_path, ...
-  %                               filters, ...
-  %                               'unzip', true, ...
-  %                               'force', false, ...
-  %                               'skip_dep', false, ...
-  %                               'use_schema, use_schema, ...
-  %                               'verbose', true);
+  %   bids.copy_to_derivative(BIDS, ...
+  %                           'pipeline_name', '', ...
+  %                           'out_path', '', ...
+  %                           'filters', struct(), ...
+  %                           'unzip', true, ...
+  %                           'force', false, ...
+  %                           'skip_dep', false, ...
+  %                           'use_schema, use_schema, ...
+  %                           'verbose', true);
   %
   %
   % :param BIDS:            BIDS directory name or BIDS structure (from bids.layout)
   % :type  BIDS:            structure or string
+  %
   % :param pipeline_name:   name of pipeline to use
   % :type  pipeline_name:   string
   %
   % :param out_path:        path to directory containing the derivatives
   % :type  out_path:        string
+  %
   % :param filter:          list of filters to choose what files to copy (see bids.query)
   % :type  filter:          structure or cell
   %
-  % :param unzip:           If ``true`` (default) then all ``.gz`` files will be unzipped
+  % :param unzip:           If ``true`` then all ``.gz`` files will be unzipped
   %                         after being copied.
   % :type  unzip:           boolean
-  % :param force:           If set to ``false`` (default) it will not overwrite any file already
+  %
+  % :param force:           If set to ``false`` it will not overwrite any file already
   %                         present in the destination.
   % :type  force:           boolean
-  % :param skip_dep:        If set to ``false`` (default) it will copy all the
+  %
+  % :param skip_dep:        If set to ``false`` it will copy all the
   %                         dependencies of each file.
   % :type  skip_dep:        boolean
-  % :param use_schema:      If set to ``true`` (default) it will only copy files
+  %
+  % :param use_schema:      If set to ``true`` it will only copy files
   %                         that are BIDS valid.
   % :type  use_schema:      boolean
+  %
   % :param  verbose:
   % :type  verbose:         boolean
   %
@@ -47,60 +54,58 @@ function copy_to_derivative(varargin)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  default_pipeline_name = '';
   default_out_path = '';
   default_filter = struct();
-
   default_unzip = true;
   default_force = false;
   default_skip_dep = false;
   default_schema = true;
   default_verbose = false;
 
-  p = inputParser;
+  args = inputParser;
 
-  addRequired(p, 'BIDS');
-  addRequired(p, 'pipeline_name', @ischar);
+  addRequired(args, 'BIDS');
+  addParameter(args, 'pipeline_name', default_pipeline_name, @ischar);
+  addParameter(args, 'out_path', default_out_path, @ischar);
+  addParameter(args, 'filter', default_filter, @isstruct);
+  addParameter(args, 'unzip', default_unzip);
+  addParameter(args, 'force', default_force);
+  addParameter(args, 'skip_dep', default_skip_dep);
+  addParameter(args, 'use_schema', default_schema);
+  addParameter(args, 'verbose', default_verbose);
 
-  addOptional(p, 'out_path', default_out_path, @ischar);
-  addOptional(p, 'filter', default_filter, @isstruct);
+  parse(args, varargin{:});
 
-  addParameter(p, 'unzip', default_unzip);
-  addParameter(p, 'force', default_force);
-  addParameter(p, 'skip_dep', default_skip_dep);
-  addParameter(p, 'use_schema', default_schema);
-  addParameter(p, 'verbose', default_verbose);
-
-  parse(p, varargin{:});
-
-  BIDS = bids.layout(p.Results.BIDS, p.Results.use_schema);
+  BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema);
 
   % Check that we actually have to copy something
-  data_list = bids.query(BIDS, 'data', p.Results.filter);
-  subjects_list = bids.query(BIDS, 'subjects', p.Results.filter);
+  data_list = bids.query(BIDS, 'data', args.Results.filter);
+  subjects_list = bids.query(BIDS, 'subjects', args.Results.filter);
 
   if isempty(data_list)
     warning('No data found for this query');
     return
   else
-    if p.Results.verbose
+    if args.Results.verbose
       fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
     end
   end
 
   % Determine and create output directory
-  out_path = p.Results.out_path;
+  out_path = args.Results.out_path;
   if isempty(out_path)
     out_path = fullfile(BIDS.pth, 'derivatives');
   end
   if ~exist(out_path, 'dir')
-    mkdir(out_path);
+    bids.util.mkdir(out_path);
   end
-  derivatives_folder = fullfile(out_path, p.Results.pipeline_name);
+  derivatives_folder = fullfile(out_path, args.Results.pipeline_name);
   if ~exist(derivatives_folder, 'dir')
-    mkdir(derivatives_folder);
+    bids.util.mkdir(derivatives_folder);
   end
 
-  ds_desc = bids.Description(p.Results.pipeline_name, BIDS);
+  ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
 
   % Incase we are copying again to the output folder, we append that info to the
   % description otherwise we create a bran new dataset description for
@@ -109,31 +114,31 @@ function copy_to_derivative(varargin)
   if exist(descr_file, 'file')
     content = bids.util.jsondecode(descr_file);
     ds_desc = ds_desc.set_field(content);
-    ds_desc = ds_desc.append('GeneratedBy', struct('Name', p.Results.pipeline_name));
+    ds_desc = ds_desc.append('GeneratedBy', struct('Name', args.Results.pipeline_name));
 
   else
-    ds_desc = bids.Description(p.Results.pipeline_name, BIDS);
+    ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
 
   end
 
   ds_desc.write(derivatives_folder);
 
-  copy_participants_tsv(BIDS, derivatives_folder, p);
+  copy_participants_tsv(BIDS, derivatives_folder, args);
 
   % looping over selected files
   for iFile = 1:numel(data_list)
     copy_file(BIDS, derivatives_folder, data_list{iFile}, ...
-              p.Results.unzip, ...
-              p.Results.force, ...
-              p.Results.skip_dep, ...
-              p.Results.verbose);
+              args.Results.unzip, ...
+              args.Results.force, ...
+              args.Results.skip_dep, ...
+              args.Results.verbose);
   end
 
-  if p.Results.verbose
+  if args.Results.verbose
     fprintf('\n');
   end
 
-  copy_session_scan_tsv(BIDS, derivatives_folder, p);
+  copy_session_scan_tsv(BIDS, derivatives_folder, args);
 
 end
 

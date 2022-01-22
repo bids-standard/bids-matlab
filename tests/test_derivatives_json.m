@@ -26,9 +26,8 @@ function test_derivatives_json_force()
 
   %% force to create default content
   filename = 'sub-01_task-faceRecognition_bold.nii';
-  force = true;
 
-  json = bids.derivatives_json(filename, force);
+  json = bids.derivatives_json(filename, 'force', true);
 
   expected.content = expected_content();
   expected.filename = 'sub-01_task-faceRecognition_bold.json';

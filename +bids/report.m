@@ -658,3 +658,14 @@ function print_text(template_name, file_id, verbose, metadata)
   end
   print_to_output(boilerplate_text, file_id, verbose);
 end
+
+function status = is_octave()
+
+  persistent cacheval   % speeds up repeated calls
+
+  if isempty (cacheval)
+    cacheval = (exist ('OCTAVE_VERSION', 'builtin') > 0);
+  end
+
+  status = cacheval;
+end

@@ -10,11 +10,9 @@ function test_layout_nested()
 
   pth_bids_example = get_test_data_dir();
 
-  use_schema = true;
-
-  index_derivatives = true;
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'), use_schema, index_derivatives);
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'), ...
+                     'use_schema', true, ...
+                     'index_derivatives', true);
 
 end
 
@@ -22,12 +20,11 @@ function test_layout_meg_derivatives()
 
   pth_bids_example = get_test_data_dir();
 
-  use_schema = false();
-
   BIDS = bids.layout(fullfile(pth_bids_example, ...
                               'ds000117', ...
                               'derivatives', ...
-                              'meg_derivatives'), use_schema);
+                              'meg_derivatives'), ...
+                     'use_schema', false);
 
   modalities = {'meg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -46,14 +43,13 @@ function test_layout_prefix()
 
   pth_bids_example = get_test_data_dir();
 
-  use_schema = false();
-
   copyfile(fullfile(pth_bids_example, 'qmri_tb1tfl', 'sub-01', 'fmap', ...
                     'sub-01_acq-anat_TB1TFL.nii.gz'), ...
            fullfile(pth_bids_example, 'qmri_tb1tfl', 'sub-01', 'fmap', ...
                     'swuasub-01_acq-anat_TB1TFL.nii.gz'));
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'), use_schema);
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'), ...
+                     'use_schema', false);
 
   data = bids.query(BIDS, 'data', ...
                     'sub', '01', ...
@@ -81,9 +77,8 @@ function test_layout_parse_json()
   assertEqual(size(data, 1), 2);
 
   %%
-  use_schema = false();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_qsm'), use_schema);
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_qsm'), ...
+                     'use_schema', false);
 
   data = bids.query(BIDS, 'data', ...
                     'sub', '01', ...
@@ -97,10 +92,9 @@ function test_layout_schemaless()
 
   pth_bids_example = get_test_data_dir();
 
-  use_schema = false();
-
   BIDS = bids.layout(fullfile(pth_bids_example, ...
-                              'ds000001-fmriprep'), use_schema);
+                              'ds000001-fmriprep'), ...
+                     'use_schema', false);
 
   modalities = {'anat', 'figures', 'func'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);

@@ -1,4 +1,4 @@
-function tsvwrite(f, var)
+function tsvwrite(filename, var)
   %
   % Save text and numeric data to tab-separated-value file
   %
@@ -6,8 +6,8 @@ function tsvwrite(f, var)
   %
   %   tsvwrite(f, var)
   %
-  % :param f: filename
-  % :type f: string
+  % :param filename:
+  % :type filename: string
   % :param var:
   % :type var: data array or structure
   %
@@ -61,10 +61,10 @@ function tsvwrite(f, var)
 
     end
 
-    write_to_file(f, var, delim);
+    write_to_file(filename, var, delim);
 
   elseif isa(var, 'table')
-    writetable(var, f, ...
+    writetable(var, filename, ...
                'FileType', 'text', ...
                'Delimiter', delim);
 
