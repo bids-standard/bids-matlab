@@ -56,51 +56,51 @@ function copy_to_derivative(varargin)
   default_schema = true;
   default_verbose = false;
 
-  p = inputParser;
+  args = inputParser;
 
-  addRequired(p, 'BIDS');
-  addRequired(p, 'pipeline_name', @ischar);
+  addRequired(args, 'BIDS');
+  addRequired(args, 'pipeline_name', @ischar);
 
-  addOptional(p, 'out_path', default_out_path, @ischar);
-  addOptional(p, 'filter', default_filter, @isstruct);
+  addOptional(args, 'out_path', default_out_path, @ischar);
+  addOptional(args, 'filter', default_filter, @isstruct);
 
-  addParameter(p, 'unzip', default_unzip);
-  addParameter(p, 'force', default_force);
-  addParameter(p, 'skip_dep', default_skip_dep);
-  addParameter(p, 'use_schema', default_schema);
-  addParameter(p, 'verbose', default_verbose);
+  addParameter(args, 'unzip', default_unzip);
+  addParameter(args, 'force', default_force);
+  addParameter(args, 'skip_dep', default_skip_dep);
+  addParameter(args, 'use_schema', default_schema);
+  addParameter(args, 'verbose', default_verbose);
 
-  parse(p, varargin{:});
+  parse(args, varargin{:});
 
-  BIDS = bids.layout(p.Results.BIDS, p.Results.use_schema);
+  BIDS = bids.layout(args.Results.BIDS, args.Results.use_schema);
 
   % Check that we actually have to copy something
-  data_list = bids.query(BIDS, 'data', p.Results.filter);
-  subjects_list = bids.query(BIDS, 'subjects', p.Results.filter);
+  data_list = bids.query(BIDS, 'data', args.Results.filter);
+  subjects_list = bids.query(BIDS, 'subjects', args.Results.filter);
 
   if isempty(data_list)
     warning('No data found for this query');
     return
   else
-    if p.Results.verbose
+    if args.Results.verbose
       fprintf('Found %d files in %d subjects\n', length(data_list), length(subjects_list));
     end
   end
 
   % Determine and create output directory
-  out_path = p.Results.out_path;
+  out_path = args.Results.out_path;
   if isempty(out_path)
     out_path = fullfile(BIDS.pth, 'derivatives');
   end
   if ~exist(out_path, 'dir')
     mkdir(out_path);
   end
-  derivatives_folder = fullfile(out_path, p.Results.pipeline_name);
+  derivatives_folder = fullfile(out_path, args.Results.pipeline_name);
   if ~exist(derivatives_folder, 'dir')
     mkdir(derivatives_folder);
   end
 
-  ds_desc = bids.Description(p.Results.pipeline_name, BIDS);
+  ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
 
   % Incase we are copying again to the output folder, we append that info to the
   % description otherwise we create a bran new dataset description for
@@ -109,31 +109,31 @@ function copy_to_derivative(varargin)
   if exist(descr_file, 'file')
     content = bids.util.jsondecode(descr_file);
     ds_desc = ds_desc.set_field(content);
-    ds_desc = ds_desc.append('GeneratedBy', struct('Name', p.Results.pipeline_name));
+    ds_desc = ds_desc.append('GeneratedBy', struct('Name', args.Results.pipeline_name));
 
   else
-    ds_desc = bids.Description(p.Results.pipeline_name, BIDS);
+    ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
 
   end
 
   ds_desc.write(derivatives_folder);
 
-  copy_participants_tsv(BIDS, derivatives_folder, p);
+  copy_participants_tsv(BIDS, derivatives_folder, args);
 
   % looping over selected files
   for iFile = 1:numel(data_list)
     copy_file(BIDS, derivatives_folder, data_list{iFile}, ...
-              p.Results.unzip, ...
-              p.Results.force, ...
-              p.Results.skip_dep, ...
-              p.Results.verbose);
+              args.Results.unzip, ...
+              args.Results.force, ...
+              args.Results.skip_dep, ...
+              args.Results.verbose);
   end
 
-  if p.Results.verbose
+  if args.Results.verbose
     fprintf('\n');
   end
 
-  copy_session_scan_tsv(BIDS, derivatives_folder, p);
+  copy_session_scan_tsv(BIDS, derivatives_folder, args);
 
 end
 
