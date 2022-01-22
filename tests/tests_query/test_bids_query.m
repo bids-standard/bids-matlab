@@ -256,12 +256,6 @@ function test_query_modalities()
   assertEqual(bids.query(BIDS, 'modalities', 'sub', '01'), modalities);
   assertEqual(bids.query(BIDS, 'modalities', 'sub', '01', 'ses', 'rescan'), modalities);
 
-  % does this fail on octave?
-  modalities = {'anat', 'dwi', 'fmap', 'func'};
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'genetics_ukbb'));
-  assertEqual(bids.query(BIDS, 'modalities', 'sub', '02'), modalities);
-
 end
 
 function test_query_sessions()
@@ -288,7 +282,12 @@ function test_query_sessions_tsv()
   assert(~isempty(BIDS.subjects(1).sess));
   assert(~isempty(BIDS.subjects(1).scans));
 
-  % does this fail on octave?
+  % unrelated but used to fail on octave
+  % https://github.com/bids-standard/bids-matlab/issues/112
+  % leaving it here to track an eventual regression
+  %
+  % could be moved in a different test once indexing of 
+  % 7t_trt with bids.layout does not take freaking eons
   modalities = {'fmap', 'func'};
   assertEqual(bids.query(BIDS, 'modalities', 'sub', '02', 'ses', '2'), modalities);
 
