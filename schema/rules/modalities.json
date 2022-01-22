@@ -32,5 +32,10 @@
     "datatypes": [
       "pet"
     ]
+  },
+  "micr": {
+    "datatypes": [
+      "micr"
+    ]
   }
 }
