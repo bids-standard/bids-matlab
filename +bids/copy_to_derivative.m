@@ -5,38 +5,45 @@ function copy_to_derivative(varargin)
   %
   % USAGE::
   %
-  %   bids.copy_to_derivative(BIDS, pipeline_name...
-  %                               out_path, ...
-  %                               filters, ...
-  %                               'unzip', true, ...
-  %                               'force', false, ...
-  %                               'skip_dep', false, ...
-  %                               'use_schema, use_schema, ...
-  %                               'verbose', true);
+  %   bids.copy_to_derivative(BIDS, ...
+  %                           'pipeline_name', '', ...
+  %                           'out_path', '', ...
+  %                           'filters', struct(), ...
+  %                           'unzip', true, ...
+  %                           'force', false, ...
+  %                           'skip_dep', false, ...
+  %                           'use_schema, use_schema, ...
+  %                           'verbose', true);
   %
   %
   % :param BIDS:            BIDS directory name or BIDS structure (from bids.layout)
   % :type  BIDS:            structure or string
+  %
   % :param pipeline_name:   name of pipeline to use
   % :type  pipeline_name:   string
   %
   % :param out_path:        path to directory containing the derivatives
   % :type  out_path:        string
+  %
   % :param filter:          list of filters to choose what files to copy (see bids.query)
   % :type  filter:          structure or cell
   %
-  % :param unzip:           If ``true`` (default) then all ``.gz`` files will be unzipped
+  % :param unzip:           If ``true`` then all ``.gz`` files will be unzipped
   %                         after being copied.
   % :type  unzip:           boolean
-  % :param force:           If set to ``false`` (default) it will not overwrite any file already
+  %
+  % :param force:           If set to ``false`` it will not overwrite any file already
   %                         present in the destination.
   % :type  force:           boolean
-  % :param skip_dep:        If set to ``false`` (default) it will copy all the
+  %
+  % :param skip_dep:        If set to ``false`` it will copy all the
   %                         dependencies of each file.
   % :type  skip_dep:        boolean
-  % :param use_schema:      If set to ``true`` (default) it will only copy files
+  %
+  % :param use_schema:      If set to ``true`` it will only copy files
   %                         that are BIDS valid.
   % :type  use_schema:      boolean
+  %
   % :param  verbose:
   % :type  verbose:         boolean
   %
@@ -47,9 +54,9 @@ function copy_to_derivative(varargin)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  default_pipeline_name = '';
   default_out_path = '';
   default_filter = struct();
-
   default_unzip = true;
   default_force = false;
   default_skip_dep = false;
@@ -59,11 +66,9 @@ function copy_to_derivative(varargin)
   args = inputParser;
 
   addRequired(args, 'BIDS');
-  addRequired(args, 'pipeline_name', @ischar);
-
-  addOptional(args, 'out_path', default_out_path, @ischar);
-  addOptional(args, 'filter', default_filter, @isstruct);
-
+  addParameter(args, 'pipeline_name', default_pipeline_name, @ischar);
+  addParameter(args, 'out_path', default_out_path, @ischar);
+  addParameter(args, 'filter', default_filter, @isstruct);
   addParameter(args, 'unzip', default_unzip);
   addParameter(args, 'force', default_force);
   addParameter(args, 'skip_dep', default_skip_dep);
@@ -72,7 +77,7 @@ function copy_to_derivative(varargin)
 
   parse(args, varargin{:});
 
-  BIDS = bids.layout(args.Results.BIDS, args.Results.use_schema);
+  BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema);
 
   % Check that we actually have to copy something
   data_list = bids.query(BIDS, 'data', args.Results.filter);
