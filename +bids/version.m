@@ -1,24 +1,24 @@
-function versionNumber = version()
+function version_number = version()
   %
   % Reads the version number of the pipeline from the txt file in the root of the
   % repository.
   %
   % USAGE::
   %
-  %   versionNumber = version()
+  %   version_number = version()
   %
-  % :returns: :versionNumber: (string) Use semantic versioning format (like v0.1.0)
+  % :returns: :version_number: (string) Use semantic versioning format (like v0.1.0)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   try
-    versionNumber = fileread(fullfile(fileparts(mfilename('fullpath')), '..', 'version.txt'));
+    version_number = fileread(fullfile(fileparts(mfilename('fullpath')), '..', 'version.txt'));
   catch
 
-    versionNumber = 'v0.1.0 ';
+    version_number = 'v0.1.0 ';
 
   end
 
   % dirty hack to get rid of line return
-  versionNumber = versionNumber(1:end - 1);
+  version_number = version_number(1:end - 1);
 end
