@@ -6,7 +6,6 @@ function test_suite = test_layout_index_json %#ok<*STOUT>
   initTestSuite;
 end
 
-
 function test_layout_parse_json()
 
   pth_bids_example = get_test_data_dir();

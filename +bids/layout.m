@@ -156,7 +156,7 @@ function BIDS = index_root_directory(BIDS)
                       'genetic_info', ... % because it messes the parse_filename
                       '(.bids-validator-config)' ...
                      };
-                   
+
   pattern = ['^(?!', strjoin(files_to_exclude, '|'), ').*.(tsv)$'];
 
   files_in_root = bids.internal.file_utils('FPList', BIDS.pth, pattern);
