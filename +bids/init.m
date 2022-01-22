@@ -33,9 +33,9 @@ function init(varargin)
   p = inputParser;
 
   addOptional(p, 'pth', default.pth, @ischar);
-  addOptional(p, 'folders', default.folders, @isstruct);
-  addOptional(p, 'is_derivative', default.is_derivative);
-  addOptional(p, 'is_datalad_ds', default.is_datalad_ds);
+  addParameter(p, 'folders', default.folders, @isstruct);
+  addParameter(p, 'is_derivative', default.is_derivative);
+  addParameter(p, 'is_datalad_ds', default.is_datalad_ds);
 
   parse(p, varargin{:});
 

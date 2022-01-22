@@ -24,7 +24,7 @@ end
 
 function test_no_folder_smoke_test()
 
-  bids.init('dummy_ds', struct(), true);
+  bids.init('dummy_ds', 'folders', struct(), 'is_derivative', true);
 
   clean_up();
 
@@ -36,7 +36,7 @@ function test_folders()
   folders.sessions = {'test', 'retest'};
   folders.modalities = {'anat', 'func'};
 
-  bids.init('dummy_ds', folders);
+  bids.init('dummy_ds', 'folders', folders);
   assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'ses-retest', 'func'), 'dir'), 7);
 
   clean_up();
@@ -45,23 +45,23 @@ end
 
 function test_derivatives()
 
-  is_derivative = true;
-
   folders.subjects = {'01', '02'};
   folders.sessions = {'test', 'retest'};
   folders.modalities = {'anat', 'func'};
 
   dataset_description = fullfile(pwd, 'dummy_ds', 'dataset_description.json');
 
-  bids.init('dummy_ds', folders, is_derivative);
+  bids.init('dummy_ds', 'folders', folders, 'is_derivative', true);
   assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'ses-retest', 'func'), 'dir'), 7);
 
   ds_metadata = bids.util.jsondecode(dataset_description);
   assertEqual(ds_metadata.DatasetType, 'derivative');
 
   % smoke test
-  is_datalad_ds = true;
-  bids.init('dummy_ds', folders, is_derivative, is_datalad_ds);
+  bids.init('dummy_ds',  ...
+            'folders', folders, ...
+            'is_derivative', true, ...
+            'is_datalad_ds', true);
 
   clean_up();
 
