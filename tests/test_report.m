@@ -14,7 +14,7 @@ function test_report_asl()
 
   BIDS = fullfile(cfg.pth_bids_example, datasets);
 
-  BIDS = bids.layout(BIDS, true);
+  BIDS = bids.layout(BIDS, 'use_schema', true);
 
   filter.modality = 'perf';
 
@@ -46,7 +46,7 @@ function test_report_basic()
   for i = 1:numel(datasets)
 
     BIDS = fullfile(cfg.pth_bids_example, datasets{i});
-    BIDS = bids.layout(BIDS, true);
+    BIDS = bids.layout(BIDS, 'use_schema', true);
 
     for j = 1:numel(modalities)
 
@@ -81,7 +81,7 @@ function test_report_pet()
 
   BIDS = fullfile(cfg.pth_bids_example, datasets);
 
-  BIDS = bids.layout(BIDS, true);
+  BIDS = bids.layout(BIDS, 'use_schema', true);
 
   filter.modality = 'pet';
 
@@ -112,7 +112,7 @@ function test_report_moae_data()
 
   BIDS = fullfile(bids.internal.root_dir(), 'examples', 'MoAEpilot');
 
-  BIDS = bids.layout(BIDS, true);
+  BIDS = bids.layout(BIDS, 'use_schema', true);
 
   report = bids.report(BIDS, ...
                        'output_path', cfg.output_path, ...
