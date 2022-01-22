@@ -152,7 +152,7 @@ function test_copy_to_derivative_dependencies()
                             'use_schema', false, ...
                             'verbose', verbose);
   copied_files = bids.query(derivatives, 'data');
-  assertEqual(size(copied_files, 1), 20);
+  assertEqual(size(copied_files, 1), 10);
 
   teardown(out_path);
   bids.util.mkdir(out_path);
@@ -174,7 +174,7 @@ function test_copy_to_derivative_dependencies()
                             'use_schema', false, ...
                             'verbose', verbose);
   copied_files = bids.query(derivatives, 'data');
-  assertEqual(size(copied_files, 1), 22);
+  assertEqual(size(copied_files, 1), 11);
 
   teardown(out_path);
 

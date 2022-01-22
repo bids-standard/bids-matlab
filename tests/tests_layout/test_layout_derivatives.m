@@ -64,30 +64,6 @@ function test_layout_prefix()
 
 end
 
-function test_layout_parse_json()
-
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_qsm'));
-
-  data = bids.query(BIDS, 'data', ...
-                    'sub', '01', ...
-                    'modality', 'anat');
-
-  assertEqual(size(data, 1), 2);
-
-  %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_qsm'), ...
-                     'use_schema', false);
-
-  data = bids.query(BIDS, 'data', ...
-                    'sub', '01', ...
-                    'modality', 'anat');
-
-  assertEqual(size(data, 1), 3);
-
-end
-
 function test_layout_schemaless()
 
   pth_bids_example = get_test_data_dir();
@@ -107,7 +83,7 @@ function test_layout_schemaless()
                     'res', '2');
 
   basename = bids.internal.file_utils(data, 'basename');
-  assertEqual(basename(2), {
+  assertEqual(basename, {
                             ['sub-10_task-balloonanalogrisktask_run-1', ...
                              '_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii']
                            });
