@@ -146,6 +146,15 @@
         "code",
         "ideas"
       ]
+    },
+    {
+      "login": "ChristophePhillips",
+      "name": "Christophe Phillips",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2011934?v=4",
+      "profile": "http://www.giga.uliege.be",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
