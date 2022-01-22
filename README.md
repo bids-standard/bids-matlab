@@ -1,11 +1,8 @@
 [![Build Status](https://travis-ci.com/bids-standard/bids-matlab.svg?branch=master)](https://travis-ci.com/bids-standard/bids-matlab)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb)
 [![View bids-matlab on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab)
-
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 # BIDS for MATLAB / Octave
@@ -201,6 +198,7 @@ Thanks goes to these wonderful people
     <td align="center"><a href="https://github.com/nbeliy"><img src="https://avatars.githubusercontent.com/u/44231332?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nikita Beliy</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/commits?author=nbeliy" title="Code">💻</a> <a href="#ideas-nbeliy" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/bids-standard/bids-matlab/pulls?q=is%3Apr+reviewed-by%3Anbeliy" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://profiles.stanford.edu/martin-noergaard"><img src="https://avatars.githubusercontent.com/u/12412821?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Martin Norgaard</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/issues?q=author%3Amnoergaard" title="Bug reports">🐛</a> <a href="#ideas-mnoergaard" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://cpernet.github.io/"><img src="https://avatars.githubusercontent.com/u/4772878?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cyril Pernet</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/commits?author=CPernet" title="Code">💻</a> <a href="#ideas-CPernet" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="http://www.giga.uliege.be"><img src="https://avatars.githubusercontent.com/u/2011934?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Christophe Phillips</b></sub></a><br /><a href="#ideas-ChristophePhillips" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
