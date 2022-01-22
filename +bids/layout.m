@@ -156,7 +156,8 @@ function BIDS = index_root_directory(BIDS)
                       'genetic_info', ... % because it messes the parse_filename
                       '(.bids-validator-config)' ...
                      };
-  pattern = ['^(?!', strjoin(files_to_exclude, '|'), ').*.(tsv|json)$'];
+
+  pattern = ['^(?!', strjoin(files_to_exclude, '|'), ').*.(tsv)$'];
 
   files_in_root = bids.internal.file_utils('FPList', BIDS.pth, pattern);
   BIDS.root = struct([]);
@@ -398,9 +399,8 @@ function file_list = return_file_list(modality, subject, schema)
   pattern = [pattern '([a-zA-Z0-9]+\.){1}'];
 
   % extension
-  if ~isempty(schema.content)
-    pattern = [pattern '(?!json)'];
-  end
+  % JSON files are not indexed
+  pattern = [pattern '(?!json)'];
   pattern = [pattern '([a-zA-Z0-9.]+){1}$'];
 
   pth = fullfile(subject.path, modality);
