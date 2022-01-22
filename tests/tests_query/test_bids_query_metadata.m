@@ -13,7 +13,7 @@ function test_bids_query_metadata_events()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
 
-  meta = bids.query(BIDS, 'metadata', 'sub', '01', 'run', '01', 'type', 'events');
+  meta = bids.query(BIDS, 'metadata', 'sub', '01', 'run', '01', 'suffix', 'events');
 
   assertEqual(fieldnames(meta), {'onset', ...
                                  'duration', ...
