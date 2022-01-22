@@ -18,6 +18,10 @@ function result = query(BIDS, query, varargin)
   %     - ``'modalities'``
   %     - ``'tasks'``
   %     - ``'runs'``
+  %     - ``'spaces'``
+  %     - ``'labels'``
+  %     - ``'descriptions'``
+  %     - ``'resolutions'``
   %     - ``'suffixes'``
   %     - ``'entities'``
   %     - ``'data'``
@@ -100,6 +104,10 @@ function result = query(BIDS, query, varargin)
                    'modalities', ...
                    'tasks', ...
                    'runs', ...
+                   'spaces', ...
+                   'labels', ...
+                   'descriptions', ...
+                   'resolutions', ...
                    'entities', ...
                    'suffixes', ...
                    'data', ...
@@ -110,7 +118,10 @@ function result = query(BIDS, query, varargin)
                    'prefixes'};
 
   if ~any(strcmp(query, VALID_QUERIES))
-    error('Invalid query input: ''%s''', query);
+    msg = sprintf('\nInvalid query input: ''%s''.\n\nValid queries are:\n- %s', ...
+                  query, ...
+                  strjoin(VALID_QUERIES, '\n- '));
+    bids.internal.error_handling(mfilename(), 'unknownQuery', msg, false, true);
   end
 
   BIDS = bids.layout(BIDS);
@@ -151,7 +162,9 @@ function result = query(BIDS, query, varargin)
         result = result';
       end
 
-    case {'tasks', 'entities', 'runs', 'suffixes', 'extensions', 'prefixes'}
+    case {'tasks', 'entities', 'runs', ...
+          'spaces', 'labels', 'descriptions', 'resolutions', ...
+          'suffixes', 'extensions', 'prefixes'}
       result = unique(result);
       result(cellfun('isempty', result)) = [];
   end
@@ -331,11 +344,9 @@ function result = update_result(query, options, result, this_subject, this_modal
           %   result{end+1} = d(k).meta;
           % end
 
-        case {'runs', 'tasks'}
-          field = query(1:end - 1);
-          if isfield(d(k).entities, field)
-            result{end + 1} = d(k).entities.(field);
-          end
+        case {'runs', 'tasks', 'spaces', 'labels', 'descriptions', 'resolutions'}
+
+          result = update_if_entity(query, result, d(k));
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -385,11 +396,9 @@ function result = update_result_with_root_content(query, options, result, BIDS)
         case 'data'
           result{end + 1} = fullfile(BIDS.pth, d(k).filename);
 
-        case {'runs', 'tasks'}
-          field = query(1:end - 1);
-          if isfield(d(k).entities, field)
-            result{end + 1} = d(k).entities.(field);
-          end
+        case {'runs', 'tasks', 'spaces', 'labels', 'descriptions', 'resolutions'}
+
+          result = update_if_entity(query, result, d(k));
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -402,6 +411,21 @@ function result = update_result_with_root_content(query, options, result, BIDS)
 
     end
   end
+end
+
+function result = update_if_entity(query, result, dk)
+
+  field = query(1:end - 1);
+  if strcmp(query, 'descriptions')
+    field = 'desc';
+  elseif strcmp(query, 'resolutions')
+    field = 'res';
+  end
+
+  if isfield(dk.entities, field)
+    result{end + 1} = dk.entities.(field);
+  end
+
 end
 
 % TODO  performace issue ???
