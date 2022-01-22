@@ -77,10 +77,10 @@ function test_read_write
 
   pth = fileparts(mfilename('fullpath'));
 
-  tsv_file = fullfile(pth, 'data', 'sub-01_recording-autosampler_blood.tsv');
+  tsv_file = fullfile(pth, '..', 'data', 'sub-01_recording-autosampler_blood.tsv');
   output = bids.util.tsvread(tsv_file);
 
-  new_tsv_file = fullfile(pth, 'data', 'sub-01_recording-autosampler_blood_new.tsv');
+  new_tsv_file = fullfile(pth, '..', 'data', 'sub-01_recording-autosampler_blood_new.tsv');
   bids.util.tsvwrite(new_tsv_file, output);
 
   % reread the new file and makes sure their content match
