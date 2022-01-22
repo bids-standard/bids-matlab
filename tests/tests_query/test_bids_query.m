@@ -286,7 +286,7 @@ function test_query_sessions_tsv()
   % https://github.com/bids-standard/bids-matlab/issues/112
   % leaving it here to track an eventual regression
   %
-  % could be moved in a different test once indexing of 
+  % could be moved in a different test once indexing of
   % 7t_trt with bids.layout does not take freaking eons
   modalities = {'fmap', 'func'};
   assertEqual(bids.query(BIDS, 'modalities', 'sub', '02', 'ses', '2'), modalities);
