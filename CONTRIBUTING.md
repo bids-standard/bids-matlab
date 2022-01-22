@@ -47,7 +47,6 @@ TODO: sections to add
   - setting up an octave jupyter notebook
 - binder
 - continuous integration
-  - travis
   - github actions
 -->
 
