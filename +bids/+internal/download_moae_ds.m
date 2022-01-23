@@ -19,6 +19,9 @@ function output_dir = download_moae_ds(download_data, output_dir)
 
     % clean previous runs
     if exist(fullfile(output_dir, 'MoAEpilot'), 'dir')
+      if bids.internal.is_octave()
+        confirm_recursive_rmdir(false, 'local');
+      end
       rmdir(fullfile(output_dir, 'MoAEpilot'), 's');
     end
 
