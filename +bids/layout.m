@@ -146,7 +146,7 @@ function BIDS = layout(varargin)
   BIDS = manage_dependencies(BIDS, verbose);
 
   BIDS = index_derivatives_dir(BIDS, index_derivatives, verbose);
-  
+
   if ismember('micr', bids.query(BIDS, 'modalities'))
     BIDS.samples = [];
     BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, 'samples.tsv', verbose);
