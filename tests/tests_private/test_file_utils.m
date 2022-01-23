@@ -92,6 +92,7 @@ function test_file_utils_basic()
                                           '^data$');
   assertEqual(fp_directory, ...
               fullfile(this_dir, 'data'));
+  set_test_cfg();            
   rmdir(dir_to_create, 's');
 
 end
