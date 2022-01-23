@@ -27,7 +27,7 @@ function test_report_asl()
   expected = get_expected_content(cfg, datasets, filter.modality);
 
   % TODO make it work on Octave
-  if is_octave()
+  if bids.internal.is_octave()
     return
   end
   assertEqual(content, expected);
@@ -62,7 +62,7 @@ function test_report_basic()
       expected = get_expected_content(cfg, datasets{i}, modalities{j});
 
       % TODO make it work on Octave
-      if is_octave()
+      if bids.internal.is_octave()
         return
       end
 
@@ -94,7 +94,7 @@ function test_report_pet()
   expected = get_expected_content(cfg, datasets, filter.modality);
 
   % TODO make it work on Octave
-  if is_octave()
+  if bids.internal.is_octave()
     return
   end
   assertEqual(content, expected);
@@ -123,7 +123,7 @@ function test_report_moae_data()
   expected = get_expected_content(cfg, 'MoAE', 'all');
 
   % TODO make it work on Octave
-  if is_octave()
+  if bids.internal.is_octave()
     return
   end
   assertEqual(content, expected);

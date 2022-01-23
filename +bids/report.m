@@ -588,7 +588,7 @@ function print_to_output(text, file_id, verbose)
   text = add_word_wrap(text);
 
   if file_id ~= 1
-    if is_octave()
+    if bids.internal.is_octave()
       bids.internal.error_handling(mfilename(), ...
                                    'notImplemented', ...
                                    'saving to file not implement for Ocatve', ...
@@ -657,15 +657,4 @@ function print_text(template_name, file_id, verbose, metadata)
     boilerplate_text = bids.internal.replace_placeholders(boilerplate_text, metadata);
   end
   print_to_output(boilerplate_text, file_id, verbose);
-end
-
-function status = is_octave()
-
-  persistent cacheval   % speeds up repeated calls
-
-  if isempty (cacheval)
-    cacheval = (exist ('OCTAVE_VERSION', 'builtin') > 0);
-  end
-
-  status = cacheval;
 end

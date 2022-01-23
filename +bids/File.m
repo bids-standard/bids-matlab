@@ -510,8 +510,6 @@ classdef File
 
     function bids_file_error(obj, id, msg)
 
-      module = 'bids:File';
-
       if nargin < 2
         msg = '';
       end
@@ -531,7 +529,7 @@ classdef File
 
       end
 
-      bids.internal.error_handling(module, id, msg, obj.tolerant, obj.verbose);
+      bids.internal.error_handling(mfilename(), id, msg, obj.tolerant, obj.verbose);
 
     end
 
