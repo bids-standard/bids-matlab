@@ -8,7 +8,7 @@ end
 
 function test_append_to_layout_schema_unknown_entity()
 
-  if ~is_octave()
+  if ~bids.internal.is_octave()
 
     [subject, modality, schema, previous] = set_up('meg');
 
@@ -24,7 +24,7 @@ end
 
 function test_append_to_layout_schema_unknown_extension()
 
-  if ~is_octave()
+  if ~bids.internal.is_octave()
 
     [subject, modality, schema, previous] = set_up('meg');
 
@@ -70,7 +70,7 @@ end
 
 function test_append_to_layout_schema_missing_required_entity()
 
-  if ~is_octave()
+  if ~bids.internal.is_octave()
     [subject, modality, schema, previous] = set_up('func');
 
     % func with missing task entity

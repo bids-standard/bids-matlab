@@ -53,7 +53,7 @@ end
 
 function test_query_regex_subjects_no_regex_by_default()
 
-  if is_octave()
+  if bids.internal.is_octave()
     return
     %
     %   failure: regexp: nothing to repeat at position 1 of expression

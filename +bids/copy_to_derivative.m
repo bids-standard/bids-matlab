@@ -323,7 +323,7 @@ function use_copyfile(src, target, unzip_files, verbose)
 
   if unzip_files && is_gunzipped(src)
     % Octave deletes the source file so we must copy and then unzip
-    if is_octave()
+    if bids.internal.is_octave()
       [status, message, messageId] = copyfile(src, target);
       gunzip(target);
     else
@@ -379,25 +379,4 @@ end
 
 function status = is_gunzipped(file)
   status = bids.internal.ends_with(file, '.gz');
-end
-
-function status = is_octave()
-  %
-  % Returns true if the environment is Octave.
-  %
-  % USAGE::
-  %
-  %   status = isOctave()
-  %
-  % :returns: :status: (boolean)
-  %
-  % (C) Copyright 2020 Agah Karakuzu
-
-  persistent cacheval   % speeds up repeated calls
-
-  if isempty (cacheval)
-    cacheval = (exist ('OCTAVE_VERSION', 'builtin') > 0);
-  end
-
-  status = cacheval;
 end
