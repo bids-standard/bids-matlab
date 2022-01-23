@@ -101,10 +101,6 @@ BIDS-y enough, the behavior may be predictable.
   iEEG, physio and events data,
 - deal with some of the incoming BIDS extensions (BIDS model...)
 
-We are trying to centralize the requests for new features in this
-[issue](https://github.com/bids-standard/bids-matlab/issues/60): have a browse
-to see what could be coming soon or if we have missed something obvious.
-
 ### What will this toolbox most likely never do
 
 - act as a Matlab / Octave based BIDS-validator
