@@ -77,8 +77,8 @@ end
 
 function clean_up()
 
-  pause(0.5)
+  pause(0.5);
 
   rmdir(fullfile(pwd, 'dummy_ds'), 's');
-  
+
 end

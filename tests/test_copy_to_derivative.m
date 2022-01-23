@@ -226,7 +226,7 @@ function [BIDS, out_path, filter, cfg] = fixture(dataset)
   out_path = fullfile(pwd, 'data', dataset, 'derivatives');
 
   if exist(out_path, 'dir')
-    teardown(out_path)
+    teardown(out_path);
   end
 
   bids.util.mkdir(out_path);
