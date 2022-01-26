@@ -24,11 +24,11 @@ function test_forbidden_entity()
   input.entities.rec = 'stuff';
 
   assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
-                        'bids:File:forbiddenEntity');
+                        'File:forbiddenEntity');
 
   input = 'sub-01_task-test_rec-stuff_eeg.bdf';
   assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
-                        'bids:File:forbiddenEntity');
+                        'File:forbiddenEntity');
 
 end
 
@@ -225,13 +225,13 @@ function test_error_schema_missing
 
   % THEN
   assertExceptionThrown(@()bf.get_required_entities(), ...
-                        'bids:File:schemaMissing');
+                        'File:schemaMissing');
 
   assertExceptionThrown(@()bf.get_modality_from_schema(), ...
-                        'bids:File:schemaMissing');
+                        'File:schemaMissing');
 
   assertExceptionThrown(@()bf.get_entity_order_from_schema(), ...
-                        'bids:File:schemaMissing');
+                        'File:schemaMissing');
 
 end
 
@@ -244,7 +244,7 @@ function test_error_required_entity()
                              'acq', '01');
   % THEN
   assertExceptionThrown(@()bids.File(filename, 'use_schema', true, 'tolerant', false), ...
-                        'bids:File:requiredEntity');
+                        'File:requiredEntity');
 
 end
 
@@ -256,7 +256,7 @@ function test_error_suffix_in_many_modalities()
                              'task', 'faces');
   % THEN
   assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
-                        'bids:File:manyModalityForsuffix');
+                        'File:manyModalityForsuffix');
 end
 
 function test_error_no_extension()
@@ -266,27 +266,27 @@ function test_error_no_extension()
                              'task', 'faces');
   % THEN
   assertExceptionThrown(@()bids.File(filename, 'use_schema', false,  'tolerant', false), ...
-                        'bids:File:emptyExtension');
+                        'File:emptyExtension');
   assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
-                        'bids:File:emptyExtension');
+                        'File:emptyExtension');
 end
 
 function test_name_validation()
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
   assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
-                        'bids:File:prefixDefined');
+                        'File:prefixDefined');
 
   filename = 'bold.nii';
   assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
-                        'bids:File:noEntity');
+                        'File:noEntity');
 
   filename = 'sub-01_task-faceRecognition_ses-test_run-02_bold';
   assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
-                        'bids:File:emptyExtension');
+                        'File:emptyExtension');
 
   filename = 'sub-01_task-faceRecognition_ses-test_run-02.nii';
   assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
-                        'bids:File:emptySuffix');
+                        'File:emptySuffix');
 end
 
 function test_error_no_suffix()
@@ -295,9 +295,9 @@ function test_error_no_suffix()
                              'task', 'faces');
   % THEN
   assertExceptionThrown(@()bids.File(filename, 'use_schema', false,  'tolerant', false), ...
-                        'bids:File:emptySuffix');
+                        'File:emptySuffix');
   assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
-                        'bids:File:emptySuffix');
+                        'File:emptySuffix');
 end
 
 function test_validation()
@@ -305,26 +305,26 @@ function test_validation()
   bf = bids.File('sub-01_T1w.nii', 'tolerant', false);
 
   assertExceptionThrown(@() bf.validate_string([2 3], 'String', '.*'), ...
-                        'bids:File:InvalidString');
+                        'File:InvalidString');
   assertExceptionThrown(@() bf.validate_string(['.nii'; '.abc'], 'String', '.*'), ...
-                        'bids:File:InvalidString');
+                        'File:InvalidString');
   assertExceptionThrown(@() bf.validate_string('abc', 'String', 'abcde'), ...
-                        'bids:File:InvalidString');
+                        'File:InvalidString');
 
   assertExceptionThrown(@() bf.validate_extension('nii'), ...
-                        'bids:File:InvalidExtension');
+                        'File:InvalidExtension');
   assertExceptionThrown(@() bf.validate_extension('.nii-'), ...
-                        'bids:File:InvalidExtension');
+                        'File:InvalidExtension');
   assertExceptionThrown(@() bf.validate_extension('.nii_'), ...
-                        'bids:File:InvalidExtension');
+                        'File:InvalidExtension');
 
   assertExceptionThrown(@() bf.validate_prefix('abc/def'), ...
-                        'bids:File:InvalidPrefix');
+                        'File:InvalidPrefix');
   assertExceptionThrown(@() bf.validate_prefix('abcsub-def'), ...
-                        'bids:File:InvalidPrefix');
+                        'File:InvalidPrefix');
 
   assertExceptionThrown(@() bf.validate_word('abc/def', 'Word'), ...
-                        'bids:File:InvalidWord');
+                        'File:InvalidWord');
   assertExceptionThrown(@() bf.validate_word('abc-def', 'Word'), ...
-                        'bids:File:InvalidWord');
+                        'File:InvalidWord');
 end

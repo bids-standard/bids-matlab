@@ -8,7 +8,7 @@ end
 
 function test_parse_filename_warnings()
 
-  if is_octave()
+  if bids.internal.is_octave()
     return
   end
 
