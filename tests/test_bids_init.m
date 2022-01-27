@@ -9,6 +9,8 @@ end
 
 function test_basic()
 
+  set_test_cfg();
+
   dataset_description = fullfile(pwd, 'dummy_ds', 'dataset_description.json');
 
   bids.init('dummy_ds');
@@ -24,6 +26,8 @@ end
 
 function test_no_folder_smoke_test()
 
+  set_test_cfg();
+
   bids.init('dummy_ds', 'folders', struct(), 'is_derivative', true);
 
   clean_up();
@@ -31,6 +35,8 @@ function test_no_folder_smoke_test()
 end
 
 function test_folders()
+
+  set_test_cfg();
 
   folders.subjects = {'01', '02'};
   folders.sessions = {'test', 'retest'};
@@ -44,6 +50,8 @@ function test_folders()
 end
 
 function test_derivatives()
+
+  set_test_cfg();
 
   folders.subjects = {'01', '02'};
   folders.sessions = {'test', 'retest'};
@@ -69,11 +77,8 @@ end
 
 function clean_up()
 
-  pause(1);
+  pause(0.5);
 
-  if is_octave()
-    confirm_recursive_rmdir (true, 'local');
-  end
   rmdir(fullfile(pwd, 'dummy_ds'), 's');
 
 end

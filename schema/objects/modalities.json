@@ -22,5 +22,9 @@
   "pet": {
     "name": "Positron Emission Tomography",
     "description": "Data acquired with PET.\n"
+  },
+  "micr": {
+    "name": "Microscopy",
+    "description": "Data acquired with a microscope.\n"
   }
 }
