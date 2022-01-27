@@ -6,387 +6,325 @@ function test_suite = test_bids_file %#ok<*STOUT>
   initTestSuite;
 end
 
-%% create filenames
+%  TODO
+% function test_forbidden_order()
+%
+%   input = 'sub-01_task-nback_ses-02_eeg.bdf';
+%   assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
+%                         'bids:File:wrongEntityOrder');
+%
+% end
 
-function test_create_filename_derivatives_2()
+function test_forbidden_entity()
 
-  % GIVEN
-  filename = 'sub-01_ses-test_T1w.nii';
-  use_schema = false;
-  name_spec.modality = 'roi';
-  name_spec.suffix = 'mask';
-  name_spec.entities = struct('desc', 'preproc');
-  % WHEN
-  file = bids.File(filename, use_schema, name_spec);
-  % THEN
-  assertEqual(file.filename, 'sub-01_ses-test_desc-preproc_mask.nii');
-  assertEqual(file.relative_pth, fullfile('sub-01', 'ses-test', 'roi'));
+  input.suffix = 'eeg';
+  input.ext = '.bdf';
+  input.entities.sub = '01';
+  input.entities.task = 'test';
+  input.entities.rec = 'stuff';
+
+  assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
+                        'File:forbiddenEntity');
+
+  input = 'sub-01_task-test_rec-stuff_eeg.bdf';
+  assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
+                        'File:forbiddenEntity');
 
 end
 
-function test_create_filename_derivatives()
+function test_parsing()
+
+  filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+
+  entities = struct('sub', '01', 'ses', 'test', ...
+                    'task', 'faceRecognition', 'run', '02');
+
+  assertEqual(file.prefix, 'wua');
+  assertEqual(file.suffix, 'bold');
+  assertEqual(file.extension, '.nii');
+  assertEqual(file.entities, entities);
+  assertEqual(file.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+  assertEqual(file.bids_path, fullfile('sub-01', 'ses-test'));
+
+  filename = [];
+  filename.prefix = 'wua';
+  filename.suffix = 'bold';
+  filename.ext = '.nii';
+  filename.entities = entities;
+  file = bids.File(filename, 'use_schema', false);
+  assertEqual(file.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
+
+  % testing empty file name
+  file = bids.File('');
+  file.suffix = 'bold';
+  file.extension = '.nii';
+  assertEqual(file.filename, 'bold.nii');
+
+  file = file.set_entity('sub', 'abc');
+  file.suffix = '';
+  assertEqual(file.filename, 'sub-abc.nii');
+
+end
+
+function test_change()
+
+  filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+
+  % Implicit update
+  file.prefix = '';
+  file.suffix = 'test';
+  assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_run-02_test.nii');
+
+  % Explicit update
+  file.extension = '.a';
+  file = file.update();
+  assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_run-02_test.a');
+
+  % Setting entities
+  file.entities = struct('sub', '02', 'task', 'doNothing', 'acq', 'abc');
+  assertEqual(file.bids_path, 'sub-02');
+  assertEqual(file.filename, 'sub-02_task-doNothing_acq-abc_test.a');
+
+  file = file.set_entity('task', 'faceRecognition');
+  file = file.set_entity('run', '01');
+  assertEqual(file.filename, 'sub-02_task-faceRecognition_acq-abc_run-01_test.a');
+
+end
+
+function test_bids_file_remove_entities()
+
+  % GIVEN
+  filename = 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+  % WHEN
+  file.entities.run = '';
+  % THEN
+  assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_bold.nii');
+
+end
+
+function test_reorder()
+
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+  file = file.reorder_entities({'sub', 'ses'});
+
+  assertEqual(file.entity_order, {'sub'; 'ses'; 'task'; 'run'});
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+  file = file.use_schema();
+  file = file.reorder_entities();
+
+  assertEqual(file.entity_order, {'sub'
+                                  'ses'; ...
+                                  'task'; ...
+                                  'acq'; ...
+                                  'ce'; ...
+                                  'rec'; ...
+                                  'dir'; ...
+                                  'run'; ...
+                                  'echo'; ...
+                                  'part'});
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+
+end
+
+function test_bids_file_derivatives_2()
+
+  % GIVEN
+  filename = 'sub-01_ses-test_T1w.nii';
+  file = bids.File(filename, 'use_schema', false);
+  % WHEN
+  file.modality = 'roi';
+  file.suffix = 'mask';
+  file.entities.label = 'brain';
+  % THEN
+  assertEqual(file.filename, 'sub-01_ses-test_label-brain_mask.nii');
+  assertEqual(file.bids_path, fullfile('sub-01', 'ses-test', 'roi'));
+
+end
+
+function test_bids_file_derivatives()
 
   % GIVEN
   filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
-  use_schema = false;
-  name_spec.prefix = '';
-  name_spec.entities = struct('desc', 'preproc');
+  file = bids.File(filename, 'use_schema', false);
   % WHEN
-  file = bids.File(filename, use_schema, name_spec);
+  file.prefix = '';
+  file.entities.desc = 'preproc';
   % THEN
   assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii');
 
 end
 
-function test_create_filename_order()
+%% SCHEMA
+
+function test_bids_file_parsing_filename_schema_based()
 
   % GIVEN
-  name_spec.suffix = 'bold';
-  name_spec.ext = '.nii';
-  name_spec.entities = struct( ...
-                              'sub', '01', ...
-                              'ses', 'test', ...
-                              'task', 'face recognition', ...
-                              'run', '02');
-  file = bids.File(name_spec);
-  file = file.reorder_entities({'sub', 'run'});
+  filename = 'sub-01_task-foo_run-1_bold.nii.gz';
+  use_schema = true;
+
   % WHEN
-  [~, filename] = file.create_filename();
+  file = bids.File(filename, 'use_schema', use_schema);
+
   % THEN
-  assertEqual(filename, 'sub-01_run-02_ses-test_task-faceRecognition_bold.nii');
+  assert(~isempty(file.schema));
+  assertEqual(file.modality, 'func');
+  assertEqual(file.entity_required, {'sub', 'task'});
+  assertEqual(file.entity_order, ...
+              {'sub'
+               'ses'
+               'task'
+               'acq'
+               'ce'
+               'rec'
+               'dir'
+               'run'
+               'echo'
+               'part'});
+
+  assertEqual(file.prefix, '');
+  assertEqual(file.suffix, 'bold');
+  assertEqual(file.extension, '.nii.gz');
+  assertEqual(file.entities, struct('sub', '01', 'task', 'foo', 'run', '1'));
+  assertEqual(file.filename, 'sub-01_task-foo_run-1_bold.nii.gz');
+  assertEqual(file.json_filename, 'sub-01_task-foo_run-1_bold.json');
+  assertEqual(file.bids_path, fullfile('sub-01', 'func'));
 
 end
 
-function test_create_filename_schema_based()
+function test_bids_file_parsing_structure_schema_based()
+  % entities given in any order, should be reordered according to schema
 
   % GIVEN
-  name_spec.suffix = 'bold';
-  name_spec.ext = '.nii';
-  name_spec.entities = struct( ...
-                              'sub', '01', ...
-                              'run', '02', ...
-                              'task', 'face recognition');
-  use_schema = true;
+  filename.suffix = 'bold';
+  filename.ext = '.nii';
+  filename.entities = struct('sub', '01', ...
+                             'run', '02', ...
+                             'task', 'faceRecognition');
+
   % WHEN
-  file = bids.File(name_spec, use_schema);
+  file = bids.File(filename, 'use_schema', true);
+
   % THEN
   assertEqual(file.filename, 'sub-01_task-faceRecognition_run-02_bold.nii');
 
 end
 
-function test_create_filename_prefix_suffix_ext()
+%% ERRORS
 
-  % GIVEN
-  filename = 'sub-02_task-newTask_run-02_bold.nii';
-  file = bids.File(filename);
-  name_spec = struct('suffix', 'eeg');
-  % WHEN
-  [~, filename] = file.create_filename(name_spec);
-  % THEN
-  assertEqual(filename, 'sub-02_task-newTask_run-02_eeg.nii');
+function test_error_schema_missing
 
-end
-
-function test_create_filename_change_extension()
-
-  % GIVEN
-  filename = 'sub-02_task-newTask_run-02_eeg.nii';
-  file = bids.File(filename);
-  name_spec = struct('ext', '.json');
-  % WHEN
-  [~, filename] = file.create_filename(name_spec);
-  % THEN
-  assertEqual(filename, 'sub-02_task-newTask_run-02_eeg.json');
-
-end
-
-function test_create_filename_basic()
-
-  % GIVEN
-  use_schema = true;
-
-  name_spec.suffix = 'bold';
-  name_spec.ext = '.nii';
-  name_spec.entities = struct( ...
-                              'sub', '01', ...
-                              'ses', 'test', ...
-                              'task', 'face recognition', ...
-                              'run', '02');
-  % WHEN
-  file = bids.File(name_spec, use_schema);
+  bf = bids.File('sub-01_T1w.nii', 'tolerant', false, 'use_schema', false);
 
   % THEN
-  assertEqual(file.filename, 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii');
-  assertEqual(file.relative_pth, fullfile('sub-01', 'ses-test', 'func'));
+  assertExceptionThrown(@()bf.get_required_entities(), ...
+                        'File:schemaMissing');
 
-  %% Modify existing filename
-  new_spec.entities = struct( ...
-                             'sub', '02', ...
-                             'task', 'new task');
+  assertExceptionThrown(@()bf.get_modality_from_schema(), ...
+                        'File:schemaMissing');
 
-  file = file.create_filename(new_spec);
-
-  assertEqual(file.filename, 'sub-02_ses-test_task-newTask_run-02_bold.nii');
-
-  %% Remove entity from filename
-  new_spec.entities = struct('ses', '');
-
-  file = file.create_filename(new_spec);
-
-  assertEqual(file.filename, 'sub-02_task-newTask_run-02_bold.nii');
+  assertExceptionThrown(@()bf.get_entity_order_from_schema(), ...
+                        'File:schemaMissing');
 
 end
-
-%% smoke tests
-
-function test_bids_file_basic()
-  file = bids.File();
-  file = file.reorder_entities();
-  file = file.get_required_entity_from_schema();
-  file = file.create_filename();
-end
-
-function test_bids_file_basic_schema()
-  use_schema = true;
-  file = bids.File('', use_schema);
-  file = file.reorder_entities();
-  file = file.get_required_entity_from_schema();
-  file = file.create_filename();
-end
-
-%% methods
-
-function test_bids_file_set_name_spec()
-  % GIVEN
-  file = bids.File();
-  name_spec = struct('ext', '.nii', ...
-                     'suffix', 'T1w', ...
-                     'entities', struct('sub', '01', ...
-                                        'ses', '02'));
-  % WHEN
-  file = file.set_name_spec(name_spec);
-  % THEN
-  assertEqual(file.suffix, 'T1w');
-  assertEqual(file.ext, '.nii');
-  assertEqual(file.entities.sub, '01');
-  assertEqual(file.entities.ses, '02');
-end
-
-function test_bids_file_reset_name_spec()
-  % GIVEN
-  file = set_up();
-  name_spec.entities.sub = '02';
-  % WHEN
-  file = file.set_name_spec(name_spec);
-  % THEN
-  assertEqual(file.suffix, 'T1w');
-  assertEqual(file.ext, '.nii');
-  assertEqual(file.entities.sub, '02');
-  assertEqual(file.entities.ses, '02');
-end
-
-function test_bids_file_input_as_filename()
-  % GIVEN
-  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  % WHEN
-  file = bids.File(input_file);
-  % THEN
-  assertEqual(file.pth, pwd);
-  assertEqual(file.suffix, 'T1w');
-  assertEqual(file.ext, '.nii');
-  assertEqual(file.entities.sub, '01');
-  assertEqual(file.entities.ses, '02');
-  assertEqual(file.relative_pth, 'sub-01/ses-02');
-end
-
-function test_bids_file_input_as_filename_with_schema()
-  % GIVEN
-  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  use_schema = true;
-  % WHEN
-  file = bids.File(input_file, use_schema);
-  % THEN
-  assertEqual(file.pth, pwd);
-  assertEqual(file.suffix, 'T1w');
-  assertEqual(file.ext, '.nii');
-  assertEqual(file.entities.sub, '01');
-  assertEqual(file.entities.ses, '02');
-  assertEqual(file.relative_pth, 'sub-01/ses-02/anat');
-  assertEqual(file.entity_order, {'sub'
-                                  'ses'});
-  assertEqual(file.required_entities, {'sub'});
-  assertEqual(file.modality, 'anat');
-end
-
-function test_bids_file_basic_input_as_structure()
-  % GIVEN
-  input_file = struct('ext', '.nii', ...
-                      'suffix', 'T1w', ...
-                      'entities', struct('sub', '01', ...
-                                         'ses', '02'));
-  % WHEN
-  file = bids.File(input_file);
-  % THEN
-  assertEqual(file.suffix, 'T1w');
-  assertEqual(file.ext, '.nii');
-  assertEqual(file.entities.sub, '01');
-  assertEqual(file.entities.ses, '02');
-  assertEqual(file.relative_pth, 'sub-01/ses-02');
-end
-
-function test_bids_file_reorder_entities_order_specified()
-  % GIVEN
-  input_file = fullfile(pwd, 'sub-01_ses-02_run-03_T1w.nii');
-  file = bids.File(input_file);
-  file.entity_order = {'ses', 'sub'};
-  % WHEN
-  file = file.reorder_entities();
-  % THEN
-  assertEqual(file.entity_order, {'ses'
-                                  'sub'
-                                  'run'});
-  assertEqual(file.entities, struct('ses', '02', ...
-                                    'sub', '01', ...
-                                    'run', '03'));
-end
-
-function test_bids_file_reorder_entities_schema_based()
-  % GIVEN
-  input_file = fullfile(pwd, 'sub-01_run-03_ses-02_T1w.nii');
-  use_schema = true;
-  file = bids.File(input_file, use_schema);
-  % WHEN
-  file = file.reorder_entities();
-  % THEN
-  assertEqual(file.entity_order, {'sub'
-                                  'ses'
-                                  'run'
-                                  'acq'
-                                  'ce'
-                                  'rec'
-                                  'part'});
-  assertEqual(file.entities, struct('sub', '01', ...
-                                    'ses', '02', ...
-                                    'run', '03'));
-end
-
-function test_bids_file_reorder_entities_user_specified()
-  % GIVEN
-  file = set_up_with_schema();
-  % WHEN
-  file = file.reorder_entities({'run', 'ses', 'sub'});
-  % THEN
-  assertEqual(file.entity_order, {'run'; 'ses'; 'sub'});
-  assertEqual(file.entities, struct('ses', '02', ...
-                                    'sub', '01'));
-end
-
-function test_bids_file_create_filename()
-  % GIVEN
-  file = set_up();
-  name_spec.entities.sub = '02';
-  file = file.set_name_spec(name_spec);
-  % WHEN
-  file = file.create_filename();
-  % THEN
-  assertEqual(file.filename, 'sub-02_ses-02_T1w.nii');
-end
-
-function test_bids_file_get_entity_order()
-  % GIVEN
-  file = set_up_with_schema();
-  % WHEN
-  file = file.get_entity_order_from_schema();
-  % THEN
-  assertEqual(file.entity_order, {'sub'
-                                  'ses'
-                                  'run'
-                                  'acq'
-                                  'ce'
-                                  'rec'
-                                  'part'});
-end
-
-function test_bids_file_get_required_entity()
-  % GIVEN
-  file = set_up_with_schema();
-  % WHEN
-  file = file.get_required_entity_from_schema();
-  % THEN
-  assertEqual(file.required_entities, {'sub'});
-end
-
-function test_bids_file_get_modality_from_schema()
-  % GIVEN
-  file = set_up_with_schema();
-  % WHEN
-  file = file.get_modality_from_schema();
-  % THEN
-  assertEqual(file.modality, 'anat');
-end
-
-% Errors
 
 function test_error_required_entity()
   % GIVEN
-  name_spec.suffix = 'bold';
-  name_spec.ext = '.nii';
-  name_spec.entities = struct( ...
-                              'run', '02', ...
-                              'acq', '01');
-  use_schema = true;
-  tolerant = false;
+  filename.suffix = 'bold';
+  filename.ext = '.nii';
+  filename.entities = struct( ...
+                             'run', '02', ...
+                             'acq', '01');
   % THEN
-  assertExceptionThrown(@()bids.File(name_spec, use_schema, struct(), tolerant), ...
+  assertExceptionThrown(@()bids.File(filename, 'use_schema', true, 'tolerant', false), ...
                         'File:requiredEntity');
 
 end
 
 function test_error_suffix_in_many_modalities()
   % GIVEN
-  name_spec.suffix = 'events';
-  name_spec.ext = '.tsv';
-  name_spec.entities = struct('sub', '01', ...
-                              'task', 'faces');
-  use_schema = true;
-  tolerant = false;
+  filename.suffix = 'events';
+  filename.ext = '.tsv';
+  filename.entities = struct('sub', '01', ...
+                             'task', 'faces');
   % THEN
-  assertExceptionThrown(@()bids.File(name_spec, use_schema,  struct(), tolerant), ...
+  assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
                         'File:manyModalityForsuffix');
-end
-
-function test_error_no_suffix()
-  % GIVEN
-  name_spec.entities = struct('sub', '01', ...
-                              'task', 'faces');
-  use_schema = false;
-  tolerant = false;
-  % THEN
-  assertExceptionThrown(@()bids.File(name_spec, use_schema,  struct(), tolerant), ...
-                        'File:emptySuffix');
 end
 
 function test_error_no_extension()
   % GIVEN
-  name_spec.suffix = 'bold';
-  name_spec.entities = struct('sub', '01', ...
-                              'task', 'faces');
-  use_schema = false;
-  tolerant = false;
+  filename.suffix = 'bold';
+  filename.entities = struct('sub', '01', ...
+                             'task', 'faces');
   % THEN
-  assertExceptionThrown(@()bids.File(name_spec, use_schema,  struct(), tolerant), ...
+  assertExceptionThrown(@()bids.File(filename, 'use_schema', false,  'tolerant', false), ...
+                        'File:emptyExtension');
+  assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
                         'File:emptyExtension');
 end
 
-% Fixtures
+function test_name_validation()
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
+                        'File:prefixDefined');
 
-function file = set_up()
-  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  file = bids.File(input_file);
+  filename = 'bold.nii';
+  assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
+                        'File:noEntity');
+
+  filename = 'sub-01_task-faceRecognition_ses-test_run-02_bold';
+  assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
+                        'File:emptyExtension');
+
+  filename = 'sub-01_task-faceRecognition_ses-test_run-02.nii';
+  assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
+                        'File:emptySuffix');
 end
 
-function file = set_up_with_schema()
-  input_file = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  use_schema = true;
-  file = bids.File(input_file, use_schema);
+function test_error_no_suffix()
+  % GIVEN
+  filename.entities = struct('sub', '01', ...
+                             'task', 'faces');
+  % THEN
+  assertExceptionThrown(@()bids.File(filename, 'use_schema', false,  'tolerant', false), ...
+                        'File:emptySuffix');
+  assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
+                        'File:emptySuffix');
+end
+
+function test_validation()
+
+  bf = bids.File('sub-01_T1w.nii', 'tolerant', false);
+
+  assertExceptionThrown(@() bf.validate_string([2 3], 'String', '.*'), ...
+                        'File:InvalidString');
+  assertExceptionThrown(@() bf.validate_string(['.nii'; '.abc'], 'String', '.*'), ...
+                        'File:InvalidString');
+  assertExceptionThrown(@() bf.validate_string('abc', 'String', 'abcde'), ...
+                        'File:InvalidString');
+
+  assertExceptionThrown(@() bf.validate_extension('nii'), ...
+                        'File:InvalidExtension');
+  assertExceptionThrown(@() bf.validate_extension('.nii-'), ...
+                        'File:InvalidExtension');
+  assertExceptionThrown(@() bf.validate_extension('.nii_'), ...
+                        'File:InvalidExtension');
+
+  assertExceptionThrown(@() bf.validate_prefix('abc/def'), ...
+                        'File:InvalidPrefix');
+  assertExceptionThrown(@() bf.validate_prefix('abcsub-def'), ...
+                        'File:InvalidPrefix');
+
+  assertExceptionThrown(@() bf.validate_word('abc/def', 'Word'), ...
+                        'File:InvalidWord');
+  assertExceptionThrown(@() bf.validate_word('abc-def', 'Word'), ...
+                        'File:InvalidWord');
 end

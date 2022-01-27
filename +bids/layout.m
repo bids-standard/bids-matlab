@@ -1,31 +1,35 @@
-function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
+function BIDS = layout(varargin)
   %
   % Parse a directory structure formated according to the BIDS standard
   %
   % USAGE::
   %
-  %   BIDS = bids.layout(root = pwd, ...
-  %                      use_schema = false, ...
-  %                      index_derivatives = false, ...
-  %                      tolerant = true, ...
-  %                      verbose = false)
+  %   BIDS = bids.layout(pwd, ...
+  %                      'use_schema', true, ...
+  %                      'index_derivatives', false, ...
+  %                      'tolerant', true, ...
+  %                      'verbose', false)
   %
-  % :param root:       directory of the dataset formated according to BIDS [default: ``pwd``]
+  % :param root:       directory of the dataset formated according to BIDS
+  %                    [default: ``pwd``]
   % :type  root:       string
-  % :param use_schema: If set to ``true`` (default), the parsing of the dataset
+  %
+  % :param use_schema: If set to ``true``, the parsing of the dataset
   %                    will follow the bids-schema provided with bids-matlab.
   %                    If set to ``false`` files just have to be of the form
   %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
   %                    If a folder path is provided, then the schema contained
   %                    in that folder will be used for parsing.
   % :type  use_schema: boolean
+  %
   % :param index_derivatives: if ``true`` this will index the content of the
   %                           any ``derivatives`` folder in the BIDS dataset.
   % :type  index_derivatives: boolean
+  %
   % :param tolerant: Set to ``true`` to turn validation errors into warnings
-  %                  [default: ``true``]
   % :type  tolerant: boolean
-  % :param verbose: Set to ``true`` to get more feedback [default: ``false``]
+  %
+  % :param verbose: Set to ``true`` to get more feedback
   % :type  verbose: boolean
   %
   %
@@ -35,43 +39,41 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
 
   %% Validate input arguments
   % ==========================================================================
-  if ~nargin
-    root = pwd;
 
-  elseif nargin > 0
+  default_root = pwd;
+  default_index_derivatives = false;
+  default_tolerant = true;
+  default_use_schema = true;
+  default_verbose = false;
 
-    if ischar(root)
-      root = bids.internal.file_utils(root, 'CPath');
+  isDirOrStruct = @(x) (isstruct(x) || isdir(x));
 
-    elseif isstruct(root)
-      BIDS = root; % for bids.query
-      return
+  args = inputParser();
 
-    else
-      error('Invalid syntax.');
+  addOptional(args, 'root', default_root, isDirOrStruct);
+  addParameter(args, 'index_derivatives', default_index_derivatives);
+  addParameter(args, 'tolerant', default_tolerant);
+  addParameter(args, 'use_schema', default_use_schema);
+  addParameter(args, 'verbose', default_verbose);
 
-    end
+  parse(args, varargin{:});
 
-  end
+  root = args.Results.root;
+  index_derivatives = args.Results.index_derivatives;
+  tolerant = args.Results.tolerant;
+  use_schema = args.Results.use_schema;
+  verbose = args.Results.verbose;
 
-  if ~exist('tolerant', 'var')
-    tolerant = true;
-  end
+  if ischar(root)
+    root = bids.internal.file_utils(root, 'CPath');
 
-  if ~exist('verbose', 'var')
-    verbose = false;
-  end
+  elseif isstruct(root)
+    BIDS = root; % for bids.query
+    return
 
-  if ~exist('use_schema', 'var')
-    use_schema = true;
-  end
+  else
+    error('Invalid syntax.');
 
-  if ~exist('index_derivatives', 'var')
-    index_derivatives = false;
-  end
-
-  if ~exist(root, 'dir')
-    error('BIDS directory does not exist: ''%s''', root);
   end
 
   %% BIDS structure
@@ -109,7 +111,10 @@ function BIDS = layout(root, use_schema, index_derivatives, tolerant, verbose)
   % ==========================================================================
   subjects = cellstr(bids.internal.file_utils('List', BIDS.pth, 'dir', '^sub-.*$'));
   if isequal(subjects, {''})
-    error('No subjects found in BIDS directory.');
+    msg = sprintf('No subjects found in BIDS directory: ''%s''', ...
+                  BIDS.pth);
+    bids.internal.error_handling(mfilename, 'noSubject', msg, tolerant, verbose);
+    return
   end
 
   schema = bids.Schema(use_schema);
@@ -151,7 +156,8 @@ function BIDS = index_root_directory(BIDS)
                       'genetic_info', ... % because it messes the parse_filename
                       '(.bids-validator-config)' ...
                      };
-  pattern = ['^(?!', strjoin(files_to_exclude, '|'), ').*.(tsv|json)$'];
+
+  pattern = ['^(?!', strjoin(files_to_exclude, '|'), ').*.(tsv)$'];
 
   files_in_root = bids.internal.file_utils('FPList', BIDS.pth, pattern);
   BIDS.root = struct([]);
@@ -170,23 +176,23 @@ function BIDS = index_root_directory(BIDS)
 
 end
 
-function BIDS = index_derivatives_dir(BIDS, index_derivatives, verbose)
-  if index_derivatives && exist(fullfile(BIDS.pth, 'derivatives'), 'dir')
+function BIDS = index_derivatives_dir(BIDS, idx_deriv, verbose)
+  if idx_deriv && exist(fullfile(BIDS.pth, 'derivatives'), 'dir')
 
-    deriv_folders = cellstr(bids.internal.file_utils('List', ...
-                                                     fullfile(BIDS.pth, 'derivatives'), ...
-                                                     'dir', ...
-                                                     '.*'));
+    der_folders = cellstr(bids.internal.file_utils('List', ...
+                                                   fullfile(BIDS.pth, 'derivatives'), ...
+                                                   'dir', ...
+                                                   '.*'));
 
-    for iDir = 1:numel(deriv_folders)
-      BIDS.derivatives.(deriv_folders{iDir}) = bids.layout( ...
-                                                           fullfile(BIDS.pth, ...
-                                                                    'derivatives', ...
-                                                                    deriv_folders{iDir}), ...
-                                                           false, ...
-                                                           index_derivatives, ...
-                                                           true, ...
-                                                           verbose);
+    for iDir = 1:numel(der_folders)
+      BIDS.derivatives.(der_folders{iDir}) = bids.layout( ...
+                                                         fullfile(BIDS.pth, ...
+                                                                  'derivatives', ...
+                                                                  der_folders{iDir}), ...
+                                                         'use_schema', false, ...
+                                                         'index_derivatives', idx_deriv, ...
+                                                         'tolerant', true, ...
+                                                         'verbose', verbose);
     end
 
   end
@@ -228,7 +234,7 @@ function subject = parse_subject(pth, subjname, sesname, schema, verbose)
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
-        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf'}
+        case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf', 'micr'}
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
         otherwise
           % in case we are going schemaless
@@ -393,9 +399,8 @@ function file_list = return_file_list(modality, subject, schema)
   pattern = [pattern '([a-zA-Z0-9]+\.){1}'];
 
   % extension
-  if ~isempty(schema.content)
-    pattern = [pattern '(?!json)'];
-  end
+  % JSON files are not indexed
+  pattern = [pattern '(?!json)'];
   pattern = [pattern '([a-zA-Z0-9.]+){1}$'];
 
   pth = fullfile(subject.path, modality);

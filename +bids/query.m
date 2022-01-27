@@ -18,6 +18,10 @@ function result = query(BIDS, query, varargin)
   %     - ``'modalities'``
   %     - ``'tasks'``
   %     - ``'runs'``
+  %     - ``'spaces'``
+  %     - ``'labels'``
+  %     - ``'descriptions'``
+  %     - ``'resolutions'``
   %     - ``'suffixes'``
   %     - ``'entities'``
   %     - ``'data'``
@@ -42,6 +46,16 @@ function result = query(BIDS, query, varargin)
   %     - ``'echo'``
   %
   % It is also possible to use regular expressions in the value.
+  %
+  %  Regex example::
+  %
+  %     % The following 2 will return the same thing
+  %     data = bids.query(BIDS, 'data', 'sub', '01')
+  %     data = bids.query(BIDS, 'data', 'sub', '^01$')
+  %
+  %     % But the following would return all the data for all subjects
+  %     % whose label ends in '01'
+  %     data = bids.query(BIDS, 'data', 'sub', '.*01')
   %
   % ---
   %
@@ -90,6 +104,10 @@ function result = query(BIDS, query, varargin)
                    'modalities', ...
                    'tasks', ...
                    'runs', ...
+                   'spaces', ...
+                   'labels', ...
+                   'descriptions', ...
+                   'resolutions', ...
                    'entities', ...
                    'suffixes', ...
                    'data', ...
@@ -100,7 +118,10 @@ function result = query(BIDS, query, varargin)
                    'prefixes'};
 
   if ~any(strcmp(query, VALID_QUERIES))
-    error('Invalid query input: ''%s''', query);
+    msg = sprintf('\nInvalid query input: ''%s''.\n\nValid queries are:\n- %s', ...
+                  query, ...
+                  strjoin(VALID_QUERIES, '\n- '));
+    bids.internal.error_handling(mfilename(), 'unknownQuery', msg, false, true);
   end
 
   BIDS = bids.layout(BIDS);
@@ -141,7 +162,9 @@ function result = query(BIDS, query, varargin)
         result = result';
       end
 
-    case {'tasks', 'entities', 'runs', 'suffixes', 'extensions', 'prefixes'}
+    case {'tasks', 'entities', 'runs', ...
+          'spaces', 'labels', 'descriptions', 'resolutions', ...
+          'suffixes', 'extensions', 'prefixes'}
       result = unique(result);
       result(cellfun('isempty', result)) = [];
   end
@@ -246,8 +269,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
     this_subject = BIDS.subjects(i);
 
     % Only continue if this subject is one of those filtered
-    keep = regexp(this_subject.name(5:end), subjects, 'match');
-    if all(cellfun('isempty', keep))
+    if check_label_with_regex(this_subject.name(5:end), subjects)
       continue
     end
 
@@ -322,11 +344,9 @@ function result = update_result(query, options, result, this_subject, this_modal
           %   result{end+1} = d(k).meta;
           % end
 
-        case {'runs', 'tasks'}
-          field = query(1:end - 1);
-          if isfield(d(k).entities, field)
-            result{end + 1} = d(k).entities.(field);
-          end
+        case {'runs', 'tasks', 'spaces', 'labels', 'descriptions', 'resolutions'}
+
+          result = update_if_entity(query, result, d(k));
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -376,11 +396,9 @@ function result = update_result_with_root_content(query, options, result, BIDS)
         case 'data'
           result{end + 1} = fullfile(BIDS.pth, d(k).filename);
 
-        case {'runs', 'tasks'}
-          field = query(1:end - 1);
-          if isfield(d(k).entities, field)
-            result{end + 1} = d(k).entities.(field);
-          end
+        case {'runs', 'tasks', 'spaces', 'labels', 'descriptions', 'resolutions'}
+
+          result = update_if_entity(query, result, d(k));
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -392,5 +410,47 @@ function result = update_result_with_root_content(query, options, result, BIDS)
       end
 
     end
+  end
+end
+
+function result = update_if_entity(query, result, dk)
+
+  field = query(1:end - 1);
+  if strcmp(query, 'descriptions')
+    field = 'desc';
+  elseif strcmp(query, 'resolutions')
+    field = 'res';
+  end
+
+  if isfield(dk.entities, field)
+    result{end + 1} = dk.entities.(field);
+  end
+
+end
+
+% TODO  performace issue ???
+% the options could be converted to regex only once
+% and not for every call to keep_file
+
+function status = check_label_with_regex(label, option)
+  if numel(option) == 1
+    option = prepare_regex(option);
+    keep = regexp(label, option, 'match');
+    status = isempty(keep) || isempty(keep{1});
+  else
+    status = ~ismember(label, option);
+  end
+end
+
+function option = prepare_regex(option)
+  option = option{1};
+  if strcmp(option, '')
+    return
+  end
+  if ~strcmp(option(1), '^')
+    option = ['^' option];
+  end
+  if ~strcmp(option(end), '$')
+    option = [option '$'];
   end
 end

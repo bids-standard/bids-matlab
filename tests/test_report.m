@@ -14,7 +14,7 @@ function test_report_asl()
 
   BIDS = fullfile(cfg.pth_bids_example, datasets);
 
-  BIDS = bids.layout(BIDS, true);
+  BIDS = bids.layout(BIDS, 'use_schema', true);
 
   filter.modality = 'perf';
 
@@ -27,7 +27,7 @@ function test_report_asl()
   expected = get_expected_content(cfg, datasets, filter.modality);
 
   % TODO make it work on Octave
-  if is_octave()
+  if bids.internal.is_octave()
     return
   end
   assertEqual(content, expected);
@@ -46,7 +46,7 @@ function test_report_basic()
   for i = 1:numel(datasets)
 
     BIDS = fullfile(cfg.pth_bids_example, datasets{i});
-    BIDS = bids.layout(BIDS, true);
+    BIDS = bids.layout(BIDS, 'use_schema', true);
 
     for j = 1:numel(modalities)
 
@@ -62,7 +62,7 @@ function test_report_basic()
       expected = get_expected_content(cfg, datasets{i}, modalities{j});
 
       % TODO make it work on Octave
-      if is_octave()
+      if bids.internal.is_octave()
         return
       end
 
@@ -81,7 +81,7 @@ function test_report_pet()
 
   BIDS = fullfile(cfg.pth_bids_example, datasets);
 
-  BIDS = bids.layout(BIDS, true);
+  BIDS = bids.layout(BIDS, 'use_schema', true);
 
   filter.modality = 'pet';
 
@@ -94,7 +94,7 @@ function test_report_pet()
   expected = get_expected_content(cfg, datasets, filter.modality);
 
   % TODO make it work on Octave
-  if is_octave()
+  if bids.internal.is_octave()
     return
   end
   assertEqual(content, expected);
@@ -112,7 +112,7 @@ function test_report_moae_data()
 
   BIDS = fullfile(bids.internal.root_dir(), 'examples', 'MoAEpilot');
 
-  BIDS = bids.layout(BIDS, true);
+  BIDS = bids.layout(BIDS, 'use_schema', true);
 
   report = bids.report(BIDS, ...
                        'output_path', cfg.output_path, ...
@@ -123,7 +123,7 @@ function test_report_moae_data()
   expected = get_expected_content(cfg, 'MoAE', 'all');
 
   % TODO make it work on Octave
-  if is_octave()
+  if bids.internal.is_octave()
     return
   end
   assertEqual(content, expected);

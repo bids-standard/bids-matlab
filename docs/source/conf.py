@@ -22,7 +22,7 @@ copyright = '2018, BIDS-MATLAB developers'
 author = 'BIDS-MATLAB developers'
 
 # The full version, including alpha/beta/rc tags
-# release = 'v0.1.0'
+release = 'v0.1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,7 +32,8 @@ author = 'BIDS-MATLAB developers'
 # ones.
 extensions = [
     'sphinxcontrib.matlab',
-    'sphinx.ext.autodoc']
+    'sphinx.ext.autodoc',
+    'sphinx_copybutton']
 matlab_src_dir = os.path.dirname(os.path.abspath('../../+bids'))
 primary_domain = 'mat'
 
@@ -66,7 +67,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # html_logo = '_static/cpp_lab_logo.png'
 

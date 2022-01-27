@@ -9,6 +9,8 @@ end
 
 function test_basic()
 
+  set_test_cfg();
+
   dataset_description = fullfile(pwd, 'dummy_ds', 'dataset_description.json');
 
   bids.init('dummy_ds');
@@ -22,13 +24,25 @@ function test_basic()
 
 end
 
+function test_no_folder_smoke_test()
+
+  set_test_cfg();
+
+  bids.init('dummy_ds', 'folders', struct(), 'is_derivative', true);
+
+  clean_up();
+
+end
+
 function test_folders()
+
+  set_test_cfg();
 
   folders.subjects = {'01', '02'};
   folders.sessions = {'test', 'retest'};
   folders.modalities = {'anat', 'func'};
 
-  bids.init('dummy_ds', folders);
+  bids.init('dummy_ds', 'folders', folders);
   assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'ses-retest', 'func'), 'dir'), 7);
 
   clean_up();
@@ -37,7 +51,7 @@ end
 
 function test_derivatives()
 
-  is_derivative = true;
+  set_test_cfg();
 
   folders.subjects = {'01', '02'};
   folders.sessions = {'test', 'retest'};
@@ -45,15 +59,17 @@ function test_derivatives()
 
   dataset_description = fullfile(pwd, 'dummy_ds', 'dataset_description.json');
 
-  bids.init('dummy_ds', folders, is_derivative);
+  bids.init('dummy_ds', 'folders', folders, 'is_derivative', true);
   assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'ses-retest', 'func'), 'dir'), 7);
 
   ds_metadata = bids.util.jsondecode(dataset_description);
   assertEqual(ds_metadata.DatasetType, 'derivative');
 
   % smoke test
-  is_datalad_ds = true;
-  bids.init('dummy_ds', folders, is_derivative, is_datalad_ds);
+  bids.init('dummy_ds',  ...
+            'folders', folders, ...
+            'is_derivative', true, ...
+            'is_datalad_ds', true);
 
   clean_up();
 
@@ -61,11 +77,8 @@ end
 
 function clean_up()
 
-  pause(1);
+  pause(0.5);
 
-  if is_octave()
-    confirm_recursive_rmdir (true, 'local');
-  end
   rmdir(fullfile(pwd, 'dummy_ds'), 's');
 
 end

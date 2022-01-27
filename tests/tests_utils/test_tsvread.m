@@ -8,7 +8,7 @@ end
 
 function test_tsvread_basic()
 
-  if ~is_octave() && bids.internal.is_github_ci()
+  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
     % TODO fix downloading of test data when testing with matlab in CI
     return
   else
@@ -25,7 +25,7 @@ function test_tsvread_basic()
 
   %% test tsvread on zipped tsv file
   output = bids.util.tsvread(fullfile( ...
-                                      fileparts(mfilename('fullpath')), ....
+                                      fileparts(mfilename('fullpath')), '..', ...
                                       'data', ...
                                       'sub-01_task-auditory_events.tsv.gz'));
   assertEqual(output.onset', events.onset);
@@ -34,7 +34,7 @@ end
 
 function test_tsvread_subset()
 
-  if ~is_octave() && bids.internal.is_github_ci()
+  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
     % TODO fix downloading of test data when testing with matlab in CI
     return
   else
