@@ -12,10 +12,23 @@ function test_bids_query_microscopy_basic()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'micr_SEM'));
 
-  bids.query(BIDS, 'data')
+  data = bids.query(BIDS, 'data');
+  assertEqual(numel(data), 3);
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'micr_SPIM'));
 
-  % TODO add query for sample and chunks
+  data = bids.query(BIDS, 'data');
+  assertEqual(numel(data), 9);
+
+  samples = bids.query(BIDS, 'samples');
+  assertEqual(samples, {'A', 'B'});
+
+  chunks = bids.query(BIDS, 'chunks');
+  assertEqual(chunks, {'01', '02', '03', '04'});
+
+  % make sure we can use indices for chunks
+  data = bids.query(BIDS, 'data', 'sample', 'A', 'chunk', 1, 'ext', '.ome.tif');
+  filename = bids.internal.file_utils(data{1}, 'filename');
+  assertEqual(filename, 'sub-01_sample-A_stain-LFB_chunk-01_SPIM.ome.tif');
 
 end

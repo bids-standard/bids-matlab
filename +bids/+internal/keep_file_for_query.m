@@ -91,7 +91,7 @@ end
 
 function status = check_label(key, value, values)
 
-  if ismember(key, {'run', 'flip', 'inv', 'split', 'echo'})
+  if ismember(key, {'run', 'flip', 'inv', 'split', 'echo', 'chunk'})
 
     if ischar(value)
       value = str2double(value);
