@@ -1,0 +1,87 @@
+[
+  {
+    "suffixes": [
+      "bold",
+      "cbv",
+      "sbref"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "required",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
+      "direction": "optional",
+      "run": "optional",
+      "echo": "optional",
+      "part": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "phase"
+    ],
+    "extensions": [
+      ".nii.gz",
+      ".nii",
+      ".json"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "required",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
+      "direction": "optional",
+      "run": "optional",
+      "echo": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "events"
+    ],
+    "extensions": [
+      ".tsv",
+      ".json"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "required",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
+      "direction": "optional",
+      "run": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "physio",
+      "stim"
+    ],
+    "extensions": [
+      ".tsv.gz",
+      ".json"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "required",
+      "acquisition": "optional",
+      "ceagent": "optional",
+      "reconstruction": "optional",
+      "direction": "optional",
+      "run": "optional",
+      "recording": "optional"
+    }
+  }
+]

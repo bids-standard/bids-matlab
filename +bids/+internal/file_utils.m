@@ -2,19 +2,19 @@ function varargout = file_utils(str, varargin)
   %
   % Character array (or cell array of strings) handling facility
   %
+  % USAGE:
   %
-  % To list files or directories (with fullpath if necessary)
+  % To list files or directories (with fullpath if necessary)::
   %
-  % FORMAT [files, dirs] = bids.internal.file_utils('List',   directory,        regexp)
-  % FORMAT [files, dirs] = bids.internal.file_utils('FPList', directory,        regexp)
-  % FORMAT [dirs]        = bids.internal.file_utils('List',   directory, 'dir', regexp)
-  % FORMAT [dirs]        = bids.internal.file_utils('FPList', directory, 'dir', regexp)
+  %   [files, dirs] = bids.internal.file_utils('List',   directory,        regexp)
+  %   [files, dirs] = bids.internal.file_utils('FPList', directory,        regexp)
+  %   [dirs]        = bids.internal.file_utils('List',   directory, 'dir', regexp)
+  %   [dirs]        = bids.internal.file_utils('FPList', directory, 'dir', regexp)
   %
   %
+  % To get a certain piece of information from a file::
   %
-  % To get a certain piece of information from a file.
-  %
-  % FORMAT str = bids.internal.file_utils(str, option)
+  %   str = bids.internal.file_utils(str, option)
   %
   % str        - character array, or cell array of strings
   %
@@ -22,10 +22,9 @@ function varargout = file_utils(str, varargin)
   %              {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}
   %
   %
+  % To set a certain piece of information from a file::
   %
-  % To set a certain piece of information from a file.
-  %
-  % FORMAT str = bids.internal.file_utils(str, opt_key, opt_val,...)
+  %   str = bids.internal.file_utils(str, opt_key, opt_val, ...)
   %
   % str        - character array, or cell array of strings
   %
@@ -34,12 +33,12 @@ function varargout = file_utils(str, varargin)
   %
   % opt_val    - string of new value for feature
   %
-  % __________________________________________________________________________
   %
   % Based on spm_file.m and spm_select.m from SPM12.
-  % __________________________________________________________________________
-
-  % Copyright (C) 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
+  % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   %#ok<*AGROW>
 
@@ -53,34 +52,48 @@ function varargout = file_utils(str, varargin)
 
   str = cellstr(str);
 
-  % -Get item
-  % ==========================================================================
   if numel(options) == 1
-    for n = 1:numel(str)
-      [pth, nam, ext] = fileparts(deblank(str{n}));
-      switch lower(options{1})
-        case 'path'
-          str{n} = pth;
-        case 'basename'
-          str{n} = nam;
-        case 'ext'
-          str{n} = ext(2:end);
-        case 'filename'
-          str{n} = [nam ext];
-        case 'cpath'
-          str(n) = canonicalise_path(str(n));
-        case 'fpath'
-          str{n} = fileparts(char(canonicalise_path(str(n))));
-        otherwise
-          error('Unknown option: ''%s''', options{1});
-      end
-    end
-    options = {};
+    [str, options] = get_item(str, options);
   end
 
-  % -Set item
-  % ==========================================================================
+  str = set_item(str, options);
+
+  if needchar
+    str = char(str);
+  end
+  varargout = {str};
+
+end
+
+function [str, options] = get_item(str, options)
+
+  for n = 1:numel(str)
+    [pth, nam, ext] = fileparts(deblank(str{n}));
+    switch lower(options{1})
+      case 'path'
+        str{n} = pth;
+      case 'basename'
+        str{n} = nam;
+      case 'ext'
+        str{n} = ext(2:end);
+      case 'filename'
+        str{n} = [nam ext];
+      case 'cpath'
+        str(n) = canonicalise_path(str(n));
+      case 'fpath'
+        str{n} = fileparts(char(canonicalise_path(str(n))));
+      otherwise
+        error('Unknown option: ''%s''', options{1});
+    end
+  end
+  options = {};
+
+end
+
+function str = set_item(str, options)
+
   while ~isempty(options)
+
     for n = 1:numel(str)
       [pth, nam, ext] = fileparts(deblank(str{n}));
       switch lower(options{1})
@@ -106,12 +119,8 @@ function varargout = file_utils(str, varargin)
       str{n} = fullfile(pth, [nam ext]);
     end
     options([1 2]) = [];
-  end
 
-  if needchar
-    str = char(str);
   end
-  varargout = {str};
 
 end
 
@@ -281,7 +290,6 @@ function [files, dirs] = listfiles(action, directory, varargin)
     files = dirs;
 
   else
-
     t = regexp(files, expr);
 
     if numel(files) == 1 && ~iscell(t)

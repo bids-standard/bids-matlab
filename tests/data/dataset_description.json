@@ -1,0 +1,21 @@
+{
+    "Name": "Multisubject, multimodal face processing",
+    "BIDSVersion": "1.0.2",
+    "DatasetType": "raw",
+    "License": "CC0",
+    "Authors": [
+        "Wakeman, DG",
+        "Henson, RN"
+    ],
+    "Acknowledgements": "This work was supported by the UK Medical Research Council",
+    "HowToAcknowledge": "Cite this paper: https://www.ncbi.nlm.nih.gov/pubmed/25977808",
+    "Funding": [
+        "UK Medical Research Council (SUAG/010 RG91365), Elekta Ltd."
+    ],
+    "ReferencesAndLinks": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/25977808",
+        "https://openfmri.org/dataset/ds000117/",
+        "ftp://ftp.mrc-cbu.cam.ac.uk/personal/rik.henson/wakemandg_hensonrn/Publications/"
+    ],
+    "DatasetDOI": "10.18112/openneuro.ds000117.v1.0.4"
+}

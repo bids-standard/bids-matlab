@@ -1,0 +1,59 @@
+name: tests_matlab
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - dev
+  pull_request:
+    branches: ["*"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Install MATLAB
+        uses: matlab-actions/setup-matlab@v1.0.1
+        with:
+          # MATLAB release to set up R2020a
+          release: R2020a
+
+      - name: Clone bids-matlab
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 2
+
+      - name: Install bids example
+        run: |
+          cd tests
+          make data
+
+      - name: Install Moxunit and MOcov
+        run: |
+          git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
+          git clone https://github.com/MOcov/MOcov.git --depth 1
+
+      - name: Run commands
+        uses: matlab-actions/run-command@v1.0.1
+        with:
+          command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); addpath(getenv('GITHUB_WORKSPACE')); success = run_tests(); assert(success);
+
+      # - name: Upload coverage
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: coverage_file
+      #     path: coverage.xml
+
+      # - name: Code coverage
+      #   uses: codecov/codecov-action@v1
+      #   with:
+      #     file: coverage.xml # optional
+      #     flags: unittests # optional
+      #     name: codecov-umbrella # optional
+      #     fail_ci_if_error: true # optional (default = false)

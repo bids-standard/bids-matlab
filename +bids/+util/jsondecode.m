@@ -7,21 +7,24 @@ function value = jsondecode(file, varargin)
   %   json = bids.util.jsondecode(file, opts)
   %
   % :param file: name of a JSON file or JSON string
-  % :type filename: string
+  % :type file: string
   % :param opts: structure of optional parameters (only with JSONio):
-  %              - replacementStyle: string to control how non-alphanumeric
-  %                  characters are replaced [Default: ``'underscore'``]:
-  %                     - ``'underscore'``
-  %                     - ``'hex'``
-  %                     - ``'delete'``
-  %                     - ``'nop'``
   % :type opts: structure
+  %
+  % ``opt.replacementStyle``: string to control how non-alphanumeric characters are replaced.
+  %
+  %    - ``'underscore'`` Default
+  %    - ``'hex'``
+  %    - ``'delete'``
+  %    - ``'nop'``
+  %
   %
   % :returns: - :json: JSON structure
   %
-
-  % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   persistent has_jsondecode
   if isempty(has_jsondecode)

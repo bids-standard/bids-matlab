@@ -1,11 +1,32 @@
+octave-workspace
 *.asv
 *.*~
+*.swp
 
-/tests/bids-examples
-/tests/*.tsv
+tmp*
+examples/brainstorm
+examples/MoAEpilot
 
-# ignore virtual env
-convert_schema/*
 
-# ignore bids-specification repo that gets cloned during CI
+# virtual env
+env/*
+
+# other bids repos
 bids-specification/*
+bids-examples
+
+# input and output data involved in tests
+data/*
+derivatives/*
+tests/*.tsv
+
+# coverage
+coverage_html
+
+# styling
+.prettierrc
+
+# visual studio code config
+.vscode/*
+
+MoAEpilot.zip

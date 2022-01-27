@@ -1,32 +1,42 @@
-function fileContent = tsvread(filename, fieldToReturn, hdr)
-  % Load text and numeric data from tab-separated-value or other file
-  % FORMAT x = tsvread(f,v,hdr)
-  % f - filename (can be gzipped) {txt,mat,csv,tsv,json}
-  % v - name of field to return if data stored in a structure [default: '']
-  % or index of column if data stored as an array
-  % hdr - detect the presence of a header row for csv/tsv [default: true]
+function file_content = tsvread(filename, field_to_return, hdr)
   %
-  % x - corresponding data array or structure
-
-  % __________________________________________________________________________
+  % Load text and numeric data from tab-separated-value or other file.
+  %
+  % USAGE::
+  %
+  %   file_content = tsvread(filename, field_to_return, hdr)
+  %
+  % :param filename: filename (can be gzipped) {txt,mat,csv,tsv,json}ename
+  % :type filename: string
+  % :param field_to_return: name of field to return if data stored in a structure
+  %                       [default: ``''``]; or index of column if data stored as an array
+  % :type field_to_return:
+  % :param hdr: detect the presence of a header row for csv/tsv [default: ``true``]
+  % :type hdr: boolean
+  %
+  %
+  % :returns: - :file_content: corresponding data array or structure
+  %
   %
   % Based on spm_load.m from SPM12.
-  % __________________________________________________________________________
-
-  % Copyright (C) 2018, Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  % Copyright (C) 2018--, BIDS-MATLAB developers
+  %
+  %
+  % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
+  %
+  % (C) Copyright 2018 BIDS-MATLAB developers
 
   % -Check input arguments
   % --------------------------------------------------------------------------
   if nargin < 1
     error('no input file specified');
   end
+
   if ~exist(filename, 'file')
     error('Unable to read file ''%s'': file not found', filename);
   end
 
   if nargin < 2
-    fieldToReturn = '';
+    field_to_return = '';
   end
   if nargin < 3
     hdr = true;
@@ -35,86 +45,121 @@ function fileContent = tsvread(filename, fieldToReturn, hdr)
   % -Load the data file
   % --------------------------------------------------------------------------
   [~, ~, ext] = fileparts(filename);
+
   switch ext(2:end)
+
     case 'txt'
-      fileContent = load(filename, '-ascii');
+      file_content = load(filename, '-ascii');
+
     case 'mat'
-      fileContent = load(filename, '-mat');
+      file_content = load(filename, '-mat');
+
     case 'csv'
       % x = csvread(f); % numeric data only
-      fileContent = dsv_read(filename, ',', hdr);
+      file_content = dsv_read(filename, ',', hdr);
+
     case 'tsv'
       % x = dlmread(f,'\t'); % numeric data only
-      fileContent = dsv_read(filename, '\t', hdr);
+      file_content = dsv_read(filename, '\t', hdr);
+
     case 'json'
-      fileContent = bids.util.jsondecode(filename);
+      file_content = bids.util.jsondecode(filename);
+
     case 'gz'
+
+      if bids.internal.is_octave()
+        back_up = tempname;
+        copyfile(filename, back_up);
+      end
       fz = gunzip(filename, tempname);
+
       sts = true;
       try
-        fileContent = bids.util.tsvread(fz{1});
+        file_content = bids.util.tsvread(fz{1});
       catch err
         sts = false;
         err_msg = err.message;
       end
+
       delete(fz{1});
       rmdir(fileparts(fz{1}));
+
+      if bids.internal.is_octave()
+        copyfile(back_up, filename);
+      end
+
       if ~sts
         error('Cannot load file ''%s'': %s.', filename, err_msg);
       end
+
     otherwise
       try
-        fileContent = load(filename);
+        file_content = load(filename);
       catch
         error('Cannot read file ''%s'': Unknown file format.', filename);
       end
+
   end
+
+  file_content = return_subset(file_content, field_to_return);
+
+end
+
+function file_content = return_subset(file_content, field_to_return)
 
   % -Return relevant subset of the data if required
   % --------------------------------------------------------------------------
-  if isstruct(fileContent)
-    if isempty(fieldToReturn)
-      fieldsList = fieldnames(fileContent);
-      if numel(fieldsList) == 1 && isnumeric(fileContent.(fieldsList{1}))
-        fileContent = fileContent.(fieldsList{1});
+  if isstruct(file_content)
+
+    if isempty(field_to_return)
+      fieldsList = fieldnames(file_content);
+      if numel(fieldsList) == 1 && isnumeric(file_content.(fieldsList{1}))
+        file_content = file_content.(fieldsList{1});
       end
+
     else
-      if ischar(fieldToReturn)
+      if ischar(field_to_return)
         try
-          fileContent = fileContent.(fieldToReturn);
+          file_content = file_content.(field_to_return);
         catch
-          error('Data do not contain array ''%s''.', fieldToReturn);
+          error('Data do not contain array ''%s''.', field_to_return);
         end
+
       else
-        fieldsList = fieldnames(fileContent);
+        fieldsList = fieldnames(file_content);
         try
-          fileContent = fileContent.(fieldsList{fieldToReturn});
+          file_content = file_content.(fieldsList{field_to_return});
         catch
           error('Data index out of range: %d (data contains %d fields)', ...
-                fieldToReturn, numel(fieldsList));
+                field_to_return, numel(fieldsList));
         end
+
       end
     end
-  elseif isnumeric(fileContent)
-    if isnumeric(fieldToReturn)
+
+  elseif isnumeric(file_content)
+
+    if isnumeric(field_to_return)
       try
-        fileContent = fileContent(:, fieldToReturn);
+        file_content = file_content(:, field_to_return);
       catch
         error('Data index out of range: %d (data contains $d columns).', ...
-              fieldToReturn, size(fileContent, 2));
+              field_to_return, size(file_content, 2));
       end
-    elseif ~isempty(fieldToReturn)
+
+    elseif ~isempty(field_to_return)
       error(['Invalid data index. ', ...
              'When data is numeric, index must be numeric or empty. ', ...
              'Got a %s'], ...
-            class(fieldToReturn));
+            class(field_to_return));
     end
+
   end
 
-  % ==========================================================================
-  % function x = dsv_read(f,delim)
-  % ==========================================================================
+end
+
 function x = dsv_read(filename, delim, header)
+
   % Read delimiter-separated values file into a structure array
   % * header line of column names will be used if detected
   % * 'n/a' fields are replaced with NaN
@@ -208,3 +253,5 @@ function x = dsv_read(filename, delim, header)
     x = struct2cell(x);
     x = [x{:}];
   end
+
+end

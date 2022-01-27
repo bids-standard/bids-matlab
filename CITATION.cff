@@ -1,0 +1,58 @@
+# schema: https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md
+
+cff-version: 1.2.0
+
+title: bids-matlab
+
+version: 0.1.0
+
+license: GPL-3.0
+
+repository-code: "https://github.com/bids-standard/bids-matlab"
+
+message: "If you use this software, please cite it as below."
+
+authors:
+  - family-names: Gau
+    given-names: Rémi
+    orcid: https://orcid.org/0000-0002-1535-9767
+
+  - family-names: Flandin
+    given-names: Guillaume
+
+  - family-names: Janke
+    given-names: Andrew
+
+  - alias: tanguyduval
+
+  - family-names: Oostenveld
+    given-names: Robert
+
+  - family-names: Madan
+    given-names: Christopher
+
+  - family-names: Niso Galán
+    given-names: Guiomar
+
+  - family-names: Szczepanik
+    given-names: Michał
+
+  - family-names: Mutsaerts
+    given-names: Henk
+
+  - family-names: Beliy
+    given-names: Nikita
+
+  - family-names: Norgaard
+    given-names: Martin
+
+  - family-names: Pernet
+    given-names: Cyril
+
+  - family-names: Chrisophe
+    given-names: Phillips
+
+keywords:
+  - brain imaging data structure
+
+type: software

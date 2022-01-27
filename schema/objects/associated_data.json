@@ -1,0 +1,18 @@
+{
+  "code": {
+    "name": "Code",
+    "description": "A folder in which to store any code used to generate the derivatives from the\nsource data.\n"
+  },
+  "derivatives": {
+    "name": "Derivative data",
+    "description": "Derivative data\n"
+  },
+  "sourcedata": {
+    "name": "Source data",
+    "description": "Data before harmonization, reconstruction, and/or file format conversion\n(for example, E-Prime event logs or DICOM files).\n"
+  },
+  "stimuli": {
+    "name": "Stimulus files",
+    "description": "The stimulus files can be added in a `/stimuli` folder\n(under the root folder of the dataset; with optional subfolders)\nAND using a stim_file column in *_events.tsv mentioning which stimulus file was\nused for a given event.\n\nThere are no restrictions on the file formats of the stimuli files, but they should be\nstored in the `/stimuli` folder.\n"
+  }
+}

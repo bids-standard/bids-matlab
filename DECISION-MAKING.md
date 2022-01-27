@@ -94,7 +94,7 @@ and heavily depend on the
 
 ### Stable VS latest versions, releases and fixes
 
-Version number follow semantic versioning. 
+Version number follow semantic versioning.
 
 <!-- add link -->
 
@@ -103,7 +103,7 @@ The `main` branch holds the stable version of the toolbox.
 The `dev` branch is where the latest version can be fetched.
 
 Version bumps and new releases are triggered:
-- by hotfixes of bug 
+- by hotfixes of bug
 - by a merge of the develop branch in the main branch.
 
 A diagram version of the decision-making flow we are aiming for is shown below. ([source](https://blog.axosoft.com/gitflow/))
@@ -124,7 +124,7 @@ Conditions:
 
 Eventually though this technical debt must be paid back before a new release and merging into the main branch.
 
-Conditions: 
+Conditions:
 - All unit and integration tests must pass.
 - All checks for code style and quality must pass.
 
