@@ -268,12 +268,15 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip
   % All the metadata of each file is read through the whole hierarchy
   % and dumped into one side-car json file for each file copied
   % In practice this "unravels" the inheritance principle
-  if ~strcmpi(file.ext, '.json') % skip if data file is json
+  if ~strcmpi(file.ext, '.json') && ... % skip if data file is json
+     numel(fieldnames(file.meta)) > 0 % skip if there is no metadata
     bids.util.jsonencode(output_metadata_file, file.meta);
-  end
-  % checking that json is created
-  if ~exist(output_metadata_file, 'file')
-    error('Failed to create sidecar json file: %s', output_metadata_file);
+
+    % checking that json is created
+    if ~exist(output_metadata_file, 'file')
+      error('Failed to create sidecar json file: %s', output_metadata_file);
+    end
+
   end
 
   copy_dependencies(file, BIDS, derivatives_folder, unzip_files, force, skip_dep, verbose);

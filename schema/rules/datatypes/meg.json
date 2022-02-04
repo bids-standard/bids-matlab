@@ -151,5 +151,24 @@
       "session": "optional",
       "acquisition": "optional"
     }
+  },
+  {
+    "suffixes": [
+      "physio",
+      "stim"
+    ],
+    "extensions": [
+      ".tsv.gz",
+      ".json"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional",
+      "task": "required",
+      "acquisition": "optional",
+      "run": "optional",
+      "processing": "optional",
+      "recording": "optional"
+    }
   }
 ]
