@@ -1,5 +1,8 @@
 function diagnostic_table = diagnostic(varargin)
   %
+  % Creates a summary figure listing the number of files for each subject / session and
+  % and imaging modality (possiblty split by task) 
+  %
   % USAGE::
   %
   %   diagnostic_table = diagnostic(BIDS, ...
@@ -7,6 +10,32 @@ function diagnostic_table = diagnostic(varargin)
   %                                 'output_path', '', ...
   %                                 'filter', struct(), ...
   %                                 'split_by', {''})
+  %
+  % :param BIDS:       BIDS directory name or BIDS structure (from ``bids.layout``)
+  % :type  BIDS:       structure or string
+  %
+  % :param split_by:       splits results by a given BIDS entity (now only ``task`` is supported)
+  % :type  split_by:       cell
+  %
+  % :param use_schema: If set to ``true``, the parsing of the dataset
+  %                    will follow the bids-schema provided with bids-matlab.
+  %                    If set to ``false`` files just have to be of the form
+  %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
+  %                    If a folder path is provided, then the schema contained
+  %                    in that folder will be used for parsing.
+  % :type  use_schema: boolean
+  %
+  % :param out_path:   path to directory containing the derivatives
+  % :type  out_path:   string
+  %
+  % :param filter:     list of filters to choose what files to copy (see bids.query)
+  % :type  filter:     structure or cell
+  %
+  % Examples::
+  %
+  %   BIDS = bids.layout(path_to_dataset);
+  %   diagnostic_table = bids.diagnostic(BIDS, 'output_path', pwd);
+  %   diagnostic_table = bids.diagnostic(BIDS, 'split_by', {'task'}, 'output_path', pwd);
   %
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
@@ -30,7 +59,7 @@ function diagnostic_table = diagnostic(varargin)
   parse(args, varargin{:});
 
   %%
-  BIDS = bids.layout(args.Results.BIDS);
+  BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema);
 
   filter = args.Results.filter;
 

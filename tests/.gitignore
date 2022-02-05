@@ -1,6 +1,6 @@
-
 *.tsv
 *.json
+*.png
 
 dummy_ds
 output

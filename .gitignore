@@ -10,7 +10,6 @@ examples/MoAEpilot
 
 *.zip*
 *.jpg
-*.png
 
 # virtual env
 env/*
