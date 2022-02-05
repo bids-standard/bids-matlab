@@ -71,12 +71,12 @@
 				"name": "output_path",
 				"kind": "namevalue",
 				"type": "folder"
-			},				
+			},
 			{
 				"name": "filter",
 				"kind": "namevalue",
 				"type": "structure"
-			},			
+			},
 			{
 				"name": "read_nifti",
 				"kind": "namevalue",

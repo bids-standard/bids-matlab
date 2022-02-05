@@ -147,6 +147,11 @@ function BIDS = layout(varargin)
 
   BIDS = index_derivatives_dir(BIDS, index_derivatives, verbose);
 
+  if ismember('micr', bids.query(BIDS, 'modalities'))
+    BIDS.samples = [];
+    BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, 'samples.tsv', verbose);
+  end
+
 end
 
 function BIDS = index_root_directory(BIDS)
@@ -238,7 +243,7 @@ function subject = parse_subject(pth, subjname, sesname, schema, verbose)
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
         otherwise
           % in case we are going schemaless
-          % and the modality is not one of the usual suspect
+          % or the modality is not one of the usual suspect
           subject.(modalities{iModality}) = struct([]);
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
       end

@@ -12,6 +12,11 @@ repository-code: "https://github.com/bids-standard/bids-matlab"
 
 message: "If you use this software, please cite it as below."
 
+identifiers:
+  - description:  MATLAB / Octave tools for BIDS datasets
+    type: doi
+    value: "10.5281/zenodo.5910584"
+
 authors:
   - family-names: Gau
     given-names: Rémi
@@ -24,6 +29,7 @@ authors:
     given-names: Andrew
 
   - alias: tanguyduval
+    given-names: tanguyduval
 
   - family-names: Oostenveld
     given-names: Robert
