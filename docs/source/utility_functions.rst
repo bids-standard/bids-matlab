@@ -9,4 +9,6 @@ Utility functions
 .. autofunction:: tsvread
 .. autofunction:: tsvwrite
 
+.. autofunction:: create_data_dict
+
 .. autofunction:: mkdir

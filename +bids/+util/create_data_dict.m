@@ -2,7 +2,23 @@ function data_dict = create_data_dict(varargin)
   %
   % Create a data dictionnary for a TSV file
   %
-  % data_dict = bids.util.jsonwrite(tsv_file, 'output', [], 'schema', true);
+  % data_dict = bids.util.create_data_dict(tsv_file, ...
+  %                                        'output', [], ...
+  %                                        'schema', true, ...
+  %                                        'force', false, ...
+  %                                        'level_limit', 10);
+  %
+  %
+  % :param output:           filename for the output file
+  %
+  % :param force:           If set to ``false`` it will not overwrite any file already
+  %                         present in the destination.
+  % :type  force:           boolean
+  %
+  % :param schema:          If set to ``true`` it will use the schema to try to
+  %                         find definitions for the column headers
+  % :type  schema:          boolean or a schema object
+  %
   %
   % (C) Copyright 2021 Remi Gau
 
