@@ -34,6 +34,17 @@ function test_metadata_loading()
 
 end
 
+function test_metadata_get_definition()
+
+  schema = bids.Schema();
+  def = schema.get_definition('onset');
+
+  assertEqual(def.name, 'onset');
+  assertEqual(def.type, 'number');
+  assertEqual(def.unit, 's');
+
+end
+
 function test_schemaless()
 
   use_schema = false();

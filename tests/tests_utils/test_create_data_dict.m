@@ -15,8 +15,7 @@ function test_create_data_dict_basic()
   data = bids.query(BIDS, 'data', ...
                     'sub', '01', ...
                     'suffix', 'events');
- 
-  
-  data_dict = bids.util.create_data_dict(data{1}, 'output', 'tmp.json')
-                  
+
+  data_dict = bids.util.create_data_dict(data{1}, 'output', 'tmp.json', 'schema', true);
+
 end

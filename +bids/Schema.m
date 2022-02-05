@@ -351,6 +351,24 @@ classdef Schema
       reg_ex = ['^%s.*' suffixes extensions '$'];
     end
 
+    function def = get_definition(obj, word)
+
+      if ~isfield(obj.content.objects, 'metadata')
+        obj.load_schema_metadata = true;
+        obj = obj.load();
+      end
+
+      if isfield(obj.content.objects.columns, word)
+        def = obj.content.objects.columns.(word);
+      else
+        def = struct('LongName', word, ...
+                     'Description', 'TODO', ...
+                     'Units', 'TODO', ...
+                     'TermURL', 'TODO');
+      end
+
+    end
+
   end
 
   % ----------------------------------------------------------------------- %

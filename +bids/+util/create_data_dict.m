@@ -1,13 +1,13 @@
 function data_dict = create_data_dict(varargin)
   %
   % (C) Copyright 2021 Remi Gau
-  
-  default_use_schema = true;
+
+  default_schema = false;
   default_output = [];
   default_verbose = true;
   default_force = false;
   default_level_limit = 10;
-  
+
   is_file = @(x) exist(x, 'file');
 
   args = inputParser();
@@ -15,7 +15,7 @@ function data_dict = create_data_dict(varargin)
   addRequired(args, 'tsv_file', is_file);
   addParameter(args, 'level_limit', default_level_limit);
   addParameter(args, 'output', default_output);
-  addParameter(args, 'schema', default_use_schema);
+  addParameter(args, 'schema', default_schema);
   addParameter(args, 'verbose', default_verbose);
   addParameter(args, 'force', default_force);
 
@@ -37,7 +37,7 @@ function data_dict = create_data_dict(varargin)
 
   data_dict = struct();
   for i = 1:numel(headers)
-    data_dict.(headers{i}) = set_dict(headers{i});
+    data_dict.(headers{i}) = set_dict(headers{i}, schema);
     data_dict = add_levels_description(data_dict, headers{i}, content, level_limit);
   end
 
@@ -70,34 +70,25 @@ function json_content = add_levels_description(json_content, header, tsv_content
 
 end
 
-function dict = set_dict(header)
+function dict = set_dict(header, schema)
+
+  dict = default_dict(header);
+  if schema
+    try
+      dict = schema.get_definition(header);
+    catch
+      schema = bids.Schema();
+      dict = schema.get_definition(header);
+    end
+  end
+
+end
+
+function default = default_dict(header)
 
   default = struct('LongName', header, ...
                    'Description', 'TODO', ...
                    'Units', 'TODO', ...
                    'TermURL', 'TODO');
-
-  participant = struct('LongName', 'Participant Id', ...
-                       'Description', 'Unique label associated with a participant');
-
-  onset =  struct('LongName', 'Event onset time', ...
-                  'Description', ...
-                  'Time elapsed since experiment start when the event started', ...
-                  'Units', 's');
-
-  duration = struct('Description', ...
-                    'Duration of the event', ...
-                    'Units', 's');
-
-  switch header
-    case 'onset'
-      dict = onset;
-    case 'duration'
-      dict = duration;
-    case 'participant_id'
-      dict = participant;
-    otherwise
-      dict = default;
-  end
 
 end
