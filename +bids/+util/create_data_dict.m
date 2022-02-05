@@ -154,15 +154,18 @@ function json_content = add_levels_description(json_content, header, tsv_content
       % add a prefix because fieldnames cannot be numbers in matlab
       this_level = ['level_' num2str(this_level)];
     end
-    this_level = regexprep(this_level, '[\./- '']', '_');
-    if strcmp(this_level(1), '_')
-      this_level = ['level_' this_level];
+
+    this_level = regexprep(this_level, '[\./- ''@\?\!]', '_');
+
+    pre = regexprep(this_level(1), '[0-9_]', ['level_' this_level(1)]);
+    if numel(this_level) > 1
+      this_level = [pre this_level(2:end)];
+    else
+      this_level = pre;
     end
-    if numel(this_level) == 1
-      if strcmp(this_level, '_')
-        continue
-      end
-      this_level = regexprep(this_level, '[0-9]', ['level_' this_level]);
+
+    if strcmp(this_level, '_')
+      continue
     end
 
     json_content.(header).Levels.(this_level) = 'TODO';
