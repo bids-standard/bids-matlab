@@ -1,5 +1,9 @@
 function data_dict = create_data_dict(varargin)
   %
+  % Create a data dictionnary for a TSV file
+  %
+  % data_dict = bids.util.jsonwrite(tsv_file, 'output', [], 'schema', true);
+  %
   % (C) Copyright 2021 Remi Gau
 
   default_schema = false;
@@ -8,11 +12,11 @@ function data_dict = create_data_dict(varargin)
   default_force = false;
   default_level_limit = 10;
 
-  is_file = @(x) exist(x, 'file');
+  is_file_or_cellstr = @(x) (iscellstr(x) || exist(x, 'file'));
 
   args = inputParser();
 
-  addRequired(args, 'tsv_file', is_file);
+  addRequired(args, 'tsv_file', is_file_or_cellstr);
   addParameter(args, 'level_limit', default_level_limit);
   addParameter(args, 'output', default_output);
   addParameter(args, 'schema', default_schema);
@@ -25,24 +29,88 @@ function data_dict = create_data_dict(varargin)
   level_limit = args.Results.level_limit;
   output = args.Results.output;
   schema = args.Results.schema;
-  verbose = args.Results.verbose;
   force = args.Results.force;
+  verbose = args.Results.verbose;
+
+  data_dict = struct();
 
   if ~iscell(tsv_file)
     tsv_file = {tsv_file};
   end
-  content = bids.util.tsvread(tsv_file{1});
+  if isempty(tsv_file)
+    return
+  end
+
+  content = get_content_from_tsv_files(tsv_file);
 
   headers = fieldnames(content);
 
-  data_dict = struct();
   for i = 1:numel(headers)
     data_dict.(headers{i}) = set_dict(headers{i}, schema);
     data_dict = add_levels_description(data_dict, headers{i}, content, level_limit);
   end
 
   if ~isempty(output)
-    bids.util.jsonwrite(output, data_dict);
+    if exist(output, 'file')
+      if force
+        bids.util.jsonwrite(output, data_dict);
+      end
+    else
+      bids.util.jsonwrite(output, data_dict);
+    end
+  end
+
+end
+
+function content = get_content_from_tsv_files(tsv_file)
+
+  content = bids.util.tsvread(tsv_file{1});
+
+  if numel(tsv_file) > 1
+
+    for f = 2:numel(tsv_file)
+
+      new_content = bids.util.tsvread(tsv_file{f});
+      [content, new_content] = bids.internal.match_structure_fields(content, new_content);
+
+      headers = fieldnames(content);
+
+      for h = 1:numel(headers)
+
+        append_to = content.(headers{h});
+        to_append = new_content.(headers{h});
+
+        if isempty(append_to)
+          append_to = nan;
+        end
+
+        if isempty(to_append)
+          to_append = nan;
+        end
+
+        % dealing with nan
+        if iscellstr(append_to) && ~iscellstr(to_append)
+          if all(isnan(to_append))
+            to_append = repmat({'n/a'}, numel(to_append), 1);
+          end
+        end
+
+        if iscellstr(to_append) && ~iscellstr(append_to)
+          if all(isnan(append_to))
+            append_to = repmat({'n/a'}, numel(append_to), 1);
+          end
+        end
+
+        content.(headers{h}) = cat(1, append_to, to_append);
+
+        if (ischar(content.(headers{h})) || iscellstr(content.(headers{h}))) && ...
+            any(strcmp(content.(headers{h}), ' '))
+        end
+
+      end
+
+    end
+
   end
 
 end
@@ -51,23 +119,38 @@ function json_content = add_levels_description(json_content, header, tsv_content
 
   levels = unique(tsv_content.(header));
 
-  if ismember(header, {'participant_id'}) || ...
-      numel(levels) > level_limit || ...
-      isnumeric(levels) && not(all(isinteger(levels)))
+  if numel(levels) > level_limit || ...
+     (isnumeric(levels) && not(all(isinteger(levels))))
     return
   end
 
   json_content.(header).Levels = struct();
+
   for i = 1:numel(levels)
+
     this_level = levels(i);
+
     if iscell(this_level)
       this_level = this_level{1};
     end
+
     if isnumeric(this_level)
-      % add a _ because fieldnames cannot be numbers in matlab
-      this_level = ['' num2str(this_level)];
+      % add a prefix because fieldnames cannot be numbers in matlab
+      this_level = ['level_' num2str(this_level)];
     end
-    json_content.(header).Levels.(this_level) = '';
+    this_level = regexprep(this_level, '[\./- '']', '_');
+    if strcmp(this_level(1), '_')
+      this_level = ['level_' this_level];
+    end
+    if numel(this_level) == 1
+      if strcmp(this_level, '_')
+        continue
+      end
+      this_level = regexprep(this_level, '[0-9]', ['level_' this_level]);
+    end
+
+    json_content.(header).Levels.(this_level) = 'TODO';
+
   end
 
 end
@@ -95,9 +178,11 @@ function dict = set_dict(header, schema)
     if isfield(def, 'unit')
       dict.Units = def.unit;
     elseif isfield(def, 'anyOf')
-      number_allowed = cellfun(@(x) strcmp(x.type, 'number'), def.anyOf);
-      if any(number_allowed)
-        dict.Units = def.anyOf{number_allowed}.unit;
+      if iscell(def.anyOf)
+        number_allowed = cellfun(@(x) strcmp(x.type, 'number'), def.anyOf);
+        if any(number_allowed)
+          dict.Units = def.anyOf{number_allowed}.unit;
+        end
       end
     end
 
