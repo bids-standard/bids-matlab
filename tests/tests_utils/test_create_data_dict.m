@@ -19,3 +19,21 @@ function test_create_data_dict_basic()
   data_dict = bids.util.create_data_dict(data{1}, 'output', 'tmp.json', 'schema', true);
 
 end
+
+function test_create_data_dict_schema()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
+
+  data = bids.query(BIDS, 'data', ...
+                    'sub', '01', ...
+                    'suffix', 'events');
+
+  schema = bids.Schema();
+  schema.load_schema_metadata = true;
+  schema = schema.load();
+
+  data_dict = bids.util.create_data_dict(data{1}, 'output', 'tmp.json', 'schema', schema);
+
+end

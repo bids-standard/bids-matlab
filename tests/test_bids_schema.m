@@ -45,6 +45,13 @@ function test_metadata_get_definition()
 
 end
 
+function test_metadata_object()
+
+  schema = bids.Schema();
+  assert(schema.eq);
+
+end
+
 function test_schemaless()
 
   use_schema = false();

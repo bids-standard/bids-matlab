@@ -41,7 +41,9 @@ function data_dict = create_data_dict(varargin)
     data_dict = add_levels_description(data_dict, headers{i}, content, level_limit);
   end
 
-  bids.util.jsonwrite(output, data_dict);
+  if ~isempty(output)
+    bids.util.jsonwrite(output, data_dict);
+  end
 
 end
 
@@ -51,7 +53,7 @@ function json_content = add_levels_description(json_content, header, tsv_content
 
   if ismember(header, {'participant_id'}) || ...
       numel(levels) > level_limit || ...
-      not(all(isinteger(levels)))
+      isnumeric(levels) && not(all(isinteger(levels)))
     return
   end
 
@@ -73,13 +75,32 @@ end
 function dict = set_dict(header, schema)
 
   dict = default_dict(header);
-  if schema
+
+  if (isobject(schema) && isfield(schema.content, 'objects')) || schema == true
+
     try
-      dict = schema.get_definition(header);
+      [def, status] = schema.get_definition(header);
     catch
       schema = bids.Schema();
-      dict = schema.get_definition(header);
+      [def, status] = schema.get_definition(header);
     end
+
+    if ~status
+      return
+    end
+
+    dict.LongName = def.name;
+    dict.Description = def.description;
+
+    if isfield(def, 'unit')
+      dict.Units = def.unit;
+    elseif isfield(def, 'anyOf')
+      number_allowed = cellfun(@(x) strcmp(x.type, 'number'), def.anyOf);
+      if any(number_allowed)
+        dict.Units = def.anyOf{number_allowed}.unit;
+      end
+    end
+
   end
 
 end
