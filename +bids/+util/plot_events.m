@@ -70,8 +70,14 @@ function plot_this_file(this_file, filter)
   yMin = 0;
   yMax = 1;
 
+  nb_col = 8;
+  nb_rows = numel(trial_type_list);
+
   figure('name', fig_name, ...
          'position', [50 50 2000 1000]);
+
+  subplot_col_1 = 1:(nb_col - 1);
+  subplot_col_2 = nb_col;
 
   for iCdt = 1:numel(trial_type_list)
 
@@ -79,19 +85,20 @@ function plot_this_file(this_file, filter)
 
     onsets = data.onset(idx);
 
-    duration = data.duration(idx);
+    durations = data.duration(idx);
 
     if isfield(data, 'response_time')
-      response_time = data.response_time(idx);
+      response_times = data.response_time(idx);
     else
-      response_time = nan(size(onsets));
+      response_times = nan(size(onsets));
     end
 
-    subplot(numel(trial_type_list), 1, iCdt);
+    %% Time course
+    subplot(nb_rows, nb_col, subplot_col_1);
 
     hold on;
 
-    if all(duration == 0)
+    if all(durations == 0)
 
       stem(onsets, ones(1, numel(onsets)), 'r');
 
@@ -99,31 +106,43 @@ function plot_this_file(this_file, filter)
 
       for iStim = 1:numel(onsets)
 
-        offset = onsets(iStim) + duration(iStim);
-        xMax = max([xMax; offset]);
+        offsets = onsets(iStim) + durations(iStim);
+        xMax = max([xMax; offsets]);
 
-        rectangle('position', [onsets(iStim) 0 duration(iStim) 1], ...
+        rectangle('position', [onsets(iStim) 0 durations(iStim) 1], ...
                   'FaceColor', 'r');
       end
 
     end
 
     % add response time
-    response_time = onsets + response_time;
-    has_response = ~isnan(response_time);
+    response_times = onsets + response_times;
+    has_response = ~isnan(response_times);
     if any(has_response)
-      stem(response_time(has_response), 0.5 * ones(1, sum(has_response)), 'k');
+      stem(response_times(has_response), 0.5 * ones(1, sum(has_response)), 'k');
     end
 
     ylabel(sprintf(strrep(trial_type_list{iCdt}, '_', '\n')));
 
+    %% Duration distribution
+    subplot(nb_rows, nb_col, subplot_col_2);
+
+    hold on;
+    hist(diff(onsets));
+
+    %% Increment
+    subplot_col_1 = subplot_col_1 + nb_col;
+    subplot_col_2 = subplot_col_2 + nb_col;
+
   end
 
+  %% Update axis
   xMax = xMax + 5;
 
+  subplot_col_1 = 1:(nb_col - 1);
   for iCdt = 1:numel(trial_type_list)
 
-    subplot(numel(trial_type_list), 1, iCdt);
+    subplot(nb_rows, nb_col, subplot_col_1);
 
     axis([xMin xMax yMin yMax]);
 
@@ -132,15 +151,20 @@ function plot_this_file(this_file, filter)
         'xTickLabel', '', ...
         'TickDir', 'out');
 
+    subplot_col_1 = subplot_col_1 + nb_col;
+
   end
 
-  subplot(numel(trial_type_list), 1, 1);
+  subplot(nb_rows, nb_col, 1:(nb_col - 1));
   title(fig_name);
 
-  subplot(numel(trial_type_list), 1, numel(trial_type_list));
+  subplot(nb_rows, nb_col, [1:(nb_col - 1)] + (nb_col * (nb_rows - 1)));
   set(gca, 'xTick', 0:60:xMax, ...
       'xTickLabel', 0:60:xMax, ...
       'TickDir', 'out');
   xlabel('seconds');
+
+  subplot(nb_rows, nb_col, nb_col);
+  title('ISI distribution');
 
 end
