@@ -13,15 +13,15 @@ function plot_events(varargin)
   % EXAMPLE::
   %
   %   data_dir = fullfile(get_test_data_dir(), 'ds108');
-  % 
+  %
   %   BIDS = bids.layout(data_dir);
-  % 
+  %
   %   events_files = bids.query(BIDS, ...
   %                             'data', ...
   %                             'sub', '01', ...
   %                             'run', '01', ...
   %                             'suffix', 'events');
-  % 
+  %
   %   filter = {'Reapp_Neg_Cue', 'Look_Neg_Cue', 'Look_Neutral_Cue'};
   %   bids.util.plot_events(events_files, 'filter', filter);
   %
@@ -137,9 +137,9 @@ function plot_this_file(this_file, filter)
     subplot(nb_rows, nb_col, subplot_col_2);
 
     hold on;
-    
+
     hist(diff(onsets));
-    
+
     ax = axis;
     plot([0 0], [ax(3) ax(4)], 'k');
     plot([ax(1) ax(2)], [0 0], 'k');
