@@ -8,6 +8,9 @@ examples/brainstorm
 examples/MoAEpilot
 
 
+*.zip*
+*.jpg
+
 # virtual env
 env/*
 
