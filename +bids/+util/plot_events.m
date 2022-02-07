@@ -34,17 +34,21 @@ function plot_events(varargin)
   events_files = args.Results.events_files;
   filter = args.Results.filter;
 
+  if ischar(filter)
+    filter = {filter};
+  end
+
   if ischar(events_files)
     events_files = {events_files};
   end
 
   for i = 1:numel(events_files)
-    plot_this_file(events_files{i});
+    plot_this_file(events_files{i}, filter);
   end
 
 end
 
-function plot_this_file(this_file)
+function plot_this_file(this_file, filter)
 
   bids_file = bids.File(this_file);
 
@@ -54,7 +58,11 @@ function plot_this_file(this_file)
   data = bids.util.tsvread(this_file);
 
   trial_type = data.trial_type;
-  trial_type_list = unique(trial_type);
+  if ~isempty(filter)
+    trial_type_list = filter;
+  else
+    trial_type_list = unique(trial_type);
+  end
 
   xMin = floor(min(data.onset)) - 1;
   xMax = ceil(max(data.onset + data.duration));
