@@ -9,15 +9,15 @@ function plot_events(varargin)
   %
   % EXAMPLE::
   %
-  %     data_dir = fullfile('bids-examples', 'ds001');
+  %   BIDS = bids.layout(data_dir);
   %
-  %     events_files = bids.query(data_dir, ...
+  %   events_files = bids.query(BIDS, ...
   %                             'data', ...
   %                             'sub', '01', ...
   %                             'task', 'balloonanalogrisktask', ...
   %                             'suffix', 'events');
   %
-  %     plotEvents(events_files{1});
+  %   bids.util.plot_events(events_files);
   %
   % (C) Copyright 2020 Remi Gau
 
@@ -62,7 +62,8 @@ function plot_this_file(this_file)
   yMin = 0;
   yMax = 1;
 
-  figure('name', fig_name, 'position', [50 50 1000 1000]);
+  figure('name', fig_name, ...
+         'position', [50 50 2000 1000]);
 
   for iCdt = 1:numel(trial_type_list)
 
@@ -73,7 +74,7 @@ function plot_this_file(this_file)
     duration = data.duration(idx);
 
     if isfield(data, 'response_time')
-      response_time = data.response_time;
+      response_time = data.response_time(idx);
     else
       response_time = nan(size(onsets));
     end
@@ -100,10 +101,10 @@ function plot_this_file(this_file)
     end
 
     % add response time
-    for iStim = 1:numel(onsets)
-      if ~isnan(response_time(iStim))
-        stem(onsets(iStim) + response_time(iStim), 0.5, 'k');
-      end
+    response_time = onsets + response_time;
+    has_response = ~isnan(response_time);
+    if any(has_response)
+      stem(response_time(has_response), 0.5 * ones(1, sum(has_response)), 'k');
     end
 
     ylabel(sprintf(strrep(trial_type_list{iCdt}, '_', '\n')));
@@ -118,12 +119,20 @@ function plot_this_file(this_file)
 
     axis([xMin xMax yMin yMax]);
 
-    xlabel('seconds');
-
-    subplot(numel(trial_type_list), 1, 1);
+    % x tick in minutes
+    set(gca, 'xTick', 0:60:xMax, ...
+        'xTickLabel', '', ...
+        'TickDir', 'out');
 
   end
 
+  subplot(numel(trial_type_list), 1, 1);
   title(fig_name);
+
+  subplot(numel(trial_type_list), 1, numel(trial_type_list));
+  set(gca, 'xTick', 0:60:xMax, ...
+      'xTickLabel', 0:60:xMax, ...
+      'TickDir', 'out');
+  xlabel('seconds');
 
 end
