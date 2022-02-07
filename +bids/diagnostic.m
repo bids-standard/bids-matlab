@@ -1,7 +1,7 @@
 function diagnostic_table = diagnostic(varargin)
   %
   % Creates a summary figure listing the number of files for each subject / session and
-  % and imaging modality (possiblty split by task) 
+  % and imaging modality (possiblty split by task)
   %
   % USAGE::
   %
