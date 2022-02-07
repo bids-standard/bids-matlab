@@ -2,24 +2,33 @@ function plot_events(varargin)
   %
   % USAGE::
   %
-  %   plot_events(events_files)
+  %   plot_events(events_files, 'filter', filter)
   %
-  % :param events_files: Path to a bids _events.tsv file.
-  % :type events_files: string
+  % :param events_files: BIDS events TSV files.
+  % :type events_files: path or cellstr of paths
+  %
+  % :param filter: Restrict conditions to plot.
+  % :type filter: string or cellstr
   %
   % EXAMPLE::
   %
+  %   data_dir = fullfile(get_test_data_dir(), 'ds108');
+  % 
   %   BIDS = bids.layout(data_dir);
-  %
+  % 
   %   events_files = bids.query(BIDS, ...
   %                             'data', ...
   %                             'sub', '01', ...
-  %                             'task', 'balloonanalogrisktask', ...
+  %                             'run', '01', ...
   %                             'suffix', 'events');
+  % 
+  %   filter = {'Reapp_Neg_Cue', 'Look_Neg_Cue', 'Look_Neutral_Cue'};
+  %   bids.util.plot_events(events_files, 'filter', filter);
   %
-  %   bids.util.plot_events(events_files);
   %
   % (C) Copyright 2020 Remi Gau
+
+  % TODO add reponse_time column
 
   args = inputParser();
 
@@ -128,7 +137,12 @@ function plot_this_file(this_file, filter)
     subplot(nb_rows, nb_col, subplot_col_2);
 
     hold on;
+    
     hist(diff(onsets));
+    
+    ax = axis;
+    plot([0 0], [ax(3) ax(4)], 'k');
+    plot([ax(1) ax(2)], [0 0], 'k');
 
     %% Increment
     subplot_col_1 = subplot_col_1 + nb_col;
@@ -147,7 +161,8 @@ function plot_this_file(this_file, filter)
     axis([xMin xMax yMin yMax]);
 
     % x tick in minutes
-    set(gca, 'xTick', 0:60:xMax, ...
+    set(gca, ...
+        'xTick', 0:60:xMax, ...
         'xTickLabel', '', ...
         'TickDir', 'out');
 
@@ -158,13 +173,17 @@ function plot_this_file(this_file, filter)
   subplot(nb_rows, nb_col, 1:(nb_col - 1));
   title(fig_name);
 
-  subplot(nb_rows, nb_col, [1:(nb_col - 1)] + (nb_col * (nb_rows - 1)));
-  set(gca, 'xTick', 0:60:xMax, ...
+  subplot(nb_rows, nb_col, [1:(nb_col - 1)] + (nb_col * (nb_rows - 1))); %#ok<NBRAK>
+  set(gca, ...
+      'xTick', 0:60:xMax, ...
       'xTickLabel', 0:60:xMax, ...
       'TickDir', 'out');
   xlabel('seconds');
 
   subplot(nb_rows, nb_col, nb_col);
   title('ISI distribution');
+
+  subplot(nb_rows, nb_col, nb_rows * nb_col);
+  xlabel('seconds');
 
 end
