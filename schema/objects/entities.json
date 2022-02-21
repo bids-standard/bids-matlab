@@ -6,6 +6,13 @@
     "type": "string",
     "format": "label"
   },
+  "atlas": {
+    "name": "Atlas",
+    "entity": "atlas",
+    "description": "The `atlas-<label>` key/value pair corresponds to a custom label the user\nMAY use to distinguish a different atlas used for similar type of data.\n\nThis entity is only applicable to derivative data.\n",
+    "type": "string",
+    "format": "label"
+  },
   "ceagent": {
     "name": "Contrast Enhancing Agent",
     "entity": "ce",
