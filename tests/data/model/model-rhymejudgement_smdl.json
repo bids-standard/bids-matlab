@@ -24,14 +24,14 @@
       },
       "Model": {
         "X": [
-          "pseudoword",
-          "word"
+          "trial_type.pseudoword",
+          "trial_type.word"
         ],
         "Type": "glm",
         "HRF": {
           "Variables": [
-            "pseudoword",
-            "word"
+            "trial_type.pseudoword",
+            "trial_type.word"
           ],
           "Model": "DoubleGamma"
         },
@@ -58,8 +58,8 @@
       "DummyContrasts": {
         "Test": "t",
         "Contrasts": [
-          "pseudoword",
-          "word"
+          "trial_type.pseudoword",
+          "trial_type.word"
         ]
       }
     },

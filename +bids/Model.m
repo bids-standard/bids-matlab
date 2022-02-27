@@ -216,47 +216,47 @@ classdef Model
 
     %% Node level methods
     % assumes that only one node is being queried
-    function value = get_transformations(obj, varargin)
+    function [value, idx] = get_transformations(obj, varargin)
       %
       % value = bm.get_transformations('Name', 'node_name')
       %
       value = [];
-      node = get_nodes(obj, varargin{:});
+      [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
       if isfield(node{1}, 'Transformations')
         value = node{1}.Transformations;
       end
     end
 
-    function value = get_dummy_contrasts(obj, varargin)
+    function [value, idx] = get_dummy_contrasts(obj, varargin)
       %
       % value = bm.get_dummy_contrasts('Name', 'node_name')
       %
       value = [];
-      node = get_nodes(obj, varargin{:});
+      [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
       if isfield(node{1}, 'DummyContrasts')
         value = node{1}.DummyContrasts;
       end
     end
 
-    function value = get_contrasts(obj, varargin)
+    function [value, idx] = get_contrasts(obj, varargin)
       %
       % value = bm.get_contrasts('Name', 'node_name')
       %
       value = [];
-      node = get_nodes(obj, varargin{:});
+      [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
       if isfield(node{1}, 'Contrasts')
         value = node{1}.Contrasts;
       end
     end
 
-    function value = get_model(obj, varargin)
+    function [value, idx] = get_model(obj, varargin)
       %
       % value = bm.get_model('Name', 'node_name')
       %
-      node = get_nodes(obj, varargin{:});
+      [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
       value = node{1}.Model;
     end
@@ -265,7 +265,7 @@ classdef Model
       %
       % value = bm.get_design_matrix('Name', 'node_name')
       %
-      model = get_model(obj, varargin{:});
+      [model, idx] = get_model(obj, varargin{:});
       value = model.X;
     end
 
@@ -286,6 +286,9 @@ classdef Model
 
       trial_type_list = bids.internal.list_all_trial_types(args.Results.layout, tasks);
 
+      trial_type_list = cellfun(@(x) strjoin({'trial_type.', x}, ''), ...
+                                trial_type_list, ...
+                                'UniformOutput', false);
       obj.Nodes{1}.Model.X = trial_type_list;
       obj.Nodes{1}.Model.HRF.Variables = trial_type_list;
       obj.Nodes{1}.DummyContrasts.Contrasts = trial_type_list;
