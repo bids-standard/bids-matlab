@@ -1,7 +1,28 @@
 classdef Model
   %
+  % Class to deal with BIDS files and to help to create BIDS valid names
   %
-  % (C) Copyright 2021 Remi Gau
+  % USAGE::
+  %
+  %   file = bids.Model(init, true, ...
+  %                    'file', path_to_bids_stats_model_file, ...
+  %                    'tolerant', true,
+  %                    'verbose', false);
+  %
+  % :param init:
+  % :type init: boolean
+  %
+  % :param file:
+  % :type file: path
+  %
+  % :param tolerant: turns errors into warning
+  % :type tolerant: boolean
+  %
+  % :param verbose: silences warnings
+  % :type verbose: boolean
+  %
+  %
+  % (C) Copyright 2022 Remi Gau
 
   properties
 
@@ -31,7 +52,7 @@ classdef Model
       is_file = @(x) exist(x, 'file');
 
       args.addParameter('init', false, @islogical);
-      args.addParameter('file', false, is_file);
+      args.addParameter('file', '', is_file);
       args.addParameter('tolerant', obj.tolerant, @islogical);
       args.addParameter('verbose', obj.verbose, @islogical);
 
@@ -40,7 +61,7 @@ classdef Model
       obj.tolerant = args.Results.tolerant;
       obj.verbose = args.Results.verbose;
 
-      if args.Results.init
+      if args.Results.init || strcmp(args.Results.file, '')
 
         obj.Name = 'empty_model';
         obj.Description = 'This is an empty BIDS stats model.';
@@ -133,6 +154,11 @@ classdef Model
     end
 
     function [value, idx] = get_nodes(obj, varargin)
+      %
+      % [value, idx] = bm.get_nodes('Level', {'Run', 'Session', 'Subject', 'Dataset'}, ...
+      %                             'Name', 'run')
+      %
+      %
       if isempty(varargin)
         value = obj.Nodes;
       else
@@ -180,7 +206,9 @@ classdef Model
           end
         else
           msg = sprintf('Could not find a corresponding Node.');
-          errorHandling(mfilename(), 'missingNode', msg, obj.tolerant, obj.verbose);
+          bids.internal.error_handling(mfilename(), 'missingNode', msg, ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
         end
 
       end
@@ -189,6 +217,10 @@ classdef Model
     %% Node level methods
     % assumes that only one node is being queried
     function value = get_transformations(obj, varargin)
+      %
+      % value = bm.get_transformations('Name', 'node_name')
+      %
+
       value = [];
       node = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -198,6 +230,10 @@ classdef Model
     end
 
     function value = get_dummy_contrasts(obj, varargin)
+      %
+      % value = bm.get_dummy_contrasts('Name', 'node_name')
+      %
+
       value = [];
       node = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -207,6 +243,10 @@ classdef Model
     end
 
     function value = get_contrasts(obj, varargin)
+      %
+      % value = bm.get_contrasts('Name', 'node_name')
+      %
+
       value = [];
       node = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -216,12 +256,18 @@ classdef Model
     end
 
     function value = get_model(obj, varargin)
+      %
+      % value = bm.get_model('Name', 'node_name')
+      %
       node = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
       value = node{1}.Model;
     end
 
     function value = get_design_matrix(obj, varargin)
+      %
+      % value = bm.get_design_matrix('Name', 'node_name')
+      %
       model = get_model(obj, varargin{:});
       value = model.X;
     end
@@ -229,6 +275,9 @@ classdef Model
     %% Update content and write
 
     function obj = update(obj)
+      %
+      % bm = bm.update()
+      %
       obj.content.Name = obj.Name;
       obj.content.BIDSModelVersion = obj.BIDSModelVersion;
       obj.content.Description = obj.Description;
@@ -238,6 +287,9 @@ classdef Model
     end
 
     function write(obj, filename)
+      %
+      % bm.update(filename)
+      %
       bids.util.mkdir(fileparts(filename));
       bids.util.jsonencode(filename, obj.content);
     end
@@ -247,6 +299,9 @@ classdef Model
   methods (Static)
 
     function node = empty_node(level)
+      %
+      % node = Model.empty_node('run')
+      %
 
       node =  struct('Level', [upper(level(1)) level(2:end)], ...
                      'Name', [level], ...
@@ -262,7 +317,9 @@ classdef Model
     end
 
     function transformations = empty_transformations()
-
+      %
+      % transformations = Model.empty_transformations()
+      %
       transformations = struct('Transformer', '', ...
                                'Instructions', {{
                                                  struct('Name', '', ...
@@ -272,7 +329,9 @@ classdef Model
     end
 
     function model = empty_model()
-
+      %
+      % model = Model.empty_model()
+      %
       model = struct('X', {{''}}, ...
                      'Type', 'glm', ...
                      'HRF', struct('Variables', {{''}}, ...

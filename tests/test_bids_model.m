@@ -10,9 +10,7 @@ end
 
 function test_model_basic()
 
-  opt = setOptions('narps');
-
-  bm = bids.Model('file', opt.model.file);
+  bm = bids.Model('file', model_file('narps'));
 
   assertEqual(bm.Name, 'NARPS');
   assertEqual(bm.Description, 'NARPS Analysis model');
@@ -26,13 +24,11 @@ end
 
 function test_model_write()
 
-  opt = setOptions('narps');
-
-  bm = bids.Model('file', opt.model.file);
+  bm = bids.Model('file', model_file('narps'));
 
   filename = fullfile(pwd, 'tmp', 'foo.json');
   bm.write(filename);
-  assertEqual(bids.util.jsondecode(opt.model.file), ...
+  assertEqual(bids.util.jsondecode(model_file('narps')), ...
               bids.util.jsondecode(filename));
 
   delete(filename);
@@ -41,9 +37,7 @@ end
 
 function test_model_get_nodes()
 
-  opt = setOptions('narps');
-
-  bm = bids.Model('file', opt.model.file);
+  bm = bids.Model('file', model_file('narps'));
 
   assertEqual(numel(bm.get_nodes), 5);
   assertEqual(numel(bm.get_nodes('Level', 'Run')), 1);
@@ -56,9 +50,7 @@ end
 
 function test_model_get_design_matrix()
 
-  opt = setOptions('narps');
-
-  bm = bids.Model('file', opt.model.file);
+  bm = bids.Model('file', model_file('narps'));
 
   assertEqual(bm.get_design_matrix('Name', 'run'), ...
               {'trials'
@@ -71,9 +63,7 @@ end
 
 function test_model_node_level_getters()
 
-  opt = setOptions('narps');
-
-  bm = bids.Model('file', opt.model.file);
+  bm = bids.Model('file', model_file('narps'));
 
   assertEqual(bm.get_dummy_contrasts('Name', 'run'), ...
               struct('Conditions', {{'gain'; 'loss'}}, ...
@@ -93,11 +83,11 @@ function test_model_empty_model()
   filename = fullfile(pwd, 'tmp', 'foo.json');
   bm.write(filename);
   assertEqual(bids.util.jsondecode(filename), ...
-              bids.util.jsondecode(fullfile(get_test_data_dir(), ...
-                                            '..', ...
-                                            'data', ...
-                                            'model', ...
-                                            'empty.json')));
+              bids.util.jsondecode(model_file('empty')));
   delete(filename);
 
+end
+
+function value = model_file(name)
+  value = fullfile(get_test_data_dir(), '..', 'data', 'model', ['model-' name '_smdl.json']);
 end
