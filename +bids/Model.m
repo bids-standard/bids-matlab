@@ -1,7 +1,7 @@
 classdef Model
   %
   %
-  % (C) Copyright 2020 CPP_SPM developers
+  % (C) Copyright 2021 Remi Gau
 
   properties
 
@@ -45,7 +45,7 @@ classdef Model
         obj.Name = 'empty_model';
         obj.Description = 'This is an empty BIDS stats model.';
         obj.Input = struct('task', '');
-        obj.Nodes{1} = Model.empty_node('run');
+        obj.Nodes{1} = bids.Model.empty_node('run');
 
         obj = update(obj);
 
@@ -244,30 +244,31 @@ classdef Model
 
   end
 
-  methods(Static)
+  methods (Static)
+
     function node = empty_node(level)
 
       node =  struct('Level', [upper(level(1)) level(2:end)], ...
                      'Name', [level], ...
-                     'Transformations', {Model.empty_transformations()}, ...
-                     'Model', Model.empty_model(), ...
+                     'Transformations', {bids.Model.empty_transformations()}, ...
+                     'Model', bids.Model.empty_model(), ...
                      'Contrasts', struct('Name', '', ...
                                          'ConditionList', {{''}}, ...
                                          'Weights', {{''}}, ...
                                          'Test', ''), ...
                      'DummyContrasts',  struct('Test', 't', ...
                                                'Contrasts', {{''}}));
-    
+
     end
 
     function transformations = empty_transformations()
 
       transformations = struct('Transformer', '', ...
-                              'Instructions', {{
-                                                struct('Name', '', ...
-                                                       'Inputs', {{''}})
-                                               }});
-    
+                               'Instructions', {{
+                                                 struct('Name', '', ...
+                                                        'Inputs', {{''}})
+                                                }});
+
     end
 
     function model = empty_model()
@@ -284,8 +285,6 @@ classdef Model
 
     end
 
-
   end
-
 
 end

@@ -1,6 +1,6 @@
 % (C) Copyright 2020 CPP_SPM developers
 
-function test_suite = test_model %#ok<*STOUT>
+function test_suite = test_bids_model %#ok<*STOUT>
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine
@@ -12,7 +12,7 @@ function test_model_basic()
 
   opt = setOptions('narps');
 
-  bm = Model('file', opt.model.file);
+  bm = bids.Model('file', opt.model.file);
 
   assertEqual(bm.Name, 'NARPS');
   assertEqual(bm.Description, 'NARPS Analysis model');
@@ -28,7 +28,7 @@ function test_model_write()
 
   opt = setOptions('narps');
 
-  bm = Model('file', opt.model.file);
+  bm = bids.Model('file', opt.model.file);
 
   filename = fullfile(pwd, 'tmp', 'foo.json');
   bm.write(filename);
@@ -43,7 +43,7 @@ function test_model_get_nodes()
 
   opt = setOptions('narps');
 
-  bm = Model('file', opt.model.file);
+  bm = bids.Model('file', opt.model.file);
 
   assertEqual(numel(bm.get_nodes), 5);
   assertEqual(numel(bm.get_nodes('Level', 'Run')), 1);
@@ -58,7 +58,7 @@ function test_model_get_design_matrix()
 
   opt = setOptions('narps');
 
-  bm = Model('file', opt.model.file);
+  bm = bids.Model('file', opt.model.file);
 
   assertEqual(bm.get_design_matrix('Name', 'run'), ...
               {'trials'
@@ -73,7 +73,7 @@ function test_model_node_level_getters()
 
   opt = setOptions('narps');
 
-  bm = Model('file', opt.model.file);
+  bm = bids.Model('file', opt.model.file);
 
   assertEqual(bm.get_dummy_contrasts('Name', 'run'), ...
               struct('Conditions', {{'gain'; 'loss'}}, ...
@@ -89,9 +89,15 @@ end
 
 function test_model_empty_model()
 
-  bm = Model('init', true);
-  bm.write('tmp.json');
-  assertEqual(bids.util.jsondecode('tmp.json'), ...
-              bids.util.jsondecode('empty.json'));
+  bm = bids.Model('init', true);
+  filename = fullfile(pwd, 'tmp', 'foo.json');
+  bm.write(filename);
+  assertEqual(bids.util.jsondecode(filename), ...
+              bids.util.jsondecode(fullfile(get_test_data_dir(), ...
+                                            '..', ...
+                                            'data', ...
+                                            'model', ...
+                                            'empty.json')));
+  delete(filename);
 
 end
