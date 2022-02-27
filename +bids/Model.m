@@ -220,7 +220,6 @@ classdef Model
       %
       % value = bm.get_transformations('Name', 'node_name')
       %
-
       value = [];
       node = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -233,7 +232,6 @@ classdef Model
       %
       % value = bm.get_dummy_contrasts('Name', 'node_name')
       %
-
       value = [];
       node = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -246,7 +244,6 @@ classdef Model
       %
       % value = bm.get_contrasts('Name', 'node_name')
       %
-
       value = [];
       node = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);

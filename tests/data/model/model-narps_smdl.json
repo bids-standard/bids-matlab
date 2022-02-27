@@ -1,0 +1,193 @@
+{
+    "Name": "NARPS",
+    "Description": "NARPS Analysis model",
+    "BIDSModelVersion": "1.0.0",
+    "Input": {
+        "task": "MGT"
+    },
+    "Nodes": [
+        {
+            "Level": "Run",
+            "Name": "run",
+            "GroupBy": [
+                "run",
+                "subject"
+            ],
+            "Transformations": {
+                "Transformer": "pybids-transforms-v1",
+                "Instructions": [
+                    {
+                        "Name": "Threshold",
+                        "Input": [
+                            "gain"
+                        ],
+                        "Binarize": true,
+                        "Output": [
+                            "trials"
+                        ]
+                    },
+                    {
+                        "Name": "Scale",
+                        "Input": [
+                            "gain",
+                            "loss",
+                            "RT"
+                        ],
+                        "Demean": true,
+                        "Rescale": false,
+                        "Output": [
+                            "gain",
+                            "loss",
+                            "demeaned_RT"
+                        ]
+                    },
+                    {
+                        "Name": "Convolve",
+                        "Model": "spm",
+                        "Input": [
+                            "trials",
+                            "gain",
+                            "loss",
+                            "demeaned_RT"
+                        ]
+                    }
+                ]
+            },
+            "Model": {
+                "X": [
+                    "trials",
+                    "gain",
+                    "loss",
+                    "demeaned_RT",
+                    1
+                ]
+            },
+            "DummyContrasts": {
+                "Conditions": [
+                    "gain",
+                    "loss"
+                ],
+                "Test": "t"
+            }
+        },
+        {
+            "Level": "Subject",
+            "Name": "subject",
+            "GroupBy": [
+                "subject",
+                "contrast"
+            ],
+            "Model": {
+                "X": [
+                    1
+                ],
+                "Type": "Meta"
+            },
+            "DummyContrasts": {
+                "Test": "t"
+            }
+        },
+        {
+            "Level": "Dataset",
+            "Name": "between-groups",
+            "GroupBy": [
+                "contrast"
+            ],
+            "Model": {
+                "X": [
+                    1,
+                    "group"
+                ],
+                "Formula": "0 + C(group)"
+            },
+            "Contrasts": [
+                {
+                    "Name": "range_vs_indiference",
+                    "ConditionList": [
+                        "C(group)[T.equalRange]",
+                        "C(group)[T.equalIndifference]"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Test": "t"
+                }
+            ]
+        },
+        {
+            "Level": "Dataset",
+            "Name": "positive",
+            "GroupBy": [
+                "contrast",
+                "group"
+            ],
+            "Model": {
+                "X": [
+                    1
+                ]
+            },
+            "Contrasts": [
+                {
+                    "Name": "positive",
+                    "ConditionList": [
+                        1
+                    ],
+                    "Weights": [
+                        1
+                    ],
+                    "Test": "t"
+                }
+            ]
+        },
+        {
+            "Level": "Dataset",
+            "Name": "negative",
+            "GroupBy": [
+                "contrast",
+                "group"
+            ],
+            "Model": {
+                "X": [
+                    1
+                ]
+            },
+            "Contrasts": [
+                {
+                    "Name": "negative",
+                    "ConditionList": [
+                        1
+                    ],
+                    "Weights": [
+                        -1
+                    ],
+                    "Test": "t"
+                }
+            ]
+        }
+    ],
+    "Edges": [
+        {
+            "Source": "run",
+            "Destination": "subject"
+        },
+        {
+            "Source": "subject",
+            "Destination": "positive"
+        },
+        {
+            "Source": "subject",
+            "Destination": "negative",
+            "Filter": {
+                "contrast": "loss"
+            }
+        },
+        {
+            "Source": "subject",
+            "Destination": "between-groups",
+            "Filter": {
+                "contrast": "loss"
+            }
+        }
+    ]
+}

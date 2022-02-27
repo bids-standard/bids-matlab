@@ -1,6 +1,5 @@
 
 *.tsv
-*.json
 
 dummy_ds
 output
