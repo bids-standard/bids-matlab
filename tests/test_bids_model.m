@@ -93,10 +93,8 @@ function test_model_default_model()
   pth_bids_example = get_test_data_dir();
   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
 
-  bm = bids.Model('init', true);
+  bm = bids.Model();
   bm = bm.default(BIDS);
-
-  bm;
 
   filename = fullfile(pwd, 'tmp', 'rhymejudgement.json');
   bm.write(filename);
