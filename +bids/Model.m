@@ -271,7 +271,9 @@ classdef Model
 
     %% Other
     function obj = default(obj, varargin)
-
+      %
+      % bm = bm.default(BIDS)
+      %
       args = inputParser;
       args.addRequired('layout');
       args.parse(varargin{:});
@@ -287,6 +289,18 @@ classdef Model
       obj.Nodes{1}.Model.X = trial_type_list;
       obj.Nodes{1}.Model.HRF.Variables = trial_type_list;
       obj.Nodes{1}.DummyContrasts.Contrasts = trial_type_list;
+
+      sessions = bids.query(args.Results.layout, 'sessions', 'task', tasks);
+      if ~isempty(sessions)
+        obj.Nodes{end + 1, 1} = bids.Model.empty_node('session');
+      end
+      obj.Nodes{end + 1, 1} = bids.Model.empty_node('subject');
+      obj.Nodes{end + 1, 1} = bids.Model.empty_node('dataset');
+
+      for i = 1:(numel(obj.Nodes) - 1)
+        obj.Edges{i, 1} = struct('Source', obj.Nodes{i, 1}.Name, ...
+                                 'Destination', obj.Nodes{i + 1, 1}.Name);
+      end
 
       obj = obj.update();
 
@@ -307,7 +321,7 @@ classdef Model
 
     function write(obj, filename)
       %
-      % bm.update(filename)
+      % bm.write(filename)
       %
       bids.util.mkdir(fileparts(filename));
       bids.util.jsonencode(filename, obj.content);

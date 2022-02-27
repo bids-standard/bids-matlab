@@ -62,9 +62,120 @@
           "word"
         ]
       }
+    },
+    {
+      "Level": "Subject",
+      "Name": "subject",
+      "Transformations": {
+        "Transformer": "",
+        "Instructions": [
+          {
+            "Name": "",
+            "Inputs": [
+              ""
+            ]
+          }
+        ]
+      },
+      "Model": {
+        "X": [
+          ""
+        ],
+        "Type": "glm",
+        "HRF": {
+          "Variables": [
+            ""
+          ],
+          "Model": "DoubleGamma"
+        },
+        "Options": {
+          "HighPassFilterCutoffHz": 0.008,
+          "LowPassFilterCutoffHz": null,
+          "Mask": {
+            "desc": "brain",
+            "suffix": "mask"
+          }
+        },
+        "Software": ""
+      },
+      "Contrasts": {
+        "Name": "",
+        "ConditionList": [
+          ""
+        ],
+        "Weights": [
+          ""
+        ],
+        "Test": ""
+      },
+      "DummyContrasts": {
+        "Test": "t",
+        "Contrasts": [
+          ""
+        ]
+      }
+    },
+    {
+      "Level": "Dataset",
+      "Name": "dataset",
+      "Transformations": {
+        "Transformer": "",
+        "Instructions": [
+          {
+            "Name": "",
+            "Inputs": [
+              ""
+            ]
+          }
+        ]
+      },
+      "Model": {
+        "X": [
+          ""
+        ],
+        "Type": "glm",
+        "HRF": {
+          "Variables": [
+            ""
+          ],
+          "Model": "DoubleGamma"
+        },
+        "Options": {
+          "HighPassFilterCutoffHz": 0.008,
+          "LowPassFilterCutoffHz": null,
+          "Mask": {
+            "desc": "brain",
+            "suffix": "mask"
+          }
+        },
+        "Software": ""
+      },
+      "Contrasts": {
+        "Name": "",
+        "ConditionList": [
+          ""
+        ],
+        "Weights": [
+          ""
+        ],
+        "Test": ""
+      },
+      "DummyContrasts": {
+        "Test": "t",
+        "Contrasts": [
+          ""
+        ]
+      }
     }
   ],
   "Edges": [
-    "RECOMMENDED"
+    {
+      "Source": "run",
+      "Destination": "subject"
+    },
+    {
+      "Source": "subject",
+      "Destination": "dataset"
+    }
   ]
 }
