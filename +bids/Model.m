@@ -284,7 +284,7 @@ classdef Model
       obj.Name = sprintf('default_%s_model', strjoin(tasks, '_'));
       obj.Description = sprintf('default BIDS stats model for %s task', strjoin(tasks, '/'));
 
-      trial_type_list = list_all_trial_types(args.Results.layout, tasks);
+      trial_type_list = bids.internal.list_all_trial_types(args.Results.layout, tasks);
 
       obj.Nodes{1}.Model.X = trial_type_list;
       obj.Nodes{1}.Model.HRF.Variables = trial_type_list;
@@ -377,31 +377,6 @@ classdef Model
 
     end
 
-  end
-
-end
-
-function trial_type_list = list_all_trial_types(BIDS, task)
-  % list all the *events.tsv files for that task and make a lis of all the
-  % trial_types
-  event_files = bids.query(BIDS, 'data', ...
-                           'suffix', 'events', ...
-                           'extension', '.tsv', ...
-                           'task', task);
-
-  trial_type_list = {};
-
-  for i = 1:size(event_files, 1)
-    tmp = bids.util.tsvread(event_files{i, 1});
-    for j = 1:numel(tmp.trial_type)
-      trial_type_list{end + 1, 1} = tmp.trial_type{j}; %#ok<*AGROW>
-    end
-  end
-
-  trial_type_list = unique(trial_type_list);
-  idx = ismember(trial_type_list, 'trial_type');
-  if any(idx)
-    trial_type_list{idx} = [];
   end
 
 end
