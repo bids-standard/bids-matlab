@@ -66,7 +66,7 @@ function test_model_node_level_getters()
   bm = bids.Model('file', model_file('narps'));
 
   assertEqual(bm.get_dummy_contrasts('Name', 'run'), ...
-              struct('Conditions', {{'gain'; 'loss'}}, ...
+              struct('Contrasts', {{'gain'; 'loss'}}, ...
                      'Test', 't'));
 
   assertEqual(fieldnames(bm.get_transformations('Name', 'run')), ...
@@ -84,6 +84,25 @@ function test_model_empty_model()
   bm.write(filename);
   assertEqual(bids.util.jsondecode(filename), ...
               bids.util.jsondecode(model_file('empty')));
+  delete(filename);
+
+end
+
+function test_model_default_model()
+
+  pth_bids_example = get_test_data_dir();
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
+
+  bm = bids.Model('init', true);
+  bm = bm.default(BIDS);
+
+  bm;
+
+  filename = fullfile(pwd, 'tmp', 'rhymejudgement.json');
+  bm.write(filename);
+
+  assertEqual(bids.util.jsondecode(filename), ...
+              bids.util.jsondecode(model_file('rhymejudgement')));
   delete(filename);
 
 end

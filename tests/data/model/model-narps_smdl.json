@@ -63,7 +63,7 @@
                 ]
             },
             "DummyContrasts": {
-                "Conditions": [
+                "Contrasts": [
                     "gain",
                     "loss"
                 ],

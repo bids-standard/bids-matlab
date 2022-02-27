@@ -1,0 +1,70 @@
+{
+  "Name": "default_rhymejudgment_model",
+  "BIDSModelVersion": "1.0.0",
+  "Description": "default BIDS stats model for rhymejudgment task",
+  "Input": {
+    "task": [
+      "rhymejudgment"
+    ]
+  },
+  "Nodes": [
+    {
+      "Level": "Run",
+      "Name": "run",
+      "Transformations": {
+        "Transformer": "",
+        "Instructions": [
+          {
+            "Name": "",
+            "Inputs": [
+              ""
+            ]
+          }
+        ]
+      },
+      "Model": {
+        "X": [
+          "pseudoword",
+          "word"
+        ],
+        "Type": "glm",
+        "HRF": {
+          "Variables": [
+            "pseudoword",
+            "word"
+          ],
+          "Model": "DoubleGamma"
+        },
+        "Options": {
+          "HighPassFilterCutoffHz": 0.008,
+          "LowPassFilterCutoffHz": null,
+          "Mask": {
+            "desc": "brain",
+            "suffix": "mask"
+          }
+        },
+        "Software": ""
+      },
+      "Contrasts": {
+        "Name": "",
+        "ConditionList": [
+          ""
+        ],
+        "Weights": [
+          ""
+        ],
+        "Test": ""
+      },
+      "DummyContrasts": {
+        "Test": "t",
+        "Contrasts": [
+          "pseudoword",
+          "word"
+        ]
+      }
+    }
+  ],
+  "Edges": [
+    "RECOMMENDED"
+  ]
+}
