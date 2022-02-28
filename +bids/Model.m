@@ -126,6 +126,9 @@ classdef Model
         else
           obj = get_edges_from_nodes(obj);
         end
+
+        obj.validate();
+
       end
 
     end
@@ -174,6 +177,9 @@ classdef Model
 
     function value = get.Nodes(obj)
       value = obj.Nodes;
+      if ~iscell(value)
+        value = {value};
+      end
     end
 
     function [value, idx] = get_nodes(obj, varargin)
@@ -184,6 +190,7 @@ classdef Model
       %
       if isempty(varargin)
         value = obj.Nodes;
+
       else
 
         value = {};
@@ -235,6 +242,17 @@ classdef Model
         end
 
       end
+
+      if ~iscell(value)
+        value = {value};
+      end
+    end
+
+    function value = get.Edges(obj)
+      value = obj.Edges;
+      if isstruct(value)
+        value = {value};
+      end
     end
 
     function obj = get_edges_from_nodes(obj)
@@ -242,6 +260,94 @@ classdef Model
         obj.Edges{i, 1} = struct('Source', obj.Nodes{i, 1}.Name, ...
                                  'Destination', obj.Nodes{i + 1, 1}.Name);
       end
+    end
+
+    function status = validate(obj)
+      %
+      % Very light validation of fields that were not checked on loading
+      %
+
+      REQUIRED_NODES_FIELDS = {'Level', 'Name', 'Model'};
+      REQUIRED_TRANSFORMATIONS_FIELDS = {'Transformer', 'Instructions'};
+      REQUIRED_MODEL_FIELDS = {'Type', 'X'};
+      REQUIRED_HRF_FIELDS = {'Variables', 'Model'};
+      REQUIRED_CONTRASTS_FIELDS = {'Name', 'ConditionList'};
+      REQUIRED_DUMMY_CONTRASTS_FIELDS = {'Contrasts'};
+      REQUIRED_EDGES_FIELDS = {'Source', 'Destination'};
+
+      status = true;
+
+      % Nodes
+      nodes = obj.Nodes;
+      for i = 1:(numel(nodes))
+
+        fields_present = fieldnames(nodes{i, 1});
+        if any(~ismember(REQUIRED_NODES_FIELDS, fields_present))
+          status =  false;
+          obj.model_validation_error('Nodes', REQUIRED_NODES_FIELDS);
+        end
+
+        check = struct('Model', {REQUIRED_MODEL_FIELDS}, ...
+                       'Transformations', {REQUIRED_TRANSFORMATIONS_FIELDS}, ...
+                       'DummyConstrasts', {REQUIRED_DUMMY_CONTRASTS_FIELDS}, ...
+                       'Contrasts', {REQUIRED_CONTRASTS_FIELDS});
+
+        field_to_check = fieldnames(check);
+
+        for j = 1:numel(field_to_check)
+
+          if ~isfield(nodes{i, 1}, field_to_check{j})
+            continue
+          end
+
+          fields_present = fieldnames(nodes{i, 1}.(field_to_check{j}));
+          if any(~ismember(check.(field_to_check{j}), fields_present))
+            status = false;
+            obj.model_validation_error(field_to_check{j}, check.(field_to_check{j}));
+          end
+
+          if strcmp(field_to_check{j}, 'Model')
+
+            if isfield(nodes{i, 1}.Model, 'HRF')
+
+              fields_present = fieldnames(nodes{i, 1}.Model.HRF);
+              if any(~ismember(check.(field_to_check{j}), fields_present))
+                status =  false;
+                obj.model_validation_error('HRF', REQUIRED_HRF_FIELDS);
+              end
+
+            end
+
+          end
+
+        end
+
+      end
+
+      % Edges
+      edges = obj.Edges;
+      if ~isempty(edges)
+
+        for i = 1:(numel(edges))
+
+          if ~isstruct(edges{i, 1})
+            status =  false;
+            obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
+
+          else
+
+            fields_present = fieldnames(edges{i, 1});
+            if any(~ismember(REQUIRED_EDGES_FIELDS, fields_present))
+              status =  false;
+              obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
+            end
+
+          end
+
+        end
+
+      end
+
     end
 
     %% Node level methods
@@ -331,7 +437,7 @@ classdef Model
       obj.Nodes{end + 1, 1} = bids.Model.empty_node('dataset');
 
       obj = get_edges_from_nodes(obj);
-
+      obj.validate();
       obj = obj.update();
 
     end
@@ -405,6 +511,20 @@ classdef Model
                                                       'suffix', 'mask')), ...
                      'Software', '');
 
+    end
+
+  end
+
+  methods (Access = protected)
+
+    function model_validation_error(obj, key, required_fields)
+      bids.internal.error_handling(mfilename(), ...
+                                   ['Missing' key 'RequiredField'], ...
+                                   sprintf('%s require the fields: %s.', ...
+                                           key, ...
+                                           strjoin(required_fields, ', ')), ...
+                                   obj.tolerant, ...
+                                   obj.verbose);
     end
 
   end

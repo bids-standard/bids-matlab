@@ -8,6 +8,25 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_validate()
+
+  bm = bids.Model();
+  assertWarning(@()bm.validate(), 'Model:MissingEdgesRequiredField');
+
+  bm = bids.Model();
+  bm.Nodes{1} = rmfield(bm.Nodes{1}, 'Name');
+  assertWarning(@()bm.validate(), 'Model:MissingNodesRequiredField');
+
+  bm = bids.Model();
+  bm.Nodes{1}.Model = rmfield(bm.Nodes{1}.Model, 'X');
+  assertWarning(@()bm.validate(), 'Model:MissingModelRequiredField');
+
+  bm = bids.Model();
+  bm.Edges{1} = struct('Source', 'foo');
+  assertWarning(@()bm.validate(), 'Model:MissingEdgesRequiredField');
+
+end
+
 function test_model_basic()
 
   bm = bids.Model('file', model_file('narps'));
