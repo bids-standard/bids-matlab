@@ -29,16 +29,19 @@ classdef Model
     content = ''
 
     Name = 'REQUIRED'
+
     Description = 'RECOMMENDED'
+
     BIDSModelVersion = '1.0.0'
+
     Input = 'REQUIRED'
+
     Nodes =  {'REQUIRED'}
+
     Edges = {'RECOMMENDED'}
 
-  end
-
-  properties (SetAccess = private)
     tolerant = true
+
     verbose = true
 
   end
@@ -311,7 +314,7 @@ classdef Model
             if isfield(nodes{i, 1}.Model, 'HRF')
 
               fields_present = fieldnames(nodes{i, 1}.Model.HRF);
-              if any(~ismember(check.(field_to_check{j}), fields_present))
+              if any(~ismember(REQUIRED_HRF_FIELDS, fields_present))
                 status =  false;
                 obj.model_validation_error('HRF', REQUIRED_HRF_FIELDS);
               end
@@ -519,7 +522,7 @@ classdef Model
 
     function model_validation_error(obj, key, required_fields)
       bids.internal.error_handling(mfilename(), ...
-                                   ['Missing' key 'RequiredField'], ...
+                                   ['missingField'], ...
                                    sprintf('%s require the fields: %s.', ...
                                            key, ...
                                            strjoin(required_fields, ', ')), ...

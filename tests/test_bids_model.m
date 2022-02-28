@@ -8,28 +8,56 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_default_model()
+
+  if bids.internal.is_octave() && bids.internal.is_github_ci()
+    % TODO fix for octave in CI
+    return
+  end
+
+  pth_bids_example = get_test_data_dir();
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
+
+  bm = bids.Model();
+  bm = bm.default(BIDS);
+
+  filename = fullfile(pwd, 'tmp', 'rhymejudgement.json');
+  bm.write(filename);
+
+  assertEqual(bids.util.jsondecode(filename), ...
+              bids.util.jsondecode(model_file('rhymejudgement')));
+  delete(filename);
+
+end
+
 function test_model_validate()
 
   bm = bids.Model();
-  assertWarning(@()bm.validate(), 'Model:MissingEdgesRequiredField');
-
-  bm = bids.Model();
   bm.Nodes{1} = rmfield(bm.Nodes{1}, 'Name');
-  assertWarning(@()bm.validate(), 'Model:MissingNodesRequiredField');
+  assertWarning(@()bm.validate(), 'Model:missingField');
 
   bm = bids.Model();
   bm.Nodes{1}.Model = rmfield(bm.Nodes{1}.Model, 'X');
-  assertWarning(@()bm.validate(), 'Model:MissingModelRequiredField');
+  assertWarning(@()bm.validate(), 'Model:missingField');
+
+  bm.Nodes{1}.Transformations = rmfield(bm.Nodes{1}.Transformations, 'Transformer');
+  assertWarning(@()bm.validate(), 'Model:missingField');
+
+  bm.Nodes{1}.Contrasts = rmfield(bm.Nodes{1}.Contrasts, 'ConditionList');
+  assertWarning(@()bm.validate(), 'Model:missingField');
+
+  bm = bids.Model();
+  assertWarning(@()bm.validate(), 'Model:missingField');
 
   bm = bids.Model();
   bm.Edges{1} = struct('Source', 'foo');
-  assertWarning(@()bm.validate(), 'Model:MissingEdgesRequiredField');
+  assertWarning(@()bm.validate(), 'Model:missingField');
 
 end
 
 function test_model_basic()
 
-  bm = bids.Model('file', model_file('narps'));
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
   assertEqual(bm.Name, 'NARPS');
   assertEqual(bm.Description, 'NARPS Analysis model');
@@ -43,7 +71,7 @@ end
 
 function test_model_write()
 
-  bm = bids.Model('file', model_file('narps'));
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
   filename = fullfile(pwd, 'tmp', 'foo.json');
   bm.write(filename);
@@ -56,20 +84,21 @@ end
 
 function test_model_get_nodes()
 
-  bm = bids.Model('file', model_file('narps'));
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
   assertEqual(numel(bm.get_nodes), 5);
   assertEqual(numel(bm.get_nodes('Level', 'Run')), 1);
   assertEqual(numel(bm.get_nodes('Level', 'Dataset')), 3);
   assertEqual(numel(bm.get_nodes('Name', 'negative')), 1);
 
+  bm.verbose = true;
   assertWarning(@()bm.get_nodes('Name', 'foo'), 'Model:missingNode');
 
 end
 
 function test_model_get_design_matrix()
 
-  bm = bids.Model('file', model_file('narps'));
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
   assertEqual(bm.get_design_matrix('Name', 'run'), ...
               {'trials'
@@ -82,7 +111,7 @@ end
 
 function test_model_node_level_getters()
 
-  bm = bids.Model('file', model_file('narps'));
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
   assertEqual(bm.get_dummy_contrasts('Name', 'run'), ...
               struct('Contrasts', {{'gain'; 'loss'}}, ...
@@ -103,28 +132,6 @@ function test_model_empty_model()
   bm.write(filename);
   assertEqual(bids.util.jsondecode(filename), ...
               bids.util.jsondecode(model_file('empty')));
-  delete(filename);
-
-end
-
-function test_model_default_model()
-
-  if bids.internal.is_octave() && bids.internal.is_github_ci()
-    % TODO fix for octave in CI
-    return
-  end
-
-  pth_bids_example = get_test_data_dir();
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
-
-  bm = bids.Model();
-  bm = bm.default(BIDS);
-
-  filename = fullfile(pwd, 'tmp', 'rhymejudgement.json');
-  bm.write(filename);
-
-  assertEqual(bids.util.jsondecode(filename), ...
-              bids.util.jsondecode(model_file('rhymejudgement')));
   delete(filename);
 
 end
