@@ -78,7 +78,11 @@ classdef Model
         obj.content = bids.util.jsondecode(args.Results.file);
 
         if ~isfield(obj.content, 'Name')
-          error('Name required');
+          bids.internal.error_handling(mfilename(), ...
+                                       'nameRequired', ...
+                                       'Name field required', ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
         else
           obj.Name = obj.content.Name;
         end
@@ -88,28 +92,39 @@ classdef Model
         end
 
         if ~isfield(obj.content, 'BIDSModelVersion')
-          error('BIDSModelVersion required');
+          bids.internal.error_handling(mfilename(), ...
+                                       'BIDSModelVersionRequired', ...
+                                       'BIDSModelVersion field required', ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
         else
           obj.BIDSModelVersion = obj.content.BIDSModelVersion;
         end
 
         if ~isfield(obj.content, 'Input')
-          error('Input required');
+          bids.internal.error_handling(mfilename(), ...
+                                       'InputRequired', ...
+                                       'Input field required', ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
         else
           obj.Input = obj.content.Input;
         end
 
         if ~isfield(obj.content, 'Nodes')
-          error('Nodes required');
+          bids.internal.error_handling(mfilename(), ...
+                                       'NodesRequired', ...
+                                       'Nodes field required', ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
         else
           obj.Nodes = obj.content.Nodes;
         end
 
-        obj;
-
         if isfield(obj.content, 'Edges')
           obj.Edges = obj.content.Edges;
-          % TODO when no Edges assume all Nodes follow each other
+        else
+          obj = get_edges_from_nodes(obj);
         end
       end
 
@@ -137,7 +152,15 @@ classdef Model
     end
 
     function obj = set.Edges(obj, edges)
-      obj.Edges = edges;
+      if nargin < 2
+        edges = [];
+      end
+      if isempty(edges)
+        % assume nodes follow each other linearly
+        obj = get_edges_from_nodes(obj);
+      else
+        obj.Edges = edges;
+      end
     end
 
     %% Getters
@@ -185,7 +208,7 @@ classdef Model
           idx = ismember(levels, Level);
         end
 
-        Name = lower(args.Results.Name);
+        Name = lower(args.Results.Name);  %#ok<*PROPLC>
         if ~strcmp(Name, '')
           if ischar(Name)
             Name = {Name};
@@ -193,7 +216,7 @@ classdef Model
           if iscell(obj.Nodes)
             names = cellfun(@(x) lower(x.Name), obj.Nodes, 'UniformOutput', false);
           elseif isstruct(obj.Nodes)
-            levels = lower({obj.Nodes.Name}');
+            names = lower({obj.Nodes.Name}');
           end
           idx = ismember(names, Name);
         end
@@ -211,6 +234,13 @@ classdef Model
                                        obj.verbose);
         end
 
+      end
+    end
+
+    function obj = get_edges_from_nodes(obj)
+      for i = 1:(numel(obj.Nodes) - 1)
+        obj.Edges{i, 1} = struct('Source', obj.Nodes{i, 1}.Name, ...
+                                 'Destination', obj.Nodes{i + 1, 1}.Name);
       end
     end
 
@@ -265,7 +295,7 @@ classdef Model
       %
       % value = bm.get_design_matrix('Name', 'node_name')
       %
-      [model, idx] = get_model(obj, varargin{:});
+      model = get_model(obj, varargin{:});
       value = model.X;
     end
 
@@ -300,10 +330,7 @@ classdef Model
       obj.Nodes{end + 1, 1} = bids.Model.empty_node('subject');
       obj.Nodes{end + 1, 1} = bids.Model.empty_node('dataset');
 
-      for i = 1:(numel(obj.Nodes) - 1)
-        obj.Edges{i, 1} = struct('Source', obj.Nodes{i, 1}.Name, ...
-                                 'Destination', obj.Nodes{i + 1, 1}.Name);
-      end
+      obj = get_edges_from_nodes(obj);
 
       obj = obj.update();
 
@@ -340,7 +367,7 @@ classdef Model
       %
 
       node =  struct('Level', [upper(level(1)) level(2:end)], ...
-                     'Name', [level], ...
+                     'Name', level, ...
                      'Transformations', {bids.Model.empty_transformations()}, ...
                      'Model', bids.Model.empty_model(), ...
                      'Contrasts', struct('Name', '', ...
