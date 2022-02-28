@@ -368,7 +368,33 @@ classdef File
       args.addParameter('dry_run', true, @islogical);
       args.addParameter('force', false, @islogical);
       args.addParameter('verbose', []);
+      args.addParameter('spec', struct([]), @isstruct);
       args.parse(varargin{:});
+
+      if ~isempty(args.Results.spec)
+        spec = args.Results.spec;
+        if isfield(spec, 'prefix')
+          obj.prefix = spec.prefix;
+        end
+        if isfield(spec, 'suffix')
+          obj.suffix = spec.suffix;
+        end
+        if isfield(spec, 'ext')
+          obj.extension = spec.ext;
+        end
+        if isfield(spec, 'entities')
+          entities = fieldnames(spec.entities); %#ok<*PROPLC>
+          for i = 1:numel(entities)
+            obj = obj.set_entity(entities{i}, ...
+                                 bids.internal.camel_case(spec.entities.(entities{i})));
+          end
+        end
+        if isfield(spec, 'entity_order')
+          obj = obj.reorder_entities(spec.entity_order);
+        end
+
+        obj = obj.update;
+      end
 
       if ~isempty(args.Results.verbose) && islogical(args.Results.verbose)
         obj.verbose = args.Results.verbose;
@@ -384,7 +410,7 @@ classdef File
           movefile(obj.path, output_file);
           obj.path = output_file;
         else
-          bids.internal.error_handling(mfilename(), 'fileAlreadyExist', ...
+          bids.internal.error_handling(mfilename(), 'fileAlreadyExists', ...
                                        sprintf(['file %s already exist. ', ...
                                                 'Use ''force'' to overwrite.'], ...
                                                output_file), ...

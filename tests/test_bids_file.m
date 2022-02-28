@@ -48,6 +48,24 @@ function test_rename()
 
 end
 
+function test_rename_with_spec()
+
+  input_filename = 'wuasub-01_task-faceRecognition_bold.nii';
+  output_filename = 'sub-01_task-faceRecognition_label-GM_desc-bold_dseg.json';
+  file = bids.File(input_filename, 'use_schema', false);
+
+  spec.prefix = '';
+  spec.entities.desc = 'bold';
+  spec.entities.label = 'GM';
+  spec.suffix = 'dseg';
+  spec.ext = '.json';
+  spec.entity_order = {'sub', 'task', 'label', 'desc'};
+
+  file = file.rename('spec', spec);
+  assertEqual(file.filename, output_filename);
+
+end
+
 function test_rename_force()
 
   input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
@@ -66,7 +84,7 @@ function test_rename_force()
 
   file.prefix = '';
   file.entities.desc = 'preproc';
-  assertWarning(@() file.rename('dry_run', false), 'File:fileAlreadyExist');
+  assertWarning(@() file.rename('dry_run', false), 'File:fileAlreadyExists');
 
   file = file.rename('dry_run', false, 'verbose', false);
   assertEqual(exist(input_file, 'file'), 2);
@@ -78,6 +96,7 @@ function test_rename_force()
 
   teardown(input_file);
   teardown(output_file);
+
 end
 
 function test_camel_case()
