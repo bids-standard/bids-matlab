@@ -180,9 +180,6 @@ classdef Model
 
     function value = get.Nodes(obj)
       value = obj.Nodes;
-      if ~iscell(value)
-        value = {value};
-      end
     end
 
     function [value, idx] = get_nodes(obj, varargin)
@@ -235,7 +232,11 @@ classdef Model
         if any(idx)
           idx = find(idx);
           for i = 1:numel(idx)
-            value{end + 1} = obj.Nodes{idx};
+            if iscell(obj.Nodes)
+              value{end + 1} = obj.Nodes{idx};
+            elseif isstruct(obj.Nodes)
+              value{end + 1} = obj.Nodes(idx);
+            end
           end
         else
           msg = sprintf('Could not find a corresponding Node.');
@@ -253,9 +254,6 @@ classdef Model
 
     function value = get.Edges(obj)
       value = obj.Edges;
-      if isstruct(value)
-        value = {value};
-      end
     end
 
     function obj = get_edges_from_nodes(obj)
@@ -266,7 +264,11 @@ classdef Model
     end
 
     function value = node_names(obj)
-      value = cellfun(@(x) x.Name, obj.Nodes, 'UniformOutput', false);
+      if iscell(obj.Nodes)
+        value = cellfun(@(x) x.Name, obj.Nodes, 'UniformOutput', false);
+      else
+        value = {obj.Nodes.Name};
+      end
     end
 
     function status = validate(obj)
@@ -288,7 +290,13 @@ classdef Model
       nodes = obj.Nodes;
       for i = 1:(numel(nodes))
 
-        fields_present = fieldnames(nodes{i, 1});
+        if iscell(nodes)
+          this_node = nodes{i, 1};
+        elseif isstruct(nodes)
+          this_node = nodes(i);
+        end
+
+        fields_present = fieldnames(this_node);
         if any(~ismember(REQUIRED_NODES_FIELDS, fields_present))
           status =  false;
           obj.model_validation_error('Nodes', REQUIRED_NODES_FIELDS);
@@ -303,11 +311,12 @@ classdef Model
 
         for j = 1:numel(field_to_check)
 
-          if ~isfield(nodes{i, 1}, field_to_check{j})
+          if ~isfield(this_node, field_to_check{j})
             continue
           end
 
-          fields_present = fieldnames(nodes{i, 1}.(field_to_check{j}));
+          fields_present = bids.Model.get_keys(this_node.(field_to_check{j}));
+          %           fields_present = fieldnames(this_node.(field_to_check{j}));
           if any(~ismember(check.(field_to_check{j}), fields_present))
             status = false;
             obj.model_validation_error(field_to_check{j}, check.(field_to_check{j}));
@@ -315,9 +324,9 @@ classdef Model
 
           if strcmp(field_to_check{j}, 'Model')
 
-            if isfield(nodes{i, 1}.Model, 'HRF')
+            if isfield(this_node.Model, 'HRF')
 
-              fields_present = fieldnames(nodes{i, 1}.Model.HRF);
+              fields_present = fieldnames(this_node.Model.HRF);
               if any(~ismember(REQUIRED_HRF_FIELDS, fields_present))
                 status =  false;
                 obj.model_validation_error('HRF', REQUIRED_HRF_FIELDS);
@@ -337,22 +346,31 @@ classdef Model
 
         for i = 1:(numel(edges))
 
-          if ~isstruct(edges{i, 1})
-            status =  false;
-            obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
+          if iscell(edges)
 
-          else
+            this_edge = edges{i, 1};
 
-            fields_present = fieldnames(edges{i, 1});
-            if any(~ismember(REQUIRED_EDGES_FIELDS, fields_present))
+            if ~isstruct(this_edge)
               status =  false;
               obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
+              continue
+
             end
+
+          elseif isstruct(edges)
+
+            this_edge = edges(1);
 
           end
 
-          if ~ismember(edges{i, 1}.Source, obj.node_names()) || ...
-             ~ismember(edges{i, 1}.Destination, obj.node_names())
+          fields_present = fieldnames(this_edge);
+          if any(~ismember(REQUIRED_EDGES_FIELDS, fields_present))
+            status =  false;
+            obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
+          end
+
+          if ~ismember(this_edge.Source, obj.node_names()) || ...
+              ~ismember(this_edge.Destination, obj.node_names())
 
             bids.internal.error_handling(mfilename(), ...
                                          'edgeRefersToUnknownNode', ...
@@ -531,6 +549,14 @@ classdef Model
                                                       'suffix', 'mask')), ...
                      'Software', '');
 
+    end
+
+    function values = get_keys(cell_or_struct)
+      if iscell(cell_or_struct)
+        values = cellfun(@(x) fieldnames(x), cell_or_struct, 'UniformOutput', false);
+      elseif isstruct(cell_or_struct)
+        values = fieldnames(cell_or_struct);
+      end
     end
 
   end
