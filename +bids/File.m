@@ -76,6 +76,8 @@ classdef File
 
     modality = ''   % name of file modality
 
+    path = ''    % absolute path
+
     bids_path = ''  % path within dataset
 
     filename = ''   % bidsified name
@@ -116,6 +118,9 @@ classdef File
       if isempty(args.Results.input)
         f_struct = struct([]);
       elseif ischar(args.Results.input)
+        if ~isempty(fileparts(args.Results.input))
+          obj.path = args.Results.input;
+        end
         f_struct = bids.internal.parse_filename(args.Results.input);
       elseif isstruct(args.Results.input)
         f_struct = args.Results.input;
@@ -252,7 +257,7 @@ classdef File
       %
 
       fname = '';
-      path = '';
+      path = ''; %#ok<*PROP>
 
       fn = fieldnames(obj.entities);
 
@@ -355,6 +360,38 @@ classdef File
       end
       obj.entities = tmp;
       obj.update();
+
+    end
+
+    function obj = rename(obj, varargin)
+      args = inputParser;
+      args.addParameter('dry_run', true, @islogical);
+      args.addParameter('force', false, @islogical);
+      args.addParameter('verbose', []);
+      args.parse(varargin{:});
+
+      if ~isempty(args.Results.verbose) && islogical(args.Results.verbose)
+        obj.verbose = args.Results.verbose;
+      end
+
+      if obj.verbose
+        fprintf(1, '%s --> %s\n', obj.path, fullfile(fileparts(obj.path), obj.filename));
+      end
+
+      if ~args.Results.dry_run
+        output_file = fullfile(fileparts(obj.path), obj.filename);
+        if ~exist(output_file, 'file') || args.Results.force
+          movefile(obj.path, output_file);
+          obj.path = output_file;
+        else
+          bids.internal.error_handling(mfilename(), 'fileAlreadyExist', ...
+                                       sprintf(['file %s already exist. ', ...
+                                                'Use ''force'' to overwrite.'], ...
+                                               output_file), ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
+        end
+      end
 
     end
 

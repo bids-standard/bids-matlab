@@ -15,6 +15,71 @@ end
 %
 % end
 
+function test_rename()
+
+  input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  input_file = fullfile(fileparts(mfilename('fullpath')), input_filename);
+  output_filename = 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii';
+  output_file = fullfile(fileparts(mfilename('fullpath')), output_filename);
+
+  set_up(input_file);
+  teardown(output_file);
+
+  file = bids.File(input_file, 'use_schema', false, 'verbose', true);
+
+  assertEqual(file.path, input_file);
+
+  file.prefix = '';
+  file.entities.desc = 'preproc';
+  assertEqual(file.filename, output_filename);
+
+  file.rename();
+  assertEqual(exist(output_file, 'file'), 0);
+
+  file.rename('dry_run', true);
+  assertEqual(exist(output_file, 'file'), 0);
+
+  file = file.rename('dry_run', false);
+  assertEqual(exist(input_file, 'file'), 0);
+  assertEqual(exist(output_file, 'file'), 2);
+  assertEqual(file.path, output_file);
+
+  teardown(output_file);
+
+end
+
+function test_rename_force()
+
+  input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  input_file = fullfile(fileparts(mfilename('fullpath')), input_filename);
+  output_filename = 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii';
+  output_file = fullfile(fileparts(mfilename('fullpath')), output_filename);
+
+  set_up(input_file);
+  set_up(output_file);
+
+  system(sprintf('touch %s', input_file));
+  system(sprintf('touch %s', output_file));
+  file = bids.File(input_file, 'use_schema', false, 'verbose', true);
+
+  assertEqual(file.path, input_file);
+
+  file.prefix = '';
+  file.entities.desc = 'preproc';
+  assertWarning(@() file.rename('dry_run', false), 'File:fileAlreadyExist');
+
+  file = file.rename('dry_run', false, 'verbose', false);
+  assertEqual(exist(input_file, 'file'), 2);
+  assertEqual(exist(output_file, 'file'), 2);
+
+  file = file.rename('dry_run', false, 'force', true, 'verbose', false);
+  assertEqual(exist(input_file, 'file'), 0);
+  assertEqual(exist(output_file, 'file'), 2);
+
+  teardown(input_file);
+  teardown(output_file);
+end
+
 function test_camel_case()
 
   filename = 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii';
@@ -337,4 +402,17 @@ function test_validation()
                         'File:InvalidWord');
   assertExceptionThrown(@() bf.validate_word('abc-def', 'Word'), ...
                         'File:InvalidWord');
+end
+
+function set_up(filename)
+  if exist(filename, 'file')
+    delete(filename);
+  end
+  system(sprintf('touch %s', filename));
+end
+
+function teardown(filename)
+  if exist(filename, 'file')
+    delete(filename);
+  end
 end
