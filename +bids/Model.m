@@ -336,13 +336,13 @@ classdef Model
       obj.validate_edges();
 
     end
-    
+
     function validate_edges(obj)
-      
+
       REQUIRED_EDGES_FIELDS = {'Source', 'Destination'};
-      
+
       edges = obj.Edges;
-      
+
       if ~isempty(edges)
 
         for i = 1:(numel(edges))
