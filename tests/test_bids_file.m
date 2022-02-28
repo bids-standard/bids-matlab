@@ -15,6 +15,16 @@ end
 %
 % end
 
+function test_camel_case()
+
+  filename = 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+
+  file.entities.task = 'test bla';
+  assertEqual(file.filename, 'sub-01_ses-test_task-testBla_run-02_bold.nii');
+
+end
+
 function test_forbidden_entity()
 
   input.suffix = 'eeg';

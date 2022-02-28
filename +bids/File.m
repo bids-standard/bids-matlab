@@ -215,7 +215,7 @@ classdef File
       for ifn = 1:size(fn, 1)
         key = fn{ifn};
         obj.validate_word(key, 'Entity label');
-        val = entities.(key);
+        val = bids.internal.camel_case(entities.(key));
         if isempty(val)
           continue
         end
@@ -241,7 +241,7 @@ classdef File
       obj.validate_word(label, 'Entity label');
       obj.validate_word(value, 'Entity value');
 
-      obj.entities(1).(label) = value;
+      obj.entities(1).(label) = bids.internal.camel_case(value);
       obj.changed = true;
     end
 
@@ -258,7 +258,7 @@ classdef File
 
       for i = 1:size(fn, 1)
         key = fn{i};
-        val = obj.entities.(key);
+        val = bids.internal.camel_case(obj.entities.(key));
         if isempty(val)
           continue
         end
