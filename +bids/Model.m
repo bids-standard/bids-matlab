@@ -271,7 +271,7 @@ classdef Model
       end
     end
 
-    function status = validate(obj)
+    function validate(obj)
       %
       % Very light validation of fields that were not checked on loading
       %
@@ -282,9 +282,6 @@ classdef Model
       REQUIRED_HRF_FIELDS = {'Variables', 'Model'};
       REQUIRED_CONTRASTS_FIELDS = {'Name', 'ConditionList'};
       REQUIRED_DUMMY_CONTRASTS_FIELDS = {'Contrasts'};
-      REQUIRED_EDGES_FIELDS = {'Source', 'Destination'};
-
-      status = true;
 
       % Nodes
       nodes = obj.Nodes;
@@ -298,7 +295,6 @@ classdef Model
 
         fields_present = fieldnames(this_node);
         if any(~ismember(REQUIRED_NODES_FIELDS, fields_present))
-          status =  false;
           obj.model_validation_error('Nodes', REQUIRED_NODES_FIELDS);
         end
 
@@ -316,9 +312,7 @@ classdef Model
           end
 
           fields_present = bids.Model.get_keys(this_node.(field_to_check{j}));
-          %           fields_present = fieldnames(this_node.(field_to_check{j}));
           if any(~ismember(check.(field_to_check{j}), fields_present))
-            status = false;
             obj.model_validation_error(field_to_check{j}, check.(field_to_check{j}));
           end
 
@@ -328,7 +322,6 @@ classdef Model
 
               fields_present = fieldnames(this_node.Model.HRF);
               if any(~ismember(REQUIRED_HRF_FIELDS, fields_present))
-                status =  false;
                 obj.model_validation_error('HRF', REQUIRED_HRF_FIELDS);
               end
 
@@ -340,8 +333,16 @@ classdef Model
 
       end
 
-      % Edges
+      obj.validate_edges();
+
+    end
+    
+    function validate_edges(obj)
+      
+      REQUIRED_EDGES_FIELDS = {'Source', 'Destination'};
+      
       edges = obj.Edges;
+      
       if ~isempty(edges)
 
         for i = 1:(numel(edges))
@@ -351,7 +352,6 @@ classdef Model
             this_edge = edges{i, 1};
 
             if ~isstruct(this_edge)
-              status =  false;
               obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
               continue
 
@@ -365,7 +365,6 @@ classdef Model
 
           fields_present = fieldnames(this_edge);
           if any(~ismember(REQUIRED_EDGES_FIELDS, fields_present))
-            status =  false;
             obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
           end
 
