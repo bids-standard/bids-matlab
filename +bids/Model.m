@@ -333,7 +333,9 @@ classdef Model
 
       end
 
-      obj.validate_edges();
+      if numel(nodes) > 1
+        obj.validate_edges();
+      end
 
     end
 
