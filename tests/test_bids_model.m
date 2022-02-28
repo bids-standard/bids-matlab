@@ -53,6 +53,10 @@ function test_model_validate()
   bm.Edges{1} = struct('Source', 'foo');
   assertWarning(@()bm.validate(), 'Model:missingField');
 
+  bm = bids.Model();
+  bm.Edges{1} = struct('Source', 'run', 'Destination', 'subject');
+  assertWarning(@()bm.validate(), 'Model:edgeRefersToUnknownNode');
+
 end
 
 function test_model_basic()
