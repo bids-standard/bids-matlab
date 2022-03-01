@@ -223,6 +223,7 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
     for col = 1:nb_cols
       for row = 1:nb_rows
         t = text(col, row, sprintf('%i', diagnostic_table(row, col)));
+        set(t, 'Color', 'blue');
         if diagnostic_table(row, col) == 0
           set(t, 'Color', 'red');
         end
