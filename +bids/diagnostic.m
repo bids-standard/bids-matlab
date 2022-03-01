@@ -196,6 +196,8 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
 
   figure('name', 'diagnostic_table', 'position', [1000 1000 50 + 350 * nb_cols 50 + 100 * nb_rows]);
 
+  hold on;
+
   colormap('gray');
 
   imagesc(diagnostic_table, [0, max(diagnostic_table(:))]);
@@ -212,11 +214,23 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
         'XTickLabelRotation', 25);
   end
 
+  % add horizontal borders
+  x_borders = [0 nb_cols] + 0.5;
+  y_borders = [[1:nb_rows]', [1:nb_rows]'] - 0.5;
+  plot(x_borders, y_borders, '-w');
+
+  % add horizontal borders
+  y_borders = [0 nb_rows] + 0.5;
+  x_borders = [[1:nb_cols]', [1:nb_cols]'] - 0.5;
+  plot(x_borders, y_borders, '-w');
+
   % y axis
   set(gca, 'yTick', 1:nb_rows);
   if nb_rows < 50
     set(gca, 'yTick', 1:nb_rows, 'yTickLabel', yticklabel);
   end
+
+  axis tight;
 
   % plot actual values if there are not too many
   if numel(diagnostic_table) < 600
