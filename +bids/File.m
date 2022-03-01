@@ -76,6 +76,8 @@ classdef File
 
     modality = ''   % name of file modality
 
+    path = ''    % absolute path
+
     bids_path = ''  % path within dataset
 
     filename = ''   % bidsified name
@@ -116,6 +118,9 @@ classdef File
       if isempty(args.Results.input)
         f_struct = struct([]);
       elseif ischar(args.Results.input)
+        if ~isempty(fileparts(args.Results.input))
+          obj.path = args.Results.input;
+        end
         f_struct = bids.internal.parse_filename(args.Results.input);
       elseif isstruct(args.Results.input)
         f_struct = args.Results.input;
@@ -215,7 +220,7 @@ classdef File
       for ifn = 1:size(fn, 1)
         key = fn{ifn};
         obj.validate_word(key, 'Entity label');
-        val = entities.(key);
+        val = bids.internal.camel_case(entities.(key));
         if isempty(val)
           continue
         end
@@ -241,7 +246,7 @@ classdef File
       obj.validate_word(label, 'Entity label');
       obj.validate_word(value, 'Entity value');
 
-      obj.entities(1).(label) = value;
+      obj.entities(1).(label) = bids.internal.camel_case(value);
       obj.changed = true;
     end
 
@@ -252,13 +257,13 @@ classdef File
       %
 
       fname = '';
-      path = '';
+      path = ''; %#ok<*PROP>
 
       fn = fieldnames(obj.entities);
 
       for i = 1:size(fn, 1)
         key = fn{i};
-        val = obj.entities.(key);
+        val = bids.internal.camel_case(obj.entities.(key));
         if isempty(val)
           continue
         end
@@ -355,6 +360,64 @@ classdef File
       end
       obj.entities = tmp;
       obj.update();
+
+    end
+
+    function obj = rename(obj, varargin)
+      args = inputParser;
+      args.addParameter('dry_run', true, @islogical);
+      args.addParameter('force', false, @islogical);
+      args.addParameter('verbose', []);
+      args.addParameter('spec', struct([]), @isstruct);
+      args.parse(varargin{:});
+
+      if ~isempty(args.Results.spec)
+        spec = args.Results.spec;
+        if isfield(spec, 'prefix')
+          obj.prefix = spec.prefix;
+        end
+        if isfield(spec, 'suffix')
+          obj.suffix = spec.suffix;
+        end
+        if isfield(spec, 'ext')
+          obj.extension = spec.ext;
+        end
+        if isfield(spec, 'entities')
+          entities = fieldnames(spec.entities); %#ok<*PROPLC>
+          for i = 1:numel(entities)
+            obj = obj.set_entity(entities{i}, ...
+                                 bids.internal.camel_case(spec.entities.(entities{i})));
+          end
+        end
+        if isfield(spec, 'entity_order')
+          obj = obj.reorder_entities(spec.entity_order);
+        end
+
+        obj = obj.update;
+      end
+
+      if ~isempty(args.Results.verbose) && islogical(args.Results.verbose)
+        obj.verbose = args.Results.verbose;
+      end
+
+      if obj.verbose
+        fprintf(1, '%s --> %s\n', obj.path, fullfile(fileparts(obj.path), obj.filename));
+      end
+
+      if ~args.Results.dry_run
+        output_file = fullfile(fileparts(obj.path), obj.filename);
+        if ~exist(output_file, 'file') || args.Results.force
+          movefile(obj.path, output_file);
+          obj.path = output_file;
+        else
+          bids.internal.error_handling(mfilename(), 'fileAlreadyExists', ...
+                                       sprintf(['file %s already exist. ', ...
+                                                'Use ''force'' to overwrite.'], ...
+                                               output_file), ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
+        end
+      end
 
     end
 
