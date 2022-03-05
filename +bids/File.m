@@ -84,19 +84,24 @@ classdef File
 
     json_filename = ''  % bidsified name for json file
 
+    metadata_files = {} % list of metadata files related
+
+    metadata
+
     entity_required = {}  % Required entities
 
     entity_order = {}   % Expected order of entities
 
     schema = []     % BIDS schema used
 
+    tolerant = true
+
+    verbose = false
+
   end
 
   properties (SetAccess = private)
     changed = false
-    tolerant = true
-    verbose = false
-
   end
 
   methods
@@ -150,6 +155,8 @@ classdef File
       if args.Results.use_schema
         obj = obj.use_schema();
       end
+
+      obj = obj.set_metadata();
 
       obj = obj.update();
     end
@@ -242,12 +249,27 @@ classdef File
       obj.changed = true;
     end
 
+    function obj = set_metadata(obj)
+      if isempty(obj.metadata_files)
+        pattern = '^.*%s\\.json$';
+        obj.metadata_files = bids.internal.get_meta_list(obj.path, pattern);
+      end
+      obj.metadata =  bids.internal.get_metadata(obj.metadata_files);
+    end
+
     function obj = set_entity(obj, label, value)
       obj.validate_word(label, 'Entity label');
       obj.validate_word(value, 'Entity value');
 
       obj.entities(1).(label) = bids.internal.camel_case(value);
       obj.changed = true;
+    end
+
+    function obj = set_metadata_files(obj, pattern)
+      if nargin < 2
+        pattern = '^.*%s\\.json$';
+      end
+      obj.metadata_files = bids.internal.get_meta_list(obj.path, pattern);
     end
 
     %% other methods
@@ -405,6 +427,7 @@ classdef File
       end
 
       if ~args.Results.dry_run
+        % TODO update obj.path
         output_file = fullfile(fileparts(obj.path), obj.filename);
         if ~exist(output_file, 'file') || args.Results.force
           movefile(obj.path, output_file);
