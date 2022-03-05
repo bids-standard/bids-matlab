@@ -59,6 +59,7 @@ function metalist = get_meta_list(filename, pattern)
 
     % For all those files we find which one is potentially associated with
     % the file of interest
+    % TODO: not more than one file per level is allowed
     for i = 1:numel(metafile)
 
       p2 = bids.internal.parse_filename(metafile{i});
@@ -76,6 +77,8 @@ function metalist = get_meta_list(filename, pattern)
       % as its data file counterpart
       ismeta = true;
       if ~strcmp(p.suffix, p2.suffix)
+        % TODO is this necessary as we have already
+        % only listed files with the same suffix
         ismeta = false;
       end
       for j = 1:numel(entities)

@@ -268,12 +268,15 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip
   % All the metadata of each file is read through the whole hierarchy
   % and dumped into one side-car json file for each file copied
   % In practice this "unravels" the inheritance principle
-  if ~strcmpi(file.ext, '.json') % skip if data file is json
+  if ~strcmpi(file.ext, '.json') && ... % skip if data file is json
+     numel(fieldnames(file.meta)) > 0 % skip if there is no metadata
     bids.util.jsonencode(output_metadata_file, file.meta);
-  end
-  % checking that json is created
-  if ~exist(output_metadata_file, 'file')
-    error('Failed to create sidecar json file: %s', output_metadata_file);
+
+    % checking that json is created
+    if ~exist(output_metadata_file, 'file')
+      error('Failed to create sidecar json file: %s', output_metadata_file);
+    end
+
   end
 
   copy_dependencies(file, BIDS, derivatives_folder, unzip_files, force, skip_dep, verbose);
@@ -323,7 +326,7 @@ function use_copyfile(src, target, unzip_files, verbose)
 
   if unzip_files && is_gunzipped(src)
     % Octave deletes the source file so we must copy and then unzip
-    if is_octave()
+    if bids.internal.is_octave()
       [status, message, messageId] = copyfile(src, target);
       gunzip(target);
     else
@@ -379,25 +382,4 @@ end
 
 function status = is_gunzipped(file)
   status = bids.internal.ends_with(file, '.gz');
-end
-
-function status = is_octave()
-  %
-  % Returns true if the environment is Octave.
-  %
-  % USAGE::
-  %
-  %   status = isOctave()
-  %
-  % :returns: :status: (boolean)
-  %
-  % (C) Copyright 2020 Agah Karakuzu
-
-  persistent cacheval   % speeds up repeated calls
-
-  if isempty (cacheval)
-    cacheval = (exist ('OCTAVE_VERSION', 'builtin') > 0);
-  end
-
-  status = cacheval;
 end

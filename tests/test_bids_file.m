@@ -15,6 +15,141 @@ end
 %
 % end
 
+function test_get_metadata_suffixes_basic()
+  % ensures that "similar" suffixes are distinguished
+
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+
+  file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.shape.gii');
+  side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.json');
+
+  bf = bids.File(file);
+
+  % TODO only only json file per folder level allowed
+  % assertEqual(numel(bf.metadata_files), 1)
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+  file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.surf.gii');
+  side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.json');
+
+  bf = bids.File(file);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  side_car = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.json');
+
+  bf = bids.File(file);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+end
+
+function test_rename()
+
+  input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  input_file = fullfile(fileparts(mfilename('fullpath')), input_filename);
+  output_filename = 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii';
+  output_file = fullfile(fileparts(mfilename('fullpath')), output_filename);
+
+  set_up(input_file);
+  teardown(output_file);
+
+  file = bids.File(input_file, 'use_schema', false, 'verbose', false);
+
+  assertEqual(file.path, input_file);
+
+  file.prefix = '';
+  file.entities.desc = 'preproc';
+  assertEqual(file.filename, output_filename);
+
+  file.rename();
+  assertEqual(exist(output_file, 'file'), 0);
+
+  file.rename('dry_run', true);
+  assertEqual(exist(output_file, 'file'), 0);
+
+  file = file.rename('dry_run', false);
+  assertEqual(exist(input_file, 'file'), 0);
+  assertEqual(exist(output_file, 'file'), 2);
+  assertEqual(file.path, output_file);
+
+  teardown(output_file);
+
+end
+
+function test_rename_with_spec()
+
+  input_filename = 'wuasub-01_task-faceRecognition_bold.nii';
+  output_filename = 'sub-01_task-faceRecognition_label-GM_desc-bold_dseg.json';
+  file = bids.File(input_filename, 'use_schema', false);
+
+  spec.prefix = '';
+  spec.entities.desc = 'bold';
+  spec.entities.label = 'GM';
+  spec.suffix = 'dseg';
+  spec.ext = '.json';
+  spec.entity_order = {'sub', 'task', 'label', 'desc'};
+
+  file = file.rename('spec', spec);
+  assertEqual(file.filename, output_filename);
+
+end
+
+function test_rename_force()
+
+  input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  input_file = fullfile(fileparts(mfilename('fullpath')), input_filename);
+  output_filename = 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii';
+  output_file = fullfile(fileparts(mfilename('fullpath')), output_filename);
+
+  set_up(input_file);
+  set_up(output_file);
+
+  system(sprintf('touch %s', input_file));
+  system(sprintf('touch %s', output_file));
+  file = bids.File(input_file, 'use_schema', false, 'verbose', false);
+
+  assertEqual(file.path, input_file);
+
+  file.prefix = '';
+  file.entities.desc = 'preproc';
+  file.verbose = true;
+  if bids.internal.is_github_ci && ~bids.internal.is_octave
+    % failure: warning 'Octave:mixed-string-concat' was raised, expected 'File:fileAlreadyExists'.
+    assertWarning(@() file.rename('dry_run', false), 'File:fileAlreadyExists');
+  end
+
+  file = file.rename('dry_run', false, 'verbose', false);
+  assertEqual(exist(input_file, 'file'), 2);
+  assertEqual(exist(output_file, 'file'), 2);
+
+  file = file.rename('dry_run', false, 'force', true, 'verbose', false);
+  assertEqual(exist(input_file, 'file'), 0);
+  assertEqual(exist(output_file, 'file'), 2);
+
+  teardown(input_file);
+  teardown(output_file);
+
+end
+
+function test_camel_case()
+
+  filename = 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+
+  file.entities.task = 'test bla';
+  assertEqual(file.filename, 'sub-01_ses-test_task-testBla_run-02_bold.nii');
+
+end
+
 function test_forbidden_entity()
 
   input.suffix = 'eeg';
@@ -24,11 +159,11 @@ function test_forbidden_entity()
   input.entities.rec = 'stuff';
 
   assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
-                        'bids:File:forbiddenEntity');
+                        'File:forbiddenEntity');
 
   input = 'sub-01_task-test_rec-stuff_eeg.bdf';
   assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
-                        'bids:File:forbiddenEntity');
+                        'File:forbiddenEntity');
 
 end
 
@@ -225,13 +360,13 @@ function test_error_schema_missing
 
   % THEN
   assertExceptionThrown(@()bf.get_required_entities(), ...
-                        'bids:File:schemaMissing');
+                        'File:schemaMissing');
 
   assertExceptionThrown(@()bf.get_modality_from_schema(), ...
-                        'bids:File:schemaMissing');
+                        'File:schemaMissing');
 
   assertExceptionThrown(@()bf.get_entity_order_from_schema(), ...
-                        'bids:File:schemaMissing');
+                        'File:schemaMissing');
 
 end
 
@@ -244,7 +379,7 @@ function test_error_required_entity()
                              'acq', '01');
   % THEN
   assertExceptionThrown(@()bids.File(filename, 'use_schema', true, 'tolerant', false), ...
-                        'bids:File:requiredEntity');
+                        'File:requiredEntity');
 
 end
 
@@ -256,7 +391,7 @@ function test_error_suffix_in_many_modalities()
                              'task', 'faces');
   % THEN
   assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
-                        'bids:File:manyModalityForsuffix');
+                        'File:manyModalityForsuffix');
 end
 
 function test_error_no_extension()
@@ -266,27 +401,27 @@ function test_error_no_extension()
                              'task', 'faces');
   % THEN
   assertExceptionThrown(@()bids.File(filename, 'use_schema', false,  'tolerant', false), ...
-                        'bids:File:emptyExtension');
+                        'File:emptyExtension');
   assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
-                        'bids:File:emptyExtension');
+                        'File:emptyExtension');
 end
 
 function test_name_validation()
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
   assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
-                        'bids:File:prefixDefined');
+                        'File:prefixDefined');
 
   filename = 'bold.nii';
   assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
-                        'bids:File:noEntity');
+                        'File:noEntity');
 
   filename = 'sub-01_task-faceRecognition_ses-test_run-02_bold';
   assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
-                        'bids:File:emptyExtension');
+                        'File:emptyExtension');
 
   filename = 'sub-01_task-faceRecognition_ses-test_run-02.nii';
   assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
-                        'bids:File:emptySuffix');
+                        'File:emptySuffix');
 end
 
 function test_error_no_suffix()
@@ -295,9 +430,9 @@ function test_error_no_suffix()
                              'task', 'faces');
   % THEN
   assertExceptionThrown(@()bids.File(filename, 'use_schema', false,  'tolerant', false), ...
-                        'bids:File:emptySuffix');
+                        'File:emptySuffix');
   assertExceptionThrown(@()bids.File(filename, 'use_schema', true,  'tolerant', false), ...
-                        'bids:File:emptySuffix');
+                        'File:emptySuffix');
 end
 
 function test_validation()
@@ -305,26 +440,39 @@ function test_validation()
   bf = bids.File('sub-01_T1w.nii', 'tolerant', false);
 
   assertExceptionThrown(@() bf.validate_string([2 3], 'String', '.*'), ...
-                        'bids:File:InvalidString');
+                        'File:InvalidString');
   assertExceptionThrown(@() bf.validate_string(['.nii'; '.abc'], 'String', '.*'), ...
-                        'bids:File:InvalidString');
+                        'File:InvalidString');
   assertExceptionThrown(@() bf.validate_string('abc', 'String', 'abcde'), ...
-                        'bids:File:InvalidString');
+                        'File:InvalidString');
 
   assertExceptionThrown(@() bf.validate_extension('nii'), ...
-                        'bids:File:InvalidExtension');
+                        'File:InvalidExtension');
   assertExceptionThrown(@() bf.validate_extension('.nii-'), ...
-                        'bids:File:InvalidExtension');
+                        'File:InvalidExtension');
   assertExceptionThrown(@() bf.validate_extension('.nii_'), ...
-                        'bids:File:InvalidExtension');
+                        'File:InvalidExtension');
 
   assertExceptionThrown(@() bf.validate_prefix('abc/def'), ...
-                        'bids:File:InvalidPrefix');
+                        'File:InvalidPrefix');
   assertExceptionThrown(@() bf.validate_prefix('abcsub-def'), ...
-                        'bids:File:InvalidPrefix');
+                        'File:InvalidPrefix');
 
   assertExceptionThrown(@() bf.validate_word('abc/def', 'Word'), ...
-                        'bids:File:InvalidWord');
+                        'File:InvalidWord');
   assertExceptionThrown(@() bf.validate_word('abc-def', 'Word'), ...
-                        'bids:File:InvalidWord');
+                        'File:InvalidWord');
+end
+
+function set_up(filename)
+  if exist(filename, 'file')
+    delete(filename);
+  end
+  system(sprintf('touch %s', filename));
+end
+
+function teardown(filename)
+  if exist(filename, 'file')
+    delete(filename);
+  end
 end

@@ -9,22 +9,22 @@
 			},
 			{
 				"name": "use_schema",
-				"kind": "positional",
+				"kind": "namevalue",
 				"type": "boolean"
 			},
 			{
 				"name": "index_derivatives",
-				"kind": "positional",
+				"kind": "namevalue",
 				"type": "boolean"
 			},
 			{
 				"name": "tolerant",
-				"kind": "positional",
+				"kind": "namevalue",
 				"type": "boolean"
 			},
 			{
 				"name": "verbose",
-				"kind": "positional",
+				"kind": "namevalue",
 				"type": "boolean"
 			}
 		]
@@ -62,16 +62,29 @@
 				"kind": "required",
 				"type": [
 					[
-						"folder"
-					],
-					[
+						"folder",
 						"struct"
 					]
 				]
 			},
 			{
-				"name": "ReadNII",
-				"kind": "positional",
+				"name": "output_path",
+				"kind": "namevalue",
+				"type": "folder"
+			},
+			{
+				"name": "filter",
+				"kind": "namevalue",
+				"type": "structure"
+			},
+			{
+				"name": "read_nifti",
+				"kind": "namevalue",
+				"type": "boolean"
+			},
+			{
+				"name": "verbose",
+				"kind": "namevalue",
 				"type": "boolean"
 			}
 		]
@@ -85,17 +98,17 @@
 			},
 			{
 				"name": "folders",
-				"kind": "positional",
-				"type": "struct"
+				"kind": "namevalue",
+				"type": "structure"
 			},
 			{
 				"name": "is_derivative",
-				"kind": "positional",
+				"kind": "namevalue",
 				"type": "boolean"
 			},
 			{
 				"name": "is_datalad_ds",
-				"kind": "positional",
+				"kind": "namevalue",
 				"type": "boolean"
 			}
 		]
@@ -107,23 +120,23 @@
 				"kind": "required",
 				"type": [
 					"folder",
-					"struct"
+					"structure"
 				]
 			},
 			{
 				"name": "pipeline_name",
-				"kind": "required",
+				"kind": "namevalue",
 				"type": "string"
 			},
 			{
 				"name": "out_path",
-				"kind": "positional",
+				"kind": "namevalue",
 				"type": "folder"
 			},
 			{
 				"name": "filter",
-				"kind": "positional",
-				"type": "struct"
+				"kind": "namevalue",
+				"type": "structure"
 			},
 			{
 				"name": "unzip",

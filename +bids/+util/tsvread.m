@@ -30,6 +30,7 @@ function file_content = tsvread(filename, field_to_return, hdr)
   if nargin < 1
     error('no input file specified');
   end
+
   if ~exist(filename, 'file')
     error('Unable to read file ''%s'': file not found', filename);
   end
@@ -44,21 +45,34 @@ function file_content = tsvread(filename, field_to_return, hdr)
   % -Load the data file
   % --------------------------------------------------------------------------
   [~, ~, ext] = fileparts(filename);
+
   switch ext(2:end)
+
     case 'txt'
       file_content = load(filename, '-ascii');
+
     case 'mat'
       file_content = load(filename, '-mat');
+
     case 'csv'
       % x = csvread(f); % numeric data only
       file_content = dsv_read(filename, ',', hdr);
+
     case 'tsv'
       % x = dlmread(f,'\t'); % numeric data only
       file_content = dsv_read(filename, '\t', hdr);
+
     case 'json'
       file_content = bids.util.jsondecode(filename);
+
     case 'gz'
+
+      if bids.internal.is_octave()
+        back_up = tempname;
+        copyfile(filename, back_up);
+      end
       fz = gunzip(filename, tempname);
+
       sts = true;
       try
         file_content = bids.util.tsvread(fz{1});
@@ -66,17 +80,25 @@ function file_content = tsvread(filename, field_to_return, hdr)
         sts = false;
         err_msg = err.message;
       end
+
       delete(fz{1});
       rmdir(fileparts(fz{1}));
+
+      if bids.internal.is_octave()
+        copyfile(back_up, filename);
+      end
+
       if ~sts
         error('Cannot load file ''%s'': %s.', filename, err_msg);
       end
+
     otherwise
       try
         file_content = load(filename);
       catch
         error('Cannot read file ''%s'': Unknown file format.', filename);
       end
+
   end
 
   file_content = return_subset(file_content, field_to_return);
@@ -88,11 +110,13 @@ function file_content = return_subset(file_content, field_to_return)
   % -Return relevant subset of the data if required
   % --------------------------------------------------------------------------
   if isstruct(file_content)
+
     if isempty(field_to_return)
       fieldsList = fieldnames(file_content);
       if numel(fieldsList) == 1 && isnumeric(file_content.(fieldsList{1}))
         file_content = file_content.(fieldsList{1});
       end
+
     else
       if ischar(field_to_return)
         try
@@ -100,6 +124,7 @@ function file_content = return_subset(file_content, field_to_return)
         catch
           error('Data do not contain array ''%s''.', field_to_return);
         end
+
       else
         fieldsList = fieldnames(file_content);
         try
@@ -108,9 +133,12 @@ function file_content = return_subset(file_content, field_to_return)
           error('Data index out of range: %d (data contains %d fields)', ...
                 field_to_return, numel(fieldsList));
         end
+
       end
     end
+
   elseif isnumeric(file_content)
+
     if isnumeric(field_to_return)
       try
         file_content = file_content(:, field_to_return);
@@ -118,12 +146,14 @@ function file_content = return_subset(file_content, field_to_return)
         error('Data index out of range: %d (data contains $d columns).', ...
               field_to_return, size(file_content, 2));
       end
+
     elseif ~isempty(field_to_return)
       error(['Invalid data index. ', ...
              'When data is numeric, index must be numeric or empty. ', ...
              'Got a %s'], ...
             class(field_to_return));
     end
+
   end
 
 end

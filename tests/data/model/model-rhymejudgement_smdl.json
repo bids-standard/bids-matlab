@@ -1,0 +1,181 @@
+{
+  "Name": "default_rhymejudgment_model",
+  "BIDSModelVersion": "1.0.0",
+  "Description": "default BIDS stats model for rhymejudgment task",
+  "Input": {
+    "task": [
+      "rhymejudgment"
+    ]
+  },
+  "Nodes": [
+    {
+      "Level": "Run",
+      "Name": "run",
+      "Transformations": {
+        "Transformer": "",
+        "Instructions": [
+          {
+            "Name": "",
+            "Inputs": [
+              ""
+            ]
+          }
+        ]
+      },
+      "Model": {
+        "X": [
+          "trial_type.pseudoword",
+          "trial_type.word"
+        ],
+        "Type": "glm",
+        "HRF": {
+          "Variables": [
+            "trial_type.pseudoword",
+            "trial_type.word"
+          ],
+          "Model": "DoubleGamma"
+        },
+        "Options": {
+          "HighPassFilterCutoffHz": 0.008,
+          "LowPassFilterCutoffHz": null,
+          "Mask": {
+            "desc": "brain",
+            "suffix": "mask"
+          }
+        },
+        "Software": ""
+      },
+      "Contrasts": {
+        "Name": "",
+        "ConditionList": [
+          ""
+        ],
+        "Weights": [
+          ""
+        ],
+        "Test": ""
+      },
+      "DummyContrasts": {
+        "Test": "t",
+        "Contrasts": [
+          "trial_type.pseudoword",
+          "trial_type.word"
+        ]
+      }
+    },
+    {
+      "Level": "Subject",
+      "Name": "subject",
+      "Transformations": {
+        "Transformer": "",
+        "Instructions": [
+          {
+            "Name": "",
+            "Inputs": [
+              ""
+            ]
+          }
+        ]
+      },
+      "Model": {
+        "X": [
+          ""
+        ],
+        "Type": "glm",
+        "HRF": {
+          "Variables": [
+            ""
+          ],
+          "Model": "DoubleGamma"
+        },
+        "Options": {
+          "HighPassFilterCutoffHz": 0.008,
+          "LowPassFilterCutoffHz": null,
+          "Mask": {
+            "desc": "brain",
+            "suffix": "mask"
+          }
+        },
+        "Software": ""
+      },
+      "Contrasts": {
+        "Name": "",
+        "ConditionList": [
+          ""
+        ],
+        "Weights": [
+          ""
+        ],
+        "Test": ""
+      },
+      "DummyContrasts": {
+        "Test": "t",
+        "Contrasts": [
+          ""
+        ]
+      }
+    },
+    {
+      "Level": "Dataset",
+      "Name": "dataset",
+      "Transformations": {
+        "Transformer": "",
+        "Instructions": [
+          {
+            "Name": "",
+            "Inputs": [
+              ""
+            ]
+          }
+        ]
+      },
+      "Model": {
+        "X": [
+          ""
+        ],
+        "Type": "glm",
+        "HRF": {
+          "Variables": [
+            ""
+          ],
+          "Model": "DoubleGamma"
+        },
+        "Options": {
+          "HighPassFilterCutoffHz": 0.008,
+          "LowPassFilterCutoffHz": null,
+          "Mask": {
+            "desc": "brain",
+            "suffix": "mask"
+          }
+        },
+        "Software": ""
+      },
+      "Contrasts": {
+        "Name": "",
+        "ConditionList": [
+          ""
+        ],
+        "Weights": [
+          ""
+        ],
+        "Test": ""
+      },
+      "DummyContrasts": {
+        "Test": "t",
+        "Contrasts": [
+          ""
+        ]
+      }
+    }
+  ],
+  "Edges": [
+    {
+      "Source": "run",
+      "Destination": "subject"
+    },
+    {
+      "Source": "subject",
+      "Destination": "dataset"
+    }
+  ]
+}

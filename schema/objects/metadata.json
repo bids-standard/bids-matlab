@@ -6,7 +6,7 @@
   },
   "AcquisitionDuration": {
     "name": "AcquisitionDuration",
-    "description": "Duration (in seconds) of volume acquisition.\nCorresponds to DICOM Tag 0018, 9073 `Acquisition Duration`.\nThis field is mutually exclusive with RepetitionTime.\n",
+    "description": "Duration (in seconds) of volume acquisition.\nCorresponds to DICOM Tag 0018, 9073 `Acquisition Duration`.\nThis field is mutually exclusive with `\"RepetitionTime\"`.\n",
     "type": "number",
     "exclusiveMinimum": 0,
     "unit": "s"
@@ -35,7 +35,7 @@
   },
   "AnalyticalApproach": {
     "name": "AnalyticalApproach",
-    "description": "Methodology or methodologies used to analyse the `GeneticLevel`.\nValues MUST be taken from the\n[database of Genotypes and Phenotypes\n(dbGaP)](https://www.ncbi.nlm.nih.gov/gap/advanced)\nunder /Study/Molecular Data Type (for example, SNP Genotypes (Array) or\nMethylation (CpG).\n",
+    "description": "Methodology or methodologies used to analyse the `\"GeneticLevel\"`.\nValues MUST be taken from the\n[database of Genotypes and Phenotypes\n(dbGaP)](https://www.ncbi.nlm.nih.gov/gap/advanced)\nunder /Study/Molecular Data Type (for example, SNP Genotypes (Array) or\nMethylation (CpG).\n",
     "anyOf": [
       {
         "type": "string"
@@ -50,7 +50,7 @@
   },
   "AnatomicalLandmarkCoordinateSystem": {
     "name": "AnatomicalLandmarkCoordinateSystem",
-    "description": "Defines the coordinate system for the anatomical landmarks.\nSee [Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`AnatomicalLandmarkCoordinateSystemDescription`.\n",
+    "description": "Defines the coordinate system for the anatomical landmarks.\nSee [Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"AnatomicalLandmarkCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -73,7 +73,7 @@
   },
   "AnatomicalLandmarkCoordinateUnits": {
     "name": "AnatomicalLandmarkCoordinateUnits",
-    "description": "Units of the coordinates of `AnatomicalLandmarkCoordinateSystem`.\nMUST be `\"m\"`, `\"cm\"`, or `\"mm\"`.\n",
+    "description": "Units of the coordinates of `\"AnatomicalLandmarkCoordinateSystem\"`.\n",
     "type": "string",
     "enum": [
       "m",
@@ -84,7 +84,7 @@
   },
   "AnatomicalLandmarkCoordinates": {
     "name": "AnatomicalLandmarkCoordinates",
-    "description": "Key:value pairs of the labels and 3-D digitized locations of anatomical landmarks,\ninterpreted following the `AnatomicalLandmarkCoordinateSystem`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`.\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
+    "description": "Key:value pairs of the labels and 3-D digitized locations of anatomical landmarks,\ninterpreted following the `\"AnatomicalLandmarkCoordinateSystem\"`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`.\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
     "type": "object",
     "additionalProperties": {
       "type": "array",
@@ -110,7 +110,7 @@
   },
   "ArterialSpinLabelingType": {
     "name": "ArterialSpinLabelingType",
-    "description": "`\"CASL\"`, `\"PCASL\"`, `\"PASL\"`.\n",
+    "description": "The arterial spin labeling type.\n",
     "type": "string",
     "enum": [
       "CASL",
@@ -160,23 +160,30 @@
   },
   "B0FieldIdentifier": {
     "name": "B0FieldIdentifier",
-    "description": "The presence of this key states that this particular 3D or 4D image MAY be\nused for fieldmap estimation purposes.\nThe `B0FieldIdentifier` MUST be a unique string within one participant's tree,\nshared only by the images meant to be used as inputs for the estimation of a\nparticular instance of the *B<sub>0</sub> field* estimation.\nIt is RECOMMENDED to derive this identifier from DICOM Tags, for example,\nDICOM tag 0018, 1030 `Protocol Name`, or DICOM tag 0018, 0024 `Sequence Name`\nwhen the former is not defined (for example, in GE devices.)\n",
-    "type": "string",
-    "format": "participant_relative"
-  },
-  "B0FieldSource": {
-    "name": "B0FieldSource",
-    "description": "At least one existing `B0FieldIdentifier` defined by other images in the\nparticipant's tree.\nThis field states the *B<sub>0</sub> field* estimation designated by the\n`B0FieldIdentifier` that may be used to correct the dataset for distortions\ncaused by B<sub>0</sub> inhomogeneities.\n`B0FieldSource` and `B0FieldIdentifier` are mutually exclusive.\n",
+    "description": "The presence of this key states that this particular 3D or 4D image MAY be\nused for fieldmap estimation purposes.\nEach `\"B0FieldIdentifier\"` MUST be a unique string within one participant's tree,\nshared only by the images meant to be used as inputs for the estimation of a\nparticular instance of the *B<sub>0</sub> field* estimation.\nIt is RECOMMENDED to derive this identifier from DICOM Tags, for example,\nDICOM tag 0018, 1030 `Protocol Name`, or DICOM tag 0018, 0024 `Sequence Name`\nwhen the former is not defined (for example, in GE devices.)\n",
     "anyOf": [
       {
-        "type": "string",
-        "format": "participant_relative"
+        "type": "string"
       },
       {
         "type": "array",
         "items": {
-          "type": "string",
-          "format": "participant_relative"
+          "type": "string"
+        }
+      }
+    ]
+  },
+  "B0FieldSource": {
+    "name": "B0FieldSource",
+    "description": "At least one existing `\"B0FieldIdentifier\"` defined by images in the\nparticipant's tree.\nThis field states the *B<sub>0</sub> field* estimation designated by the\n`\"B0FieldIdentifier\"` that may be used to correct the dataset for distortions\ncaused by B<sub>0</sub> inhomogeneities.\n`\"B0FieldSource\"` and `\"B0FieldIdentifier\"` MAY both be present for images that\nare used to estimate their own B<sub>0</sub> field, for example, in \"pepolar\"\nacquisitions.\n",
+    "anyOf": [
+      {
+        "type": "string"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string"
         }
       }
     ]
@@ -277,12 +284,12 @@
   },
   "BrainLocation": {
     "name": "BrainLocation",
-    "description": "Refers to the location in space of the `TissueOrigin`.\nValues may be an MNI coordinate,\na label taken from the\n[Allen Brain Atlas](https://atlas.brain-map.org/atlas?atlas=265297125&plate=\\\n112360888&structure=4392&x=40348.15104166667&y=46928.75&zoom=-7&resolution=\\\n206.60&z=3),\nor layer to refer to layer-specific gene expression,\nwhich can also tie up with laminar fMRI.\n",
+    "description": "Refers to the location in space of the `\"TissueOrigin\"`.\nValues may be an MNI coordinate,\na label taken from the\n[Allen Brain Atlas](https://atlas.brain-map.org/atlas?atlas=265297125&plate=\\\n112360888&structure=4392&x=40348.15104166667&y=46928.75&zoom=-7&resolution=\\\n206.60&z=3),\nor layer to refer to layer-specific gene expression,\nwhich can also tie up with laminar fMRI.\n",
     "type": "string"
   },
   "CASLType": {
     "name": "CASLType",
-    "description": "Describes if a separate coil is used for labeling:\n`\"single-coil\"` or `\"double-coil\"`.\n",
+    "description": "Describes if a separate coil is used for labeling.\n",
     "type": "string",
     "enum": [
       "single-coil",
@@ -384,7 +391,7 @@
   },
   "ContrastBolusIngredient": {
     "name": "ContrastBolusIngredient",
-    "description": "Active ingredient of agent.\nValues MUST be one of: `\"IODINE\"`, `\"GADOLINIUM\"`, `\"CARBON DIOXIDE\"`,\n`\"BARIUM\"`, `\"XENON\"`.\nCorresponds to DICOM Tag 0018, 1048 `Contrast/Bolus Ingredient`.\n",
+    "description": "Active ingredient of agent.\nCorresponds to DICOM Tag 0018, 1048 `Contrast/Bolus Ingredient`.\n",
     "type": "string",
     "enum": [
       "IODINE",
@@ -407,7 +414,7 @@
   },
   "DatasetType": {
     "name": "DatasetType",
-    "description": "The interpretation of the dataset.\nMUST be one of `\"raw\"` or `\"derivative\"`.\nFor backwards compatibility, the default value is `\"raw\"`.\n",
+    "description": "The interpretation of the dataset.\nFor backwards compatibility, the default value is `\"raw\"`.\n",
     "type": "string",
     "enum": [
       "raw",
@@ -424,13 +431,13 @@
   },
   "DelayAfterTrigger": {
     "name": "DelayAfterTrigger",
-    "description": "Duration (in seconds) from trigger delivery to scan onset.\nThis delay is commonly caused by adjustments and loading times.\nThis specification is entirely independent of\n`NumberOfVolumesDiscardedByScanner` or `NumberOfVolumesDiscardedByUser`,\nas the delay precedes the acquisition.\n",
+    "description": "Duration (in seconds) from trigger delivery to scan onset.\nThis delay is commonly caused by adjustments and loading times.\nThis specification is entirely independent of\n`\"NumberOfVolumesDiscardedByScanner\"` or `\"NumberOfVolumesDiscardedByUser\"`,\nas the delay precedes the acquisition.\n",
     "type": "number",
     "unit": "s"
   },
   "DelayTime": {
     "name": "DelayTime",
-    "description": "User specified time (in seconds) to delay the acquisition of data for the\nfollowing volume.\nIf the field is not present it is assumed to be set to zero.\nCorresponds to Siemens CSA header field `lDelayTimeInTR`.\nThis field is REQUIRED for sparse sequences using the `RepetitionTime` field\nthat do not have the `SliceTiming` field set to allowed for accurate\ncalculation of \"acquisition time\".\nThis field is mutually exclusive with `VolumeTiming`.\n",
+    "description": "User specified time (in seconds) to delay the acquisition of data for the\nfollowing volume.\nIf the field is not present it is assumed to be set to zero.\nCorresponds to Siemens CSA header field `lDelayTimeInTR`.\nThis field is REQUIRED for sparse sequences using the `\"RepetitionTime\"` field\nthat do not have the `\"SliceTiming\"` field set to allowed for accurate\ncalculation of \"acquisition time\".\nThis field is mutually exclusive with `\"VolumeTiming\"`.\n",
     "type": "number",
     "unit": "s"
   },
@@ -476,7 +483,7 @@
   },
   "DigitizedHeadPointsCoordinateSystem": {
     "name": "DigitizedHeadPointsCoordinateSystem",
-    "description": "Defines the coordinate system for the digitized head points.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`DigitizedHeadPointsCoordinateSystemDescription`.\n",
+    "description": "Defines the coordinate system for the digitized head points.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"DigitizedHeadPointsCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -499,7 +506,7 @@
   },
   "DigitizedHeadPointsCoordinateUnits": {
     "name": "DigitizedHeadPointsCoordinateUnits",
-    "description": "Units of the coordinates of `DigitizedHeadPointsCoordinateSystem`.\nMUST be `\"m\"`, `\"cm\"`, or `\"mm\"`.\n",
+    "description": "Units of the coordinates of `\"DigitizedHeadPointsCoordinateSystem\"`.\n",
     "type": "string",
     "enum": [
       "m",
@@ -531,7 +538,7 @@
   },
   "DwellTime": {
     "name": "DwellTime",
-    "description": "Actual dwell time (in seconds) of the receiver per point in the readout\ndirection, including any oversampling.\nFor Siemens, this corresponds to DICOM field 0019, 1018 (in ns).\nThis value is necessary for the optional readout distortion correction of\nanatomicals in the HCP Pipelines.\nIt also usefully provides a handle on the readout bandwidth,\nwhich isn't captured in the other metadata tags.\nNot to be confused with `EffectiveEchoSpacing`, and the frequent mislabeling\nof echo spacing (which is spacing in the phase encoding direction) as\n\"dwell time\" (which is spacing in the readout direction).\n",
+    "description": "Actual dwell time (in seconds) of the receiver per point in the readout\ndirection, including any oversampling.\nFor Siemens, this corresponds to DICOM field 0019, 1018 (in ns).\nThis value is necessary for the optional readout distortion correction of\nanatomicals in the HCP Pipelines.\nIt also usefully provides a handle on the readout bandwidth,\nwhich isn't captured in the other metadata tags.\nNot to be confused with `\"EffectiveEchoSpacing\"`, and the frequent mislabeling\nof echo spacing (which is spacing in the phase encoding direction) as\n\"dwell time\" (which is spacing in the readout direction).\n",
     "type": "number",
     "unit": "s"
   },
@@ -578,7 +585,7 @@
   },
   "EEGCoordinateUnits": {
     "name": "EEGCoordinateUnits",
-    "description": "Units of the coordinates of `EEGCoordinateSystem`.\nMUST be `\"m\"`, `\"cm\"`, or `\"mm\"`.\n",
+    "description": "Units of the coordinates of `EEGCoordinateSystem`.\n",
     "type": "string",
     "enum": [
       "m",
@@ -656,14 +663,14 @@
   },
   "EffectiveEchoSpacing": {
     "name": "EffectiveEchoSpacing",
-    "description": "The \"effective\" sampling interval, specified in seconds,\nbetween lines in the phase-encoding direction,\ndefined based on the size of the reconstructed image in the phase direction.\nIt is frequently, but incorrectly, referred to as \"dwell time\"\n(see `DwellTime` parameter below for actual dwell time).\nIt is required for unwarping distortions using field maps.\nNote that beyond just in-plane acceleration,\na variety of other manipulations to the phase encoding need to be accounted\nfor properly, including partial fourier, phase oversampling,\nphase resolution, phase field-of-view and interpolation.\n",
+    "description": "The \"effective\" sampling interval, specified in seconds,\nbetween lines in the phase-encoding direction,\ndefined based on the size of the reconstructed image in the phase direction.\nIt is frequently, but incorrectly, referred to as \"dwell time\"\n(see the `\"DwellTime\"` parameter for actual dwell time).\nIt is required for unwarping distortions using field maps.\nNote that beyond just in-plane acceleration,\na variety of other manipulations to the phase encoding need to be accounted\nfor properly, including partial fourier, phase oversampling,\nphase resolution, phase field-of-view and interpolation.\n",
     "type": "number",
     "exclusiveMinimum": 0,
     "unit": "s"
   },
   "ElectricalStimulation": {
     "name": "ElectricalStimulation",
-    "description": "Boolean field to specify if electrical stimulation was done during the\nrecording (options are `true` or `false`). Parameters for event-like\nstimulation should be specified in the events.tsv file.\n",
+    "description": "Boolean field to specify if electrical stimulation was done during the\nrecording (options are `true` or `false`). Parameters for event-like\nstimulation should be specified in the `events.tsv` file.\n",
     "type": "boolean"
   },
   "ElectricalStimulationParameters": {
@@ -689,7 +696,7 @@
   },
   "EstimationAlgorithm": {
     "name": "EstimationAlgorithm",
-    "description": "Type of algorithm used to perform fitting\n(for example, linear, non-linear, LM and such).\n",
+    "description": "Type of algorithm used to perform fitting\n(for example, `\"linear\"`, `\"non-linear\"`, `\"LM\"` and such).\n",
     "type": "string"
   },
   "EstimationReference": {
@@ -707,7 +714,7 @@
   },
   "FiducialsCoordinateSystem": {
     "name": "FiducialsCoordinateSystem",
-    "description": "Defines the coordinate system for the fiducials.\nPreferably the same as the `EEGCoordinateSystem`.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`FiducialsCoordinateSystemDescription`.\n",
+    "description": "Defines the coordinate system for the fiducials.\nPreferably the same as the `\"EEGCoordinateSystem\"`.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"FiducialsCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -730,7 +737,7 @@
   },
   "FiducialsCoordinateUnits": {
     "name": "FiducialsCoordinateUnits",
-    "description": "Units in which the coordinates that are  listed in the field\n`FiducialsCoordinateSystem` are represented.\nMUST be `\"m\"`, `\"cm\"`, or `\"mm\"`.\n",
+    "description": "Units in which the coordinates that are  listed in the field\n`\"FiducialsCoordinateSystem\"` are represented.\n",
     "type": "string",
     "enum": [
       "m",
@@ -741,7 +748,7 @@
   },
   "FiducialsCoordinates": {
     "name": "FiducialsCoordinates",
-    "description": "Key:value pairs of the labels and 3-D digitized position of anatomical\nlandmarks, interpreted following the `FiducialsCoordinateSystem`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
+    "description": "Key:value pairs of the labels and 3-D digitized position of anatomical\nlandmarks, interpreted following the `\"FiducialsCoordinateSystem\"`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
     "type": "object",
     "additionalProperties": {
       "type": "array",
@@ -754,7 +761,7 @@
   },
   "FiducialsDescription": {
     "name": "FiducialsDescription",
-    "description": "Free-form text description of how the fiducials such as vitamin-E capsules\nwere placed relative to anatomical landmarks,\nand how the position of the fiducials were measured\n(for example, both with Polhemus and with T1w MRI).\n",
+    "description": "Free-form text description of how the fiducials such as vitamin-E capsules\nwere placed relative to anatomical landmarks,\nand how the position of the fiducials were measured\n(for example, `\"both with Polhemus and with T1w MRI\"`).\n",
     "type": "string"
   },
   "FlipAngle": {
@@ -789,7 +796,7 @@
   },
   "FrameTimesStart": {
     "name": "FrameTimesStart",
-    "description": "Start times for all frames relative to `TimeZero` in default unit seconds.\n",
+    "description": "Start times for all frames relative to `\"TimeZero\"` in default unit seconds.\n",
     "type": "array",
     "items": {
       "type": "number"
@@ -806,7 +813,7 @@
   },
   "GeneratedBy": {
     "name": "GeneratedBy",
-    "description": "Used to specify provenance of the derived dataset.\nSee table below for contents of each object.\n",
+    "description": "Used to specify provenance of the dataset.\n",
     "type": "array",
     "minItems": 1,
     "items": {
@@ -938,7 +945,7 @@
   },
   "HardwareFilters": {
     "name": "HardwareFilters",
-    "description": "Object of temporal hardware filters applied, or \"n/a\" if the data is not\navailable. Each key:value pair in the JSON object is a name of the filter and\nan object in which its parameters are defined as key:value pairs.\nFor example, `{\"Highpass RC filter\": {\"Half amplitude cutoff (Hz)\":\n0.0159, \"Roll-off\": \"6dB/Octave\"}}`.\n",
+    "description": "Object of temporal hardware filters applied, or `\"n/a\"` if the data is not\navailable. Each key:value pair in the JSON object is a name of the filter and\nan object in which its parameters are defined as key:value pairs.\nFor example, `{\"Highpass RC filter\": {\"Half amplitude cutoff (Hz)\":\n0.0159, \"Roll-off\": \"6dB/Octave\"}}`.\n",
     "anyOf": [
       {
         "type": "object",
@@ -986,7 +993,7 @@
   },
   "HeadCoilCoordinateUnits": {
     "name": "HeadCoilCoordinateUnits",
-    "description": "Units of the coordinates of `HeadCoilCoordinateSystem`.\nMUST be `\"m\"`, `\"cm\"`, or `\"mm\"`.\n",
+    "description": "Units of the coordinates of `HeadCoilCoordinateSystem`.\n",
     "type": "string",
     "enum": [
       "m",
@@ -1042,7 +1049,7 @@
   },
   "ImageDecayCorrectionTime": {
     "name": "ImageDecayCorrectionTime",
-    "description": "Point in time from which the decay correction was applied with respect to\nTimeZero in the default unit seconds.\n",
+    "description": "Point in time from which the decay correction was applied with respect to\n`\"TimeZero\"` in the default unit seconds.\n",
     "type": "number",
     "unit": "s"
   },
@@ -1053,7 +1060,7 @@
   },
   "InfusionRadioactivity": {
     "name": "InfusionRadioactivity",
-    "description": "Amount of radioactivity infused into the patient.\nThis value must be less than or equal to the total injected radioactivity\n(`InjectedRadioactivity`).\nUnits should be the same as `InjectedRadioactivityUnits`.\n",
+    "description": "Amount of radioactivity infused into the patient.\nThis value must be less than or equal to the total injected radioactivity\n(`\"InjectedRadioactivity\"`).\nUnits should be the same as `\"InjectedRadioactivityUnits\"`.\n",
     "type": "number"
   },
   "InfusionSpeed": {
@@ -1069,13 +1076,13 @@
   },
   "InfusionStart": {
     "name": "InfusionStart",
-    "description": "Time of start of infusion with respect to `TimeZero` in the default unit\nseconds.\n",
+    "description": "Time of start of infusion with respect to `\"TimeZero\"` in the default unit\nseconds.\n",
     "type": "number",
     "unit": "s"
   },
   "InjectedMass": {
     "name": "InjectedMass",
-    "description": "Total mass of radiolabeled compound injected into subject (for example, 10).\nThis can be derived as the ratio of the `InjectedRadioactivity` and\n`MolarRadioactivity`.\n**For those tracers in which injected mass is not available (for example FDG)\ncan be set to `\"n/a\"`)**.\n",
+    "description": "Total mass of radiolabeled compound injected into subject (for example, `10`).\nThis can be derived as the ratio of the `\"InjectedRadioactivity\"` and\n`\"MolarRadioactivity\"`.\n**For those tracers in which injected mass is not available (for example FDG)\ncan be set to `\"n/a\"`)**.\n",
     "anyOf": [
       {
         "type": "number"
@@ -1117,7 +1124,7 @@
   },
   "InjectedRadioactivity": {
     "name": "InjectedRadioactivity",
-    "description": "Total amount of radioactivity injected into the patient (for example, 400).\nFor bolus-infusion experiments, this value should be the sum of all injected\nradioactivity originating from both bolus and infusion.\nCorresponds to DICOM Tag 0018, 1074 `Radionuclide Total Dose`.\n",
+    "description": "Total amount of radioactivity injected into the patient (for example, `400`).\nFor bolus-infusion experiments, this value should be the sum of all injected\nradioactivity originating from both bolus and infusion.\nCorresponds to DICOM Tag 0018, 1074 `Radionuclide Total Dose`.\n",
     "type": "number"
   },
   "InjectedRadioactivityUnits": {
@@ -1134,13 +1141,13 @@
   },
   "InjectionEnd": {
     "name": "InjectionEnd",
-    "description": "Time of end of injection with respect to `TimeZero` in the default unit\nseconds.\n",
+    "description": "Time of end of injection with respect to `\"TimeZero\"` in the default unit\nseconds.\n",
     "type": "number",
     "unit": "s"
   },
   "InjectionStart": {
     "name": "InjectionStart",
-    "description": "Time of start of injection with respect to `TimeZero` in the default unit\nseconds.\nThis corresponds to DICOM Tag 0018, 1042 `Contrast/Bolus Start Time`\nconverted to seconds relative to `TimeZero`.\n",
+    "description": "Time of start of injection with respect to `\"TimeZero\"` in the default unit\nseconds.\nThis corresponds to DICOM Tag 0018, 1042 `Contrast/Bolus Start Time`\nconverted to seconds relative to `\"TimeZero\"`.\n",
     "type": "number",
     "unit": "s"
   },
@@ -1196,7 +1203,7 @@
   },
   "LabelingDuration": {
     "name": "LabelingDuration",
-    "description": "Total duration of the labeling pulse train, in seconds,\ncorresponding to the temporal width of the labeling bolus for\n`\"PCASL\"` or `\"CASL\"`.\nIn case all control-label volumes (or deltam or CBF) have the same\n`LabelingDuration`, a scalar must be specified.\nIn case the control-label volumes (or deltam or cbf) have a different\n`LabelingDuration`, an array of numbers must be specified,\nfor which any `m0scan` in the timeseries has a `LabelingDuration` of zero.\nIn case an array of numbers is provided,\nits length should be equal to the number of volumes specified in\n`*_aslcontext.tsv`.\nCorresponds to DICOM Tag 0018, 9258 `ASL Pulse Train Duration`.\n",
+    "description": "Total duration of the labeling pulse train, in seconds,\ncorresponding to the temporal width of the labeling bolus for\n`\"PCASL\"` or `\"CASL\"`.\nIn case all control-label volumes (or deltam or CBF) have the same\n`LabelingDuration`, a scalar must be specified.\nIn case the control-label volumes (or deltam or cbf) have a different\n`\"LabelingDuration\"`, an array of numbers must be specified,\nfor which any `m0scan` in the timeseries has a `\"LabelingDuration\"` of zero.\nIn case an array of numbers is provided,\nits length should be equal to the number of volumes specified in\n`*_aslcontext.tsv`.\nCorresponds to DICOM Tag 0018, 9258 `ASL Pulse Train Duration`.\n",
     "anyOf": [
       {
         "type": "number",
@@ -1234,7 +1241,7 @@
   },
   "LabelingPulseAverageB1": {
     "name": "LabelingPulseAverageB1",
-    "description": "The average B1-field strength of the RF labeling pulses, in microteslas.\nAs an alternative, `LabelingPulseFlipAngle` can be provided.\n",
+    "description": "The average B1-field strength of the RF labeling pulses, in microteslas.\nAs an alternative, `\"LabelingPulseFlipAngle\"` can be provided.\n",
     "type": "number",
     "exclusiveMinimum": 0,
     "unit": "uT"
@@ -1255,7 +1262,7 @@
   },
   "LabelingPulseFlipAngle": {
     "name": "LabelingPulseFlipAngle",
-    "description": "The flip angle of a single labeling pulse, in degrees,\nwhich can be given as an alternative to `LabelingPulseAverageB1`.\n",
+    "description": "The flip angle of a single labeling pulse, in degrees,\nwhich can be given as an alternative to `\"LabelingPulseAverageB1\"`.\n",
     "type": "number",
     "exclusiveMinimum": 0,
     "maximum": 360,
@@ -1313,7 +1320,7 @@
   },
   "M0Type": {
     "name": "M0Type",
-    "description": "Describes the presence of M0 information, as either:\n`\"Separate\"` when a separate `*_m0scan.nii[.gz]` is present,\n`\"Included\"` when an m0scan volume is contained within the current\n`*_asl.nii[.gz]`,\n`\"Estimate\"` when a single whole-brain M0 value is provided, or\n`\"Absent\"` when no specific M0 information is present.\n",
+    "description": "Describes the presence of M0 information.\n`\"Separate\"` means that a separate `*_m0scan.nii[.gz]` is present.\n`\"Included\"` means that an m0scan volume is contained within the current\n`*_asl.nii[.gz]`.\n`\"Estimate\"` means that a single whole-brain M0 value is provided.\n`\"Absent\"` means that no specific M0 information is present.\n",
     "type": "string",
     "enum": [
       "Separate",
@@ -1324,13 +1331,13 @@
   },
   "MEGChannelCount": {
     "name": "MEGChannelCount",
-    "description": "Number of MEG channels (for example, 275).\n",
+    "description": "Number of MEG channels (for example, `275`).\n",
     "type": "integer",
     "minimum": 0
   },
   "MEGCoordinateSystem": {
     "name": "MEGCoordinateSystem",
-    "description": "Defines the coordinate system for the MEG sensors.\nSee [Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`MEGCoordinateSystemDescription`.\n",
+    "description": "Defines the coordinate system for the MEG sensors.\nSee [Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"MEGCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -1353,7 +1360,7 @@
   },
   "MEGCoordinateUnits": {
     "name": "MEGCoordinateUnits",
-    "description": "Units of the coordinates of `MEGCoordinateSystem`.\nMUST be `\"m\"`, `\"cm\"`, or `\"mm\"`.\n",
+    "description": "Units of the coordinates of `\"MEGCoordinateSystem\"`.\n",
     "type": "string",
     "enum": [
       "m",
@@ -1364,13 +1371,13 @@
   },
   "MEGREFChannelCount": {
     "name": "MEGREFChannelCount",
-    "description": "Number of MEG reference channels (for example, 23).\nFor systems without such channels (for example, Neuromag Vectorview),\n`MEGREFChannelCount` should be set to `0`.\n",
+    "description": "Number of MEG reference channels (for example, `23`).\nFor systems without such channels (for example, Neuromag Vectorview),\n`MEGREFChannelCount` should be set to `0`.\n",
     "type": "integer",
     "minimum": 0
   },
   "MRAcquisitionType": {
     "name": "MRAcquisitionType",
-    "description": "Possible values: `\"2D\"` or `\"3D\"`.\nType of sequence readout.\nCorresponds to DICOM Tag 0018, 0023 `MR Acquisition Type`.\n",
+    "description": "Type of sequence readout.\nCorresponds to DICOM Tag 0018, 0023 `MR Acquisition Type`.\n",
     "type": "string",
     "enum": [
       "2D",
@@ -1407,7 +1414,7 @@
   },
   "MTPulseShape": {
     "name": "MTPulseShape",
-    "description": "Shape of the magnetization transfer RF pulse waveform.\nAccepted values: `\"HARD\"`, `\"GAUSSIAN\"`,\n`\"GAUSSHANN\"` (gaussian pulse with Hanning window),\n`\"SINC\"`, `\"SINCHANN\"` (sinc pulse with Hanning window),\n`\"SINCGAUSS\"` (sinc pulse with Gaussian window), `\"FERMI\"`.\n",
+    "description": "Shape of the magnetization transfer RF pulse waveform.\nThe value `\"GAUSSHANN\"` refers to a Gaussian pulse with a Hanning window.\nThe value `\"SINCHANN\"` refers to a sinc pulse with a Hanning window.\nThe value `\"SINCGAUSS\"` refers to a sinc pulse with a Gaussian window.\n",
     "type": "string",
     "enum": [
       "HARD",
@@ -1431,7 +1438,7 @@
   },
   "Magnification": {
     "name": "Magnification",
-    "description": "Lens magnification (for example: `40`). If the file format is OME-TIFF,\nthe value MUST be consistent with the `NominalMagnification` OME metadata field.\n",
+    "description": "Lens magnification (for example: `40`). If the file format is OME-TIFF,\nthe value MUST be consistent with the `\"NominalMagnification\"` OME metadata field.\n",
     "type": "number",
     "exclusiveMinimum": 0
   },
@@ -1457,7 +1464,7 @@
   },
   "MaxMovement": {
     "name": "MaxMovement",
-    "description": "Maximum head movement (in mm) detected during the recording,\nas measured by the head localisation coils (for example, 4.8).\n",
+    "description": "Maximum head movement (in mm) detected during the recording,\nas measured by the head localisation coils (for example, `4.8`).\n",
     "type": "number",
     "unit": "mm"
   },
@@ -1551,19 +1558,19 @@
   },
   "NumberOfVolumesDiscardedByScanner": {
     "name": "NumberOfVolumesDiscardedByScanner",
-    "description": "Number of volumes (\"dummy scans\") discarded by the scanner\n(as opposed to those discarded by the user post hoc)\nbefore saving the imaging file.\nFor example, a sequence that automatically discards the first 4 volumes\nbefore saving would have this field as 4.\nA sequence that doesn't discard dummy scans would have this set to 0.\nPlease note that the onsets recorded in the `events.tsv` file should always\nrefer to the beginning of the acquisition of the first volume in the\ncorresponding imaging file - independent of the value of\n`NumberOfVolumesDiscardedByScanner` field.\n",
+    "description": "Number of volumes (\"dummy scans\") discarded by the scanner\n(as opposed to those discarded by the user post hoc)\nbefore saving the imaging file.\nFor example, a sequence that automatically discards the first 4 volumes\nbefore saving would have this field as 4.\nA sequence that does not discard dummy scans would have this set to 0.\nPlease note that the onsets recorded in the `events.tsv` file should always\nrefer to the beginning of the acquisition of the first volume in the\ncorresponding imaging file - independent of the value of\n`\"NumberOfVolumesDiscardedByScanner\"` field.\n",
     "type": "integer",
     "minimum": 0
   },
   "NumberOfVolumesDiscardedByUser": {
     "name": "NumberOfVolumesDiscardedByUser",
-    "description": "Number of volumes (\"dummy scans\") discarded by the user before including the\nfile in the dataset.\nIf possible, including all of the volumes is strongly recommended.\nPlease note that the onsets recorded in the `events.tsv` file should always\nrefer to the beginning of the acquisition of the first volume in the\ncorresponding imaging file - independent of the value of\n`NumberOfVolumesDiscardedByUser` field.\n",
+    "description": "Number of volumes (\"dummy scans\") discarded by the user before including the\nfile in the dataset.\nIf possible, including all of the volumes is strongly recommended.\nPlease note that the onsets recorded in the `events.tsv` file should always\nrefer to the beginning of the acquisition of the first volume in the\ncorresponding imaging file - independent of the value of\n`\"NumberOfVolumesDiscardedByUser\"` field.\n",
     "type": "integer",
     "minimum": 0
   },
   "NumberShots": {
     "name": "NumberShots",
-    "description": "The number of RF excitations needed to reconstruct a slice or volume\n(may be referred to as partition).\nPlease mind that this is not the same as Echo Train Length which denotes the\nnumber of k-space lines collected after excitation in a multi-echo readout.\nThe data type array is applicable for specifying this parameter before and\nafter the k-space center is sampled.\nPlease see\n[`NumberShots` metadata field]\\\n(/99-appendices/11-qmri.html#numbershots-metadata-field)\nin the qMRI appendix for corresponding calculations.\n",
+    "description": "The number of RF excitations needed to reconstruct a slice or volume\n(may be referred to as partition).\nPlease mind that this is not the same as Echo Train Length which denotes the\nnumber of k-space lines collected after excitation in a multi-echo readout.\nThe data type array is applicable for specifying this parameter before and\nafter the k-space center is sampled.\nPlease see\n[`\"NumberShots\"` metadata field]\\\n(/99-appendices/11-qmri.html#numbershots-metadata-field)\nin the qMRI appendix for corresponding calculations.\n",
     "anyOf": [
       {
         "type": "number"
@@ -1599,7 +1606,7 @@
   },
   "PCASLType": {
     "name": "PCASLType",
-    "description": "Type the gradient pulses used in the `\"control\"` condition:\n`\"balanced\"` or `\"unbalanced\"`.\n",
+    "description": "The type of gradient pulses used in the `control` condition.\n",
     "type": "string",
     "enum": [
       "balanced",
@@ -1648,7 +1655,7 @@
   },
   "PharmaceuticalDoseTime": {
     "name": "PharmaceuticalDoseTime",
-    "description": "Time of administration of pharmaceutical dose, relative to time zero.\nFor an infusion, this should be a vector with two elements specifying the\nstart and end of the infusion period. For more complex dose regimens,\nthe regimen description should be complete enough to enable unambiguous\ninterpretation of `PharmaceuticalDoseTime`.\nUnit format of the specified pharmaceutical dose time MUST be seconds.\n",
+    "description": "Time of administration of pharmaceutical dose, relative to time zero.\nFor an infusion, this should be a vector with two elements specifying the\nstart and end of the infusion period. For more complex dose regimens,\nthe regimen description should be complete enough to enable unambiguous\ninterpretation of `\"PharmaceuticalDoseTime\"`.\nUnit format of the specified pharmaceutical dose time MUST be seconds.\n",
     "anyOf": [
       {
         "type": "number",
@@ -1676,7 +1683,7 @@
   },
   "PhaseEncodingDirection": {
     "name": "PhaseEncodingDirection",
-    "description": "Possible values: `\"i\"`, `\"j\"`, `\"k\"`, `\"i-\"`, `\"j-\"`, `\"k-\"`.\nThe letters `i`, `j`, `k` correspond to the first, second and third axis of\nthe data in the NIFTI file.\nThe polarity of the phase encoding is assumed to go from zero index to\nmaximum index unless `-` sign is present\n(then the order is reversed - starting from the highest index instead of\nzero).\n`PhaseEncodingDirection` is defined as the direction along which phase is was\nmodulated which may result in visible distortions.\nNote that this is not the same as the DICOM term\n`InPlanePhaseEncodingDirection` which can have `ROW` or `COL` values.\n",
+    "description": "The letters `i`, `j`, `k` correspond to the first, second and third axis of\nthe data in the NIFTI file.\nThe polarity of the phase encoding is assumed to go from zero index to\nmaximum index unless `-` sign is present\n(then the order is reversed - starting from the highest index instead of\nzero).\n`PhaseEncodingDirection` is defined as the direction along which phase is was\nmodulated which may result in visible distortions.\nNote that this is not the same as the DICOM term\n`InPlanePhaseEncodingDirection` which can have `ROW` or `COL` values.\n",
     "type": "string",
     "enum": [
       "i",
@@ -1700,7 +1707,7 @@
   },
   "PixelSizeUnits": {
     "name": "PixelSizeUnits",
-    "description": "Unit format of the specified `PixelSize`. MUST be one of: `\"mm\"` (millimeter), `\"um\"`\n(micrometer) or `\"nm\"` (nanometer).\n",
+    "description": "Unit format of the specified `\"PixelSize\"`. MUST be one of: `\"mm\"` (millimeter), `\"um\"`\n(micrometer) or `\"nm\"` (nanometer).\n",
     "type": "string",
     "enum": [
       "mm",
@@ -1788,7 +1795,7 @@
   },
   "RandomRate": {
     "name": "RandomRate",
-    "description": "Random rate for each frame (same units as `Units`, for example, `\"Bq/mL\"`).\n",
+    "description": "Random rate for each frame (same units as `\"Units\"`, for example, `\"Bq/mL\"`).\n",
     "type": "array",
     "items": {
       "type": "number"
@@ -1805,7 +1812,7 @@
   },
   "ReceiveCoilActiveElements": {
     "name": "ReceiveCoilActiveElements",
-    "description": "Information describing the active/selected elements of the receiver coil.\nThis doesn't correspond to a tag in the DICOM ontology.\nThe vendor-defined terminology for active coil elements can go in this field.\n",
+    "description": "Information describing the active/selected elements of the receiver coil.\nThis does not correspond to a tag in the DICOM ontology.\nThe vendor-defined terminology for active coil elements can go in this field.\n",
     "type": "string"
   },
   "ReceiveCoilName": {
@@ -1888,7 +1895,7 @@
   },
   "RecordingType": {
     "name": "RecordingType",
-    "description": "Defines whether the recording is `\"continuous\"`, `\"discontinuous\"` or\n`\"epoched\"`, where `\"epoched\"` is limited to time windows about events of\ninterest (for example, stimulus presentations or subject responses).\n",
+    "description": "Defines whether the recording is `\"continuous\"`, `\"discontinuous\"`, or\n`\"epoched\"`, where `\"epoched\"` is limited to time windows about events of\ninterest (for example, stimulus presentations or subject responses).\n",
     "type": "string",
     "enum": [
       "continuous",
@@ -1913,7 +1920,7 @@
   },
   "RepetitionTimeExcitation": {
     "name": "RepetitionTimeExcitation",
-    "description": "The interval, in seconds, between two successive excitations.\n[DICOM Tag 0018, 0080](http://dicomlookup.com/lookup.asp?sw=Tnumber&q=(0018,0080)\nbest refers to this parameter.\nThis field may be used together with the `RepetitionTimePreparation` for\ncertain use cases, such as\n[MP2RAGE](https://doi.org/10.1016/j.neuroimage.2009.10.002).\nUse `RepetitionTimeExcitation` (in combination with\n`RepetitionTimePreparation` if needed) for anatomy imaging data rather than\n`RepetitionTime` as it is already defined as the amount of time that it takes\nto acquire a single volume in the\n[task imaging data](/04-modality-specific-files/01-magnetic-resonance-\\\nimaging-data.html#task-including-resting-state-imaging-data)\nsection.\n",
+    "description": "The interval, in seconds, between two successive excitations.\n[DICOM Tag 0018, 0080](http://dicomlookup.com/lookup.asp?sw=Tnumber&q=(0018,0080)\nbest refers to this parameter.\nThis field may be used together with the `\"RepetitionTimePreparation\"` for\ncertain use cases, such as\n[MP2RAGE](https://doi.org/10.1016/j.neuroimage.2009.10.002).\nUse `RepetitionTimeExcitation` (in combination with\n`\"RepetitionTimePreparation\"` if needed) for anatomy imaging data rather than\n`\"RepetitionTime\"` as it is already defined as the amount of time that it takes\nto acquire a single volume in the\n[task imaging data](/04-modality-specific-files/01-magnetic-resonance-\\\nimaging-data.html#task-including-resting-state-imaging-data)\nsection.\n",
     "type": "number",
     "minimum": 0,
     "unit": "s"
@@ -1990,7 +1997,7 @@
   },
   "SampleOrigin": {
     "name": "SampleOrigin",
-    "description": "Describes from which tissue the genetic information was extracted.\nValues MUST be one of `\"blood\"`, `\"saliva\"`, `\"brain\"`, `\"csf\"`,\n`\"breast milk\"`, `\"bile\"`, `\"amniotic fluid\"`, `\"other biospecimen\"`.\n",
+    "description": "Describes from which tissue the genetic information was extracted.\n",
     "type": "string",
     "enum": [
       "blood",
@@ -2149,7 +2156,7 @@
   },
   "SliceEncodingDirection": {
     "name": "SliceEncodingDirection",
-    "description": "Possible values: `\"i\"`, `\"j\"`, `\"k\"`, `\"i-\"`, `\"j-\"`, `\"k-\"`\n(the axis of the NIfTI data along which slices were acquired,\nand the direction in which `SliceTiming` is defined with respect to).\n`i`, `j`, `k` identifiers correspond to the first, second and third axis of\nthe data in the NIfTI file.\nA `-` sign indicates that the contents of `SliceTiming` are defined in\nreverse order - that is, the first entry corresponds to the slice with the\nlargest index, and the final entry corresponds to slice index zero.\nWhen present, the axis defined by `SliceEncodingDirection` needs to be\nconsistent with the `slice_dim` field in the NIfTI header.\nWhen absent, the entries in `SliceTiming` must be in the order of increasing\nslice index as defined by the NIfTI header.\n",
+    "description": "The axis of the NIfTI data along which slices were acquired,\nand the direction in which `\"SliceTiming\"` is defined with respect to.\n`i`, `j`, `k` identifiers correspond to the first, second and third axis of\nthe data in the NIfTI file.\nA `-` sign indicates that the contents of `\"SliceTiming\"` are defined in\nreverse order - that is, the first entry corresponds to the slice with the\nlargest index, and the final entry corresponds to slice index zero.\nWhen present, the axis defined by `\"SliceEncodingDirection\"` needs to be\nconsistent with the `slice_dim` field in the NIfTI header.\nWhen absent, the entries in `\"SliceTiming\"` must be in the order of increasing\nslice index as defined by the NIfTI header.\n",
     "type": "string",
     "enum": [
       "i",
@@ -2169,7 +2176,7 @@
   },
   "SliceTiming": {
     "name": "SliceTiming",
-    "description": "The time at which each slice was acquired within each volume (frame) of the\nacquisition.\nSlice timing is not slice order -- rather, it is a list of times containing\nthe time (in seconds) of each slice acquisition in relation to the beginning\nof volume acquisition.\nThe list goes through the slices along the slice axis in the slice encoding\ndimension (see below).\nNote that to ensure the proper interpretation of the `SliceTiming` field,\nit is important to check if the OPTIONAL `SliceEncodingDirection` exists.\nIn particular, if `SliceEncodingDirection` is negative,\nthe entries in `SliceTiming` are defined in reverse order with respect to the\nslice axis, such that the final entry in the `SliceTiming` list is the time\nof acquisition of slice 0. Without this parameter slice time correction will\nnot be possible.\n",
+    "description": "The time at which each slice was acquired within each volume (frame) of the\nacquisition.\nSlice timing is not slice order -- rather, it is a list of times containing\nthe time (in seconds) of each slice acquisition in relation to the beginning\nof volume acquisition.\nThe list goes through the slices along the slice axis in the slice encoding\ndimension (see below).\nNote that to ensure the proper interpretation of the `\"SliceTiming\"` field,\nit is important to check if the OPTIONAL `SliceEncodingDirection` exists.\nIn particular, if `\"SliceEncodingDirection\"` is negative,\nthe entries in `\"SliceTiming\"` are defined in reverse order with respect to the\nslice axis, such that the final entry in the `\"SliceTiming\"` list is the time\nof acquisition of slice 0. Without this parameter slice time correction will\nnot be possible.\n",
     "type": "array",
     "items": {
       "type": "number",
@@ -2218,7 +2225,7 @@
   },
   "SourceDatasets": {
     "name": "SourceDatasets",
-    "description": "Used to specify the locations and relevant attributes of all source datasets.\nValid keys in each object include `URL`, `DOI` (see\n[URI](/02-common-principles.html#uniform-resource-indicator)), and\n`Version` with\n[string](https://www.w3schools.com/js/js_json_datatypes.asp)\nvalues.\n",
+    "description": "Used to specify the locations and relevant attributes of all source datasets.\nValid keys in each object include `\"URL\"`, `\"DOI\"` (see\n[URI](/02-common-principles.html#uniform-resource-indicator)), and\n`\"Version\"` with\n[string](https://www.w3schools.com/js/js_json_datatypes.asp)\nvalues.\n",
     "type": "array",
     "items": {
       "type": "object",
@@ -2238,7 +2245,7 @@
   },
   "Sources": {
     "name": "Sources",
-    "description": "A list of files with the paths specified relative to dataset root;\nthese files were directly used in the creation of this derivative data file.\nFor example, if a derivative A is used in the creation of another\nderivative B, which is in turn used to generate C in a chain of A->B->C,\nC should only list B in `Sources`, and B should only list A in `Sources`.\nHowever, in case both X and Y are directly used in the creation of Z,\nthen Z should list X and Y in `Sources`,\nregardless of whether X was used to generate Y.\n",
+    "description": "A list of files with the paths specified relative to dataset root;\nthese files were directly used in the creation of this derivative data file.\nFor example, if a derivative A is used in the creation of another\nderivative B, which is in turn used to generate C in a chain of A->B->C,\nC should only list B in `\"Sources\"`, and B should only list A in `\"Sources\"`.\nHowever, in case both X and Y are directly used in the creation of Z,\nthen Z should list X and Y in `\"Sources\"`,\nregardless of whether X was used to generate Y.\n",
     "type": "array",
     "items": {
       "type": "string",
@@ -2348,7 +2355,7 @@
   },
   "SpoilingType": {
     "name": "SpoilingType",
-    "description": "Specifies which spoiling method(s) are used by a spoiled sequence.\nAccepted values: `\"RF\"`, `\"GRADIENT\"` or `\"COMBINED\"`.\n",
+    "description": "Specifies which spoiling method(s) are used by a spoiled sequence.\n",
     "type": "string",
     "enum": [
       "RF",
@@ -2369,7 +2376,7 @@
   },
   "StimulusPresentation": {
     "name": "StimulusPresentation",
-    "description": "Object containing key value pairs related to the software used to present\nthe stimuli during the experiment, specifically:\n`OperatingSystem`, `SoftwareName`, `SoftwareRRID`, `SoftwareVersion` and\n`Code`.\nSee table below for more information.\n",
+    "description": "Object containing key value pairs related to the software used to present\nthe stimuli during the experiment, specifically:\n`\"OperatingSystem\"`, `\"SoftwareName\"`, `\"SoftwareRRID\"`, `\"SoftwareVersion\"` and\n`\"Code\"`.\nSee table below for more information.\n",
     "type": "object",
     "properties": {
       "OperatingSystem": {
@@ -2401,7 +2408,7 @@
   },
   "TaskName": {
     "name": "TaskName",
-    "description": "Name of the task.\nNo two tasks should have the same name.\nThe task label included in the file name is derived from this TaskName field\nby removing all non-alphanumeric (`[a-zA-Z0-9]`) characters.\nFor example `TaskName` `\"faces n-back\"` will correspond to task label\n`facesnback`.\n",
+    "description": "Name of the task.\nNo two tasks should have the same name.\nThe task label included in the file name is derived from this `\"TaskName\"` field\nby removing all non-alphanumeric (`[a-zA-Z0-9]`) characters.\nFor example `\"TaskName\"` `\"faces n-back\"` will correspond to task label\n`facesnback`.\n",
     "type": "string"
   },
   "TermURL": {
@@ -2411,7 +2418,7 @@
   },
   "TimeZero": {
     "name": "TimeZero",
-    "description": "Time zero to which all scan and/or blood measurements have been adjusted to,\nin the unit \"hh:mm:ss\".\nThis should be equal to `InjectionStart` or `ScanStart`.\n",
+    "description": "Time zero to which all scan and/or blood measurements have been adjusted to,\nin the unit \"hh:mm:ss\".\nThis should be equal to `\"InjectionStart\"` or `\"ScanStart\"`.\n",
     "type": "string",
     "pattern": "^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"
   },
@@ -2423,7 +2430,7 @@
   },
   "TissueOrigin": {
     "name": "TissueOrigin",
-    "description": "Describes the type of tissue analyzed for `SampleOrigin` `brain`.\nValues MUST be one of `\"gray matter\"`, `\"white matter\"`, `\"csf\"`,\n`\"meninges\"`, `\"macrovascular\"` or `microvascular`.\n",
+    "description": "Describes the type of tissue analyzed for `\"SampleOrigin\"` `brain`.\n",
     "type": "string",
     "enum": [
       "gray matter",
@@ -2442,7 +2449,7 @@
   },
   "TotalReadoutTime": {
     "name": "TotalReadoutTime",
-    "description": "This is actually the \"effective\" total readout time,\ndefined as the readout duration, specified in seconds,\nthat would have generated data with the given level of distortion.\nIt is NOT the actual, physical duration of the readout train.\nIf `EffectiveEchoSpacing` has been properly computed,\nit is just `EffectiveEchoSpacing * (ReconMatrixPE - 1)`.\n",
+    "description": "This is actually the \"effective\" total readout time,\ndefined as the readout duration, specified in seconds,\nthat would have generated data with the given level of distortion.\nIt is NOT the actual, physical duration of the readout train.\nIf `\"EffectiveEchoSpacing\"` has been properly computed,\nit is just `EffectiveEchoSpacing * (ReconMatrixPE - 1)`.\n",
     "type": "number",
     "unit": "s"
   },
@@ -2496,7 +2503,7 @@
   },
   "Type": {
     "name": "Type",
-    "description": "Short identifier of the mask.\nReserved values: `Brain` - brain mask, `Lesion` - lesion mask,\n`Face` - face mask, `ROI` - ROI mask\n",
+    "description": "Short identifier of the mask.\nThe value `\"Brain\"` refers to a brain mask.\nThe value `\"Lesion\"` refers to a lesion mask.\nThe value `\"Face\"` refers to a face mask.\nThe value `\"ROI\"` refers to a region of interest mask.\n",
     "type": "string",
     "enum": [
       "Brain",
@@ -2535,7 +2542,7 @@
   },
   "VolumeTiming": {
     "name": "VolumeTiming",
-    "description": "The time at which each volume was acquired during the acquisition.\nIt is described using a list of times referring to the onset of each volume\nin the BOLD series.\nThe list must have the same length as the BOLD series,\nand the values must be non-negative and monotonically increasing.\nThis field is mutually exclusive with `RepetitionTime` and `DelayTime`.\nIf defined, this requires acquisition time (TA) be defined via either\n`SliceTiming` or `AcquisitionDuration` be defined.\n",
+    "description": "The time at which each volume was acquired during the acquisition.\nIt is described using a list of times referring to the onset of each volume\nin the BOLD series.\nThe list must have the same length as the BOLD series,\nand the values must be non-negative and monotonically increasing.\nThis field is mutually exclusive with `\"RepetitionTime\"` and `\"DelayTime\"`.\nIf defined, this requires acquisition time (TA) be defined via either\n`\"SliceTiming\"` or `\"AcquisitionDuration\"` be defined.\n",
     "type": "array",
     "minItems": 1,
     "items": {
@@ -2691,7 +2698,7 @@
   },
   "iEEGCoordinateUnits": {
     "name": "iEEGCoordinateUnits",
-    "description": "Units of the `*_electrodes.tsv`, MUST be `\"m\"`, `\"mm\"`, `\"cm\"` or `\"pixels\"`.\nMUST be `\"pixels\"` if `iEEGCoordinateSystem` is `Pixels`.\n",
+    "description": "Units of the `*_electrodes.tsv`.\nMUST be `\"pixels\"` if `iEEGCoordinateSystem` is `Pixels`.\n",
     "type": "string",
     "enum": [
       "m",
@@ -2718,7 +2725,7 @@
   },
   "iEEGReference": {
     "name": "iEEGReference",
-    "description": "General description of the reference scheme used and (when applicable) of\nlocation of the reference electrode in the raw recordings\n(for example, `\"left mastoid\"`, `\"bipolar\"`,\n`\"T01\"` for electrode with name T01,\n`\"intracranial electrode on top of a grid, not included with data\"`,\n`\"upside down electrode\"`).\nIf different channels have a different reference,\nthis field should have a general description and the channel specific\nreference should be defined in the channels.tsv file.\n",
+    "description": "General description of the reference scheme used and (when applicable) of\nlocation of the reference electrode in the raw recordings\n(for example, `\"left mastoid\"`, `\"bipolar\"`,\n`\"T01\"` for electrode with name T01,\n`\"intracranial electrode on top of a grid, not included with data\"`,\n`\"upside down electrode\"`).\nIf different channels have a different reference,\nthis field should have a general description and the channel specific\nreference should be defined in the `channels.tsv` file.\n",
     "type": "string"
   }
 }

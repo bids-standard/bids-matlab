@@ -6,14 +6,22 @@ function error_handling(varargin)
   %
   % :param function_name: default = ``bidsMatlab``
   % :type function_name:
+  %
   % :param id: default = ``unspecified``
   % :type id: string
+  %
   % :param msg: default = ``unspecified``
   % :type msg: string
+  %
   % :param tolerant:
   % :type tolerant: boolean
+  %
   % :param verbose:
   % :type verbose:  boolean
+  %
+  % EXAMPLE::
+  %
+  %   bids.internal.error_handling(mfilename(), 'thisError', 'this is an error', tolerant, verbose)
   %
   % (C) Copyright 2018 BIDS-MATLAB developers
 

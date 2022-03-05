@@ -1,11 +1,9 @@
 [![Build Status](https://travis-ci.com/bids-standard/bids-matlab.svg?branch=master)](https://travis-ci.com/bids-standard/bids-matlab)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb)
 [![View bids-matlab on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5910584.svg)](https://doi.org/10.5281/zenodo.5910584)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 # BIDS for MATLAB / Octave
@@ -100,10 +98,6 @@ BIDS-y enough, the behavior may be predictable.
 - generate human readable reports of the content of BIDS data with EEG, MEG,
   iEEG, physio and events data,
 - deal with some of the incoming BIDS extensions (BIDS model...)
-
-We are trying to centralize the requests for new features in this
-[issue](https://github.com/bids-standard/bids-matlab/issues/60): have a browse
-to see what could be coming soon or if we have missed something obvious.
 
 ### What will this toolbox most likely never do
 

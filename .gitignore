@@ -1,12 +1,12 @@
-octave-workspace
-*.asv
-*.*~
 *.swp
 
 tmp*
+
+*.zip*
+*.jpg
+
 examples/brainstorm
 examples/MoAEpilot
-
 
 # virtual env
 env/*
@@ -16,9 +16,10 @@ bids-specification/*
 bids-examples
 
 # input and output data involved in tests
-data/*
 derivatives/*
-tests/*.tsv
+
+# virtual env
+env/*
 
 # coverage
 coverage_html
@@ -29,4 +30,41 @@ coverage_html
 # visual studio code config
 .vscode/*
 
-MoAEpilot.zip
+# jupyter notebooks
+.ipynb_checkpoints
+
+## MATLAB / OCTAVE gitignore template
+
+# From : https://github.com/github/gitignore/blob/master/Global/MATLAB.gitignore
+
+# Windows default autosave extension
+*.asv
+
+# OSX / *nix default autosave extension
+*.m~
+
+# Compiled MEX binaries (all platforms)
+*.mex*
+
+# Packaged app and toolbox files
+*.mlappinstall
+*.mltbx
+
+# Generated helpsearch folders
+helpsearch*/
+
+# Simulink code generation folders
+slprj/
+sccprj/
+
+# Matlab code generation folders
+codegen/
+
+# Simulink autosave extension
+*.autosave
+
+# Simulink cache files
+*.slxc
+
+# Octave session info
+octave-workspace

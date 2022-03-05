@@ -4,13 +4,18 @@ cff-version: 1.2.0
 
 title: bids-matlab
 
-version: 0.1.0
+version: 0.1.0dev
 
 license: GPL-3.0
 
 repository-code: "https://github.com/bids-standard/bids-matlab"
 
 message: "If you use this software, please cite it as below."
+
+identifiers:
+  - description:  MATLAB / Octave tools for BIDS datasets
+    type: doi
+    value: "10.5281/zenodo.5910584"
 
 authors:
   - family-names: Gau
@@ -24,6 +29,7 @@ authors:
     given-names: Andrew
 
   - alias: tanguyduval
+    given-names: tanguyduval
 
   - family-names: Oostenveld
     given-names: Robert

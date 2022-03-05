@@ -8,7 +8,7 @@ end
 
 function test_tsvread_basic()
 
-  if ~is_octave() && bids.internal.is_github_ci()
+  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
     % TODO fix downloading of test data when testing with matlab in CI
     return
   else
@@ -34,7 +34,7 @@ end
 
 function test_tsvread_subset()
 
-  if ~is_octave() && bids.internal.is_github_ci()
+  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
     % TODO fix downloading of test data when testing with matlab in CI
     return
   else
