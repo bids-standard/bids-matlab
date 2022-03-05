@@ -62,6 +62,11 @@ function p = parse_filename(filename, fields, tolerant)
     tolerant = true;
   end
 
+  if isempty(filename)
+    p = struct([]);
+    return
+  end
+
   fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
 
   filename = bids.internal.file_utils(filename, 'filename');

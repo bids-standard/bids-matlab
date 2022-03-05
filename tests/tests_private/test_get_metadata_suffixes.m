@@ -15,6 +15,9 @@ function test_get_metadata_suffixes_basic()
   side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.json');
 
   metalist = bids.internal.get_meta_list(file);
+  % TODO only only json file per folder level allowed
+  % assertEqual(numel(metalist), 1)
+
   metadata = bids.internal.get_metadata(metalist);
 
   expected_metadata = bids.util.jsondecode(side_car);

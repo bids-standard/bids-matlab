@@ -21,4 +21,6 @@ function data_dir = get_test_data_dir()
     error(msg); %#ok<SPERR>
   end
 
+  data_dir =  bids.internal.file_utils(data_dir, 'cpath');
+
 end

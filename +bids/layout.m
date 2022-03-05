@@ -244,6 +244,10 @@ function subject = parse_subject(pth, subjname, sesname, schema, verbose)
         otherwise
           % in case we are going schemaless
           % or the modality is not one of the usual suspect
+
+          % in case folder names would lead to invalid MATLAB fieldnames
+          modalities{iModality} = regexprep(modalities{iModality}, '-', '_');
+
           subject.(modalities{iModality}) = struct([]);
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
       end
