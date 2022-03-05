@@ -44,6 +44,30 @@ function test_get_metadata_basic()
 
 end
 
+function test_get_metadata_basic_File()
+
+  % Same as above but uses the bids.File class
+
+  pth = fullfile(fileparts(mfilename('fullpath')), '..', 'data', 'synthetic');
+
+  func_sub_01.RepetitionTime = 10;
+  anat_sub_01.FlipAngle = 10;
+  anat_sub_01.Manufacturer = 'Siemens';
+
+  % try to get metadata
+  BIDS = bids.layout(pth);
+
+  data = bids.query(BIDS, 'data', 'sub', '01', 'suffix', 'bold');
+  bf = bids.File(data{1});
+  assert(bf.metadata.RepetitionTime == func_sub_01.RepetitionTime);
+
+  %% test anat metadata subject 01
+  metadata = bids.query(BIDS, 'data', 'sub', '01', 'suffix', 'T1w');
+  bf = bids.File(data{1});
+  assertEqual(bf.metadata.Manufacturer, anat_sub_01.Manufacturer);
+
+end
+
 function test_get_metadata_internal()
 
   pth_bids_example = get_test_data_dir();
@@ -67,5 +91,19 @@ function test_get_metadata_participants()
 
   expected_metadata = bids.util.jsondecode(side_car);
   assertEqual(metadata, expected_metadata);
+
+end
+
+function test_get_metadata_participants_File()
+
+  pth_bids_example = get_test_data_dir();
+
+  file = fullfile(pth_bids_example, 'pet002', 'participants.tsv');
+  side_car = fullfile(pth_bids_example, 'pet002', 'participants.json');
+
+  bf = bids.File(file);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+  assertEqual(bf.metadata, expected_metadata);
 
 end

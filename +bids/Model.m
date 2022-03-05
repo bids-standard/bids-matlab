@@ -190,6 +190,7 @@ classdef Model
       %
       if isempty(varargin)
         value = obj.Nodes;
+        idx = 1:numel(value);
 
       else
 
@@ -257,6 +258,9 @@ classdef Model
     end
 
     function obj = get_edges_from_nodes(obj)
+      if numel(obj.Nodes) <= 1
+        return
+      end
       for i = 1:(numel(obj.Nodes) - 1)
         obj.Edges{i, 1} = struct('Source', obj.Nodes{i, 1}.Name, ...
                                  'Destination', obj.Nodes{i + 1, 1}.Name);
