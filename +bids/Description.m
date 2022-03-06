@@ -15,8 +15,7 @@ classdef Description
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
-  % TODO
-  % - transfer validate function of layout in here
+  % TODO transfer validate function of layout in here
 
   properties
 

@@ -460,8 +460,7 @@ function param = get_acq_param(BIDS, filter, read_gz, verbose)
     param.echo_time = [metadata.EchoTime1 metadata.EchoTime2];
   end
 
-  % TODO
-  % acq_param = convert_field_to_millisecond(acq_param, {'te'});
+  % TODO acq_param = convert_field_to_millisecond(acq_param, {'te'});
 
   if isfield(metadata, 'EchoTime1') && isfield(metadata, 'EchoTime2')
     param.echo_time = sprintf('%0.2f / %0.2f', param.echo_time);
