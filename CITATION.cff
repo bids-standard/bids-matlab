@@ -24,6 +24,7 @@ authors:
 
   - family-names: Flandin
     given-names: Guillaume
+    orcid: https://orcid.org/0000-0003-0077-7859
 
   - family-names: Janke
     given-names: Andrew
@@ -33,9 +34,11 @@ authors:
 
   - family-names: Oostenveld
     given-names: Robert
+    orcid: https://orcid.org/0000-0002-1974-1293
 
   - family-names: Madan
     given-names: Christopher
+    orcid:  https://orcid.org/0000-0003-3228-6501 
 
   - family-names: Niso
     given-names: Guiomar
@@ -46,18 +49,22 @@ authors:
 
   - family-names: Mutsaerts
     given-names: Henk
+    orcid: https://orcid.org/0000-0003-0894-0307
 
   - family-names: Beliy
     given-names: Nikita
 
   - family-names: Norgaard
     given-names: Martin
+    orcid: https://orcid.org/0000-0003-2131-5688
 
   - family-names: Pernet
     given-names: Cyril
+    orcid: https://orcid.org/0000-0003-4010-4632
 
   - family-names: Chrisophe
     given-names: Phillips
+    orcid: https://orcid.org/0000-0002-4990-425X 
 
 keywords:
   - brain imaging data structure
