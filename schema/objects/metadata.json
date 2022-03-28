@@ -1523,7 +1523,7 @@
     "name": "MolarActivityMeasTime",
     "description": "Time to which molar radioactivity measurement above applies in the default\nunit `\"hh:mm:ss\"`.\n",
     "type": "string",
-    "pattern": "^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"
+    "format": "time"
   },
   "MolarActivityUnits": {
     "name": "MolarActivityUnits",
@@ -2211,7 +2211,7 @@
     "name": "SoftwareRRID",
     "description": "[Research Resource Identifier](https://scicrunch.org/resources) of the\nsoftware that was used to present the stimuli.\nExamples: The RRID for Psychtoolbox is 'SCR_002881',\nand that of PsychoPy is 'SCR_006571'.\n",
     "type": "string",
-    "pattern": ".+_.+"
+    "format": "rrid"
   },
   "SoftwareVersion": {
     "name": "SoftwareVersion",
@@ -2312,7 +2312,7 @@
     "name": "SpecificRadioactivityMeasTime",
     "description": "Time to which specific radioactivity measurement above applies in the default\nunit `\"hh:mm:ss\"`.\n",
     "type": "string",
-    "pattern": "^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"
+    "format": "time"
   },
   "SpecificRadioactivityUnits": {
     "name": "SpecificRadioactivityUnits",
@@ -2420,7 +2420,7 @@
     "name": "TimeZero",
     "description": "Time zero to which all scan and/or blood measurements have been adjusted to,\nin the unit \"hh:mm:ss\".\nThis should be equal to `\"InjectionStart\"` or `\"ScanStart\"`.\n",
     "type": "string",
-    "pattern": "^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"
+    "format": "time"
   },
   "TissueDeformationScaling": {
     "name": "TissueDeformationScaling",
