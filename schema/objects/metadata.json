@@ -120,7 +120,7 @@
   },
   "AssociatedEmptyRoom": {
     "name": "AssociatedEmptyRoom",
-    "description": "Relative path in BIDS folder structure to empty-room file associated with\nthe subject's MEG recording.\nThe path needs to use forward slashes instead of backward slashes\n(for example,\n\"sub-emptyroom/ses-/meg/sub-emptyroom_ses-_task-noise_run-_meg.ds\").\n",
+    "description": "Relative path in BIDS directory structure to empty-room file associated with\nthe subject's MEG recording.\nThe path needs to use forward slashes instead of backward slashes\n(for example,\n\"sub-emptyroom/ses-/meg/sub-emptyroom_ses-_task-noise_run-_meg.ds\").\n",
     "anyOf": [
       {
         "type": "array",
@@ -1173,7 +1173,7 @@
   },
   "IntendedFor": {
     "name": "IntendedFor",
-    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more filenames with paths relative to the participant\nsubfolder.\nPaths need to use forward slashes instead of backward slashes,\nregardless of operating system.\n",
+    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more filenames with paths relative to the participant\nsubdirectory.\nPaths need to use forward slashes instead of backward slashes,\nregardless of operating system.\n",
     "anyOf": [
       {
         "type": "string",
