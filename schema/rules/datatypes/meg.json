@@ -14,7 +14,9 @@
       ".ave",
       ".mrk",
       ".kdf",
-      ".mhd"
+      ".mhd",
+      ".trg",
+      ".chn"
     ],
     "entities": {
       "subject": "required",
@@ -69,7 +71,8 @@
       "headshape"
     ],
     "extensions": [
-      "*"
+      ".*",
+      ".pos"
     ],
     "entities": {
       "subject": "required",
