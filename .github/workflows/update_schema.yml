@@ -30,8 +30,13 @@ on:
     - cron: "* * * * 1" # every monday
 
 jobs:
-  build:
+  schema:
+  
+    # only trigger schema update on upstream repo
+    if: github.repository_owner == 'bids-standard'
+
     runs-on: ubuntu-latest
+
     steps:
 
     - uses: actions/checkout@v2
