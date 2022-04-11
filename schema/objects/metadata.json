@@ -481,6 +481,12 @@
     "description": "`true` or `false` value indicating whether head points outlining the\nscalp/face surface are contained within this recording.\n",
     "type": "boolean"
   },
+  "DigitizedHeadPoints__coordsystem": {
+    "name": "DigitizedHeadPoints",
+    "description": "Relative path to the file containing the locations of digitized head points\ncollected during the session (for example, `\"sub-01_headshape.pos\"`).\nRECOMMENDED for all MEG systems, especially for CTF and BTi/4D.\nFor Elekta/Neuromag the head points will be stored in the fif file.\n",
+    "type": "string",
+    "format": "file_relative"
+  },
   "DigitizedHeadPointsCoordinateSystem": {
     "name": "DigitizedHeadPointsCoordinateSystem",
     "description": "Defines the coordinate system for the digitized head points.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"DigitizedHeadPointsCoordinateSystemDescription\"`.\n",
