@@ -6,6 +6,13 @@
     "type": "string",
     "format": "label"
   },
+  "atlas": {
+    "name": "Atlas",
+    "entity": "atlas",
+    "description": "The `atlas-<label>` key/value pair corresponds to a custom label the user\nMAY use to distinguish a different atlas used for similar type of data.\n\nThis entity is only applicable to derivative data.\n",
+    "type": "string",
+    "format": "label"
+  },
   "ceagent": {
     "name": "Contrast Enhancing Agent",
     "entity": "ce",
@@ -140,7 +147,7 @@
   "run": {
     "name": "Run",
     "entity": "run",
-    "description": "If several scans with the same acquisition parameters are acquired in the same session,\nthey MUST be indexed with the [`run-<index>`](../99-appendices/09-entities.md#run) entity:\n`_run-1`, `_run-2`, `_run-3`, and so on (only nonnegative integers are allowed as\nrun labels).\n\nIf different entities apply,\nsuch as a different session indicated by [`ses-<label>`](../99-appendices/09-entities.md#ses),\nor different acquisition parameters indicated by\n[`acq-<label>`](../99-appendices/09-entities.md#acq),\nthen `run` is not needed to distinguish the scans and MAY be omitted.\n",
+    "description": "If several data acquisitions (for example, MRI scans or EEG recordings)\nwith the same acquisition parameters are acquired in the same session,\nthey MUST be indexed with the [`run-<index>`](../99-appendices/09-entities.md#run) entity:\n`_run-1`, `_run-2`, `_run-3`, and so on (only nonnegative integers are allowed as\nrun labels).\n\nIf different entities apply,\nsuch as a different session indicated by [`ses-<label>`](../99-appendices/09-entities.md#ses),\nor different acquisition parameters indicated by\n[`acq-<label>`](../99-appendices/09-entities.md#acq),\nthen `run` is not needed to distinguish the scans and MAY be omitted.\n",
     "type": "string",
     "format": "index"
   },

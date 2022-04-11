@@ -120,7 +120,7 @@
   },
   "AssociatedEmptyRoom": {
     "name": "AssociatedEmptyRoom",
-    "description": "Relative path in BIDS folder structure to empty-room file associated with\nthe subject's MEG recording.\nThe path needs to use forward slashes instead of backward slashes\n(for example,\n\"sub-emptyroom/ses-/meg/sub-emptyroom_ses-_task-noise_run-_meg.ds\").\n",
+    "description": "Relative path in BIDS directory structure to empty-room file associated with\nthe subject's MEG recording.\nThe path needs to use forward slashes instead of backward slashes\n(for example,\n\"sub-emptyroom/ses-/meg/sub-emptyroom_ses-_task-noise_run-_meg.ds\").\n",
     "anyOf": [
       {
         "type": "array",
@@ -480,6 +480,12 @@
     "name": "DigitizedHeadPoints",
     "description": "`true` or `false` value indicating whether head points outlining the\nscalp/face surface are contained within this recording.\n",
     "type": "boolean"
+  },
+  "DigitizedHeadPoints__coordsystem": {
+    "name": "DigitizedHeadPoints",
+    "description": "Relative path to the file containing the locations of digitized head points\ncollected during the session (for example, `\"sub-01_headshape.pos\"`).\nRECOMMENDED for all MEG systems, especially for CTF and BTi/4D.\nFor Elekta/Neuromag the head points will be stored in the fif file.\n",
+    "type": "string",
+    "format": "file_relative"
   },
   "DigitizedHeadPointsCoordinateSystem": {
     "name": "DigitizedHeadPointsCoordinateSystem",
@@ -1147,7 +1153,7 @@
   },
   "InjectionStart": {
     "name": "InjectionStart",
-    "description": "Time of start of injection with respect to `\"TimeZero\"` in the default unit\nseconds.\nThis corresponds to DICOM Tag 0018, 1042 `Contrast/Bolus Start Time`\nconverted to seconds relative to `\"TimeZero\"`.\n",
+    "description": "Time of start of injection with respect to `\"TimeZero\"` in the default unit\nseconds.\nThis corresponds to DICOM Tag 0018, 1072 `Contrast/Bolus Start Time`\nconverted to seconds relative to `\"TimeZero\"`.\n",
     "type": "number",
     "unit": "s"
   },
@@ -1173,7 +1179,7 @@
   },
   "IntendedFor": {
     "name": "IntendedFor",
-    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more filenames with paths relative to the participant\nsubfolder.\nPaths need to use forward slashes instead of backward slashes,\nregardless of operating system.\n",
+    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more filenames with paths relative to the participant\nsubdirectory.\nPaths need to use forward slashes instead of backward slashes,\nregardless of operating system.\n",
     "anyOf": [
       {
         "type": "string",
@@ -1523,7 +1529,7 @@
     "name": "MolarActivityMeasTime",
     "description": "Time to which molar radioactivity measurement above applies in the default\nunit `\"hh:mm:ss\"`.\n",
     "type": "string",
-    "pattern": "^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"
+    "format": "time"
   },
   "MolarActivityUnits": {
     "name": "MolarActivityUnits",
@@ -2063,7 +2069,7 @@
   },
   "ScaleFactor": {
     "name": "ScaleFactor",
-    "description": "Scale factor for each frame.\n",
+    "description": "Scale factor for each frame. This field MUST be defined if the imaging data (`.nii[.gz]`) are scaled.\nIf this field is not defined, then it is assumed that the scaling factor is 1. Defining this field\nwhen the scaling factor is 1 is RECOMMENDED, for the sake of clarity.\n",
     "type": "array",
     "items": {
       "type": "number"
@@ -2211,7 +2217,7 @@
     "name": "SoftwareRRID",
     "description": "[Research Resource Identifier](https://scicrunch.org/resources) of the\nsoftware that was used to present the stimuli.\nExamples: The RRID for Psychtoolbox is 'SCR_002881',\nand that of PsychoPy is 'SCR_006571'.\n",
     "type": "string",
-    "pattern": ".+_.+"
+    "format": "rrid"
   },
   "SoftwareVersion": {
     "name": "SoftwareVersion",
@@ -2312,7 +2318,7 @@
     "name": "SpecificRadioactivityMeasTime",
     "description": "Time to which specific radioactivity measurement above applies in the default\nunit `\"hh:mm:ss\"`.\n",
     "type": "string",
-    "pattern": "^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"
+    "format": "time"
   },
   "SpecificRadioactivityUnits": {
     "name": "SpecificRadioactivityUnits",
@@ -2420,7 +2426,7 @@
     "name": "TimeZero",
     "description": "Time zero to which all scan and/or blood measurements have been adjusted to,\nin the unit \"hh:mm:ss\".\nThis should be equal to `\"InjectionStart\"` or `\"ScanStart\"`.\n",
     "type": "string",
-    "pattern": "^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"
+    "format": "time"
   },
   "TissueDeformationScaling": {
     "name": "TissueDeformationScaling",

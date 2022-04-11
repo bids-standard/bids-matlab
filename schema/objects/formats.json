@@ -1,0 +1,87 @@
+{
+  "index": {
+    "name": "Index",
+    "description": "Non-negative, non-zero integers, optionally prefixed with leading zeros for sortability.\nAn index may not be all zeros.\n",
+    "pattern": "[0-9]*[1-9]+[0-9]*"
+  },
+  "label": {
+    "name": "Label",
+    "description": "Freeform labels without special characters.\n",
+    "pattern": "[0-9a-zA-Z]+"
+  },
+  "boolean": {
+    "name": "Boolean",
+    "description": "A boolean.\nMust be either \"true\" or \"false\".\n",
+    "pattern": "(true|false)"
+  },
+  "integer": {
+    "name": "Integer",
+    "description": "An integer which may be positive or negative.\n",
+    "pattern": "[+-]?\\d+"
+  },
+  "number": {
+    "name": "Number",
+    "description": "A number which may be an integer or float, positive or negative.\n",
+    "pattern": "[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)([eE][+-]?[0-9]+)?"
+  },
+  "string": {
+    "name": "String",
+    "description": "The basic string type (not a specific format).\nThis should allow any free-form string.\n",
+    "pattern": ".*"
+  },
+  "bids_uri": {
+    "name": "BIDS uniform resource indicator",
+    "description": "A BIDS uniform resource indicator.\n\nThe validation for this format is minimal.\nIt simply ensures that the value is a string with any characters that may appear in a valid URI,\nstarting with \"bids:\".\n",
+    "pattern": "bids:[0-9a-zA-Z/#:\\?\\_\\-\\.]+"
+  },
+  "dataset_relative": {
+    "name": "Path relative to the BIDS dataset directory",
+    "description": "A path to a file, relative to the dataset directory.\n\nThe validation for this format is minimal.\nIt simply ensures that the value is a string with any characters that may appear in a valid path,\nwithout starting with \"/\" (an absolute path).\n",
+    "pattern": "(?!/)[0-9a-zA-Z/\\_\\-\\.]+"
+  },
+  "date": {
+    "name": "Date",
+    "description": "A date in the form `\"YYYY-MM-DD[Z]\"`,\nwhere [Z] is an optional, valid timezone code.\n",
+    "pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}([A-Z]{2,4})?"
+  },
+  "datetime": {
+    "name": "Datetime",
+    "description": "A datetime in the form `\"YYYY-MM-DDThh:mm:ss[.000000][Z]\"`,\nwhere [.000000] is an optional subsecond resolution between 1 and 6 decimal points,\nand [Z] is an optional, valid timezone code.\n",
+    "pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9](\\.[0-9]{1,6})?([A-Z]{2,4})?"
+  },
+  "file_relative": {
+    "name": "Path relative to the parent file",
+    "description": "A path to a file, relative to the file in which the field is defined.\n\nThe validation for this format is minimal.\nIt simply ensures that the value is a string with any characters that may appear in a valid path,\nwithout starting with \"/\" (an absolute path).\n",
+    "pattern": "(?!/)[0-9a-zA-Z/\\_\\-\\.]+"
+  },
+  "participant_relative": {
+    "name": "Path relative to the participant directory",
+    "description": "A path to a file, relative to the participant's directory in the dataset.\n\nThe validation for this format is minimal.\nIt simply ensures that the value is a string with any characters that may appear in a valid path,\nwithout starting with \"/\" (an absolute path) or \"sub/\"\n(a relative path starting with the participant directory, rather than relative to that directory).\n",
+    "pattern": "(?!/)(?!sub-)[0-9a-zA-Z/\\_\\-\\.]+"
+  },
+  "rrid": {
+    "name": "Research resource identifier",
+    "description": "A [research resource identifier](https://scicrunch.org/resources).\n",
+    "pattern": "RRID:.+_.+"
+  },
+  "stimuli_relative": {
+    "name": "Path relative to the stimuli directory",
+    "description": "A path to a stimulus file, relative to a `/stimuli` directory somewhere.\n\nThe validation for this format is minimal.\nIt simply ensures that the value is a string with any characters that may appear in a valid path,\nwithout starting with \"/\" (an absolute path) or \"stimuli/\"\n(a relative path starting with the stimuli directory, rather than relative to that directory).\n",
+    "pattern": "(?!/)(?!stimuli/)[0-9a-zA-Z/\\_\\-\\.]+"
+  },
+  "time": {
+    "name": "Time",
+    "description": "A time in the form `\"hh:mm:ss\"`.\n",
+    "pattern": "(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9]"
+  },
+  "unit": {
+    "name": "A standardized unit",
+    "description": "A unit.\nSI units in CMIXF formatting are RECOMMENDED\n(see [Units](/02-common-principles.html#units)).\n\nCurrently this matches any string.\n\nTODO: Somehow reference the actual unit options in the Units appendix.\n",
+    "pattern": ".*"
+  },
+  "uri": {
+    "name": "Uniform resource indicator",
+    "description": "A uniform resource indicator.\n",
+    "pattern": "(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"
+  }
+}

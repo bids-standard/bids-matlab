@@ -13,7 +13,7 @@ env:
   OCTFLAGS: --no-gui --no-window-system --silent
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-20.04
 

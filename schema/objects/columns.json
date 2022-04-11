@@ -399,7 +399,7 @@
   },
   "stim_file": {
     "name": "stim_file",
-    "description": "Represents the location of the stimulus file (such as an image, video, or\naudio file) presented at the given onset time.\nThere are no restrictions on the file formats of the stimuli files,\nbut they should be stored in the `/stimuli` folder\n(under the root folder of the dataset; with optional subfolders).\nThe values under the `stim_file` column correspond to a path relative to\n`/stimuli`.\nFor example `images/cat03.jpg` will be translated to `/stimuli/images/cat03.jpg`.\n",
+    "description": "Represents the location of the stimulus file (such as an image, video, or\naudio file) presented at the given onset time.\nThere are no restrictions on the file formats of the stimuli files,\nbut they should be stored in the `/stimuli` directory\n(under the root directory of the dataset; with optional subdirectories).\nThe values under the `stim_file` column correspond to a path relative to\n`/stimuli`.\nFor example `images/cat03.jpg` will be translated to `/stimuli/images/cat03.jpg`.\n",
     "type": "string",
     "format": "stimuli_relative"
   },
