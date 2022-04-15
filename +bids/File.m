@@ -11,10 +11,13 @@ classdef File
   %
   % :param input:
   % :type input: filename or structure
+  %
   % :param use_schema:
   % :type use_schema: boolean
+  %
   % :param tolerant: turns errors into warning
   % :type tolerant: boolean
+  %
   % :param verbose: silences warnings
   % :type verbose: boolean
   %
@@ -386,6 +389,73 @@ classdef File
     end
 
     function obj = rename(obj, varargin)
+      %
+      % Renames a file according following some specification
+      %
+      % USAGE::
+      %
+      %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', [], 'force', false);
+      %
+      % :param spec: struture specifying what entities, suffix, extension, prefix to apply
+      %              renaming
+      % :type spec: structure
+      %
+      % :param dry_run: If ``true`` no file is actually renamed. ``false`` is the default to avoid
+      %                 renaming files by mistake.
+      % :type dry_run: boolean
+      %
+      % :param verbose: displays input --> output
+      % :type verbose: boolean
+      %
+      % :param force: overwrites existing file. Default: ``false``
+      % :type force: boolean
+      %
+      % EXAMPLE:
+      %
+      % .. code-block:: matlab
+      %
+      %   %% rename an SPM preprocessed file
+      %
+      %   % expected_name = fullfile(pwd, ...
+      %   %                         'sub-01', ...
+      %   %                         'sub-01_task-faceRep_space-individual_desc-preproc_bold.nii');
+      %
+      %   input_filename = 'uasub-01_task-faceRep_bold.nii';
+      %
+      %   file = bids.File(input_filename, 'use_schema', false);
+      %
+      %   spec.prefix = ''; % remove prefix
+      %   spec.entities.desc = 'preproc'; % add description entity
+      %   spec.entity_order = {'sub', 'task', 'desc'};
+      %
+      %   file = file.rename('spec', spec, 'dry_run', false, 'verbose', true);
+      %
+      %
+      %   %% Get a specific file from a dataset to rename
+      %
+      %   BIDS = bids.layout(path_to_dataset)
+      %
+      %   % construct a filter to get only the file we want/
+      %   subject = '001';
+      %   run = '001';
+      %   suffix = 'bold';
+      %   task = 'faceRep';
+      %   filter = struct('sub', subject, 'task', task, 'run', run, 'task, task');
+      %
+      %   file_to_rename = bids.query(BIDS, 'data', filter);
+      %
+      %   file = bids.File(file_to_rename, 'use_schema', false);
+      %
+      %   % specification to remove run entity
+      %   spec.entities.run = '';
+      %
+      %   % first run with dry_run = true to make sure we will get the expected output
+      %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', true);
+      %
+      %   % rename the file by setting dry_run to false
+      %   file = file.rename('spec', spec, 'dry_run', false, 'verbose', true);
+      %
+
       args = inputParser;
       args.addParameter('dry_run', true, @islogical);
       args.addParameter('force', false, @islogical);
