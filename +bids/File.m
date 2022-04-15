@@ -440,7 +440,7 @@ classdef File
       %   run = '001';
       %   suffix = 'bold';
       %   task = 'faceRep';
-      %   filter = struct('sub', subject, 'task', task, 'run', run, 'task, task');
+      %   filter = struct('sub', subject, 'task', task, 'run', run, 'suffix', suffix);
       %
       %   file_to_rename = bids.query(BIDS, 'data', filter);
       %
