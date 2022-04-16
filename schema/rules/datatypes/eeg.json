@@ -87,7 +87,9 @@
       "photo"
     ],
     "extensions": [
-      ".jpg"
+      ".jpg",
+      ".png",
+      ".tif"
     ],
     "entities": {
       "subject": "required",
