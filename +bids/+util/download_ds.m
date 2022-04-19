@@ -81,7 +81,7 @@ function out_path = download_ds(varargin)
   end
 
   % clean previous runs
-  if exist(out_path, 'dir')
+  if isdir(out_path)
     if p.Results.force
       rmdir(out_path, 's');
     else

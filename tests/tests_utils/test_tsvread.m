@@ -8,12 +8,10 @@ end
 
 function test_tsvread_basic()
 
-  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
-    % TODO fix downloading of test data when testing with matlab in CI
-    return
-  else
-    pth = bids.internal.download_moae_ds();
-  end
+  pth = bids.util.download_ds('source', 'spm', ...
+                              'demo', 'moae', ...
+                              'force', false, ...
+                              'verbose', false);
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
@@ -34,12 +32,10 @@ end
 
 function test_tsvread_subset()
 
-  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
-    % TODO fix downloading of test data when testing with matlab in CI
-    return
-  else
-    pth = bids.internal.download_moae_ds();
-  end
+  pth = bids.util.download_ds('source', 'spm', ...
+                              'demo', 'moae', ...
+                              'force', false, ...
+                              'verbose', false);
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];

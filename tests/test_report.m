@@ -103,14 +103,16 @@ end
 
 function test_report_moae_data()
 
-  % temporary silence
-  return
+  %
 
   cfg = set_up();
 
   cfg.read_nifti = true;
 
-  BIDS = fullfile(bids.internal.root_dir(), 'examples', 'MoAEpilot');
+  BIDS = bids.util.download_ds('source', 'spm', ...
+                               'demo', 'moae', ...
+                               'force', false, ...
+                               'verbose', false);
 
   BIDS = bids.layout(BIDS, 'use_schema', true);
 

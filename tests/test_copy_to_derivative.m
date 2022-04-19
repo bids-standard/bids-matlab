@@ -268,11 +268,17 @@ function [BIDS, out_path, filter, cfg] = fixture(dataset)
                                    'force', false, ...
                                    'verbose', false);
 
-      gzip(fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii'));
-      delete(fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii'));
+      anat = fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii');
+      if exist(anat, 'file')
+        gzip(anat);
+        delete(anat);
+      end
 
-      gzip(fullfile(BIDS, 'sub-01', 'func', 'sub-01_task-auditory_bold.nii'));
-      delete(fullfile(BIDS, 'sub-01', 'func', 'sub-01_task-auditory_bold.nii'));
+      func = fullfile(BIDS, 'sub-01', 'func', 'sub-01_task-auditory_bold.nii');
+      if exist(func, 'file')
+        gzip(func);
+        delete(func);
+      end
 
     otherwise
 
