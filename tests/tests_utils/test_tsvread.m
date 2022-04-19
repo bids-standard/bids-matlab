@@ -8,12 +8,10 @@ end
 
 function test_tsvread_basic()
 
-  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
-    % TODO fix downloading of test data when testing with matlab in CI
-    return
-  else
-    pth = bids.internal.download_moae_ds();
-  end
+  pth = bids.util.download_ds('source', 'spm', ...
+                              'demo', 'moae', ...
+                              'force', false, ...
+                              'verbose', false);
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
@@ -30,16 +28,16 @@ function test_tsvread_basic()
                                       'sub-01_task-auditory_events.tsv.gz'));
   assertEqual(output.onset', events.onset);
 
+  rmdir(pth, 's');
+
 end
 
 function test_tsvread_subset()
 
-  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
-    % TODO fix downloading of test data when testing with matlab in CI
-    return
-  else
-    pth = bids.internal.download_moae_ds();
-  end
+  pth = bids.util.download_ds('source', 'spm', ...
+                              'demo', 'moae', ...
+                              'force', false, ...
+                              'verbose', false);
 
   % define the expected output from bids query metadata
   events.onset = [42 126 210 294 378 462 546];
@@ -48,5 +46,7 @@ function test_tsvread_subset()
   tsv_file = fullfile(pth, 'sub-01', 'func', 'sub-01_task-auditory_events.tsv');
   output = bids.util.tsvread(tsv_file, 'onset');
   assertEqual(output', events.onset);
+
+  rmdir(pth, 's');
 
 end

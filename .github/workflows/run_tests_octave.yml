@@ -36,9 +36,8 @@ jobs:
         cd JSONio
         mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
 
-    - name: Install bids-example and data
+    - name: Install bids-example
       run: |
-        octave $OCTFLAGS --eval "addpath(pwd); bids.internal.download_moae_ds()"
         cd tests
         make data
 
