@@ -38,7 +38,6 @@ jobs:
 
     - name: Install bids-example and data
       run: |
-        octave $OCTFLAGS --eval "addpath(pwd); bids.internal.download_moae_ds()"
         cd tests
         make data
 
@@ -51,12 +50,6 @@ jobs:
         # data: # Directory for test data
         with_coverage: false
         # cover_xml_file: coverage.xml
-
-    # - name: Upload coverage
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: coverage_file
-    #     path: coverage.xml
 
     # - name: Code coverage
     #   uses: codecov/codecov-action@v1
