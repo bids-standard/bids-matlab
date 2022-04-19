@@ -17,6 +17,10 @@ function filename = download(URL, output_dir, verbose)
 
   filename = tokens{end};
 
+  if exist(filename, 'file')
+    delete(filename);
+  end
+
   if strcmp(protocol, 'http:')
 
     if isunix()
@@ -29,7 +33,11 @@ function filename = download(URL, output_dir, verbose)
       urlwrite(URL, filename);
     end
 
-    movefile(filename, output_dir);
+    % move file in case it was not downloaded in the root dir
+    if ~exist(fullfile(output_dir, filename), 'file')
+      print_to_screen([filename ' --> ' output_dir], verbose);
+      movefile(filename, fullfile(output_dir, filename));
+    end
     filename = fullfile(output_dir, filename);
 
   else
