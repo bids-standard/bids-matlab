@@ -194,6 +194,7 @@ Thanks goes to these wonderful people
     <td align="center"><a href="https://profiles.stanford.edu/martin-noergaard"><img src="https://avatars.githubusercontent.com/u/12412821?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Martin Norgaard</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/issues?q=author%3Amnoergaard" title="Bug reports">🐛</a> <a href="#ideas-mnoergaard" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://cpernet.github.io/"><img src="https://avatars.githubusercontent.com/u/4772878?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cyril Pernet</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/commits?author=CPernet" title="Code">💻</a> <a href="#ideas-CPernet" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="http://www.giga.uliege.be"><img src="https://avatars.githubusercontent.com/u/2011934?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Christophe Phillips</b></sub></a><br /><a href="#ideas-ChristophePhillips" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/CerenB"><img src="https://avatars.githubusercontent.com/u/10451654?v=4?s=100" width="100px;" alt=""/><br /><sub><b>CerenB</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/pulls?q=is%3Apr+reviewed-by%3ACerenB" title="Reviewed Pull Requests">👀</a></td>
   </tr>
 </table>
 
