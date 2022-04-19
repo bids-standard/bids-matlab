@@ -106,7 +106,7 @@ end
 
 function test_copy_to_derivative_unzip
 
-  [BIDS, out_path, filter, cfg] = fixture('MoAEpilot');
+  [pth, out_path, filter, cfg] = fixture('MoAEpilot');
 
   pipeline_name = 'bids-matlab';
   unzip = true;
@@ -115,7 +115,7 @@ function test_copy_to_derivative_unzip
   verbose = cfg.verbose;
   skip_dependencies = true;
 
-  bids.copy_to_derivative(BIDS, ...
+  bids.copy_to_derivative(pth, ...
                           'pipeline_name', pipeline_name, ...
                           'out_path', out_path, ...
                           'filter', filter, ...
@@ -132,6 +132,8 @@ function test_copy_to_derivative_unzip
   assertEqual(numel(zipped_files), 0);
 
   teardown(out_path);
+
+  rmdir(pth, 's');
 
 end
 

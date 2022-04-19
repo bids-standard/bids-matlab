@@ -28,6 +28,8 @@ function test_tsvread_basic()
                                       'sub-01_task-auditory_events.tsv.gz'));
   assertEqual(output.onset', events.onset);
 
+  rmdir(pth, 's');
+
 end
 
 function test_tsvread_subset()
@@ -44,5 +46,7 @@ function test_tsvread_subset()
   tsv_file = fullfile(pth, 'sub-01', 'func', 'sub-01_task-auditory_events.tsv');
   output = bids.util.tsvread(tsv_file, 'onset');
   assertEqual(output', events.onset);
+
+  rmdir(pth, 's');
 
 end

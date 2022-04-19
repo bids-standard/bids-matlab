@@ -3,8 +3,9 @@
 tmp*
 
 *.zip*
-*.jpg
 
+*.jpg
+*.png
 *.ps
 
 examples/brainstorm
