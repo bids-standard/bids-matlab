@@ -105,7 +105,7 @@ function test_report_moae_data()
 
   % no spm in CI
   if bids.internal.is_github_ci()
-    return;
+    return
   end
 
   cfg = set_up();
