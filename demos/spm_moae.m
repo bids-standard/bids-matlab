@@ -21,7 +21,7 @@ pth = bids.util.download_ds('source', 'spm', ...
 
 derivatives_pth = fullfile(pth, 'derivatives');
 
-%% COPY TO DERIVATIVES
+%% COPY DATA TO DERIVATIVES FOLDER
 BIDS = bids.layout(pth, ...
                    'use_schema', use_schema, ...
                    'tolerant', tolerant, ...
@@ -41,10 +41,10 @@ stats_pth = fullfile(derivatives_pth, stats_pipeline_name);
 folders = struct('subjects',  {{subject_label}}, ...
                  'modalities', {{'stats'}});
 is_derivative = true;
-bids.init(stats_pth, folders, is_derivative);
+bids.init(stats_pth, 'folders', folders, 'is_derivative', is_derivative);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% WRITE REPORT
+%% WRITE DATASET DESCRIPTION REPORT
 
 % read the dataset
 BIDS = bids.layout(fullfile(pth, 'derivatives', preproc_pipeline_name), ...
@@ -70,10 +70,12 @@ bids.report(BIDS, ...
 % Guillaume Flandin
 % $Id: auditory_spm12_batch.m 8 2014-09-29 18:11:56Z guillaume $
 
-% Initialise SPM
+%% Initialise SPM
 % --------------------------------------------------------------------------
 spm('Defaults', 'fMRI');
 spm_jobman('initcfg');
+
+clear matlabbatch;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SPATIAL PREPROCESSING
@@ -87,7 +89,7 @@ func = bids.query(BIDS, 'data', ...
 
 % Realign
 % --------------------------------------------------------------------------
-estwrite.data = {cellstr(func)};
+estwrite.data{1} = cellstr(func);
 estwrite.roptions.which = [0 1];
 
 matlabbatch{1}.spm.spatial.realign.estwrite = estwrite;
@@ -122,7 +124,7 @@ write.subj.resample = cellstr(spm_file(anat, 'prefix', 'm', ...
                                        'ext', 'nii'));
 write.woptions.vox  = [1 1 3];
 
-matlabbatch{45}.spm.spatial.normalise.write = write;
+matlabbatch{5}.spm.spatial.normalise.write = write;
 
 % Smooth
 % --------------------------------------------------------------------------
@@ -138,15 +140,17 @@ spm_jobman('run', matlabbatch);
 % re-read the dataset without the schela to index the new files
 use_schema = false;
 BIDS = bids.layout(fullfile(pth, 'derivatives', preproc_pipeline_name), ...
-                   use_schema);
+                   'use_schema', use_schema);
 
 func = bids.query(BIDS, 'data', ...
                   'sub', subject_label, ...
-                  'suffix', 'bold', 'prefix', 'sw');
+                  'suffix', 'bold', ...
+                  'prefix', 'sw');
 
 metadata = bids.query(BIDS, 'metadata', ...
                       'sub', subject_label, ...
-                      'suffix', 'bold');
+                      'suffix', 'bold', ...
+                      'prefix', 'sw');
 
 events = bids.query(BIDS, 'data', ...
                     'sub', subject_label, ...

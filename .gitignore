@@ -5,6 +5,8 @@ tmp*
 *.zip*
 *.jpg
 
+*.ps
+
 examples/brainstorm
 examples/MoAEpilot
 
