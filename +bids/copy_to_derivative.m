@@ -306,11 +306,11 @@ function copy_with_symlink(src, target, unzip_files, verbose)
     end
 
   elseif ispc
-    msg = 'Unknown system: copy may fail';
-    bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
     use_copyfile(src, target, unzip_files, verbose);
 
   else
+    msg = 'Unknown system: copy may fail';
+    bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
     use_copyfile(src, target, unzip_files, verbose);
 
   end
@@ -335,6 +335,11 @@ function use_copyfile(src, target, unzip_files, verbose)
 
   if ~status
     msg = [messageId ': ' message];
+    if strcmp(messageId, 'MATLAB:COPYFILE:OSError')
+      msg = [msg, ...
+             '\n If you are on Windows and using a datalad dataset,', ...
+             '\n try to ''datalad unlock'' your input dataset.'];
+    end
     bids.internal.error_handling(mfilename, 'copyError', msg, false, verbose);
   end
 
