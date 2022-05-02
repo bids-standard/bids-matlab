@@ -1,18 +1,18 @@
 classdef Model
   %
-  % Class to deal with BIDS files and to help to create BIDS valid names
+  % Class to deal with BIDS stats models
   %
   % USAGE::
   %
-  %   file = bids.Model(init, true, ...
+  %   bm = bids.Model('init', true, ...
   %                    'file', path_to_bids_stats_model_file, ...
   %                    'tolerant', true,
   %                    'verbose', false);
   %
-  % :param init:
+  % :param init: if ``true`` this will initialize an empty model. Defauts to ``false``.
   % :type init: boolean
   %
-  % :param file:
+  % :param file: fullpath the JSON file containing the BIDS stats model
   % :type file: path
   %
   % :param tolerant: turns errors into warning
@@ -21,28 +21,45 @@ classdef Model
   % :param verbose: silences warnings
   % :type verbose: boolean
   %
+  % EXAMPLE::
+  %
+  %   % initialize and write an empty model
+  %   bm = bids.Model('init', true);
+  %   filename = fullfile(pwd, 'model-foo_smdl.json');
+  %   bm.write(filename);
+  % 
+  % EXAMPLE::
+  %
+  %   % load a stats model from a file
+  %   model_file = fullfile(get_test_data_dir(), ...
+  %                         '..', ...
+  %                         'data', ...
+  %                         'model', ['model-narps_smdl.json']);
+  %
+  %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
+  %
   %
   % (C) Copyright 2022 Remi Gau
 
   properties
 
-    content = ''
+    content = '' % "raw" content of a loaded JSON
 
-    Name = 'REQUIRED'
+    Name = 'REQUIRED' % Name of the model
 
-    Description = 'RECOMMENDED'
+    Description = 'RECOMMENDED' % Description of the model
 
-    BIDSModelVersion = '1.0.0'
+    BIDSModelVersion = '1.0.0' % Version of the model
 
-    Input = 'REQUIRED'
+    Input = 'REQUIRED' % Input of the model
 
-    Nodes =  {'REQUIRED'}
+    Nodes =  {'REQUIRED'} % Nodes of the model
 
-    Edges = {'RECOMMENDED'}
+    Edges = {'RECOMMENDED'} % Edges of the model
 
-    tolerant = true
+    tolerant = true % if ``true`` turns error into warning
 
-    verbose = true
+    verbose = true % hides warning if ``false``
 
   end
 
@@ -183,11 +200,36 @@ classdef Model
     end
 
     function [value, idx] = get_nodes(obj, varargin)
-      %
-      % [value, idx] = bm.get_nodes('Level', {'Run', 'Session', 'Subject', 'Dataset'}, ...
-      %                             'Name', 'run')
-      %
-      %
+    %
+    % Get a specific node from the model given its Level and / or Name
+    % 
+    % USAGE::
+    %
+    %   [value, idx] = bm.get_nodes('Level', '', ...
+    %                               'Name', '')
+    %
+    %
+    % :param Level: Must be one of ``Run``, ``Session``, ``Subject``, ``Dataset``. 
+    %               Default to ``''``
+    % :type init: string 
+    %
+    % :param Name: Default to ``''``
+    % :type file: path      
+    %
+    %
+    % EXAMPLE::
+    %
+    %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
+    %
+    %   % Get all nodes
+    %   bm.get_nodes()
+    %   
+    %   % Get run level node
+    %   bm.get_nodes('Level', 'Run')
+    % 
+    %   % Get the "Negative" node
+    %   bm.get_nodes('Name', 'negative')
+    %
       if isempty(varargin)
         value = obj.Nodes;
         idx = 1:numel(value);
@@ -258,6 +300,14 @@ classdef Model
     end
 
     function obj = get_edges_from_nodes(obj)
+    %
+    % Generates all the default edges from the list of nodes in the model.
+    %
+    % USAGE::
+    %
+    %   bm = bm.get_edges_from_nodes();
+    %   edges = bm.Edges();
+    % 
       if numel(obj.Nodes) <= 1
         return
       end
@@ -277,8 +327,13 @@ classdef Model
 
     function validate(obj)
       %
-      % Very light validation of fields that were not checked on loading
+      % Very light validation of fields that were not checked on loading.
+      % Automatically run on loaoding of a dataset.
       %
+      % USAGE::
+      %
+      %  bm.validate()
+      % 
 
       REQUIRED_NODES_FIELDS = {'Level', 'Name', 'Model'};
       REQUIRED_TRANSFORMATIONS_FIELDS = {'Transformer', 'Instructions'};
@@ -344,6 +399,11 @@ classdef Model
     end
 
     function validate_edges(obj)
+      %
+      % USAGE::
+      %
+      %  bm.validate_edges()
+      % 
 
       REQUIRED_EDGES_FIELDS = {'Source', 'Destination'};
 
@@ -396,9 +456,15 @@ classdef Model
     %% Node level methods
     % assumes that only one node is being queried
     function [value, idx] = get_transformations(obj, varargin)
+      % 
+      % USAGE::
       %
-      % value = bm.get_transformations('Name', 'node_name')
+      %   transformations = bm.get_transformations('Name', 'node_name')
       %
+      %
+      % :param Name: name of the node whose transformations we want
+      % :type Name: char
+      %        
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -408,9 +474,14 @@ classdef Model
     end
 
     function [value, idx] = get_dummy_contrasts(obj, varargin)
+      % 
+      % USAGE::
       %
-      % value = bm.get_dummy_contrasts('Name', 'node_name')
+      %   dummy_contrasts = bm.get_dummy_contrasts('Name', 'node_name')
       %
+      % :param Name: name of the node whose dummy contrasts we want
+      % :type Name: char
+      %  
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -421,8 +492,13 @@ classdef Model
 
     function [value, idx] = get_contrasts(obj, varargin)
       %
-      % value = bm.get_contrasts('Name', 'node_name')
+      % USAGE::
       %
+      %   contrasts = bm.get_contrasts('Name', 'node_name')
+      %
+      % :param Name: name of the node whose contrasts we want
+      % :type Name: char
+      %  
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -432,9 +508,14 @@ classdef Model
     end
 
     function [value, idx] = get_model(obj, varargin)
+      % 
+      % USAGE::
       %
-      % value = bm.get_model('Name', 'node_name')
+      %   model = bm.get_model('Name', 'node_name')
       %
+      % :param Name: name of the node whose model we want
+      % :type Name: char
+      %  
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
       value = node{1}.Model;
@@ -442,8 +523,13 @@ classdef Model
 
     function value = get_design_matrix(obj, varargin)
       %
-      % value = bm.get_design_matrix('Name', 'node_name')
+      % USAGE::
       %
+      %   matrix = bm.get_design_matrix('Name', 'node_name')
+      %
+      % :param Name: name of the node whose model matrix we want
+      % :type Name: char
+      %  
       model = get_model(obj, varargin{:});
       value = model.X;
     end
@@ -451,8 +537,23 @@ classdef Model
     %% Other
     function obj = default(obj, varargin)
       %
-      % bm = bm.default(BIDS)
+      % Generates a default BIDS stats model for a given data set 
       %
+      % USAGE::
+      %
+      %   bm = bm.default(BIDS)
+      %
+      % :param BIDS: fullpath to a BIDS dataset or output structure from ``bids.layout``
+      % :type file: path or structure
+      %
+      % EXAMPLE::
+      %
+      %   pth_bids_example = get_test_data_dir();
+      %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
+      %   filename = fullfile(pwd, 'model-rhymejudgement_smdl.json');
+      %   bm.write(filename);
+      % 
+
       args = inputParser;
       args.addRequired('layout');
       args.parse(varargin{:});
@@ -485,11 +586,15 @@ classdef Model
 
     end
 
-    %% Update content and write
     function obj = update(obj)
       %
-      % bm = bm.update()
+      % Update ``content`` for writing
       %
+      % USAGE::
+      %
+      %   bm = bm.update()
+      %
+
       obj.content.Name = obj.Name;
       obj.content.BIDSModelVersion = obj.BIDSModelVersion;
       obj.content.Description = obj.Description;
@@ -500,10 +605,14 @@ classdef Model
 
     function write(obj, filename)
       %
-      % bm.write(filename)
+      % USAGE::
       %
+      %   bm.write(filename)
+      %
+
       bids.util.mkdir(fileparts(filename));
       bids.util.jsonencode(filename, obj.content);
+
     end
 
   end
@@ -512,7 +621,9 @@ classdef Model
 
     function node = empty_node(level)
       %
-      % node = Model.empty_node('run')
+      % USAGE::
+      %
+      %   node = Model.empty_node('run')
       %
 
       node =  struct('Level', [upper(level(1)) level(2:end)], ...
@@ -530,8 +641,11 @@ classdef Model
 
     function transformations = empty_transformations()
       %
-      % transformations = Model.empty_transformations()
+      % USAGE::
       %
+      %   transformations = Model.empty_transformations()
+      %
+
       transformations = struct('Transformer', '', ...
                                'Instructions', {{
                                                  struct('Name', '', ...
@@ -542,8 +656,11 @@ classdef Model
 
     function model = empty_model()
       %
-      % model = Model.empty_model()
+      % USAGE::
       %
+      %   model = Model.empty_model()
+      %
+
       model = struct('X', {{''}}, ...
                      'Type', 'glm', ...
                      'HRF', struct('Variables', {{''}}, ...
