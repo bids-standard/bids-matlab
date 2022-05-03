@@ -27,7 +27,7 @@ classdef Model
   %   bm = bids.Model('init', true);
   %   filename = fullfile(pwd, 'model-foo_smdl.json');
   %   bm.write(filename);
-  % 
+  %
   % EXAMPLE::
   %
   %   % load a stats model from a file
@@ -200,36 +200,36 @@ classdef Model
     end
 
     function [value, idx] = get_nodes(obj, varargin)
-    %
-    % Get a specific node from the model given its Level and / or Name
-    % 
-    % USAGE::
-    %
-    %   [value, idx] = bm.get_nodes('Level', '', ...
-    %                               'Name', '')
-    %
-    %
-    % :param Level: Must be one of ``Run``, ``Session``, ``Subject``, ``Dataset``. 
-    %               Default to ``''``
-    % :type init: string 
-    %
-    % :param Name: Default to ``''``
-    % :type file: path      
-    %
-    %
-    % EXAMPLE::
-    %
-    %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
-    %
-    %   % Get all nodes
-    %   bm.get_nodes()
-    %   
-    %   % Get run level node
-    %   bm.get_nodes('Level', 'Run')
-    % 
-    %   % Get the "Negative" node
-    %   bm.get_nodes('Name', 'negative')
-    %
+      %
+      % Get a specific node from the model given its Level and / or Name
+      %
+      % USAGE::
+      %
+      %   [value, idx] = bm.get_nodes('Level', '', ...
+      %                               'Name', '')
+      %
+      %
+      % :param Level: Must be one of ``Run``, ``Session``, ``Subject``, ``Dataset``.
+      %               Default to ``''``
+      % :type init: string
+      %
+      % :param Name: Default to ``''``
+      % :type file: path
+      %
+      %
+      % EXAMPLE::
+      %
+      %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
+      %
+      %   % Get all nodes
+      %   bm.get_nodes()
+      %
+      %   % Get run level node
+      %   bm.get_nodes('Level', 'Run')
+      %
+      %   % Get the "Negative" node
+      %   bm.get_nodes('Name', 'negative')
+      %
       if isempty(varargin)
         value = obj.Nodes;
         idx = 1:numel(value);
@@ -300,14 +300,14 @@ classdef Model
     end
 
     function obj = get_edges_from_nodes(obj)
-    %
-    % Generates all the default edges from the list of nodes in the model.
-    %
-    % USAGE::
-    %
-    %   bm = bm.get_edges_from_nodes();
-    %   edges = bm.Edges();
-    % 
+      %
+      % Generates all the default edges from the list of nodes in the model.
+      %
+      % USAGE::
+      %
+      %   bm = bm.get_edges_from_nodes();
+      %   edges = bm.Edges();
+      %
       if numel(obj.Nodes) <= 1
         return
       end
@@ -333,7 +333,7 @@ classdef Model
       % USAGE::
       %
       %  bm.validate()
-      % 
+      %
 
       REQUIRED_NODES_FIELDS = {'Level', 'Name', 'Model'};
       REQUIRED_TRANSFORMATIONS_FIELDS = {'Transformer', 'Instructions'};
@@ -403,7 +403,7 @@ classdef Model
       % USAGE::
       %
       %  bm.validate_edges()
-      % 
+      %
 
       REQUIRED_EDGES_FIELDS = {'Source', 'Destination'};
 
@@ -456,7 +456,7 @@ classdef Model
     %% Node level methods
     % assumes that only one node is being queried
     function [value, idx] = get_transformations(obj, varargin)
-      % 
+      %
       % USAGE::
       %
       %   transformations = bm.get_transformations('Name', 'node_name')
@@ -464,7 +464,7 @@ classdef Model
       %
       % :param Name: name of the node whose transformations we want
       % :type Name: char
-      %        
+      %
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -474,14 +474,14 @@ classdef Model
     end
 
     function [value, idx] = get_dummy_contrasts(obj, varargin)
-      % 
+      %
       % USAGE::
       %
       %   dummy_contrasts = bm.get_dummy_contrasts('Name', 'node_name')
       %
       % :param Name: name of the node whose dummy contrasts we want
       % :type Name: char
-      %  
+      %
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -498,7 +498,7 @@ classdef Model
       %
       % :param Name: name of the node whose contrasts we want
       % :type Name: char
-      %  
+      %
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
@@ -508,14 +508,14 @@ classdef Model
     end
 
     function [value, idx] = get_model(obj, varargin)
-      % 
+      %
       % USAGE::
       %
       %   model = bm.get_model('Name', 'node_name')
       %
       % :param Name: name of the node whose model we want
       % :type Name: char
-      %  
+      %
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
       value = node{1}.Model;
@@ -529,7 +529,7 @@ classdef Model
       %
       % :param Name: name of the node whose model matrix we want
       % :type Name: char
-      %  
+      %
       model = get_model(obj, varargin{:});
       value = model.X;
     end
@@ -537,7 +537,7 @@ classdef Model
     %% Other
     function obj = default(obj, varargin)
       %
-      % Generates a default BIDS stats model for a given data set 
+      % Generates a default BIDS stats model for a given data set
       %
       % USAGE::
       %
@@ -552,7 +552,7 @@ classdef Model
       %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
       %   filename = fullfile(pwd, 'model-rhymejudgement_smdl.json');
       %   bm.write(filename);
-      % 
+      %
 
       args = inputParser;
       args.addRequired('layout');
