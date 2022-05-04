@@ -1,5 +1,5 @@
-[
-  {
+{
+  "microscopy": {
     "suffixes": [
       "TEM",
       "SEM",
@@ -26,6 +26,9 @@
       ".tif",
       ".json"
     ],
+    "datatypes": [
+      "micr"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
@@ -36,7 +39,7 @@
       "chunk": "optional"
     }
   },
-  {
+  "photo": {
     "suffixes": [
       "photo"
     ],
@@ -45,6 +48,9 @@
       ".png",
       ".tif"
     ],
+    "datatypes": [
+      "micr"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
@@ -52,4 +58,4 @@
       "acquisition": "optional"
     }
   }
-]
+}
