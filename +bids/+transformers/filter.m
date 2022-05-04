@@ -1,4 +1,4 @@
-function tsv_content = filter(transformer, tsv_content)
+function data = filter(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
@@ -22,20 +22,20 @@ function tsv_content = filter(transformer, tsv_content)
     queryTokens = regexp(query, '==', 'split');
     if numel(queryTokens) > 1
 
-      if iscellstr(tsv_content.(tokens{1}))
-        idx = strcmp(queryTokens{2}, tsv_content.(tokens{1}));
-        tmp(idx, 1) = tsv_content.(tokens{1})(idx);
+      if iscellstr(data.(tokens{1}))
+        idx = strcmp(queryTokens{2}, data.(tokens{1}));
+        tmp(idx, 1) = data.(tokens{1})(idx);
         tmp(~idx, 1) = repmat({''}, sum(~idx), 1);
       end
 
-      if isnumeric(tsv_content.(tokens{1}))
-        idx = tsv_content.(tokens{1}) == str2num(queryTokens{2});
-        tmp(idx, 1) = tsv_content.(tokens{1})(idx);
+      if isnumeric(data.(tokens{1}))
+        idx = data.(tokens{1}) == str2num(queryTokens{2});
+        tmp(idx, 1) = data.(tokens{1})(idx);
         tmp(~idx, 1) = nan;
       end
 
-      tmp(idx, 1) = tsv_content.(tokens{1})(idx);
-      tsv_content.(outputs{i}) = tmp;
+      tmp(idx, 1) = data.(tokens{1})(idx);
+      data.(outputs{i}) = tmp;
 
     end
 

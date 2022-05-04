@@ -1,4 +1,4 @@
-function tsv_content = constant(transformer, tsv_content)
+function data = constant(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
@@ -9,5 +9,5 @@ function tsv_content = constant(transformer, tsv_content)
     value = transformer.Value;
   end
 
-  tsv_content.(outputs{1}) = ones(size(tsv_content.onset)) * value;
+  data.(outputs{1}) = ones(size(data.onset)) * value;
 end

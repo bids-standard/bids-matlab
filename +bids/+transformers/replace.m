@@ -1,4 +1,4 @@
-function tsv_content = replace(transformer, tsv_content)
+function data = replace(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
@@ -11,7 +11,7 @@ function tsv_content = replace(transformer, tsv_content)
 
   for i = 1:numel(inputs)
 
-    if ~isfield(tsv_content, inputs{i})
+    if ~isfield(data, inputs{i})
       continue
     end
 
@@ -20,17 +20,17 @@ function tsv_content = replace(transformer, tsv_content)
       switch lower(attributes{ii})
         case 'value'
           if strcmp(inputs{i}, outputs{i})
-            this_output = tsv_content.(inputs{i});
+            this_output = data.(inputs{i});
           else
-            this_output = tsv_content.(outputs{i});
+            this_output = data.(outputs{i});
           end
         case 'onset'
-          this_output = tsv_content.onset;
+          this_output = data.onset;
           if strcmp(inputs{i}, outputs{i})
             outputs{i} = 'onset';
           end
         case 'duration'
-          this_output = tsv_content.duration;
+          this_output = data.duration;
           if strcmp(inputs{i}, outputs{i})
             outputs{i} = 'duration';
           end
@@ -42,11 +42,11 @@ function tsv_content = replace(transformer, tsv_content)
 
         switch lower(attributes{ii})
           case 'value'
-            this_input = tsv_content.(inputs{i});
+            this_input = data.(inputs{i});
           case 'onset'
-            this_input = tsv_content.onset;
+            this_input = data.onset;
           case 'duration'
-            this_input = tsv_content.duration;
+            this_input = data.duration;
         end
 
         key = get_key_to_replace(inputs{i}, attributes{ii}, toReplace{iii});
@@ -74,7 +74,7 @@ function tsv_content = replace(transformer, tsv_content)
 
       end
 
-      tsv_content.(outputs{i}) = this_output;
+      data.(outputs{i}) = this_output;
     end
 
   end

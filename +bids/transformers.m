@@ -4,10 +4,10 @@ function new_content = transformers(varargin)
   %
   % USAGE::
   %
-  %   new_content = transformers(tsv_content, transformers)
+  %   new_content = transformers(data, transformers)
   %
-  % :param tsv_content:
-  % :type tsv_content: structure
+  % :param data:
+  % :type data: structure
   %
   % :param transformers:
   % :type transformers: structure
@@ -17,13 +17,13 @@ function new_content = transformers(varargin)
   % EXAMPLE::
   %
   %     tsvFile = fullfile(path_to_tsv);
-  %     tsv_content = bids.util.tsvread(tsvFile);
+  %     data = bids.util.tsvread(tsvFile);
   %
   %     % load transformation instruction from a model file
   %     bm = bids.Model('file', model_file);
   %     transformers = bm.get_transformations('Level', 'Run');
   %
-  %     new_content = bids.transformers(tsv_content, transformers);
+  %     new_content = bids.transformers(data, transformers);
   %     bids.util.tsvwrite(path_to_new_tsv, new_content)
   %
   %
@@ -46,16 +46,16 @@ function new_content = transformers(varargin)
 
   isStructOrCell = @(x) isstruct(x) || iscell(x);
 
-  addRequired(p, 'tsv_content', @isstruct);
+  addRequired(p, 'data', @isstruct);
   addOptional(p, 'transformers', default_transformers, isStructOrCell);
 
   parse(p, varargin{:});
 
-  tsv_content = p.Results.tsv_content;
+  data = p.Results.data;
   transformers = p.Results.transformers;
 
-  if isempty(transformers) || isempty(tsv_content)
-    new_content = tsv_content;
+  if isempty(transformers) || isempty(data)
+    new_content = data;
     return
   end
 
@@ -75,62 +75,51 @@ function new_content = transformers(varargin)
       return
     end
 
-    tsv_content = apply_transformer(this_transformer, tsv_content);
-    new_content = tsv_content;
+    data = apply_transformer(this_transformer, data);
+    new_content = data;
 
   end
 
 end
 
-function varargout = apply_transformer(transformer, tsv_content)
+function output = apply_transformer(transformer, data)
 
   transformerName = lower(transformer.Name);
 
   switch transformerName
 
     case {'add', 'subtract', 'multiply', 'divide'}
-
-      varargout = {bids.transformers.basic(transformer, tsv_content)};
+      output = bids.transformers.basic(transformer, data);
 
     case 'filter'
-
-      varargout = {bids.transformers.filter(transformer, tsv_content)};
+      output = bids.transformers.filter(transformer, data);
 
     case 'threshold'
-
-      varargout = {bids.transformers.threshold(transformer, tsv_content)};
+      output = bids.transformers.threshold(transformer, data);
 
     case 'rename'
-
-      varargout = {bids.transformers.rename(transformer, tsv_content)};
+      output = bids.transformers.rename(transformer, data);
 
     case 'concatenate'
-
-      varargout = {bids.transformers.concatenate_columns(transformer, tsv_content)};
+      output = bids.transformers.concatenate_columns(transformer, data);
 
     case 'replace'
-
-      varargout = {bids.transformers.replace(transformer, tsv_content)};
+      output = bids.transformers.replace(transformer, data);
 
     case 'constant'
-
-      varargout = {bids.transformers.constant(transformer, tsv_content)};
+      output = bids.transformers.constant(transformer, data);
 
     case 'copy'
-
-      varargout = {bids.transformers.copy(transformer, tsv_content)};
+      output = bids.transformers.copy(transformer, data);
 
     case 'delete'
-
-      varargout = {bids.transformers.delete(transformer, tsv_content)};
+      output = bids.transformers.delete(transformer, data);
 
     case 'select'
+      output = bids.transformers.select(transformer, data);
 
-      varargout = {bids.transformers.select(transformer, tsv_content)};
-
-    case {'and', 'or'}
-
-      varargout = {bids.transformers.and_or(transformer, tsv_content)};
+    case {'and', 'or', 'not'}
+      output = bids.transformers.logical(transformer, data);
 
     otherwise
       notImplemented(mfilename(), ...

@@ -1,12 +1,12 @@
-function tsv_content = select(transformer, tsv_content)
+function data = select(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
   inputs = bids.transformers.get_input(transformer);
 
   for i = 1:numel(inputs)
-    tmp.(inputs{i}) = tsv_content.(inputs{i});
+    tmp.(inputs{i}) = data.(inputs{i});
   end
 
-  tsv_content = tmp;
+  data = tmp;
 end

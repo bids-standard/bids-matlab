@@ -61,8 +61,6 @@ function test_transformers_combine_columns()
   assertEqual(fieldnames(tsv_content), fieldnames(new_content));
   assertEqual(unique(new_content.trial_type), {'FamousFirstRep'; 'face'});
 
-  clean_up();
-
 end
 
 function test_transformers_touch()
@@ -88,8 +86,6 @@ function test_transformers_touch()
 
   % THEN
   assertEqual(fieldnames(tsv_content), fieldnames(new_content));
-
-  clean_up();
 
 end
 
@@ -148,29 +144,21 @@ end
 function test_transformers_add_subtract
 
   % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-vismotion_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
   transformers(1).Name = 'Subtract';
   transformers(1).Input = 'onset';
   transformers(1).Value = 3;
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_events(), transformers);
 
   % THEN
   assertEqual(new_content.onset, [-1; 1]);
-
-  clean_up();
 
 end
 
 function test_transformers_add_subtract_with_output
 
   % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-vismotion_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
   transformers(1).Name = 'Subtract';
   transformers(1).Input = 'onset';
   transformers(1).Value = 3;
@@ -182,14 +170,38 @@ function test_transformers_add_subtract_with_output
   transformers(2).Output  = 'onset_plus_1';
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_events(), transformers);
 
   % THEN
   assert(all(ismember({'onset_plus_1'; 'onset_minus_3'}, fieldnames(new_content))));
   assertEqual(new_content.onset_plus_1, [3; 5]);
   assertEqual(new_content.onset_minus_3, [-1; 1]);
 
-  clean_up();
+end
+
+function test_transformers_power
+
+  %% GIVEN
+  transformers.Name = 'Power';
+  transformers.Input = 'intensity';
+
+  % WHEN
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
+
+  % THEN
+  assertEqual(new_content.intensity, [4; 16]);
+
+  %% GIVEN
+  transformers.Name = 'Power';
+  transformers.Input = 'intensity';
+  transformers.Value = 3;
+  transformers.Output = 'intensity_cubed';
+
+  % WHEN
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
+
+  % THEN
+  assertEqual(new_content.intensity_cubed, [8; -64]);
 
 end
 
@@ -212,25 +224,22 @@ end
 
 function test_transformers_constant()
 
-  % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), ...
-                     'sub-01_task-vismotionForThreshold_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
+  %% GIVEN
   transformers{1} = struct('Name', 'Constant', ...
                            'Output', 'cst');
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
 
   assertEqual(new_content.cst, ones(4, 1));
 
+  %% GIVEN
   transformers{1} = struct('Name', 'Constant', ...
                            'Value', 2, ...
                            'Output', 'cst');
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
 
   assertEqual(new_content.cst, ones(4, 1) * 2);
 
@@ -258,15 +267,10 @@ end
 
 function test_transformers_threshold_output()
 
-  % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), ...
-                     'sub-01_task-vismotionForThreshold_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Output', 'tmp');
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
 
   assertEqual(new_content.tmp, [1; 2; 0; 0]);
 
@@ -274,55 +278,50 @@ end
 
 function test_transformers_threshold()
 
-  % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), ...
-                     'sub-01_task-vismotionForThreshold_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
-  % WHEN
+  %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold');
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 2; 0; 0]);
 
-  % WHEN
+  %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Threshold', 1);
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 2; 0; 0]);
 
-  % WHEN
+  %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Binarize', true);
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 1; 0; 0]);
 
-  % WHEN
+  %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Binarize', true, ...
                         'Above', false);
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 0; 1; 1]);
 
-  % WHEN
+  %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Threshold', 1, ...
                         'Binarize', true, ...
                         'Above', true, ...
                         'Signed', false);
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 1; 0; 1]);
@@ -369,7 +368,7 @@ end
 
 function test_transformers_complex_filter_with_and()
 
-  % GIVEN
+  %% GIVEN
   tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
   tsv_content = bids.util.tsvread(tsvFile);
 
@@ -391,7 +390,7 @@ function test_transformers_complex_filter_with_and()
   assertEqual(unique(new_content.Famous), {''; 'famous'});
   assertEqual(nansum(new_content.FirstRep), 52);
 
-  % GIVEN
+  %% GIVEN
   transformers{3} = struct('Name', 'And', ...
                            'Input', {{'Famous', 'FirstRep'}}, ...
                            'Output', 'FamousFirstRep');
@@ -401,8 +400,6 @@ function test_transformers_complex_filter_with_and()
 
   % THEN
   assertEqual(sum(new_content.FamousFirstRep), 26);
-
-  clean_up();
 
 end
 
@@ -425,21 +422,91 @@ function test_transformers_filter()
   assertEqual(numel(new_content.Famous_1), 104);
   assertEqual(unique(new_content.Famous_1), {''; 'F1'});
 
-  clean_up();
+end
+
+function test_transformers_and()
+
+  % GIVEN
+  transformers = struct('Name', 'And', ...
+                        'Input', {{'sex_m', 'age_gt_twenty'}}, ...
+                        'Output', 'men_gt_twenty');
+
+  % WHEN
+  new_content = bids.transformers.logical(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.men_gt_twenty, [true; false; false; false]);
+
+end
+
+function test_transformers_or()
+
+  % GIVEN
+  transformers = struct('Name', 'Or', ...
+                        'Input', {{'sex_m', 'age_gt_twenty'}}, ...
+                        'Output', 'men_or_gt_twenty');
+
+  % WHEN
+  new_content = bids.transformers.logical(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.men_or_gt_twenty, [true; true; true; false]);
+
+end
+
+function test_transformers_not()
+
+  % GIVEN
+  transformers = struct('Name', 'Not', ...
+                        'Input', {{'age_gt_twenty'}}, ...
+                        'Output', 'ager_lt_twenty');
+
+  % WHEN
+  new_content = bids.transformers.logical(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.ager_lt_twenty, [false; true; false; true]);
 
 end
 
 function test_transformers_no_transformation()
+
+  transformers = struct([]);
+
+  new_content = bids.transformers(participants(), transformers);
+
+  assertEqual(new_content, participants());
+
+end
+
+function value = participants()
+
+  value.sex_m = [true; true; false; false];
+  value.age_gt_twenty = [true; false; true; false];
+
+end
+
+function value = vis_motion_events()
+
+  value.onset = [2; 4];
+  value.duration = [2; 2];
+  value.trial_type = {'VisMot'; 'VisStat'};
+  value.intensity = [2; -4];
+
+end
+
+function value = vis_motion_to_threshold_events()
+
+  value.onset = [2; 4; 6; 8];
+  value.duration = [2; 2; 2; 2];
+  value.trial_type = {'VisMot'; 'VisStat'; 'VisMot'; 'VisStat'};
+  value.to_threshold = [1; 2; -1; -2];
 
 end
 
 function cfg = set_up()
   cfg = set_test_cfg();
   cfg.this_path = fileparts(mfilename('fullpath'));
-end
-
-function clean_up()
-
 end
 
 function value = dummy_data_dir()
