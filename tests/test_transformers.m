@@ -44,7 +44,7 @@ function test_transformers_concatenate()
                         'Output', 'trial_type');
 
   % WHEN
-  new_content = bids.transformers.concatenate_columns(transformers, tsv_content);
+  new_content = bids.transformers.concatenate(transformers, tsv_content);
 
   assertEqual(unique(new_content.trial_type), ...
               {'famous_1'; 'famous_2';  'unfamiliar_1'; 'unfamiliar_2'});
@@ -620,6 +620,40 @@ function test_transformers_product()
 
 end
 
+function test_transformers_factor()
+
+  % GIVEN
+  transformers = struct('Name', 'Factor', ...
+                        'Input', {{'familiarity'}});
+
+  % WHEN
+  new_content = bids.transformers.factor(transformers, face_rep_events());
+
+  % THEN
+  assert(isfield(new_content, 'familiarity_1'));
+  assert(isfield(new_content, 'familiarity_2'));
+  assertEqual(new_content.familiarity_1,  [true; false; true; false]);
+  assertEqual(new_content.familiarity_2,  [false; true; false; true]);
+
+end
+
+function test_transformers_factor_numeric()
+
+  % GIVEN
+  transformers = struct('Name', 'Factor', ...
+                        'Input', {{'age'}});
+
+  % WHEN
+  new_content = bids.transformers.factor(transformers, participants());
+
+  % THEN
+  assert(isfield(new_content, 'age_10'));
+  assert(isfield(new_content, 'age_NaN'));
+  assertEqual(new_content.age_10,  [false; false; false; true; false]);
+  assertEqual(new_content.age_NaN,  [false; false; false; false; true]);
+
+end
+
 function test_transformers_no_transformation()
 
   transformers = struct([]);
@@ -633,9 +667,20 @@ end
 function value = participants()
 
   value.sex_m = [true; true; false; false; false];
+  value.handedness = {'right'; 'left'; 'ambi'; 'left'; 'right'};
   value.sex = {'M'; 'M'; 'F'; 'F'; 'F'};
   value.age_gt_twenty = [true; false; true; false; false];
   value.age = [21; 18; 46; 10; nan];
+
+end
+
+function value = face_rep_events()
+
+  value.onset = [2; 4];
+  value.duration = [2; 2];
+  value.repetition = [1; 1; 2; 2];
+  value.familiarity = {'Famous face'; 'Unfamiliar face'; 'Famous face'; 'Unfamiliar face'};
+  value.trial_type = {'Face'; 'Face'; 'Face'; 'Face'};
 
 end
 

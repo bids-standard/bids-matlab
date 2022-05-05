@@ -32,9 +32,10 @@ function new_content = transformers(varargin)
   %
   % (C) Copyright 2022 Remi Gau
 
-  SUPPORTED_TRANSFORMERS = {'Add', 'Subtract', 'Multiply', 'Divide', ...
-                            'Filter', ...
-                            'And', 'Or', ...
+  SUPPORTED_TRANSFORMERS = {'Add', 'Subtract', 'Multiply', 'Divide', 'Sum', 'Product'...
+                            'Mean', 'StdDev', ...
+                            'Filter', 'Factor',...
+                            'And', 'Or', 'Not'...
                             'Rename', 'Concatenate', 'Delete', 'Select', 'Copy', ...
                             'Constant', ...
                             'Replace', ...
@@ -91,8 +92,23 @@ function output = apply_transformer(transformer, data)
     case {'add', 'subtract', 'multiply', 'divide'}
       output = bids.transformers.basic(transformer, data);
 
+    case 'sum'
+      output = bids.transformers.sum(transformer, data);
+
+    case 'product'
+      output = bids.transformers.product(transformer, data);
+
+    case 'mean'
+      output = bids.transformers.mean(transformer, data);
+
+    case 'stddev'
+      output = bids.transformers.std(transformer, data);
+
     case 'filter'
       output = bids.transformers.filter(transformer, data);
+      
+    case 'factor'
+      output = bids.transformers.factor(transformer, data);      
 
     case 'threshold'
       output = bids.transformers.threshold(transformer, data);
@@ -101,7 +117,7 @@ function output = apply_transformer(transformer, data)
       output = bids.transformers.rename(transformer, data);
 
     case 'concatenate'
-      output = bids.transformers.concatenate_columns(transformer, data);
+      output = bids.transformers.concatenate(transformer, data);
 
     case 'replace'
       output = bids.transformers.replace(transformer, data);
