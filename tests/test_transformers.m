@@ -18,12 +18,12 @@ function test_transformers_concatenate()
                      'sub-01_task-FaceRepetitionBefore_events.tsv');
   tsv_content = bids.util.tsvread(tsvFile);
 
-  transformers{1} = struct('Name', 'Concatenate', ...
-                           'Input', {{'face_type', 'repetition_type'}}, ...
-                           'Output', 'trial_type');
+  transformers = struct('Name', 'Concatenate', ...
+                        'Input', {{'face_type', 'repetition_type'}}, ...
+                        'Output', 'trial_type');
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers.concatenate_columns(transformers, tsv_content);
 
   assertEqual(unique(new_content.trial_type), ...
               {'famous_1'; 'famous_2';  'unfamiliar_1'; 'unfamiliar_2'});
@@ -103,7 +103,7 @@ function test_transformers_replace_with_output()
   transformers(1).Attribute = 'duration';
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers.replace(transformers, tsv_content);
 
   % THEN
   assertEqual(unique(new_content.tmp), 1);
@@ -122,7 +122,7 @@ function test_transformers_replace()
   transformers(1).Replace = struct('famous', 'foo');
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers.replace(transformers, tsv_content);
 
   % THEN
   assertEqual(unique(new_content.face_type), {'foo'; 'unfamiliar'});
@@ -134,14 +134,14 @@ function test_transformers_replace()
   transformers(1).Attribute = 'duration';
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers.replace(transformers, tsv_content);
 
   % THEN
   assertEqual(unique(new_content.duration), 1);
 
 end
 
-function test_transformers_add_subtract
+function test_transformers_subtract
 
   % GIVEN
   transformers(1).Name = 'Subtract';
@@ -149,10 +149,37 @@ function test_transformers_add_subtract
   transformers(1).Value = 3;
 
   % WHEN
-  new_content = bids.transformers(vis_motion_events(), transformers);
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
 
   % THEN
   assertEqual(new_content.onset, [-1; 1]);
+
+end
+
+function test_transformers_add_coerce_value
+
+  %% GIVEN
+  transformers(1).Name = 'Add';
+  transformers(1).Input = 'onset';
+  transformers(1).Value = '3';
+
+  % WHEN
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
+
+  % THEN
+  assertEqual(new_content.onset, [5; 7]);
+
+  %% GIVEN
+  transformers(1).Name = 'Add';
+  transformers(1).Input = 'onset';
+  transformers(1).Value = '+';
+
+  % WHEN
+  assertExceptionThrown(@()bids.transformers.basic(transformers, vis_motion_events()), ...
+                        'basic:numericOrCoercableToNumericRequired');
+
+  % THEN
+  assertEqual(new_content.onset, [5; 7]);
 
 end
 
@@ -184,6 +211,7 @@ function test_transformers_power
   %% GIVEN
   transformers.Name = 'Power';
   transformers.Input = 'intensity';
+  transformers.Value = 2;
 
   % WHEN
   new_content = bids.transformers.basic(transformers, vis_motion_events());
@@ -214,7 +242,7 @@ function test_transformers_copy()
   transformers = struct('Name', 'Copy', ...
                         'Input', {{'face_type', 'repetition_type'}}, ...
                         'Output', {{'foo', 'bar'}});
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers.copy(transformers, tsv_content);
 
   assert(all(ismember({'foo'; 'bar'}, fieldnames(new_content))));
   assertEqual(new_content.foo, new_content.face_type);
@@ -225,21 +253,21 @@ end
 function test_transformers_constant()
 
   %% GIVEN
-  transformers{1} = struct('Name', 'Constant', ...
-                           'Output', 'cst');
+  transformers = struct('Name', 'Constant', ...
+                        'Output', 'cst');
 
   % WHEN
-  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
+  new_content = bids.transformers.constant(transformers, vis_motion_to_threshold_events());
 
   assertEqual(new_content.cst, ones(4, 1));
 
   %% GIVEN
-  transformers{1} = struct('Name', 'Constant', ...
-                           'Value', 2, ...
-                           'Output', 'cst');
+  transformers = struct('Name', 'Constant', ...
+                        'Value', 2, ...
+                        'Output', 'cst');
 
   % WHEN
-  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
+  new_content = bids.transformers.constant(transformers, vis_motion_to_threshold_events());
 
   assertEqual(new_content.cst, ones(4, 1) * 2);
 
@@ -251,14 +279,14 @@ function test_transformers_filter_by()
   tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
   tsv_content = bids.util.tsvread(tsvFile);
 
-  transformers{1} = struct('Name', 'Filter', ...
-                           'Input', 'face_type', ...
-                           'Query', 'repetition_type==1', ...
-                           'By', 'repetition_type', ...
-                           'Output', 'face_type_repetition_1');
+  transformers = struct('Name', 'Filter', ...
+                        'Input', 'face_type', ...
+                        'Query', 'repetition_type==1', ...
+                        'By', 'repetition_type', ...
+                        'Output', 'face_type_repetition_1');
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers.filter(transformers, tsv_content);
 
   % THEN
   % TODO
@@ -270,7 +298,8 @@ function test_transformers_threshold_output()
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Output', 'tmp');
-  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
 
   assertEqual(new_content.tmp, [1; 2; 0; 0]);
 
@@ -281,7 +310,8 @@ function test_transformers_threshold()
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold');
-  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 2; 0; 0]);
@@ -290,7 +320,8 @@ function test_transformers_threshold()
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Threshold', 1);
-  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 2; 0; 0]);
@@ -299,7 +330,8 @@ function test_transformers_threshold()
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Binarize', true);
-  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 1; 0; 0]);
@@ -309,7 +341,8 @@ function test_transformers_threshold()
                         'Input', 'to_threshold', ...
                         'Binarize', true, ...
                         'Above', false);
-  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 0; 1; 1]);
@@ -321,7 +354,8 @@ function test_transformers_threshold()
                         'Binarize', true, ...
                         'Above', true, ...
                         'Signed', false);
-  new_content = bids.transformers(vis_motion_to_threshold_events(), transformers);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 1; 0; 1]);
@@ -336,13 +370,15 @@ function test_transformers_delete_select()
 
   transformers = struct('Name', 'Delete', ...
                         'Input', 'face_type');
-  new_content = bids.transformers(tsv_content, transformers);
+
+  new_content = bids.transformers.delete(transformers, tsv_content);
 
   assert(~(ismember({'face_type'}, fieldnames(new_content))));
 
   transformers = struct('Name', 'Select', ...
                         'Input', 'face_type');
-  new_content = bids.transformers(tsv_content, transformers);
+
+  new_content = bids.transformers.select(transformers, tsv_content);
 
   assertEqual({'face_type'}, fieldnames(new_content));
 
@@ -357,7 +393,7 @@ function test_transformers_rename()
   transformers = struct('Name', 'Rename', ...
                         'Input', {{'face_type', 'repetition_type'}}, ...
                         'Output', {{'foo', 'bar'}});
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers.rename(transformers, tsv_content);
 
   assert(all(ismember({'foo'; 'bar'}, fieldnames(new_content))));
   assert(all(~ismember({'face_type'; 'repetition_type'}, fieldnames(new_content))));
@@ -415,7 +451,7 @@ function test_transformers_filter()
                         'Output', 'Famous_1');
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers.filter(transformers, tsv_content);
 
   % THEN
   assert(all(ismember({'Famous_1'}, fieldnames(new_content))));
