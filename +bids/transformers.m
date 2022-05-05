@@ -34,7 +34,7 @@ function new_content = transformers(varargin)
 
   SUPPORTED_TRANSFORMERS = {'Add', 'Subtract', 'Multiply', 'Divide', 'Sum', 'Product'...
                             'Mean', 'StdDev', ...
-                            'Filter', 'Factor',...
+                            'Filter', 'Factor', 'Scale', ...
                             'And', 'Or', 'Not'...
                             'Rename', 'Concatenate', 'Delete', 'Select', 'Copy', ...
                             'Constant', ...
@@ -106,9 +106,12 @@ function output = apply_transformer(transformer, data)
 
     case 'filter'
       output = bids.transformers.filter(transformer, data);
-      
+
+    case 'scale'
+      output = bids.transformers.scale(transformer, data);
+
     case 'factor'
-      output = bids.transformers.factor(transformer, data);      
+      output = bids.transformers.factor(transformer, data);
 
     case 'threshold'
       output = bids.transformers.threshold(transformer, data);
@@ -138,9 +141,9 @@ function output = apply_transformer(transformer, data)
       output = bids.transformers.logical(transformer, data);
 
     otherwise
-      notImplemented(mfilename(), ...
-                     sprintf('Transformer %s not implemented', transformer.Name), ...
-                     true);
+      bids.internal.error_handling(mfilename(), 'notImplemented', ...
+                                   sprintf('Transformer %s not implemented', transformer.Name), ...
+                                   false);
 
   end
 
