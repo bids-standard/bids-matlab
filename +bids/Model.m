@@ -550,6 +550,8 @@ classdef Model
       %
       %   pth_bids_example = get_test_data_dir();
       %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
+      %   bm = bids.Model();
+      %   bm = bm.default(BIDS);
       %   filename = fullfile(pwd, 'model-rhymejudgement_smdl.json');
       %   bm.write(filename);
       %
