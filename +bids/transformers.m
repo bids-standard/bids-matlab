@@ -16,14 +16,17 @@ function new_content = transformers(varargin)
   %
   % EXAMPLE::
   %
-  %     tsvFile = fullfile(path_to_tsv);
-  %     data = bids.util.tsvread(tsvFile);
+  %     data = bids.util.tsvread(path_to_tsv);
   %
   %     % load transformation instruction from a model file
   %     bm = bids.Model('file', model_file);
   %     transformers = bm.get_transformations('Level', 'Run');
   %
+  %     % apply transformers
   %     new_content = bids.transformers(data, transformers);
+  %
+  %     % if all fields in the structure have the same number of rows one
+  %     % create a new tsv file
   %     bids.util.tsvwrite(path_to_new_tsv, new_content)
   %
   %
@@ -32,12 +35,12 @@ function new_content = transformers(varargin)
   %
   % (C) Copyright 2022 Remi Gau
 
-  SUPPORTED_TRANSFORMERS = {'Add', 'Subtract', 'Multiply', 'Divide', 'Sum', 'Product'...
+  SUPPORTED_TRANSFORMERS = {'Add', 'Subtract', 'Multiply', 'Power', 'Divide', 'Sum', 'Product'...
                             'Mean', 'StdDev', ...
                             'Filter', 'Factor', 'Scale', ...
                             'And', 'Or', 'Not'...
                             'Rename', 'Concatenate', 'Delete', 'Select', 'Copy', ...
-                            'Constant', ...
+                            'Constant', 'DropNA', 'Split'...
                             'Replace', ...
                             'Threshold'};
 
@@ -89,7 +92,7 @@ function output = apply_transformer(transformer, data)
 
   switch transformerName
 
-    case {'add', 'subtract', 'multiply', 'divide'}
+    case {'add', 'subtract', 'multiply', 'divide', 'power'}
       output = bids.transformers.basic(transformer, data);
 
     case 'sum'
