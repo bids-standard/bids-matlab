@@ -605,6 +605,21 @@ function test_transformers_sum()
 
 end
 
+function test_transformers_product()
+
+  % GIVEN
+  transformers = struct('Name', 'Product', ...
+                        'Input', {{'onset', 'duration'}}, ...
+                        'Output', 'onset_times_duration');
+
+  % WHEN
+  new_content = bids.transformers.product(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.onset_times_duration, [4; 8; 12; 16]);
+
+end
+
 function test_transformers_no_transformation()
 
   transformers = struct([]);
