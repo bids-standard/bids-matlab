@@ -93,7 +93,7 @@ end
 
 %% MUNGE
 
-% multi step
+%% multi step
 
 function test_touch()
 
@@ -191,7 +191,7 @@ function test_complex_filter_with_and()
 
 end
 
-% single step
+%% single step
 
 function test_filter()
 
@@ -397,9 +397,40 @@ function test_factor_numeric()
 
 end
 
+function test_split_simple()
+
+  % GIVEN
+  transformers = struct('Name', 'Split', ...
+                        'Input', {{'age'}}, ...
+                        'By', {{'sex'}});
+
+  % WHEN'
+  new_content = bids.transformers.split(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.age_M,  [21; 18]);
+  assertEqual(new_content.age_F,  [46; 10; nan]);
+
+end
+
+function test_split_nested()
+
+  % GIVEN
+  transformers = struct('Name', 'Split', ...
+                        'Input', {{'age'}}, ...
+                        'By', {{'sex', 'handedness'}});
+
+  % WHEN'
+  %   new_content = bids.transformers.split(transformers, participants());
+
+  % THEN
+  %   assertEqual(new_content.handedness_left_sex_M,  [false; false; false; false; true]);
+
+end
+
 %% COMPUTE
 
-% multi step
+%% multi step
 
 function test_add_subtract_with_output
 
@@ -424,7 +455,7 @@ function test_add_subtract_with_output
 
 end
 
-% single step
+%% single step
 
 function test_subtract
 

@@ -1,4 +1,4 @@
-function data = concatenate_columns(transformer, data)
+function data = concatenate(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
