@@ -13,8 +13,8 @@ function data = copy(transformer, data)
   %                             from the input list to the output list.
   %
   % (C) Copyright 2022 Remi Gau
-  inputs = bids.transformers.get_input(transformer);
-  outputs = bids.transformers.get_output(transformer);
+  inputs = bids.transformers.get_input(transformer, data);
+  outputs = bids.transformers.get_output(transformer, data);
 
   assert(numel(inputs) == numel(outputs));
 

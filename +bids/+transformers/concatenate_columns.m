@@ -2,12 +2,13 @@ function data = concatenate_columns(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
-  inputs = bids.transformers.get_input(transformer);
-  outputs = bids.transformers.get_output(transformer);
+  inputs = bids.transformers.get_input(transformer, data);
+  outputs = bids.transformers.get_output(transformer, data);
 
   for row = 1:numel(data.onset)
     tmp1 = {};
     for i = 1:numel(inputs)
+
       if isnumeric(data.(inputs{i}))
         tmp1{1, i} = num2str(data.(inputs{i})(row));
       elseif iscellstr(data.(inputs{i}))

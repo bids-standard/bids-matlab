@@ -12,7 +12,7 @@ function data = constant(transformer, data)
   % - Value(float; optional): The value of the constant, defaults to 1.
   %
   % (C) Copyright 2022 Remi Gau
-  outputs = bids.transformers.get_output(transformer);
+  outputs = bids.transformers.get_output(transformer, data);
 
   assert(numel(outputs) == 1);
 

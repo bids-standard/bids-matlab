@@ -6,13 +6,14 @@ function data = mean(transformer, data)
   % Output (string, optional): the optional list of column names to write out to.
   % By default, computation is done in-place (i.e., input columnise overwritten).
   %
+  % OmitNan
   %
   % (C) Copyright 2022 Remi Gau
 
   overwrite = false;
 
-  inputs = bids.transformers.get_input(transformer);
-  outputs = bids.transformers.get_output(transformer, overwrite);
+  inputs = bids.transformers.get_input(transformer, data);
+  outputs = bids.transformers.get_output(transformer, data, overwrite);
 
   if ~isempty(outputs)
     assert(numel(inputs) == numel(outputs));
@@ -25,11 +26,6 @@ function data = mean(transformer, data)
   end
 
   for i = 1:numel(inputs)
-
-    if ~isfield(data, inputs{i})
-      % TODO throw warning
-      continue
-    end
 
     output_column = [inputs{i} '_mean'];
     if ~isempty(outputs)

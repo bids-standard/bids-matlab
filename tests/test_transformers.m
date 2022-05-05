@@ -11,6 +11,27 @@ function test_suite = test_transformers %#ok<*STOUT>
 
 end
 
+function test_transformers_get_input()
+
+  %% GIVEN
+  transformers = struct('Input', {{'onset'}});
+  data = vis_motion_to_threshold_events();
+
+  % WHEN
+  inputs = bids.transformers.get_input(transformers, data);
+
+  assertEqual(inputs, {'onset'});
+
+  %% GIVEN
+  transformers = struct('Input', {{'onset', 'foo', 'bar'}});
+  data = vis_motion_to_threshold_events();
+
+  % WHEN
+  assertExceptionThrown(@()bids.transformers.get_input(transformers, data), ...
+                        'get_input:missingInput');
+
+end
+
 function test_transformers_concatenate()
 
   % GIVEN
@@ -79,7 +100,7 @@ function test_transformers_touch()
                            'Attribute', 'duration', ...
                            'Replace', struct('duration_1', 1));
   transformers{3} = struct('Name', 'Delete', ...
-                           'Input', {{'tmp', 'Famous', 'FirstRep'}});
+                           'Input', {{'tmp'}});
 
   % WHEN
   new_content = bids.transformers(tsv_content, transformers);
@@ -554,6 +575,33 @@ function test_transformers_std()
 
   % THEN
   assertElementsAlmostEqual(new_content.age_std_omitnan, 15.543, 'absolute', 1e-3);
+
+end
+
+function test_transformers_sum()
+
+  % GIVEN
+  transformers = struct('Name', 'Sum', ...
+                        'Input', {{'onset', 'duration'}}, ...
+                        'Output', 'onset_plus_duration');
+
+  % WHEN
+  new_content = bids.transformers.sum(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.onset_plus_duration, [4; 6; 8; 10]);
+
+  % GIVEN
+  transformers = struct('Name', 'Sum', ...
+                        'Input', {{'onset', 'duration'}}, ...
+                        'Weights', [2, 1], ...
+                        'Output', 'onset_plus_duration_with_weight');
+
+  % WHEN
+  new_content = bids.transformers.sum(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.onset_plus_duration_with_weight, [6; 10; 14; 18]);
 
 end
 

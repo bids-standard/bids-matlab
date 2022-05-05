@@ -28,17 +28,12 @@ function data = basic(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer);
-  outputs = bids.transformers.get_output(transformer);
+  inputs = bids.transformers.get_input(transformer, data);
+  outputs = bids.transformers.get_output(transformer, data);
 
   assert(numel(inputs) == numel(numel(inputs)));
 
   for i = 1:numel(inputs)
-
-    if ~isfield(data, inputs{i})
-      % TODO throw warning
-      continue
-    end
 
     value = transformer.Value;
 

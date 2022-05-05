@@ -38,18 +38,13 @@ function data = logical(transformer, data)
   % TODO
   % for Add Or, if not ouput just merge the name of the input variables
 
-  inputs = bids.transformers.get_input(transformer);
+  inputs = bids.transformers.get_input(transformer, data);
 
-  outputs = bids.transformers.get_output(transformer);
+  outputs = bids.transformers.get_output(transformer, data);
   assert(numel(outputs) == 1);
 
   % try coerce all inputs to logical
   for i = 1:numel(inputs)
-
-    if ~isfield(data, inputs{i})
-      % TODO throw warning
-      return
-    end
 
     if iscellstr(data.(inputs{i}))
       tmp(:, i) = cellfun('isempty', data.(inputs{i}));

@@ -1,8 +1,8 @@
-function output = get_output(transformer, overwrite)
+function output = get_output(transformer, data, overwrite)
   %
   %
   % (C) Copyright 2022 Remi Gau
-  if nargin < 2
+  if nargin < 3
     overwrite = true;
   end
   if isfield(transformer, 'Output') && ~isempty(transformer.Output)
@@ -13,7 +13,7 @@ function output = get_output(transformer, overwrite)
   else
     % will overwrite input columns
     if overwrite
-      output = bids.transformers.get_input(transformer);
+      output = bids.transformers.get_input(transformer, data);
     else
       output = {};
     end

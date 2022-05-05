@@ -7,13 +7,14 @@ function data = std(transformer, data)
   % Must match length of input column if provided, and columns will be mapped 1-to-1 in order.
   % If no output values are provided, the transformation is applied in-place to all the inputs.
   %
+  % OmitNan
   %
   % (C) Copyright 2022 Remi Gau
 
   overwrite = false;
 
-  inputs = bids.transformers.get_input(transformer);
-  outputs = bids.transformers.get_output(transformer, overwrite);
+  inputs = bids.transformers.get_input(transformer, data);
+  outputs = bids.transformers.get_output(transformer, data, overwrite);
 
   if ~isempty(outputs)
     assert(numel(inputs) == numel(outputs));
@@ -26,11 +27,6 @@ function data = std(transformer, data)
   end
 
   for i = 1:numel(inputs)
-
-    if ~isfield(data, inputs{i})
-      % TODO throw warning
-      continue
-    end
 
     output_column = [inputs{i} '_std'];
     if ~isempty(outputs)

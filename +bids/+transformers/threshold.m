@@ -2,8 +2,8 @@ function data = threshold(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
-  inputs = bids.transformers.get_input(transformer);
-  outputs = bids.transformers.get_output(transformer);
+  inputs = bids.transformers.get_input(transformer, data);
+  outputs = bids.transformers.get_output(transformer, data);
 
   threshold = 0;
   binarize = false;
@@ -27,10 +27,6 @@ function data = threshold(transformer, data)
   end
 
   for i = 1:numel(inputs)
-
-    if ~isfield(data, inputs{i})
-      continue
-    end
 
     valuesToThreshold = data.(inputs{i});
 
