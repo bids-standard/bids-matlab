@@ -471,7 +471,7 @@ function test_transformers_and()
   new_content = bids.transformers.logical(transformers, participants());
 
   % THEN
-  assertEqual(new_content.men_gt_twenty, [true; false; false; false]);
+  assertEqual(new_content.men_gt_twenty, [true; false; false; false; false]);
 
 end
 
@@ -486,7 +486,7 @@ function test_transformers_or()
   new_content = bids.transformers.logical(transformers, participants());
 
   % THEN
-  assertEqual(new_content.men_or_gt_twenty, [true; true; true; false]);
+  assertEqual(new_content.men_or_gt_twenty, [true; true; true; false; false]);
 
 end
 
@@ -501,7 +501,59 @@ function test_transformers_not()
   new_content = bids.transformers.logical(transformers, participants());
 
   % THEN
-  assertEqual(new_content.ager_lt_twenty, [false; true; false; true]);
+  assertEqual(new_content.ager_lt_twenty, [false; true; false; true; true]);
+
+end
+
+function test_transformers_mean()
+
+  % GIVEN
+  transformers = struct('Name', 'Mean', ...
+                        'Input', {{'age'}});
+
+  % WHEN
+  new_content = bids.transformers.mean(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.age_mean, nan);
+
+  % GIVEN
+  transformers = struct('Name', 'Mean', ...
+                        'Input', {{'age'}}, ...
+                        'Output', 'age_mean_omitnan', ...
+                        'OmitNan', true);
+
+  % WHEN
+  new_content = bids.transformers.mean(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.age_mean_omitnan, 23.75);
+
+end
+
+function test_transformers_std()
+
+  % GIVEN
+  transformers = struct('Name', 'StdDev', ...
+                        'Input', {{'age'}});
+
+  % WHEN
+  new_content = bids.transformers.std(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.age_std, nan);
+
+  % GIVEN
+  transformers = struct('Name', 'StdDev', ...
+                        'Input', {{'age'}}, ...
+                        'Output', 'age_std_omitnan', ...
+                        'OmitNan', true);
+
+  % WHEN
+  new_content = bids.transformers.std(transformers, participants());
+
+  % THEN
+  assertElementsAlmostEqual(new_content.age_std_omitnan, 15.543, 'absolute', 1e-3);
 
 end
 
@@ -517,8 +569,10 @@ end
 
 function value = participants()
 
-  value.sex_m = [true; true; false; false];
-  value.age_gt_twenty = [true; false; true; false];
+  value.sex_m = [true; true; false; false; false];
+  value.sex = {'M'; 'M'; 'F'; 'F'; 'F'};
+  value.age_gt_twenty = [true; false; true; false; false];
+  value.age = [21; 18; 46; 10; nan];
 
 end
 
