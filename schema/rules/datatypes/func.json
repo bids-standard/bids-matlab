@@ -1,5 +1,5 @@
-[
-  {
+{
+  "func": {
     "suffixes": [
       "bold",
       "cbv",
@@ -9,6 +9,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "func"
     ],
     "entities": {
       "subject": "required",
@@ -23,7 +26,7 @@
       "part": "optional"
     }
   },
-  {
+  "phase": {
     "suffixes": [
       "phase"
     ],
@@ -31,6 +34,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "func"
     ],
     "entities": {
       "subject": "required",
@@ -44,13 +50,16 @@
       "echo": "optional"
     }
   },
-  {
+  "events": {
     "suffixes": [
       "events"
     ],
     "extensions": [
       ".tsv",
       ".json"
+    ],
+    "datatypes": [
+      "func"
     ],
     "entities": {
       "subject": "required",
@@ -63,7 +72,7 @@
       "run": "optional"
     }
   },
-  {
+  "timeseries": {
     "suffixes": [
       "physio",
       "stim"
@@ -71,6 +80,9 @@
     "extensions": [
       ".tsv.gz",
       ".json"
+    ],
+    "datatypes": [
+      "func"
     ],
     "entities": {
       "subject": "required",
@@ -84,4 +96,4 @@
       "recording": "optional"
     }
   }
-]
+}

@@ -1,5 +1,5 @@
-[
-  {
+{
+  "timeseries": {
     "suffixes": [
       "stim",
       "physio"
@@ -7,6 +7,9 @@
     "extensions": [
       ".tsv.gz",
       ".json"
+    ],
+    "datatypes": [
+      "beh"
     ],
     "entities": {
       "subject": "required",
@@ -17,7 +20,7 @@
       "recording": "optional"
     }
   },
-  {
+  "noncontinuous": {
     "suffixes": [
       "events",
       "beh"
@@ -25,6 +28,9 @@
     "extensions": [
       ".tsv",
       ".json"
+    ],
+    "datatypes": [
+      "beh"
     ],
     "entities": {
       "subject": "required",
@@ -34,4 +40,4 @@
       "run": "optional"
     }
   }
-]
+}

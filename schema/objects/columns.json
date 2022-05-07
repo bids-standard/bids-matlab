@@ -1,7 +1,7 @@
 {
   "HED": {
     "name": "HED",
-    "description": "Hierarchical Event Descriptor (HED) Tag.\nSee [Appendix III](/99-appendices/03-hed.html) for details.\n",
+    "description": "Hierarchical Event Descriptor (HED) Tag.\nSee [Appendix III](SPEC_ROOT/99-appendices/03-hed.md) for details.\n",
     "type": "string"
   },
   "abbreviation": {
@@ -11,13 +11,13 @@
   },
   "acq_time__scans": {
     "name": "acq_time",
-    "description": "Acquisition time refers to when the first data point in each run was acquired.\nFurthermore, if this header is provided, the acquisition times of all files\nfrom the same recording MUST be identical.\nDatetime format and their anonymization are described in [Units](/02-common-principles.html#units).\n",
+    "description": "Acquisition time refers to when the first data point in each run was acquired.\nFurthermore, if this header is provided, the acquisition times of all files\nfrom the same recording MUST be identical.\nDatetime format and their anonymization are described in\n[Units](SPEC_ROOT/02-common-principles.md#units).\n",
     "type": "string",
     "format": "datetime"
   },
   "acq_time__sessions": {
     "name": "acq_time",
-    "description": "Acquisition time refers to when the first data point of the first run was acquired.\nDatetime format and their anonymization are described in [Units](/02-common-principles.html#units).\n",
+    "description": "Acquisition time refers to when the first data point of the first run was acquired.\nDatetime format and their anonymization are described in\n[Units](SPEC_ROOT/02-common-principles.md#units).\n",
     "type": "string",
     "format": "datetime"
   },
@@ -430,7 +430,31 @@
     "description": "continuous measurement of the scanner trigger signal\n",
     "type": "number"
   },
-  "type__channels": {
+  "type__eeg_channels": {
+    "name": "type",
+    "description": "Type of channel; MUST use the channel types listed below.\nNote that the type MUST be in upper-case.\n",
+    "type": "string",
+    "enum": [
+      "AUDIO",
+      "EEG",
+      "EOG",
+      "ECG",
+      "EMG",
+      "EYEGAZE",
+      "GSR",
+      "HEOG",
+      "MISC",
+      "PPG",
+      "PUPIL",
+      "REF",
+      "RESP",
+      "SYSCLOCK",
+      "TEMP",
+      "TRIG",
+      "VEOG"
+    ]
+  },
+  "type__meg_channels": {
     "name": "type",
     "description": "Type of channel; MUST use the channel types listed below.\nNote that the type MUST be in upper-case.\n",
     "type": "string",
@@ -465,6 +489,33 @@
       "OTHER"
     ]
   },
+  "type__ieeg_channels": {
+    "name": "type",
+    "description": "Type of channel; MUST use the channel types listed below.\nNote that the type MUST be in upper-case.\n",
+    "type": "string",
+    "enum": [
+      "EEG",
+      "ECOG",
+      "SEEG",
+      "DBS",
+      "VEOG",
+      "HEOG",
+      "EOG",
+      "ECG",
+      "EMG",
+      "TRIG",
+      "AUDIO",
+      "PD",
+      "EYEGAZE",
+      "PUPIL",
+      "MISC",
+      "SYSCLOCK",
+      "ADC",
+      "DAC",
+      "REF",
+      "OTHER"
+    ]
+  },
   "type__electrodes": {
     "name": "type",
     "description": "Type of the electrode (for example, cup, ring, clip-on, wire, needle).\n",
@@ -472,7 +523,7 @@
   },
   "units": {
     "name": "units",
-    "description": "Physical unit of the value represented in this channel,\nfor example, `V` for Volt, or `fT/cm` for femto Tesla per centimeter\n(see [Units](/02-common-principles.html#units)).\n",
+    "description": "Physical unit of the value represented in this channel,\nfor example, `V` for Volt, or `fT/cm` for femto Tesla per centimeter\n(see [Units](SPEC_ROOT/02-common-principles.md#units)).\n",
     "type": "string",
     "format": "unit"
   },

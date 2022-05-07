@@ -1,0 +1,23 @@
+{
+  "Continuous": {
+    "selectors": [
+      "[\"physio\", \"stim\"].includes(suffix)"
+    ],
+    "fields": {
+      "SamplingFrequency": "required",
+      "StartTime": "required",
+      "Columns": "required"
+    }
+  },
+  "Physio": {
+    "selectors": [
+      "suffix == \"physio\""
+    ],
+    "fields": {
+      "Manufacturer": "recommended",
+      "ManufacturersModelName": "recommended",
+      "SoftwareVersions": "recommended",
+      "DeviceSerialNumber": "recommended"
+    }
+  }
+}
