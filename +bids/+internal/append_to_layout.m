@@ -61,9 +61,9 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
 
     if ~isempty(schema.content)
 
-      idx = schema.find_suffix_group(modality, p.suffix);
+      suffix_group = schema.find_suffix_group(modality, p.suffix);
 
-      if isempty(idx)
+      if isempty(suffix_group)
         [msg, id] = error_message('unknownSuffix', file, p.suffix);
         bids.internal.error_handling(mfilename, id, msg, true, schema.verbose);
         status = 0;
@@ -72,7 +72,7 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
 
       datatypes = schema.get_datatypes();
 
-      this_suffix_group = datatypes.(modality)(idx);
+      this_suffix_group = datatypes.(modality).(suffix_group);
 
       allowed_extensions = this_suffix_group.extensions;
 
