@@ -23,11 +23,11 @@ name: update schema
 
 on:
   push:
-    branches: ['**']
+    branches: 'master'
   pull_request:
-    branches: ['**']
+    branches: 'master'
   schedule:
-    - cron: "* * * * 1" # every monday
+    - cron: "0 0 * * 1" # every monday
 
 jobs:
   schema:
