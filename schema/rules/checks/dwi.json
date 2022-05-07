@@ -1,0 +1,60 @@
+{
+  "DWIVolumeCount": {
+    "code": "VOLUME_COUNT_MISMATCH",
+    "description": "The number of volumes in this scan does not match the number of volumes in the\ncorresponding .bvec and .bval files.\n",
+    "level": "error",
+    "selectors": [
+      "suffix == \"dwi\"",
+      "\"bval\" in associations",
+      "\"bvec\" in associations"
+    ],
+    "checks": [
+      "associations.bval.n_cols == nifti_header.dim[4]",
+      "associations.bvec.n_cols == nifti_header.dim[4]"
+    ]
+  },
+  "DWIBvalRows": {
+    "code": "BVAL_MULTIPLE_ROWS",
+    "description": "'.bval' files should contain exactly one row of volumes.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \"bval\""
+    ],
+    "checks": [
+      "data.n_rows == 1"
+    ]
+  },
+  "DWIBvecRows": {
+    "code": "BVEC_NUMBER_ROWS",
+    "description": "'.bvec' files should contain exactly three rows of volumes.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \"bvec\""
+    ],
+    "checks": [
+      "data.n_rows == 3"
+    ]
+  },
+  "DWIMissingBvec": {
+    "code": "DWI_MISSING_BVEC",
+    "description": "DWI scans must have a corresponding .bvec file.\n",
+    "level": "error",
+    "selectors": [
+      "suffix == \"dwi\""
+    ],
+    "checks": [
+      "\"bvec\" in associations"
+    ]
+  },
+  "DWIMissingBval": {
+    "code": "DWI_MISSING_BVAL",
+    "description": "DWI scans must have a corresponding .bval file.\n",
+    "level": "error",
+    "selectors": [
+      "suffix == \"dwi\""
+    ],
+    "checks": [
+      "\"bval\" in associations"
+    ]
+  }
+}

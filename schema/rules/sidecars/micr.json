@@ -1,0 +1,78 @@
+{
+  "MicroscopyDeviceHardware": {
+    "selectors": [
+      "modality == \"micr\"",
+      "datatype == \"micr\""
+    ],
+    "fields": {
+      "Manufacturer": "recommended",
+      "ManufacturersModelName": "recommended",
+      "DeviceSerialNumber": "recommended",
+      "StationName": "recommended",
+      "SoftwareVersions": "recommended",
+      "InstitutionName": "recommended",
+      "InstitutionAddress": "recommended",
+      "InstitutionalDepartmentName": "recommended"
+    }
+  },
+  "MicroscopyImageAcquisition": {
+    "selectors": [
+      "modality == \"micr\"",
+      "datatype == \"micr\""
+    ],
+    "fields": {
+      "PixelSize": "required",
+      "PixelSizeUnits": "required",
+      "Immersion": "optional",
+      "NumericalAperture": "optional",
+      "Magnification": "optional",
+      "ImageAcquisitionProtocol": "optional",
+      "OtherAcquisitionParameters": "optional"
+    }
+  },
+  "MicroscopySample": {
+    "selectors": [
+      "modality == \"micr\"",
+      "datatype == \"micr\""
+    ],
+    "fields": {
+      "BodyPart": {
+        "level": "recommended",
+        "description_addendum": "From [DICOM Body Part Examined](http://dicom.nema.org/medical/dicom/current/\noutput/chtml/part16/chapter_L.html#chapter_L)\n(for example `\"BRAIN\"`).\n"
+      },
+      "BodyPartDetails": "recommended",
+      "BodyPartDetailsOntology": "optional",
+      "SampleEnvironment": "recommended",
+      "SampleEmbedding": "optional",
+      "SampleFixation": "optional",
+      "SampleStaining": "recommended",
+      "SamplePrimaryAntibody": "recommended",
+      "SampleSecondaryAntibody": "recommended",
+      "SliceThickness": "optional",
+      "TissueDeformationScaling": "optional",
+      "SampleExtractionProtocol": "optional",
+      "SampleExtractionInstitution": "optional"
+    }
+  },
+  "MicroscopyChunkTransformations": {
+    "selectors": [
+      "modality == \"micr\"",
+      "datatype == \"micr\"",
+      "\"chunk\" in entities"
+    ],
+    "fields": {
+      "ChunkTransformationMatrix": "recommended"
+    }
+  },
+  "MicroscopyChunkTransformationsMatrixAxis": {
+    "selectors": [
+      "modality == \"micr\"",
+      "datatype == \"micr\"",
+      "\"chunk\" in entities",
+      "\"ChunkTransformationMatrix\" in sidecar"
+    ],
+    "fields": {
+      "ChunkTransformationMatrixAxis": "required"
+    }
+  }
+}

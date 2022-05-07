@@ -1,5 +1,5 @@
-[
-  {
+{
+  "meg": {
     "suffixes": [
       "meg"
     ],
@@ -18,6 +18,9 @@
       ".trg",
       ".chn"
     ],
+    "datatypes": [
+      "meg"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
@@ -28,12 +31,15 @@
       "split": "optional"
     }
   },
-  {
+  "calibration": {
     "suffixes": [
       "meg"
     ],
     "extensions": [
       ".dat"
+    ],
+    "datatypes": [
+      "meg"
     ],
     "entities": {
       "subject": "required",
@@ -47,12 +53,15 @@
       }
     }
   },
-  {
+  "crosstalk": {
     "suffixes": [
       "meg"
     ],
     "extensions": [
       ".fif"
+    ],
+    "datatypes": [
+      "meg"
     ],
     "entities": {
       "subject": "required",
@@ -66,7 +75,7 @@
       }
     }
   },
-  {
+  "headshape": {
     "suffixes": [
       "headshape"
     ],
@@ -74,19 +83,25 @@
       ".*",
       ".pos"
     ],
+    "datatypes": [
+      "meg"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
       "acquisition": "optional"
     }
   },
-  {
+  "markers": {
     "suffixes": [
       "markers"
     ],
     "extensions": [
       ".sqd",
       ".mrk"
+    ],
+    "datatypes": [
+      "meg"
     ],
     "entities": {
       "subject": "required",
@@ -96,12 +111,15 @@
       "space": "optional"
     }
   },
-  {
+  "coordsystem": {
     "suffixes": [
       "coordsystem"
     ],
     "extensions": [
       ".json"
+    ],
+    "datatypes": [
+      "meg"
     ],
     "entities": {
       "subject": "required",
@@ -109,13 +127,16 @@
       "acquisition": "optional"
     }
   },
-  {
+  "channels": {
     "suffixes": [
       "channels"
     ],
     "extensions": [
       ".json",
       ".tsv"
+    ],
+    "datatypes": [
+      "meg"
     ],
     "entities": {
       "subject": "required",
@@ -126,13 +147,16 @@
       "processing": "optional"
     }
   },
-  {
+  "events": {
     "suffixes": [
       "events"
     ],
     "extensions": [
       ".json",
       ".tsv"
+    ],
+    "datatypes": [
+      "meg"
     ],
     "entities": {
       "subject": "required",
@@ -142,7 +166,7 @@
       "run": "optional"
     }
   },
-  {
+  "photo": {
     "suffixes": [
       "photo"
     ],
@@ -151,13 +175,16 @@
       ".png",
       ".tif"
     ],
+    "datatypes": [
+      "meg"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
       "acquisition": "optional"
     }
   },
-  {
+  "timeseries": {
     "suffixes": [
       "physio",
       "stim"
@@ -165,6 +192,9 @@
     "extensions": [
       ".tsv.gz",
       ".json"
+    ],
+    "datatypes": [
+      "meg"
     ],
     "entities": {
       "subject": "required",
@@ -176,4 +206,4 @@
       "recording": "optional"
     }
   }
-]
+}

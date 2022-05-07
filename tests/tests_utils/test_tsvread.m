@@ -8,45 +8,40 @@ end
 
 function test_tsvread_basic()
 
-  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
-    % TODO fix downloading of test data when testing with matlab in CI
-    return
-  else
-    pth = bids.internal.download_moae_ds();
-  end
+  [pth, expected] = fixture();
 
-  % define the expected output from bids query metadata
-  events.onset = [42 126 210 294 378 462 546];
-
-  %% test tsvread on tsv file
-  tsv_file = fullfile(pth, 'sub-01', 'func', 'sub-01_task-auditory_events.tsv');
+  tsv_file = fullfile(pth, 'sub-01_task-auditory_events.tsv');
   output = bids.util.tsvread(tsv_file);
-  assertEqual(output.onset', events.onset);
+  assertEqual(output, expected);
 
-  %% test tsvread on zipped tsv file
-  output = bids.util.tsvread(fullfile( ...
-                                      fileparts(mfilename('fullpath')), '..', ...
-                                      'data', ...
-                                      'sub-01_task-auditory_events.tsv.gz'));
-  assertEqual(output.onset', events.onset);
+end
+
+function test_tsvread_gz()
+
+  [pth, expected] = fixture();
+
+  tsv_file = fullfile(pth, 'sub-01_task-auditory_events.tsv.gz');
+  output = bids.util.tsvread(tsv_file);
+  assertEqual(output, expected);
 
 end
 
 function test_tsvread_subset()
 
-  if ~bids.internal.is_octave() && bids.internal.is_github_ci()
-    % TODO fix downloading of test data when testing with matlab in CI
-    return
-  else
-    pth = bids.internal.download_moae_ds();
-  end
+  [pth, expected] = fixture();
 
-  % define the expected output from bids query metadata
-  events.onset = [42 126 210 294 378 462 546];
-
-  %% test tsvread on tsv file
-  tsv_file = fullfile(pth, 'sub-01', 'func', 'sub-01_task-auditory_events.tsv');
+  tsv_file = fullfile(pth, 'sub-01_task-auditory_events.tsv');
   output = bids.util.tsvread(tsv_file, 'onset');
-  assertEqual(output', events.onset);
+  assertEqual(output, expected.onset);
+  assert(~isfield(output, 'duration'));
 
+end
+
+function [pth, expected] = fixture()
+
+  pth = fullfile(get_test_data_dir(), '..', 'data');
+
+  expected.onset = ([42 126 210 294 378 462 546])';
+  expected.duration = repmat(42, 7, 1);
+  expected.trial_type = repmat({'listening'}, 7, 1);
 end
