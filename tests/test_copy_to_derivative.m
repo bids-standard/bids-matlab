@@ -265,9 +265,7 @@ function [BIDS, out_path, filter, cfg] = fixture(dataset)
 
     case 'MoAEpilot'
 
-
       bids.util.mkdir(fullfile(get_test_data_dir(), '..', '..', 'demos', 'spm'));
-
 
       BIDS = bids.util.download_ds('source', 'spm', ...
                                    'demo', 'moae', ...
