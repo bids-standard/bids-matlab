@@ -13,8 +13,10 @@ function test_layout_missing_subgroup()
   synthetic_derivatives = fullfile(get_test_data_dir(), '..', ...
                                    'data', 'synthetic', 'derivatives', 'manual');
 
-  assertWarning(@()bids.layout(synthetic_derivatives, 'verbose', true), ...
-                'append_to_layout:unknownSuffix');
+  if ~bids.internal.is_octave % skipping because Octave:mixed-string-concat
+    assertWarning(@()bids.layout(synthetic_derivatives, 'verbose', true), ...
+                  'append_to_layout:unknownSuffix');
+  end
 
 end
 
