@@ -159,6 +159,8 @@ function result = query(BIDS, query, varargin)
     bids.internal.error_handling(mfilename(), 'unknownQuery', msg, false, true);
   end
 
+  bids_schema_entities = schema_entities();
+
   BIDS = bids.layout(BIDS);
 
   options = parse_query(varargin);
@@ -173,7 +175,7 @@ function result = query(BIDS, query, varargin)
   % Get optional target option for metadata query
   [target, options] = get_target(query, options);
 
-  result = perform_query(BIDS, query, options, subjects, modalities, target);
+  result = perform_query(BIDS, query, options, subjects, modalities, target, bids_schema_entities);
 
   %% Postprocessing output variable
   switch query
@@ -339,7 +341,7 @@ function [target, options] = get_target(query, options)
 
 end
 
-function result = perform_query(BIDS, query, options, subjects, modalities, target)
+function result = perform_query(BIDS, query, options, subjects, modalities, target, bids_schema_entities)
 
   % Initialise output variable
   result = {};
@@ -363,17 +365,17 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
         continue
       end
 
-      result = update_result(query, options, result, this_subject, this_modality, target);
+      result = update_result(query, options, result, this_subject, this_modality, target, bids_schema_entities);
 
     end
 
   end
 
-  result = update_result_with_root_content(query, options, result, BIDS);
+  result = update_result_with_root_content(query, options, result, BIDS, bids_schema_entities);
 
 end
 
-function result = update_result(query, options, result, this_subject, this_modality, target)
+function result = update_result(query, options, result, this_subject, this_modality, target, bids_schema_entities)
 
   d = this_subject.(this_modality);
 
@@ -427,7 +429,7 @@ function result = update_result(query, options, result, this_subject, this_modal
 
         case valid_entity_queries()
 
-          result = update_if_entity(query, result, d(k));
+          result = update_if_entity(query, result, d(k), bids_schema_entities);
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -445,7 +447,7 @@ function result = update_result(query, options, result, this_subject, this_modal
   end
 end
 
-function result = update_result_with_root_content(query, options, result, BIDS)
+function result = update_result_with_root_content(query, options, result, BIDS, bids_schema_entities)
 
   d = BIDS.root;
 
@@ -479,7 +481,7 @@ function result = update_result_with_root_content(query, options, result, BIDS)
 
         case valid_entity_queries()
 
-          result = update_if_entity(query, result, d(k));
+          result = update_if_entity(query, result, d(k), bids_schema_entities);
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -499,7 +501,7 @@ function value = schema_entities()
   value = schema.content.objects.entities;
 end
 
-function result = update_if_entity(query, result, dk)
+function result = update_if_entity(query, result, dk, bids_schema_entities)
 
   if ismember(query, short_valid_entity_queries())
     field = query(1:end - 1);
@@ -508,8 +510,7 @@ function result = update_if_entity(query, result, dk)
     field =  'atlas';
 
   elseif ismember(query, long_valid_entity_queries())
-    entities = schema_entities();
-    field =  entities.(query(1:end - 1)).entity;
+    field =  bids_schema_entities.(query(1:end - 1)).entity;
 
   else
     error('query ''%s'' not yet implemented', query);
