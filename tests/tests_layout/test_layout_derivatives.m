@@ -6,6 +6,23 @@ function test_suite = test_layout_derivatives %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_warning_invalid_subfolder_struct_fieldname()
+
+  % https://github.com/bids-standard/bids-matlab/issues/332
+
+  invalid_subfolder = fullfile(get_test_data_dir(), '..', ...
+                               'data', 'synthetic', 'derivatives', 'invalid_subfolder');
+
+  % 'Octave:mixed-string-concat'
+  if ~bids.internal.is_octave
+    assertWarning(@()bids.layout(invalid_subfolder, ...
+                                 'use_schema', false, ...
+                                 'verbose', true), ...
+                  'layout:invalidSubfolderName');
+  end
+
+end
+
 function test_layout_nested()
 
   pth_bids_example = get_test_data_dir();
