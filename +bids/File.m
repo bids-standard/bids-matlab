@@ -673,6 +673,7 @@ classdef File
       switch id
         case 'noEntity'
           msg = 'No entity-label pairs.';
+          obj.tolerant = false;
 
         case 'schemaMissing'
           msg = 'no schema specified: run file.use_schema()';
@@ -684,6 +685,8 @@ classdef File
           msg = 'no extension specified';
 
       end
+
+      id = bids.internal.camel_case(id);
 
       bids.internal.error_handling(mfilename(), id, msg, obj.tolerant, obj.verbose);
 
@@ -714,8 +717,8 @@ classdef File
       obj.validate_string(extension, 'Extension', '^\.[.A-Za-z0-9]+$');
     end
 
-    function validate_word(obj, extension, type)
-      obj.validate_string(extension, type, '^[A-Za-z0-9]+$');
+    function validate_word(obj, word, type)
+      obj.validate_string(word, type, '^[A-Za-z0-9]+$');
     end
 
     function validate_prefix(obj, prefix)
