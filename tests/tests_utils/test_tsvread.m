@@ -14,8 +14,6 @@ function test_tsvread_gz()
   output = bids.util.tsvread(tsv_file);
   assertEqual(output, expected);
 
-  rmdir(pth, 's');
-
 end
 
 function test_tsvread_subset()
