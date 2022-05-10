@@ -15,6 +15,23 @@ end
 %
 % end
 
+function test_invalid_entity()
+
+  % https://github.com/bids-standard/bids-matlab/issues/362
+
+  input.suffix = 'eeg';
+  input.ext = '.bdf';
+  input.entities.sub = '01';
+  input.entities.task = '0.05';
+
+  assertExceptionThrown(@() bids.File(input, 'use_schema', false, 'tolerant', false), ...
+                        'File:InvalidEntityValue');
+
+  assertWarning(@() bids.File(input, 'use_schema', true, 'tolerant', true, 'verbose', true), ...
+                'File:InvalidEntityValue');
+
+end
+
 function test_forbidden_entity()
 
   input.suffix = 'eeg';
