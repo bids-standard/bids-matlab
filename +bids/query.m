@@ -197,7 +197,7 @@ function result = query(BIDS, query, varargin)
         result = result';
       end
 
-    case valid_entity_queries()
+    case cat(2, {'suffixes',  'suffixes', 'extensions', 'prefixes'}, valid_entity_queries())
       result = unique(result);
       result(cellfun('isempty', result)) = [];
   end
