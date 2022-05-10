@@ -8,11 +8,11 @@ end
 
 %  TODO
 % function test_forbidden_order()
-% 
+%
 %   input = 'sub-01_task-nback_ses-02_eeg.bdf';
 %   assertExceptionThrown(@() bids.File(input, 'use_schema', true, 'tolerant', false), ...
 %                         'bids:File:wrongEntityOrder');
-% 
+%
 % end
 
 function test_get_metadata_suffixes_basic()
@@ -156,10 +156,10 @@ function test_invalid_entity()
   input.suffix = 'eeg';
   input.ext = '.bdf';
   input.entities.sub = '01';
-  input.entities.task = '0-0 .%$£5';
+  input.entities.task = '0-0 .%5';
 
   bf =  bids.File(input, 'use_schema', false, 'tolerant', false);
-  assertEqual(bf.filename, 'sub-01_task-005_eeg.bdf')
+  assertEqual(bf.filename, 'sub-01_task-005_eeg.bdf');
 
 end
 
