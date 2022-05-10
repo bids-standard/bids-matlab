@@ -16,6 +16,8 @@ end
 % end
 
 function test_invalid_entity()
+  
+  % https://github.com/bids-standard/bids-matlab/issues/362
 
   input.suffix = 'eeg';
   input.ext = '.bdf';
