@@ -56,7 +56,7 @@ function result = query(BIDS, query, varargin)
   % - ``'tasks'``
   % - ``'tracers'``
   %
-  % .. warning:: 
+  % .. warning::
   %
   %   Note that all the query types are plurals.
   %
@@ -75,7 +75,7 @@ function result = query(BIDS, query, varargin)
   %
   %   bids.query(BIDS, 'entities')
   %
-  % .. warning:: 
+  % .. warning::
   %
   %   Note that integers as query label for the entity keys listed below:
   %
