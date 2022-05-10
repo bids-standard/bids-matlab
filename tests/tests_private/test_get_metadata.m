@@ -96,10 +96,20 @@ end
 
 function test_get_metadata_participants_File()
 
-  pth_bids_example = get_test_data_dir();
+  pth_bids_example = fullfile(get_test_data_dir(), 'pet002');
 
-  file = fullfile(pth_bids_example, 'pet002', 'participants.tsv');
-  side_car = fullfile(pth_bids_example, 'pet002', 'participants.json');
+  file = fullfile(pth_bids_example, 'participants.tsv');
+  side_car = fullfile(pth_bids_example, 'participants.json');
+
+  bf = bids.File(file);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+  assertEqual(bf.metadata, expected_metadata);
+
+  subj_folder = fullfile('sub-02', 'ses-baseline', 'pet');
+
+  file = fullfile(pth_bids_example, subj_folder, 'sub-02_ses-baseline_pet.nii.gz');
+  side_car = fullfile(pth_bids_example, subj_folder, 'sub-02_ses-baseline_pet.json');
 
   bf = bids.File(file);
 

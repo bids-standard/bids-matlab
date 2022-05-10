@@ -15,6 +15,16 @@ end
 %
 % end
 
+function test_participants
+
+  pth_bids_example = get_test_data_dir();
+
+  file = fullfile(pth_bids_example, 'pet002', 'participants.tsv');
+
+  bf = bids.File(file);
+
+end
+
 function test_get_metadata_suffixes_basic()
   % ensures that "similar" suffixes are distinguished
 

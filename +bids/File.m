@@ -89,7 +89,7 @@ classdef File
 
     metadata_files = {} % list of metadata files related
 
-    metadata
+    metadata  % list of metadata for this file
 
     entity_required = {}  % Required entities
 
@@ -238,7 +238,7 @@ classdef File
         obj.validate_word(val, 'Entity value');
       end
 
-      if ~contain_value
+      if ~strcmp(obj.filename, 'participants.tsv') && ~contain_value
         obj.bids_file_error('noEntity', 'No entity-label pairs');
       end
 
