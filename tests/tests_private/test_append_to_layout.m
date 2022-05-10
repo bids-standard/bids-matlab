@@ -8,6 +8,8 @@ end
 
 function test_layout_missing_subgroup()
 
+  % See https://github.com/bids-standard/bids-matlab/issues/363
+
   synthetic_derivatives = fullfile(get_test_data_dir(), '..', ...
                                    'data', 'synthetic', 'derivatives', 'manual');
 
