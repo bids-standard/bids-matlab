@@ -69,9 +69,17 @@ function file_content = tsvread(filename, field_to_return, hdr)
 
     case 'gz'
 
+      % use tmpname for original unzipped file
+      % also make a back up of eventual file with the same name as the file we
+      % are unpacking
+      % in case we have both foo.tsv.gz and foo.tsv in the same folder
       if bids.internal.is_octave()
         back_up = tempname;
         copyfile(filename, back_up);
+        if exist(filename(1:end - 3), 'file')
+          target_back_up = tempname;
+          copyfile(filename(1:end - 3), target_back_up);
+        end
       end
       fz = gunzip(filename, tempname);
 
@@ -88,6 +96,9 @@ function file_content = tsvread(filename, field_to_return, hdr)
 
       if bids.internal.is_octave()
         copyfile(back_up, filename);
+        if exist('target_back_up', 'var')
+          copyfile(target_back_up, filename(1:end - 3));
+        end
       end
 
       if ~sts

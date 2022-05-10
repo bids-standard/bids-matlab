@@ -248,7 +248,7 @@ classdef Schema
       %         'nonparametric'
       %
 
-      suffix_group = "";
+      suffix_group = '';
 
       if isempty(obj.content)
         return
@@ -270,10 +270,12 @@ classdef Schema
         end
       end
 
-      msg = sprintf('No corresponding suffix in schema for %s for datatype %s', ...
-                    suffix, ...
-                    modality);
-      bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, obj.verbose);
+      if strcmp(suffix_group, '')
+        msg = sprintf('No corresponding suffix in schema for ''%s'' for datatype ''%s''\n', ...
+                      suffix, ...
+                      modality);
+        bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, obj.verbose);
+      end
 
     end
 
