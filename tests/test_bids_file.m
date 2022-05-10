@@ -148,7 +148,7 @@ function test_camel_case()
   file.entities.task = 'test bla';
   assertEqual(file.filename, 'sub-01_ses-test_task-testBla_run-02_bold.nii');
 end
-  
+
 function test_invalid_entity()
 
   % https://github.com/bids-standard/bids-matlab/issues/362
