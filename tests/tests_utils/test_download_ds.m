@@ -13,6 +13,6 @@ function test_download_ds_basic()
                               'force', false, ...
                               'verbose', false);
 
-  rmdir(pth, 's');
+  rmdir(fullfile(pth, 'MoAEpilot'), 's');
 
 end

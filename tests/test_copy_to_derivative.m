@@ -265,12 +265,15 @@ function [BIDS, out_path, filter, cfg] = fixture(dataset)
 
     case 'MoAEpilot'
 
-      bids.util.mkdir(fullfile(get_test_data_dir(), '..', '..', 'demos', 'spm'));
+      BIDS = fullfile(get_test_data_dir(), '..', '..', 'demos', 'spm', 'moae', 'MoAEpilot');
 
-      BIDS = bids.util.download_ds('source', 'spm', ...
-                                   'demo', 'moae', ...
-                                   'force', false, ...
-                                   'verbose', false);
+      if ~isdir(BIDS)
+
+        BIDS = bids.util.download_ds('source', 'spm', ...
+                                     'demo', 'moae', ...
+                                     'force', false, ...
+                                     'verbose', false);
+      end
 
       anat = fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii');
       if exist(anat, 'file')
