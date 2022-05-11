@@ -294,6 +294,11 @@ function test_reorder()
 end
 
 function test_reorder_schemaless()
+  
+  if bids.internal.is_octave
+    return
+  end
+  
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
   file = bids.File(filename, 'use_schema', false);
   file = file.reorder_entities();
@@ -329,6 +334,11 @@ function test_reorder_schemaless()
 end
 
 function test_reorder_schemaless_with_extra_entity()
+  
+  if bids.internal.is_octave
+    return
+  end  
+  
   filename = 'sub-01_foo-bar_task-face_ses-test_run-02_mask.nii';
   file = bids.File(filename, 'use_schema', false);
   file = file.reorder_entities();
