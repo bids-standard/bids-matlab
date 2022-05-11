@@ -369,30 +369,30 @@ classdef Model
           if ~isfield(this_node, field_to_check{j})
             continue
           end
-            
+
           if strcmp(field_to_check{j}, 'Contrasts')
-            
-            for contrast= 1:numel(this_node.Contrasts)
-              
+
+            for contrast = 1:numel(this_node.Contrasts)
+
               fields_present = bids.Model.get_keys(this_node.Contrasts(contrast));
               if ~iscellstr(fields_present)
                 fields_present = fields_present{1};
               end
-              
+
               if any(~ismember(check.Contrasts, fields_present))
                 obj.model_validation_error('Contrasts', check.Contrasts);
               end
-              
+
             end
-            
+
           else
-            
+
             fields_present = bids.Model.get_keys(this_node.(field_to_check{j}));
-            
+
             if any(~ismember(check.(field_to_check{j}), fields_present))
-                obj.model_validation_error(field_to_check{j}, check.(field_to_check{j}));
+              obj.model_validation_error(field_to_check{j}, check.(field_to_check{j}));
             end
-            
+
           end
 
           if strcmp(field_to_check{j}, 'Model')
@@ -582,7 +582,7 @@ classdef Model
 
       tasks = bids.query(args.Results.layout, 'tasks');
       sessions = bids.query(args.Results.layout, 'sessions');
-      
+
       GroupBy_level_1 = {'run', 'subject'};
       if ~isempty(sessions)
         GroupBy_level_1 = {'run', 'session', 'subject'};
@@ -598,7 +598,7 @@ classdef Model
                                 trial_type_list, ...
                                 'UniformOutput', false);
       obj.Nodes{1}.Model.X = cat(1, trial_type_list, '1');
-      
+
       obj.Nodes{1}.GroupBy = GroupBy_level_1;
       obj.Nodes{1}.Model.HRF.Variables = trial_type_list;
       obj.Nodes{1}.DummyContrasts.Contrasts = trial_type_list;
@@ -670,12 +670,12 @@ classdef Model
                                                'Contrasts', {{''}}));
 
     end
-    
+
     function contrast = empty_contrast()
       contrast = struct('Name', '', ...
-                                         'ConditionList', {{''}}, ...
-                                         'Weights', {{''}}, ...
-                                         'Test', 't');
+                        'ConditionList', {{''}}, ...
+                        'Weights', {{''}}, ...
+                        'Test', 't');
     end
 
     function transformations = empty_transformations()
