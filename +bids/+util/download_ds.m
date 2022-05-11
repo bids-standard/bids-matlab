@@ -93,13 +93,6 @@ function out_path = download_ds(varargin)
     end
   end
 
-  if strcmp(p.Results.source, 'spm')
-    if strcmp(p.Results.demo, 'facerep')
-      bids.internal.ds_spm_face_rep(fileparts(out_path));
-      return
-    end
-  end
-
   [URL] = get_URL(p.Results.source, p.Results.demo, verbose);
   filename = bids.internal.download(URL, bids.internal.root_dir(), verbose);
 
@@ -129,7 +122,7 @@ end
 function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
 
   sources = {'spm', 'brainstorm'};
-  demos = {'moae', 'facep', 'eeg', ...
+  demos = {'moae', 'facerep', 'eeg', ...
            'ieeg', 'ecog', 'meg', 'meg_rest'};
 
   switch source
@@ -157,6 +150,9 @@ function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
 
     case 'eeg'
       demo_path = '/mmfaces/multimodal_eeg.zip';
+      
+    case 'facerep'
+      demo_path = '/face_rep/face_rep.zip';
 
       % brainstorm
     case 'ieeg'
