@@ -50,7 +50,7 @@
   },
   "AnatomicalLandmarkCoordinateSystem": {
     "name": "AnatomicalLandmarkCoordinateSystem",
-    "description": "Defines the coordinate system for the anatomical landmarks.\nSee [Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"AnatomicalLandmarkCoordinateSystemDescription\"`.\n",
+    "description": "Defines the coordinate system for the anatomical landmarks.\nSee [Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"AnatomicalLandmarkCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -120,7 +120,7 @@
   },
   "AssociatedEmptyRoom": {
     "name": "AssociatedEmptyRoom",
-    "description": "Relative path in BIDS directory structure to empty-room file associated with\nthe subject's MEG recording.\nThe path needs to use forward slashes instead of backward slashes\n(for example,\n\"sub-emptyroom/ses-/meg/sub-emptyroom_ses-_task-noise_run-_meg.ds\").\n",
+    "description": "A path pointing to an empty-room file associated with\nthe subject's MEG recording.\nThe path is relative to the BIDS dataset root.\nThe path needs to use forward slashes instead of backward slashes\n(for example,\n\"sub-emptyroom/ses-rest/meg/sub-emptyroom_ses-rest_task-noise_run-01_meg.ds\").\nSupplying a list of several paths to empty-room files is possible.\n",
     "anyOf": [
       {
         "type": "array",
@@ -249,7 +249,7 @@
   },
   "BodyPartDetailsOntology": {
     "name": "BodyPartDetailsOntology",
-    "description": "[URI](/02-common-principles.html#uniform-resource-indicator) of ontology used for\nBodyPartDetails (for example: `\"https://www.ebi.ac.uk/ols/ontologies/uberon\"`).\n",
+    "description": "[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator) of ontology used for\nBodyPartDetails (for example: `\"https://www.ebi.ac.uk/ols/ontologies/uberon\"`).\n",
     "type": "string",
     "format": "uri"
   },
@@ -355,19 +355,19 @@
   },
   "Code": {
     "name": "Code",
-    "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nof the code used to present the stimuli.\nPersistent identifiers such as DOIs are preferred.\nIf multiple versions of code may be hosted at the same location,\nrevision-specific URIs are recommended.\n",
+    "description": "[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)\nof the code used to present the stimuli.\nPersistent identifiers such as DOIs are preferred.\nIf multiple versions of code may be hosted at the same location,\nrevision-specific URIs are recommended.\n",
     "type": "string",
     "format": "uri"
   },
   "CogAtlasID": {
     "name": "CogAtlasID",
-    "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nof the corresponding [Cognitive Atlas](https://www.cognitiveatlas.org/)\nTask term.\n",
+    "description": "[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)\nof the corresponding [Cognitive Atlas](https://www.cognitiveatlas.org/)\nTask term.\n",
     "type": "string",
     "format": "uri"
   },
   "CogPOID": {
     "name": "CogPOID",
-    "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nof the corresponding [CogPO](http://www.cogpo.org/) term.\n",
+    "description": "[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)\nof the corresponding [CogPO](http://www.cogpo.org/) term.\n",
     "type": "string",
     "format": "uri"
   },
@@ -408,7 +408,7 @@
   },
   "DatasetDOI": {
     "name": "DatasetDOI",
-    "description": "The Digital Object Identifier of the dataset (not the corresponding paper).\nDOIs SHOULD be expressed as a valid\n[URI](/02-common-principles.html#uniform-resource-indicator);\nbare DOIs such as `10.0.2.3/dfjj.10` are\n[DEPRECATED](/02-common-principles.html#definitions).\n",
+    "description": "The Digital Object Identifier of the dataset (not the corresponding paper).\nDOIs SHOULD be expressed as a valid\n[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator);\nbare DOIs such as `10.0.2.3/dfjj.10` are\n[DEPRECATED](SPEC_ROOT/02-common-principles.md#definitions).\n",
     "type": "string",
     "format": "uri"
   },
@@ -489,7 +489,7 @@
   },
   "DigitizedHeadPointsCoordinateSystem": {
     "name": "DigitizedHeadPointsCoordinateSystem",
-    "description": "Defines the coordinate system for the digitized head points.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"DigitizedHeadPointsCoordinateSystemDescription\"`.\n",
+    "description": "Defines the coordinate system for the digitized head points.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"DigitizedHeadPointsCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -568,7 +568,7 @@
   },
   "EEGCoordinateSystem": {
     "name": "EEGCoordinateSystem",
-    "description": "Defines the coordinate system for the EEG sensors.\n\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`EEGCoordinateSystemDescription`.\n",
+    "description": "Defines the coordinate system for the EEG sensors.\n\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`EEGCoordinateSystemDescription`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -629,7 +629,7 @@
   },
   "EchoTime": {
     "name": "EchoTime",
-    "description": "The echo time (TE) for the acquisition, specified in seconds.\nCorresponds to DICOM Tag 0018, 0081 `Echo Time`\n(please note that the DICOM term is in milliseconds not seconds).\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field, or to the files in a\n[file collection](/99-appendices/10-file-collections.html)\nwhere the value of this field is iterated using the\n[echo entity](/99-appendices/09-entities.html#echo).\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation\nof the data, such as in\n[ASL](/04-modality-specific-files/01-magnetic-resonance-imaging-data.html#\\\narterial-spin-labeling-perfusion-data)\nor variable echo time fMRI sequences.\n",
+    "description": "The echo time (TE) for the acquisition, specified in seconds.\nCorresponds to DICOM Tag 0018, 0081 `Echo Time`\n(please note that the DICOM term is in milliseconds not seconds).\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field, or to the files in a\n[file collection](SPEC_ROOT/99-appendices/10-file-collections.md)\nwhere the value of this field is iterated using the\n[echo entity](SPEC_ROOT/99-appendices/09-entities.md#echo).\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation\nof the data, such as in\n[ASL](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-imaging-data.md#\\\narterial-spin-labeling-perfusion-data)\nor variable echo time fMRI sequences.\n",
     "anyOf": [
       {
         "type": "number",
@@ -720,7 +720,7 @@
   },
   "FiducialsCoordinateSystem": {
     "name": "FiducialsCoordinateSystem",
-    "description": "Defines the coordinate system for the fiducials.\nPreferably the same as the `\"EEGCoordinateSystem\"`.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"FiducialsCoordinateSystemDescription\"`.\n",
+    "description": "Defines the coordinate system for the fiducials.\nPreferably the same as the `\"EEGCoordinateSystem\"`.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"FiducialsCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -772,7 +772,7 @@
   },
   "FlipAngle": {
     "name": "FlipAngle",
-    "description": "Flip angle (FA) for the acquisition, specified in degrees.\nCorresponds to: DICOM Tag 0018, 1314 `Flip Angle`.\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field, or to the files in a\n[file collection](/99-appendices/10-file-collections.html)\nwhere the value of this field is iterated using the\n[flip entity](/99-appendices/09-entities.html#flip).\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation of\nthe data, such as in\n[ASL](/04-modality-specific-files/01-magnetic-resonance-imaging-data.html#\\\narterial-spin-labeling-perfusion-data)\nor variable flip angle fMRI sequences.\n",
+    "description": "Flip angle (FA) for the acquisition, specified in degrees.\nCorresponds to: DICOM Tag 0018, 1314 `Flip Angle`.\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field, or to the files in a\n[file collection](SPEC_ROOT/99-appendices/10-file-collections.md)\nwhere the value of this field is iterated using the\n[flip entity](SPEC_ROOT/99-appendices/09-entities.md#flip).\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation of\nthe data, such as in\n[ASL](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-imaging-data.md#\\\narterial-spin-labeling-perfusion-data)\nor variable flip angle fMRI sequences.\n",
     "anyOf": [
       {
         "type": "number",
@@ -871,46 +871,37 @@
       }
     ]
   },
-  "Genetics.Database": {
-    "name": "Genetics.Database",
-    "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nof database where the dataset is hosted.\n",
-    "type": "string",
-    "format": "uri"
-  },
-  "Genetics.Dataset": {
-    "name": "Genetics.Dataset",
-    "description": "[URI](/02-common-principles.html#uniform-resource-indicator)\nwhere data can be retrieved.\n",
-    "type": "string",
-    "format": "uri"
-  },
-  "Genetics.Descriptors": {
-    "name": "Genetics.Descriptors",
-    "description": "List of relevant descriptors (for example, journal articles) for dataset\nusing a valid\n[URI](/02-common-principles.html#uniform-resource-indicator)\nwhen possible.\n",
-    "anyOf": [
-      {
-        "type": "string"
-      },
-      {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      }
-    ]
-  },
   "Genetics": {
     "name": "Genetics",
     "description": "An object containing information about the genetics descriptor.\n",
     "type": "object",
     "properties": {
       "Database": {
-        "$ref": "Genetics.Database"
+        "name": "Database",
+        "description": "[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)\nof database where the dataset is hosted.\n",
+        "type": "string",
+        "format": "uri"
       },
       "Dataset": {
-        "$ref": "Genetics.Dataset"
+        "name": "Dataset",
+        "description": "[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)\nwhere data can be retrieved.\n",
+        "type": "string",
+        "format": "uri"
       },
       "Descriptors": {
-        "$ref": "Genetics.Descriptors"
+        "name": "Descriptors",
+        "description": "List of relevant descriptors (for example, journal articles) for dataset\nusing a valid\n[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)\nwhen possible.\n",
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
       }
     }
   },
@@ -921,7 +912,7 @@
   },
   "HED": {
     "name": "HED",
-    "description": "Hierarchical Event Descriptor (HED) information,\nsee: [Appendix III](/99-appendices/03-hed.html) for details.\n",
+    "description": "Hierarchical Event Descriptor (HED) information,\nsee: [Appendix III](SPEC_ROOT/99-appendices/03-hed.md) for details.\n",
     "anyOf": [
       {
         "type": "string"
@@ -976,7 +967,7 @@
   },
   "HeadCoilCoordinateSystem": {
     "name": "HeadCoilCoordinateSystem",
-    "description": "Defines the coordinate system for the head coils.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`HeadCoilCoordinateSystemDescription`.\n",
+    "description": "Defines the coordinate system for the head coils.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`HeadCoilCoordinateSystemDescription`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -1045,7 +1036,7 @@
   },
   "ImageAcquisitionProtocol": {
     "name": "ImageAcquisitionProtocol",
-    "description": "Description of the image acquisition protocol or\n[URI](/02-common-principles.html#uniform-resource-indicator)\n(for example from [protocols.io](https://www.protocols.io/)).\n",
+    "description": "Description of the image acquisition protocol or\n[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)\n(for example from [protocols.io](https://www.protocols.io/)).\n",
     "type": "string"
   },
   "ImageDecayCorrected": {
@@ -1194,6 +1185,23 @@
       }
     ]
   },
+  "IntendedFor__ds_relative": {
+    "name": "IntendedFor",
+    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more filenames with paths relative to the dataset\nroot.\nPaths need to use forward slashes instead of backward slashes,\nregardless of operating system.\n",
+    "anyOf": [
+      {
+        "type": "string",
+        "format": "dataset_relative"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "dataset_relative"
+        }
+      }
+    ]
+  },
   "InversionTime": {
     "name": "InversionTime",
     "description": "The inversion time (TI) for the acquisition, specified in seconds.\nInversion time is the time after the middle of inverting RF pulse to middle\nof excitation pulse to detect the amount of longitudinal magnetization.\nCorresponds to DICOM Tag 0018, 0082 `Inversion Time`\n(please note that the DICOM term is in milliseconds not seconds).\n",
@@ -1305,7 +1313,7 @@
   },
   "License": {
     "name": "License",
-    "description": "The license for the dataset.\nThe use of license name abbreviations is RECOMMENDED for specifying a license\n(see [Appendix II](/99-appendices/02-licenses.html)).\nThe corresponding full license text MAY be specified in an additional\n`LICENSE` file.\n",
+    "description": "The license for the dataset.\nThe use of license name abbreviations is RECOMMENDED for specifying a license\n(see [Appendix II](SPEC_ROOT/99-appendices/02-licenses.md)).\nThe corresponding full license text MAY be specified in an additional\n`LICENSE` file.\n",
     "type": "string"
   },
   "LongName": {
@@ -1343,7 +1351,7 @@
   },
   "MEGCoordinateSystem": {
     "name": "MEGCoordinateSystem",
-    "description": "Defines the coordinate system for the MEG sensors.\nSee [Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"MEGCoordinateSystemDescription\"`.\n",
+    "description": "Defines the coordinate system for the MEG sensors.\nSee [Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"MEGCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
         "$ref": "_MEGCoordSys"
@@ -1911,7 +1919,7 @@
   },
   "ReferencesAndLinks": {
     "name": "ReferencesAndLinks",
-    "description": "List of references to publications that contain information on the dataset.\nA reference may be textual or a\n[URI](/02-common-principles.html#uniform-resource-indicator).\n",
+    "description": "List of references to publications that contain information on the dataset.\nA reference may be textual or a\n[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator).\n",
     "items": {
       "type": "string"
     },
@@ -1933,7 +1941,7 @@
   },
   "RepetitionTimePreparation": {
     "name": "RepetitionTimePreparation",
-    "description": "The interval, in seconds, that it takes a preparation pulse block to\nre-appear at the beginning of the succeeding (essentially identical) pulse\nsequence block.\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field.\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation of\nthe data, such as in\n[ASL](/04-modality-specific-files/01-magnetic-resonance-imaging-data.html\\\n#arterial-spin-labeling-perfusion-data).\n",
+    "description": "The interval, in seconds, that it takes a preparation pulse block to\nre-appear at the beginning of the succeeding (essentially identical) pulse\nsequence block.\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field.\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation of\nthe data, such as in\n[ASL](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-imaging-data.md\\\n#arterial-spin-labeling-perfusion-data).\n",
     "anyOf": [
       {
         "type": "number",
@@ -1993,7 +2001,7 @@
   },
   "SampleExtractionProtocol": {
     "name": "SampleExtractionProtocol",
-    "description": "Description of the sample extraction protocol or\n[URI](/02-common-principles.html#uniform-resource-indicator)\n(for example from [protocols.io](https://www.protocols.io/)).\n",
+    "description": "Description of the sample extraction protocol or\n[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)\n(for example from [protocols.io](https://www.protocols.io/)).\n",
     "type": "string"
   },
   "SampleFixation": {
@@ -2077,7 +2085,7 @@
   },
   "ScanDate": {
     "name": "ScanDate",
-    "description": "Date of scan in the format `\"YYYY-MM-DD[Z]\"`.\nThis field is DEPRECATED, and this metadata SHOULD be recorded in the `acq_time` column of the\ncorresponding [Scans file](/03-modality-agnostic-files.html#scans-file).\n",
+    "description": "Date of scan in the format `\"YYYY-MM-DD[Z]\"`.\nThis field is DEPRECATED, and this metadata SHOULD be recorded in the `acq_time` column of the\ncorresponding [Scans file](SPEC_ROOT/03-modality-agnostic-files.md#scans-file).\n",
     "type": "string",
     "format": "date"
   },
@@ -2231,7 +2239,7 @@
   },
   "SourceDatasets": {
     "name": "SourceDatasets",
-    "description": "Used to specify the locations and relevant attributes of all source datasets.\nValid keys in each object include `\"URL\"`, `\"DOI\"` (see\n[URI](/02-common-principles.html#uniform-resource-indicator)), and\n`\"Version\"` with\n[string](https://www.w3schools.com/js/js_json_datatypes.asp)\nvalues.\n",
+    "description": "Used to specify the locations and relevant attributes of all source datasets.\nValid keys in each object include `\"URL\"`, `\"DOI\"` (see\n[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator)), and\n`\"Version\"` with\n[string](https://www.w3schools.com/js/js_json_datatypes.asp)\nvalues.\n",
     "type": "array",
     "items": {
       "type": "object",
@@ -2520,7 +2528,7 @@
   },
   "Units": {
     "name": "Units",
-    "description": "Measurement units for the associated file.\nSI units in CMIXF formatting are RECOMMENDED\n(see [Units](/02-common-principles.html#units)).\n",
+    "description": "Measurement units for the associated file.\nSI units in CMIXF formatting are RECOMMENDED\n(see [Units](SPEC_ROOT/02-common-principles.md#units)).\n",
     "type": "string",
     "format": "unit"
   },
@@ -2684,7 +2692,7 @@
   },
   "iEEGCoordinateSystem": {
     "name": "iEEGCoordinateSystem",
-    "description": "Defines the coordinate system for the iEEG sensors.\nSee\n[Appendix VIII](/99-appendices/08-coordinate-systems.html)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`iEEGCoordinateSystemDescription`.\nIf positions correspond to pixel indices in a 2D image\n(of either a volume-rendering, surface-rendering, operative photo, or\noperative drawing), this MUST be `\"Pixels\"`.\nFor more information, see the section on\n[2D coordinate systems](/04-modality-specific-files/04-intracranial\\\n-electroencephalography.html#allowed-2d-coordinate-systems).\n",
+    "description": "Defines the coordinate system for the iEEG sensors.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`iEEGCoordinateSystemDescription`.\nIf positions correspond to pixel indices in a 2D image\n(of either a volume-rendering, surface-rendering, operative photo, or\noperative drawing), this MUST be `\"Pixels\"`.\nFor more information, see the section on\n[2D coordinate systems](/04-modality-specific-files/04-intracranial\\\n-electroencephalography.html#allowed-2d-coordinate-systems).\n",
     "anyOf": [
       {
         "$ref": "_iEEGCoordSys"

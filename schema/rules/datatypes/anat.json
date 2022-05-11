@@ -1,5 +1,5 @@
-[
-  {
+{
+  "nonparametric": {
     "suffixes": [
       "T1w",
       "T2w",
@@ -19,6 +19,9 @@
       ".nii",
       ".json"
     ],
+    "datatypes": [
+      "anat"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
@@ -29,7 +32,7 @@
       "part": "optional"
     }
   },
-  {
+  "parametric": {
     "suffixes": [
       "T1map",
       "T2map",
@@ -54,6 +57,9 @@
       ".nii",
       ".json"
     ],
+    "datatypes": [
+      "anat"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
@@ -63,7 +69,7 @@
       "reconstruction": "optional"
     }
   },
-  {
+  "defacemask": {
     "suffixes": [
       "defacemask"
     ],
@@ -71,6 +77,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "anat"
     ],
     "entities": {
       "subject": "required",
@@ -82,7 +91,7 @@
       "modality": "optional"
     }
   },
-  {
+  "multiecho": {
     "suffixes": [
       "MESE",
       "MEGRE"
@@ -91,6 +100,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "anat"
     ],
     "entities": {
       "subject": "required",
@@ -103,7 +115,7 @@
       "part": "optional"
     }
   },
-  {
+  "multiflip": {
     "suffixes": [
       "VFA"
     ],
@@ -111,6 +123,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "anat"
     ],
     "entities": {
       "subject": "required",
@@ -124,7 +139,7 @@
       "part": "optional"
     }
   },
-  {
+  "multiinversion": {
     "suffixes": [
       "IRT1"
     ],
@@ -132,6 +147,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "anat"
     ],
     "entities": {
       "subject": "required",
@@ -144,7 +162,7 @@
       "part": "optional"
     }
   },
-  {
+  "mp2rage": {
     "suffixes": [
       "MP2RAGE"
     ],
@@ -152,6 +170,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "anat"
     ],
     "entities": {
       "subject": "required",
@@ -166,7 +187,7 @@
       "part": "optional"
     }
   },
-  {
+  "vfamt": {
     "suffixes": [
       "MPM",
       "MTS"
@@ -175,6 +196,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "anat"
     ],
     "entities": {
       "subject": "required",
@@ -189,7 +213,7 @@
       "part": "optional"
     }
   },
-  {
+  "mtr": {
     "suffixes": [
       "MTR"
     ],
@@ -197,6 +221,9 @@
       ".nii.gz",
       ".nii",
       ".json"
+    ],
+    "datatypes": [
+      "anat"
     ],
     "entities": {
       "subject": "required",
@@ -209,4 +236,4 @@
       "part": "optional"
     }
   }
-]
+}
