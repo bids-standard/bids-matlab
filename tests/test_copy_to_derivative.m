@@ -131,9 +131,9 @@ function test_copy_to_derivative_unzip
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
 
-  teardown(out_path);
+  % teardown(out_path);
 
-  rmdir(pth, 's');
+  % rmdir(pth, 's');
 
 end
 
