@@ -180,7 +180,7 @@ classdef Schema
 
       default_list = fieldnames(obj.content.objects.entities);
 
-      ischar_or_iscell = @(x) ischar(x) || iscell(x);
+      ischar_or_iscell = @(x) ischar(x) || iscellstr(x);
 
       args = inputParser;
       args.addOptional('entity_list', default_list, ischar_or_iscell);
