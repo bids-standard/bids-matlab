@@ -157,6 +157,7 @@ function test_camel_case()
 
   file.entities.task = 'test bla';
   assertEqual(file.filename, 'sub-01_ses-test_task-testBla_run-02_bold.nii');
+
 end
 
 function test_invalid_entity()
@@ -290,6 +291,58 @@ function test_reorder()
                                   'part'});
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 
+end
+
+function test_reorder_schemaless()
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+  file = file.reorder_entities();
+  assertEqual(file.entity_order, {'sub'
+                                  'ses'
+                                  'sample'
+                                  'task'
+                                  'acq'
+                                  'ce'
+                                  'trc'
+                                  'stain'
+                                  'rec'
+                                  'dir'
+                                  'run'
+                                  'mod'
+                                  'echo'
+                                  'flip'
+                                  'inv'
+                                  'mt'
+                                  'part'
+                                  'proc'
+                                  'hemi'
+                                  'space'
+                                  'split'
+                                  'recording'
+                                  'chunk'
+                                  'atlas'
+                                  'res'
+                                  'den'
+                                  'label'
+                                  'desc'});
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+end
+
+function test_reorder_with_schema()
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', true);
+  file = file.reorder_entities();
+  assertEqual(file.entity_order, {'sub'
+                                  'ses'
+                                  'task'
+                                  'acq'
+                                  'ce'
+                                  'rec'
+                                  'dir'
+                                  'run'
+                                  'echo'
+                                  'part'});
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 end
 
 function test_bids_file_derivatives_2()

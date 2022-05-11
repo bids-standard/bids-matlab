@@ -363,9 +363,17 @@ classdef File
       if nargin > 1 && ~isempty(entity_order)
         order = entity_order;
 
-      elseif ~isempty(obj.schema)
-        obj = get_entity_order_from_schema(obj);
-        order = obj.entity_order;
+      else
+        if ~isempty(obj.schema)
+          obj = get_entity_order_from_schema(obj);
+          order = obj.entity_order;
+        else
+          schema = bids.Schema;
+          entities = schema.entity_order();
+          for i = 1:numel(entities)
+            order{i, 1} = schema.return_entity_key(entities{i});
+          end
+        end
       end
 
       if size(order, 2) > 1
