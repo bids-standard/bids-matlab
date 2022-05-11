@@ -328,6 +328,13 @@ function test_reorder_schemaless()
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 end
 
+function test_reorder_schemaless_with_extra_entity()
+  filename = 'sub-01_foo-bar_task-face_ses-test_run-02_mask.nii';
+  file = bids.File(filename, 'use_schema', false);
+  file = file.reorder_entities();
+  assertEqual(file.json_filename, 'sub-01_ses-test_task-face_run-02_foo-bar_mask.json');
+end
+
 function test_reorder_with_schema()
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
   file = bids.File(filename, 'use_schema', true);
