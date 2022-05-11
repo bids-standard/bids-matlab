@@ -8,15 +8,15 @@ tmp*
 *.png
 *.ps
 
-examples/brainstorm
-examples/MoAEpilot
-
 # virtual env
 env/*
 
 # other bids repos
 bids-specification/*
 bids-examples
+
+# examples
+MoAEpilot
 
 # input and output data involved in tests
 derivatives/*

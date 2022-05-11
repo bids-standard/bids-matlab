@@ -112,10 +112,15 @@ function test_report_moae_data()
 
   cfg.read_nifti = true;
 
-  pth = bids.util.download_ds('source', 'spm', ...
-                              'demo', 'moae', ...
-                              'force', false, ...
-                              'verbose', false);
+  pth = fullfile(get_test_data_dir(), '..', '..', 'demos', 'spm', 'moae', 'MoAEpilot');
+
+  if ~isdir(pth)
+
+    pth = bids.util.download_ds('source', 'spm', ...
+                                'demo', 'moae', ...
+                                'force', false, ...
+                                'verbose', false);
+  end
 
   BIDS = bids.layout(pth, 'use_schema', true);
 
@@ -132,8 +137,6 @@ function test_report_moae_data()
     return
   end
   assertEqual(content, expected);
-
-  rmdir(pth, 's');
 
 end
 
