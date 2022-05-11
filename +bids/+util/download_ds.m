@@ -59,12 +59,14 @@ function out_path = download_ds(varargin)
   default_out_path = '';
   default_force = false;
   default_verbose = true;
+  default_delete_previous = false;
 
   p = inputParser;
 
   addParameter(p, 'source', default_source, @ischar);
   addParameter(p, 'demo', default_demo, @ischar);
   addParameter(p, 'out_path', default_out_path, @ischar);
+  addParameter(p, 'delete_previous', default_delete_previous, @ischar);
   addParameter(p, 'force', default_force);
   addParameter(p, 'verbose', default_verbose);
 
@@ -83,13 +85,14 @@ function out_path = download_ds(varargin)
   % clean previous runs
   if isdir(out_path)
     if p.Results.force
-      rmdir(out_path, 's');
+      if p.Results.delete_previous
+        rmdir(out_path, 's');
+      end
     else
       bids.internal.error_handling(mfilename(), 'dataAlreadyHere', ...
                                    ['The dataset is already present.' ...
                                     'Use "force, true" to overwrite.'], ...
                                    true, verbose);
-      return
     end
   end
 
@@ -150,7 +153,7 @@ function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
 
     case 'eeg'
       demo_path = '/mmfaces/multimodal_eeg.zip';
-      
+
     case 'facerep'
       demo_path = '/face_rep/face_rep.zip';
 

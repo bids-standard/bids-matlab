@@ -2,6 +2,8 @@
 % (C) Copyright 2014 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
 
 % TODO compare results to original script
+% TODO:
+% fix model specification warning
 
 clear;
 
@@ -16,18 +18,24 @@ stats_pipeline_name = 'spm12-stats';
 subject_label = '01';
 
 %% Download
+
+% clean previously failed download
+if isdir(fullfile(pwd, '..', 'face_rep'))
+  rmdir(fullfile(pwd, '..', 'face_rep'), 's');
+end
+
 pth = bids.util.download_ds('source', 'spm', ...
                             'demo', 'facerep', ...
-                            'force', force, ...
-                            'verbose', verbose);
+                            'force', true, ...
+                            'verbose', verbose, ...
+                            'out_path', fullfile(pwd, '..'));
 
 %% Move file into source folder
-source_path = fullfile(pwd, 'spm', 'facerep', 'sourcedata');     
+source_path = fullfile(pwd, '..', 'sourcedata');
 bids.util.mkdir(source_path);
 
-movefile(fullfile(pwd, 'spm', 'facerep', 'RawEPI'), source_path)
-movefile(fullfile(pwd, 'spm', 'facerep', 'Structural'), source_path)
-movefile(fullfile(pwd, 'spm', 'facerep', '*.mat'), source_path)
+movefile(fullfile(pwd, '..', 'face_rep', '*'), source_path);
+rmdir(fullfile(pwd, '..', 'face_rep'));
 
 derivatives_pth = fullfile(pth, 'derivatives');
 
@@ -162,9 +170,7 @@ smooth.fwhm = [8 8 8];
 
 matlabbatch{7}.spm.spatial.smooth = smooth;
 
-code_folder = fullfile(derivatives_pth, preproc_pipeline_name, 'code');
-spm_mkdir(code_folder);
-save(fullfile(code_folder, 'face_batch_preprocessing.mat'), 'matlabbatch');
+save(fullfile(pwd, 'face_batch_preprocessing.mat'), 'matlabbatch');
 
 spm_jobman('run', matlabbatch);
 
@@ -189,14 +195,15 @@ events = bids.query(BIDS, 'data', ...
 
 events = bids.util.tsvread(events{1});
 
-subj_stats_pth = fullfile(stats_pth, ['sub-' subject_label], 'stats-categorical');
+data_path = fullfile(stats_pth, ['sub-' subject_label]);
+subj_stats_pth = fullfile(data_path, 'stats-categorical');
 SPM_mat = fullfile(subj_stats_pth, 'SPM.mat');
 
 clear matlabbatch;
 
 %% Load and prepare onsets
 % --------------------------------------------------------------------------
-onsets    = events.onset;
+onsets = events.onset;
 
 face_type = unique(events.face_type);
 repetition_type = unique(events.repetition_type);
@@ -210,21 +217,21 @@ fmri_spec.timing.fmri_t = metadata.SliceTiming;
 fmri_spec.timing.fmri_t0 = median(1:numel(metadata.SliceTiming));
 fmri_spec.sess.scans = cellstr(f);
 
-con_nb = 1;
+condition_nb = 1;
 
 for i = 1:numel(face_type)
   for j = 1:numel(repetition_type)
-    
+
     is_this_face_type = ismember(events.face_type, face_type{i});
     is_this_repetition_type = ismember(events.repetition_type, repetition_type(j));
     idx = all([is_this_face_type, is_this_repetition_type], 2);
-    
-    fmri_spec.sess.cond(con_nb).name = [face_type{i} '_' num2str(repetition_type(j))];
-    fmri_spec.sess.cond(con_nb).onset = onsets(idx);
-    fmri_spec.sess.cond(con_nb).duration = 0;
-    
-    con_nb = con_nb + 1;
-    
+
+    fmri_spec.sess.cond(condition_nb).name = [face_type{i} '_' num2str(repetition_type(j))];
+    fmri_spec.sess.cond(condition_nb).onset = onsets(idx);
+    fmri_spec.sess.cond(condition_nb).duration = 0;
+
+    condition_nb = condition_nb + 1;
+
   end
 end
 
@@ -241,7 +248,7 @@ matlabbatch{1}.spm.stats.fmri_spec = fmri_spec;
 % --------------------------------------------------------------------------
 matlabbatch{2}.spm.stats.fmri_est.spmmat = cellstr(SPM_mat);
 
-save(fullfile(code_folder, 'categorical_spec.mat'), 'matlabbatch');
+save(fullfile(pwd, 'categorical_spec.mat'), 'matlabbatch');
 
 % Inference
 % --------------------------------------------------------------------------
@@ -276,10 +283,8 @@ matlabbatch{6}.spm.stats.results = results;
 
 % Run
 % --------------------------------------------------------------------------
-save('face_batch_categorical.mat', 'matlabbatch');
+save(fullfile(pwd, 'face_batch_categorical.mat'), 'matlabbatch');
 spm_jobman('run', matlabbatch);
-
-return
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                BIDS DATASET NOT YET READY FOR THIS
@@ -288,28 +293,53 @@ return
 
 clear matlabbatch;
 
-% Load onsets
+% Load lags
 % --------------------------------------------------------------------------
-onsets = load(fullfile(data_path, 'sots.mat'));
+lag = events.lag;
 
 % Output directory
 % --------------------------------------------------------------------------
-matlabbatch{1}.cfg_basicio.file_dir.dir_ops.cfg_mkdir.parent = cellstr(data_path);
-matlabbatch{1}.cfg_basicio.file_dir.dir_ops.cfg_mkdir.name = 'parametric';
+cfg_mkdir.parent = cellstr(fullfile(subj_stats_pth, '..'));
+cfg_mkdir.name = 'parametric';
+
+matlabbatch{1}.cfg_basicio.file_dir.dir_ops.cfg_mkdir = cfg_mkdir;
 
 % Model Specification (copy and edit the categorical one)
 % --------------------------------------------------------------------------
-batch_categ = load(fullfile(data_path, 'categorical_spec.mat'));
-matlabbatch{2} = batch_categ.matlabbatch{2};
+batch_categ = load(fullfile(pwd, 'categorical_spec.mat'));
+matlabbatch{2} = batch_categ.matlabbatch{1};
 
-matlabbatch{2}.spm.stats.fmri_spec.sess.cond(1).pmod = struct('name', {}, 'param', {}, 'poly', {});
-matlabbatch{2}.spm.stats.fmri_spec.sess.cond(2).pmod.name = 'Lag';
-matlabbatch{2}.spm.stats.fmri_spec.sess.cond(2).pmod.param = onsets.itemlag{2};
-matlabbatch{2}.spm.stats.fmri_spec.sess.cond(2).pmod.poly = 2;
-matlabbatch{2}.spm.stats.fmri_spec.sess.cond(3).pmod = struct('name', {}, 'param', {}, 'poly', {});
-matlabbatch{2}.spm.stats.fmri_spec.sess.cond(4).pmod.name = 'Lag';
-matlabbatch{2}.spm.stats.fmri_spec.sess.cond(4).pmod.param = onsets.itemlag{4};
-matlabbatch{2}.spm.stats.fmri_spec.sess.cond(4).pmod.poly = 2;
+condition_nb = 1;
+
+for i = 1:numel(face_type)
+  for j = 1:numel(repetition_type)
+
+    is_this_face_type = ismember(events.face_type, face_type{i});
+    is_this_repetition_type = ismember(events.repetition_type, repetition_type(j));
+    idx = all([is_this_face_type, is_this_repetition_type], 2);
+
+    if ismember(condition_nb, [2 4])
+      pmod.name = 'Lag';
+      pmod.param = lag(idx);
+      pmod.poly = 2;
+      matlabbatch{2}.spm.stats.fmri_spec.sess.cond(condition_nb).pmod = pmod;
+    else
+      matlabbatch{2}.spm.stats.fmri_spec.sess.cond(condition_nb).pmod = struct('name', {}, ...
+                                                                               'param', {}, ...
+                                                                               'poly', {});
+    end
+
+    condition_nb = condition_nb + 1;
+
+  end
+end
+
+matlabbatch{2}.spm.stats.fmri_spec.timing.units = 'secs';
+matlabbatch{2}.spm.stats.fmri_spec.timing.RT = metadata.RepetitionTime;
+matlabbatch{2}.spm.stats.fmri_spec.timing.fmri_t = metadata.SliceTiming;
+matlabbatch{2}.spm.stats.fmri_spec.timing.fmri_t0 = median(1:numel(metadata.SliceTiming));
+matlabbatch{2}.spm.stats.fmri_spec.sess.scans = cellstr(f);
+
 matlabbatch{2}.spm.stats.fmri_spec.dir = cellstr(fullfile(data_path, 'parametric'));
 matlabbatch{2}.spm.stats.fmri_spec.bases.hrf.derivs = [0 0];
 
@@ -339,5 +369,5 @@ matlabbatch{6}.spm.stats.results.conspec.mask.mtype     = 0;
 % Run
 % --------------------------------------------------------------------------
 save('face_batch_parametric.mat', 'matlabbatch');
-% spm_jobman('interactive',matlabbatch);
-spm_jobman('run', matlabbatch);
+spm_jobman('interactive', matlabbatch);
+% spm_jobman('run', matlabbatch);
