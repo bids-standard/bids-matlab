@@ -1,3 +1,10 @@
 
-brainstorm/**
-spm/**
+*/*/README
+*/*/CHANGES
+*/*/sub*
+*/*/sourcedata
+*/*/derivatives
+
+*.mat
+*.nii*
+*json
