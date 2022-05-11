@@ -3,29 +3,30 @@
   "BIDSModelVersion": "1.0.0",
   "Description": "default BIDS stats model for rhymejudgment task",
   "Input": {
-    "task": [
-      "rhymejudgment"
-    ]
+    "task": ["rhymejudgment"]
   },
   "Nodes": [
     {
       "Level": "Run",
       "Name": "run",
+      "GroupBy": [
+        "run",
+        "subject"
+      ],
       "Transformations": {
         "Transformer": "",
         "Instructions": [
           {
             "Name": "",
-            "Inputs": [
-              ""
-            ]
+            "Inputs": [""]
           }
         ]
       },
       "Model": {
         "X": [
           "trial_type.pseudoword",
-          "trial_type.word"
+          "trial_type.word",
+          "1"
         ],
         "Type": "glm",
         "HRF": {
@@ -37,24 +38,21 @@
         },
         "Options": {
           "HighPassFilterCutoffHz": 0.008,
-          "LowPassFilterCutoffHz": null,
           "Mask": {
-            "desc": "brain",
-            "suffix": "mask"
+            "desc": ["brain"],
+            "suffix": ["mask"]
           }
         },
-        "Software": ""
+        "Software": []
       },
-      "Contrasts": {
-        "Name": "",
-        "ConditionList": [
-          ""
-        ],
-        "Weights": [
-          ""
-        ],
-        "Test": ""
-      },
+      "Contrasts": [
+        {
+          "Name": "",
+          "ConditionList": [""],
+          "Weights": [""],
+          "Test": "t"
+        }
+      ],
       "DummyContrasts": {
         "Test": "t",
         "Contrasts": [
@@ -66,105 +64,59 @@
     {
       "Level": "Subject",
       "Name": "subject",
-      "Transformations": {
-        "Transformer": "",
-        "Instructions": [
-          {
-            "Name": "",
-            "Inputs": [
-              ""
-            ]
-          }
-        ]
-      },
+      "GroupBy": [""],
       "Model": {
-        "X": [
-          ""
-        ],
+        "X": [""],
         "Type": "glm",
-        "HRF": {
-          "Variables": [
-            ""
-          ],
-          "Model": "DoubleGamma"
-        },
         "Options": {
           "HighPassFilterCutoffHz": 0.008,
-          "LowPassFilterCutoffHz": null,
           "Mask": {
-            "desc": "brain",
-            "suffix": "mask"
+            "desc": ["brain"],
+            "suffix": ["mask"]
           }
         },
-        "Software": ""
+        "Software": []
       },
-      "Contrasts": {
-        "Name": "",
-        "ConditionList": [
-          ""
-        ],
-        "Weights": [
-          ""
-        ],
-        "Test": ""
-      },
+      "Contrasts": [
+        {
+          "Name": "",
+          "ConditionList": [""],
+          "Weights": [""],
+          "Test": "t"
+        }
+      ],
       "DummyContrasts": {
         "Test": "t",
-        "Contrasts": [
-          ""
-        ]
+        "Contrasts": [""]
       }
     },
     {
       "Level": "Dataset",
       "Name": "dataset",
-      "Transformations": {
-        "Transformer": "",
-        "Instructions": [
-          {
-            "Name": "",
-            "Inputs": [
-              ""
-            ]
-          }
-        ]
-      },
+      "GroupBy": [""],
       "Model": {
-        "X": [
-          ""
-        ],
+        "X": [""],
         "Type": "glm",
-        "HRF": {
-          "Variables": [
-            ""
-          ],
-          "Model": "DoubleGamma"
-        },
         "Options": {
           "HighPassFilterCutoffHz": 0.008,
-          "LowPassFilterCutoffHz": null,
           "Mask": {
-            "desc": "brain",
-            "suffix": "mask"
+            "desc": ["brain"],
+            "suffix": ["mask"]
           }
         },
-        "Software": ""
+        "Software": []
       },
-      "Contrasts": {
-        "Name": "",
-        "ConditionList": [
-          ""
-        ],
-        "Weights": [
-          ""
-        ],
-        "Test": ""
-      },
+      "Contrasts": [
+        {
+          "Name": "",
+          "ConditionList": [""],
+          "Weights": [""],
+          "Test": "t"
+        }
+      ],
       "DummyContrasts": {
         "Test": "t",
-        "Contrasts": [
-          ""
-        ]
+        "Contrasts": [""]
       }
     }
   ],

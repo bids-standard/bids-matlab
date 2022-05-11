@@ -8,6 +8,20 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_basic()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  assertEqual(bm.Name, 'NARPS');
+  assertEqual(bm.Description, 'NARPS Analysis model');
+  assertEqual(bm.BIDSModelVersion, '1.0.0');
+  assertEqual(bm.Input, struct('task', 'MGT'));
+  assertEqual(numel(bm.Nodes), 5);
+  assertEqual(numel(bm.Edges), 4);
+  assertEqual(bm.Edges{1}, struct('Source', 'run', 'Destination', 'subject'));
+
+end
+
 function test_model_default_model()
 
   if bids.internal.is_octave() && bids.internal.is_github_ci()
@@ -50,22 +64,8 @@ function test_model_validate()
   bm.Nodes{1}.Transformations = rmfield(bm.Nodes{1}.Transformations, 'Transformer');
   assertWarning(@()bm.validate(), 'Model:missingField');
 
-  bm.Nodes{1}.Contrasts = rmfield(bm.Nodes{1}.Contrasts, 'ConditionList');
+  bm.Nodes{1}.Contrasts = rmfield(bm.Nodes{1}.Contrasts{1}, 'ConditionList');
   assertWarning(@()bm.validate(), 'Model:missingField');
-
-end
-
-function test_model_basic()
-
-  bm = bids.Model('file', model_file('narps'), 'verbose', false);
-
-  assertEqual(bm.Name, 'NARPS');
-  assertEqual(bm.Description, 'NARPS Analysis model');
-  assertEqual(bm.BIDSModelVersion, '1.0.0');
-  assertEqual(bm.Input, struct('task', 'MGT'));
-  assertEqual(numel(bm.Nodes), 5);
-  assertEqual(numel(bm.Edges), 4);
-  assertEqual(bm.Edges{1}, struct('Source', 'run', 'Destination', 'subject'));
 
 end
 
