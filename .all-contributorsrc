@@ -164,6 +164,15 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "marcobarilari",
+      "name": "marcobarilari",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38101692?v=4",
+      "profile": "http://cpplab.be",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
