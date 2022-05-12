@@ -4,50 +4,91 @@ function result = query(BIDS, query, varargin)
   %
   % USAGE::
   %
-  %   result = bids.query(BIDS, query, ...)
+  %   result = bids.query(BIDS, query, filter)
   %
   % :param BIDS: BIDS directory name or BIDS structure (from bids.layout)
   % :type  BIDS: strcuture or string
+  %
   % :param query: type of query (see list below)
   % :type  query: string
   %
-  % Type of query allowed:
+  % Type of query allowed.
   %
-  %     - ``'sessions'``
-  %     - ``'subjects'``
-  %     - ``'modalities'``
-  %     - ``'tasks'``
-  %     - ``'runs'``
-  %     - ``'spaces'``
-  %     - ``'labels'``
-  %     - ``'descriptions'``
-  %     - ``'resolutions'``
-  %     - ``'suffixes'``
-  %     - ``'entities'``
-  %     - ``'data'``
-  %     - ``'metadata'``
-  %     - ``'metafiles'``
-  %     - ``'dependencies'``
-  %     - ``'extensions'``
-  %     - ``'prefixes'``
+  % Any of the following:
   %
+  % - ``'modalities'``
+  % - ``'entities'``
+  % - ``'suffixes'``
+  % - ``'data'``
+  % - ``'metadata'``
+  % - ``'metafiles'``
+  % - ``'dependencies'``
+  % - ``'extensions'``
+  % - ``'prefixes'``
   %
-  % .. warning:: Note that all the query types are plurals.
+  % And any of the BIDS entities:
   %
-  % Queries can "filtered" by passing more arguments key-value pairs as a list of
-  % strings or as a cell or a structure.
+  % - ``'acquisitions'``
+  % - ``'atlases'``
+  % - ``'ceagents'``
+  % - ``'chunks'``
+  % - ``'densities'``
+  % - ``'descriptions'``
+  % - ``'directions'``
+  % - ``'echos'``
+  % - ``'flips'``
+  % - ``'hemispheres'``
+  % - ``'inversions'``
+  % - ``'labels'``
+  % - ``'mtransfers'``
+  % - ``'parts'``
+  % - ``'processings'``
+  % - ``'reconstructions'``
+  % - ``'recordings'``
+  % - ``'resolutions'``
+  % - ``'sessions'``
+  % - ``'subjects'``
+  % - ``'runs'``
+  % - ``'samples'``
+  % - ``'spaces'``
+  % - ``'splits'``
+  % - ``'stains'``
+  % - ``'tasks'``
+  % - ``'tracers'``
   %
-  % Note that for the entities listed below can be queried using integers:
+  % .. warning::
+  %
+  %   Note that all the query types are plurals.
+  %
+  % :param filter: filter for the query
+  % :type  filter: structure, nX2 cell, series of key-value parameters
+  %
+  % The choice of available keys to filter with includes:
+  %
+  % - ``'suffix'``
+  % - ``'extension'``
+  % - ``'prefix'``
+  % - ``'modality'``
+  %
+  % It can also include any of the entity keys present in the files in the dataset.
+  % To know what those are, use::
+  %
+  %   bids.query(BIDS, 'entities')
+  %
+  % .. warning::
+  %
+  %   Note that integers as query label for the entity keys listed below:
   %
   %     - ``'run'``
   %     - ``'flip'``
   %     - ``'inv'``
   %     - ``'split'``
   %     - ``'echo'``
+  %     - ``'chunk'``
   %
   % It is also possible to use regular expressions in the value.
   %
-  %  Regex example::
+  % Regex example::
   %
   %     % The following 2 will return the same thing
   %     data = bids.query(BIDS, 'data', 'sub', '01')
@@ -98,26 +139,18 @@ function result = query(BIDS, query, varargin)
   %#ok<*AGROW>
   narginchk(2, Inf);
 
-  VALID_QUERIES = { ...
-                   'sessions', ...
-                   'samples', ...
-                   'subjects', ...
-                   'modalities', ...
-                   'tasks', ...
-                   'runs', ...
-                   'chunks', ...
-                   'spaces', ...
-                   'labels', ...
-                   'descriptions', ...
-                   'resolutions', ...
-                   'entities', ...
-                   'suffixes', ...
-                   'data', ...
-                   'metadata', ...
-                   'metafiles', ...
-                   'dependencies', ...
-                   'extensions', ...
-                   'prefixes'};
+  VALID_QUERIES = cat(2, {'sessions', ...
+                          'subjects', ...
+                          'modalities', ...
+                          'entities', ...
+                          'suffixes', ...
+                          'data', ...
+                          'metadata', ...
+                          'metafiles', ...
+                          'dependencies', ...
+                          'extensions', ...
+                          'prefixes'}, ...
+                      valid_entity_queries());
 
   if ~any(strcmp(query, VALID_QUERIES))
     msg = sprintf('\nInvalid query input: ''%s''.\n\nValid queries are:\n- %s', ...
@@ -125,6 +158,8 @@ function result = query(BIDS, query, varargin)
                   strjoin(VALID_QUERIES, '\n- '));
     bids.internal.error_handling(mfilename(), 'unknownQuery', msg, false, true);
   end
+
+  bids_entities = schema_entities();
 
   BIDS = bids.layout(BIDS);
 
@@ -140,7 +175,7 @@ function result = query(BIDS, query, varargin)
   % Get optional target option for metadata query
   [target, options] = get_target(query, options);
 
-  result = perform_query(BIDS, query, options, subjects, modalities, target);
+  result = perform_query(BIDS, query, options, subjects, modalities, target, bids_entities);
 
   %% Postprocessing output variable
   switch query
@@ -164,13 +199,59 @@ function result = query(BIDS, query, varargin)
         result = result';
       end
 
-    case {'tasks', 'entities', 'runs', 'samples', 'chunks', ...
-          'spaces', 'labels', 'descriptions', 'resolutions', ...
-          'suffixes', 'extensions', 'prefixes'}
+    case cat(2, {'suffixes',  'suffixes', 'extensions', 'prefixes'}, valid_entity_queries())
       result = unique(result);
       result(cellfun('isempty', result)) = [];
   end
 
+end
+
+function value = valid_entity_queries()
+
+  % sessions and subjets are not included below because they are treated differently in the code
+  value = cat(2, short_valid_entity_queries(), long_valid_entity_queries());
+
+end
+
+function value = short_valid_entity_queries()
+  %
+  % list the entities whose key can be obtained by removing the final "s"
+  %
+
+  value = { ...
+           'chunks', ...
+           'echos', ...
+           'flips', ...
+           'labels', ...
+           'parts', ...
+           'runs', ...
+           'samples', ...
+           'spaces', ...
+           'splits', ...
+           'stains', ...
+           'tasks', ...
+           'tracers'};
+end
+
+function value = long_valid_entity_queries()
+  %
+  % list the entities whose key CANNOT be obtained by removing the final "s"
+  %
+
+  value = { ...
+           'acquisitions', ...
+           'atlases', ...
+           'ceagents', ...
+           'densities', ...
+           'descriptions', ...
+           'directions', ...
+           'hemispheres', ...
+           'inversions', ......
+           'mtransfers', ...
+           'processings', ...
+           'reconstructions', ...
+           'recordings', ...
+           'resolutions'};
 end
 
 function options = parse_query(options)
@@ -260,7 +341,7 @@ function [target, options] = get_target(query, options)
 
 end
 
-function result = perform_query(BIDS, query, options, subjects, modalities, target)
+function result = perform_query(BIDS, query, options, subjects, modalities, target, bids_entities)
 
   % Initialise output variable
   result = {};
@@ -284,17 +365,29 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
         continue
       end
 
-      result = update_result(query, options, result, this_subject, this_modality, target);
+      result = update_result(query, options, result, this_subject, ...
+                             this_modality, target, bids_entities);
 
     end
 
   end
 
-  result = update_result_with_root_content(query, options, result, BIDS);
+  result = update_result_with_root_content(query, options, result, BIDS, bids_entities);
 
 end
 
-function result = update_result(query, options, result, this_subject, this_modality, target)
+function result = update_result(varargin)
+  %
+  % result = update_result(query,options,result,this_subject,this_modality,target,bids_entities)
+  %
+
+  query = varargin{1};
+  options = varargin{2};
+  result = varargin{3};
+  this_subject = varargin{4};
+  this_modality = varargin{5};
+  target = varargin{6};
+  bids_entities = varargin{7};
 
   d = this_subject.(this_modality);
 
@@ -346,10 +439,9 @@ function result = update_result(query, options, result, this_subject, this_modal
           %   result{end+1} = d(k).meta;
           % end
 
-        case {'runs', 'tasks', 'spaces', 'samples', 'chunks', ...
-              'labels', 'descriptions', 'resolutions'}
+        case valid_entity_queries()
 
-          result = update_if_entity(query, result, d(k));
+          result = update_if_entity(query, result, d(k), bids_entities);
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -367,7 +459,7 @@ function result = update_result(query, options, result, this_subject, this_modal
   end
 end
 
-function result = update_result_with_root_content(query, options, result, BIDS)
+function result = update_result_with_root_content(query, options, result, BIDS, bids_entities)
 
   d = BIDS.root;
 
@@ -399,10 +491,9 @@ function result = update_result_with_root_content(query, options, result, BIDS)
         case 'data'
           result{end + 1} = fullfile(BIDS.pth, d(k).filename);
 
-        case {'runs', 'tasks', 'spaces', 'samples', 'chunks', ...
-              'labels', 'descriptions', 'resolutions'}
+        case valid_entity_queries()
 
-          result = update_if_entity(query, result, d(k));
+          result = update_if_entity(query, result, d(k), bids_entities);
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -417,13 +508,25 @@ function result = update_result_with_root_content(query, options, result, BIDS)
   end
 end
 
-function result = update_if_entity(query, result, dk)
+function value = schema_entities()
+  schema = bids.Schema;
+  value = schema.content.objects.entities;
+end
 
-  field = query(1:end - 1);
-  if strcmp(query, 'descriptions')
-    field = 'desc';
-  elseif strcmp(query, 'resolutions')
-    field = 'res';
+function result = update_if_entity(query, result, dk, bids_entities)
+
+  if ismember(query, short_valid_entity_queries())
+    field = query(1:end - 1);
+
+  elseif  ismember(query, {'atlases'})
+    field =  'atlas';
+
+  elseif ismember(query, long_valid_entity_queries())
+    field =  bids_entities.(query(1:end - 1)).entity;
+
+  else
+    error('query ''%s'' not yet implemented', query);
+
   end
 
   if isfield(dk.entities, field)
