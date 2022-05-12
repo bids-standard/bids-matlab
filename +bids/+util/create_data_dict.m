@@ -155,7 +155,7 @@ function json_content = add_levels_description(json_content, header, tsv_content
       this_level = ['level_' num2str(this_level)];
     end
 
-    this_level = regexprep(this_level, '[\./- ''@\?\!]', '_');
+    this_level = regexprep(this_level, '[^a-zA-Z0-9]', '_');
 
     pre = regexprep(this_level(1), '[0-9_]', ['level_' this_level(1)]);
     if numel(this_level) > 1
