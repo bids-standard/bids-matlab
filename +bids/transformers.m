@@ -112,7 +112,7 @@ function output = apply_transformer(transformer, data)
 
     case 'scale'
       output = bids.transformers.scale(transformer, data);
-      
+
     case 'split'
       output = bids.transformers.split(transformer, data);
 
