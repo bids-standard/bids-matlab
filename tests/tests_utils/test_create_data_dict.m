@@ -62,6 +62,10 @@ end
 
 function test_create_data_dict_warning
 
+  if bids.internal.is_octave
+    return
+  end
+
   dataset = 'ds000248';
 
   schema = bids.Schema();
