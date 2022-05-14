@@ -1,7 +1,12 @@
 function data_dict = create_data_dict(varargin)
   %
-  % Create a data dictionnary for a TSV file. The output may need manual
-  % cleaning.
+  % Create a JSON data dictionnary for a TSV file.
+  %
+  % Levels in columns that may lead to invalid matlab structure fieldnames are
+  % renamed. Hence the output may need manual cleaning.
+  %
+  % Descriptions may be added for columns if a match is found in the BIDS
+  % schema: for example: trial_type, onset...
   %
   % To create better data dictionaries, please see the tools
   % for `hierarchical event descriptions <https://hedtools.ucsd.edu/hed/>`_.
