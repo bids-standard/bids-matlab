@@ -8,11 +8,27 @@ end
 
 function test_download_ds_basic()
 
+  target_dir = bids.internal.file_utils(fullfile(get_test_data_dir(), ...
+                                                 '..', '..', ...
+                                                 'demos', 'spm', 'moae'), ...
+                                        'cpath');
+
+  % back up content
+  tmp = tempname;
+  copyfile(target_dir, tmp);
+
   pth = bids.util.download_ds('source', 'spm', ...
                               'demo', 'moae', ...
-                              'force', false, ...
-                              'verbose', false);
+                              'force', true, ...
+                              'verbose', false, ...
+                              'delete_previous', true);
 
-  % rmdir(fullfile(pth, 'MoAEpilot'), 's');
+  bids.layout(target_dir);
+
+  % remove data
+  rmdir(pth, 's');
+
+  % bring backup back
+  copyfile(tmp, target_dir);
 
 end

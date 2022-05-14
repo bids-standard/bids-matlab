@@ -26,6 +26,7 @@ env/*
 
 # coverage
 coverage_html
+coverage.xml
 
 # styling
 .prettierrc

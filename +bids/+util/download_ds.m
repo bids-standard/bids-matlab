@@ -8,7 +8,8 @@ function out_path = download_ds(varargin)
   %                                 'demo', 'moae', ...
   %                                 'out_path', fullfile(bids.internal.root_dir(), 'demos'), ...
   %                                 'force', false, ...
-  %                                 'verbose', true);
+  %                                 'verbose', true, ...
+  %                                 'delete_previous', true);
   %
   %
   % SPM::
@@ -61,31 +62,31 @@ function out_path = download_ds(varargin)
   default_verbose = true;
   default_delete_previous = false;
 
-  p = inputParser;
+  args = inputParser;
 
-  addParameter(p, 'source', default_source, @ischar);
-  addParameter(p, 'demo', default_demo, @ischar);
-  addParameter(p, 'out_path', default_out_path, @ischar);
-  addParameter(p, 'delete_previous', default_delete_previous, @ischar);
-  addParameter(p, 'force', default_force);
-  addParameter(p, 'verbose', default_verbose);
+  addParameter(args, 'source', default_source, @ischar);
+  addParameter(args, 'demo', default_demo, @ischar);
+  addParameter(args, 'out_path', default_out_path, @ischar);
+  addParameter(args, 'delete_previous', default_delete_previous, @islogical);
+  addParameter(args, 'force', default_force, @islogical);
+  addParameter(args, 'verbose', default_verbose, @islogical);
 
-  parse(p, varargin{:});
+  parse(args, varargin{:});
 
-  verbose = p.Results.verbose;
+  verbose = args.Results.verbose;
 
-  out_path = p.Results.out_path;
+  out_path = args.Results.out_path;
   if isempty(out_path)
     out_path = fullfile(bids.internal.root_dir, 'demos');
-    out_path = fullfile(out_path, p.Results.source, p.Results.demo);
+    out_path = fullfile(out_path, args.Results.source, args.Results.demo);
   elseif ~exist(out_path, 'dir')
     bids.util.mkdir(out_path);
   end
 
   % clean previous runs
   if isdir(out_path)
-    if p.Results.force
-      if p.Results.delete_previous
+    if args.Results.force
+      if args.Results.delete_previous
         rmdir(out_path, 's');
       end
     else
@@ -96,7 +97,7 @@ function out_path = download_ds(varargin)
     end
   end
 
-  [URL] = get_URL(p.Results.source, p.Results.demo, verbose);
+  [URL] = get_URL(args.Results.source, args.Results.demo, verbose);
   filename = bids.internal.download(URL, bids.internal.root_dir(), verbose);
 
   % Unzipping dataset
