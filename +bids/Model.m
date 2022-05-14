@@ -2,8 +2,8 @@ classdef Model
   %
   % Class to deal with BIDS stats models
   %
-  % See the `BIDS stats model website 
-  % <https://bids-standard.github.io/stats-models/intro.html>`_ 
+  % See the `BIDS stats model website
+  % <https://bids-standard.github.io/stats-models/intro.html>`_
   % for more information.
   %
   % USAGE::
