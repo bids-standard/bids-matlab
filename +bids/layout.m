@@ -46,11 +46,11 @@ function BIDS = layout(varargin)
   default_use_schema = true;
   default_verbose = false;
 
-  isDirOrStruct = @(x) (isstruct(x) || isdir(x));
+  is_dir_or_struct = @(x) (isstruct(x) || isdir(x));
 
   args = inputParser();
 
-  addOptional(args, 'root', default_root, isDirOrStruct);
+  addOptional(args, 'root', default_root, is_dir_or_struct);
   addParameter(args, 'index_derivatives', default_index_derivatives);
   addParameter(args, 'tolerant', default_tolerant);
   addParameter(args, 'use_schema', default_use_schema);

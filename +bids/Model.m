@@ -2,6 +2,10 @@ classdef Model
   %
   % Class to deal with BIDS stats models
   %
+  % See the `BIDS stats model website
+  % <https://bids-standard.github.io/stats-models/intro.html>`_
+  % for more information.
+  %
   % USAGE::
   %
   %   bm = bids.Model('init', true, ...
@@ -55,7 +59,7 @@ classdef Model
 
     Nodes =  {'REQUIRED'} % Nodes of the model
 
-    Edges = {'RECOMMENDED'} % Edges of the model
+    Edges % Edges of the model
 
     tolerant = true % if ``true`` turns error into warning
 
@@ -85,7 +89,7 @@ classdef Model
 
         obj.Name = 'empty_model';
         obj.Description = 'This is an empty BIDS stats model.';
-        obj.Input = struct('task', '');
+        obj.Input = struct('task', {{''}});
         obj.Nodes{1} = bids.Model.empty_node('run');
 
         obj = update(obj);
@@ -370,14 +374,34 @@ classdef Model
             continue
           end
 
-          fields_present = bids.Model.get_keys(this_node.(field_to_check{j}));
-          if any(~ismember(check.(field_to_check{j}), fields_present))
-            obj.model_validation_error(field_to_check{j}, check.(field_to_check{j}));
+          if strcmp(field_to_check{j}, 'Contrasts')
+
+            for contrast = 1:numel(this_node.Contrasts)
+
+              fields_present = bids.Model.get_keys(this_node.Contrasts(contrast));
+              if ~iscellstr(fields_present)
+                fields_present = fields_present{1};
+              end
+
+              if any(~ismember(check.Contrasts, fields_present))
+                obj.model_validation_error('Contrasts', check.Contrasts);
+              end
+
+            end
+
+          else
+
+            fields_present = bids.Model.get_keys(this_node.(field_to_check{j}));
+
+            if any(~ismember(check.(field_to_check{j}), fields_present))
+              obj.model_validation_error(field_to_check{j}, check.(field_to_check{j}));
+            end
+
           end
 
           if strcmp(field_to_check{j}, 'Model')
 
-            if isfield(this_node.Model, 'HRF')
+            if isfield(this_node.Model, 'HRF') && ~isempty(this_node.Model.HRF)
 
               fields_present = fieldnames(this_node.Model.HRF);
               if any(~ismember(REQUIRED_HRF_FIELDS, fields_present))
@@ -561,17 +585,25 @@ classdef Model
       args.parse(varargin{:});
 
       tasks = bids.query(args.Results.layout, 'tasks');
+      sessions = bids.query(args.Results.layout, 'sessions');
+
+      GroupBy_level_1 = {'run', 'subject'};
+      if ~isempty(sessions)
+        GroupBy_level_1 = {'run', 'session', 'subject'};
+      end
 
       obj.Input.task = tasks;
       obj.Name = sprintf('default_%s_model', strjoin(tasks, '_'));
       obj.Description = sprintf('default BIDS stats model for %s task', strjoin(tasks, '/'));
 
+      % Define design matrix by including all trial_types and a constant
       trial_type_list = bids.internal.list_all_trial_types(args.Results.layout, tasks);
-
       trial_type_list = cellfun(@(x) strjoin({'trial_type.', x}, ''), ...
                                 trial_type_list, ...
                                 'UniformOutput', false);
-      obj.Nodes{1}.Model.X = trial_type_list;
+      obj.Nodes{1}.Model.X = cat(1, trial_type_list, '1');
+
+      obj.Nodes{1}.GroupBy = GroupBy_level_1;
       obj.Nodes{1}.Model.HRF.Variables = trial_type_list;
       obj.Nodes{1}.DummyContrasts.Contrasts = trial_type_list;
 
@@ -580,7 +612,11 @@ classdef Model
         obj.Nodes{end + 1, 1} = bids.Model.empty_node('session');
       end
       obj.Nodes{end + 1, 1} = bids.Model.empty_node('subject');
+      obj.Nodes{end, 1} = rmfield(obj.Nodes{end, 1}, 'Transformations');
+      obj.Nodes{end, 1}.Model = rmfield(obj.Nodes{end, 1}.Model, 'HRF');
       obj.Nodes{end + 1, 1} = bids.Model.empty_node('dataset');
+      obj.Nodes{end, 1} = rmfield(obj.Nodes{end, 1}, 'Transformations');
+      obj.Nodes{end, 1}.Model = rmfield(obj.Nodes{end, 1}.Model, 'HRF');
 
       obj = get_edges_from_nodes(obj);
       obj.validate();
@@ -630,15 +666,20 @@ classdef Model
 
       node =  struct('Level', [upper(level(1)) level(2:end)], ...
                      'Name', level, ...
+                     'GroupBy', {{''}}, ...
                      'Transformations', {bids.Model.empty_transformations()}, ...
                      'Model', bids.Model.empty_model(), ...
-                     'Contrasts', struct('Name', '', ...
-                                         'ConditionList', {{''}}, ...
-                                         'Weights', {{''}}, ...
-                                         'Test', ''), ...
+                     'Contrasts', {{bids.Model.empty_contrast()}}, ...
                      'DummyContrasts',  struct('Test', 't', ...
                                                'Contrasts', {{''}}));
 
+    end
+
+    function contrast = empty_contrast()
+      contrast = struct('Name', '', ...
+                        'ConditionList', {{''}}, ...
+                        'Weights', {{''}}, ...
+                        'Test', 't');
     end
 
     function transformations = empty_transformations()
@@ -668,10 +709,9 @@ classdef Model
                      'HRF', struct('Variables', {{''}}, ...
                                    'Model', 'DoubleGamma'), ...
                      'Options', struct('HighPassFilterCutoffHz', 0.008, ...
-                                       'LowPassFilterCutoffHz', nan, ...
-                                       'Mask', struct('desc', 'brain', ...
-                                                      'suffix', 'mask')), ...
-                     'Software', '');
+                                       'Mask', struct('desc', {{'brain'}}, ...
+                                                      'suffix', {{'mask'}})), ...
+                     'Software', {{}});
 
     end
 

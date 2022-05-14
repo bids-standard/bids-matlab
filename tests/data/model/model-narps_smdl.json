@@ -3,7 +3,7 @@
     "Description": "NARPS Analysis model",
     "BIDSModelVersion": "1.0.0",
     "Input": {
-        "task": "MGT"
+        "task": ["MGT"]
     },
     "Nodes": [
         {
@@ -59,11 +59,19 @@
                     "gain",
                     "loss",
                     "demeaned_RT",
+                    "rot_x",
+                    "rot_y",
+                    "rot_z",
+                    "trans_x",
+                    "trans_y",
+                    "trans_z",
                     1
-                ]
+                ],
+                "Type": "glm"
             },
             "DummyContrasts": {
-                "Contrasts": [
+                "Conditions": [
+                    "trials",
                     "gain",
                     "loss"
                 ],
@@ -81,7 +89,7 @@
                 "X": [
                     1
                 ],
-                "Type": "Meta"
+                "Type": "meta"
             },
             "DummyContrasts": {
                 "Test": "t"
@@ -94,6 +102,7 @@
                 "contrast"
             ],
             "Model": {
+                "Type": "glm",
                 "X": [
                     1,
                     "group"
@@ -123,31 +132,24 @@
                 "group"
             ],
             "Model": {
+                "Type": "glm",
                 "X": [
                     1
                 ]
             },
-            "Contrasts": [
-                {
-                    "Name": "positive",
-                    "ConditionList": [
-                        1
-                    ],
-                    "Weights": [
-                        1
-                    ],
-                    "Test": "t"
-                }
-            ]
+            "DummyContrasts": {
+                "Test": "t"
+            }
         },
         {
             "Level": "Dataset",
-            "Name": "negative",
+            "Name": "negative-loss",
             "GroupBy": [
                 "contrast",
                 "group"
             ],
             "Model": {
+                "Type": "glm",
                 "X": [
                     1
                 ]
@@ -177,16 +179,20 @@
         },
         {
             "Source": "subject",
-            "Destination": "negative",
+            "Destination": "negative-loss",
             "Filter": {
-                "contrast": "loss"
+                "contrast": [
+                    "loss"
+                ]
             }
         },
         {
             "Source": "subject",
             "Destination": "between-groups",
             "Filter": {
-                "contrast": "loss"
+                "contrast": [
+                    "loss"
+                ]
             }
         }
     ]
