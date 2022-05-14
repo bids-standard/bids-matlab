@@ -133,8 +133,6 @@ function test_copy_to_derivative_unzip
 
   teardown_moae(bu_folder);
 
-  % rmdir(pth, 's');
-
 end
 
 function test_copy_to_derivative_dependencies()

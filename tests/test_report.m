@@ -112,17 +112,15 @@ function test_report_moae_data()
 
   cfg.read_nifti = true;
 
-  pth = fullfile(get_test_data_dir(), '..', '..', 'demos', 'spm', 'moae', 'MoAEpilot');
+  bu_folder = fixture_moae();
 
-  if ~isdir(pth)
+  bids.util.download_ds('source', 'spm', ...
+                        'demo', 'moae', ...
+                        'force', true, ...
+                        'verbose', false, ...
+                        'delete_previous', true);
 
-    pth = bids.util.download_ds('source', 'spm', ...
-                                'demo', 'moae', ...
-                                'force', false, ...
-                                'verbose', false);
-  end
-
-  BIDS = bids.layout(pth, 'use_schema', true);
+  BIDS = bids.layout(moae_dir(), 'use_schema', true);
 
   report = bids.report(BIDS, ...
                        'output_path', cfg.output_path, ...
@@ -137,6 +135,8 @@ function test_report_moae_data()
     return
   end
   assertEqual(content, expected);
+
+  teardown_moae(bu_folder);
 
 end
 
