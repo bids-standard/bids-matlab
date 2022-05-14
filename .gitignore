@@ -8,6 +8,8 @@ tmp*
 *.png
 *.ps
 
+*.log
+
 # virtual env
 env/*
 
@@ -31,8 +33,7 @@ coverage.xml
 # styling
 .prettierrc
 
-# visual studio code config
-.vscode/*
+
 
 # jupyter notebooks
 .ipynb_checkpoints
