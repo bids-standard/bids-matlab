@@ -225,7 +225,9 @@ end
 
 function warning_modified_level_name(level, header, new_name, verbose)
   tolerant = true;
-  msg = sprintf('Level "%s" of column "%s" modified to "%s"\n', level, header, new_name);
+  msg = sprintf(['Level "%s" of column "%s" modified to "%s".\n', ...
+    'Check the HED tools to help you create better data dictionaries: %s.\n'],...
+    level, header, new_name, HED_URL);
   bids.internal.error_handling(mfilename(), 'modifiedLevel', msg, tolerant, verbose);
 end
 
