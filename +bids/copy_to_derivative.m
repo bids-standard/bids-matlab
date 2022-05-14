@@ -142,7 +142,7 @@ function copy_to_derivative(varargin)
 
 end
 
-function copy_participants_tsv(BIDS, derivatives_folder, p)
+function copy_participants_tsv(BIDS, derivatives_folder, args)
   %
   % Very "brutal" approach where we copy the whole file
   %
@@ -154,15 +154,15 @@ function copy_participants_tsv(BIDS, derivatives_folder, p)
     src = fullfile(BIDS.pth, 'participants.tsv');
     target = fullfile(derivatives_folder, 'participants.tsv');
 
-    copy_tsv(src, target, p);
+    copy_tsv(src, target, args);
 
   end
 end
 
-function copy_tsv(src, target, p)
+function copy_tsv(src, target, args)
 
   flag = false;
-  if p.Results.force
+  if args.Results.force
     flag = true;
   else
     if exist(target, 'file') == 0
@@ -171,18 +171,18 @@ function copy_tsv(src, target, p)
   end
 
   if flag
-    copy_with_symlink(src, target, p.Results.unzip, p.Results.verbose);
+    copy_with_symlink(src, target, args.Results.unzip, args.Results.verbose);
     if exist(bids.internal.file_utils(src, 'ext', '.json'), 'file')
       copy_with_symlink(bids.internal.file_utils(src, 'ext', '.json'), ...
                         bids.internal.file_utils(target, 'ext', '.json'), ...
-                        p.Results.unzip, ...
-                        p.Results.verbose);
+                        args.Results.unzip, ...
+                        args.Results.verbose);
     end
   end
 
 end
 
-function copy_session_scan_tsv(BIDS, derivatives_folder, p)
+function copy_session_scan_tsv(BIDS, derivatives_folder, args)
   %
   % Very "brutal" approach wehere we copy the whole file
   %
@@ -191,8 +191,8 @@ function copy_session_scan_tsv(BIDS, derivatives_folder, p)
 
   % identify in the BIDS layout the subjects / sessions combination that we
   % need to keep to copy
-  subjects_list = bids.query(BIDS, 'subjects', p.Results.filter);
-  sessions_list = bids.query(BIDS, 'sessions', p.Results.filter);
+  subjects_list = bids.query(BIDS, 'subjects', args.Results.filter);
+  sessions_list = bids.query(BIDS, 'sessions', args.Results.filter);
 
   subjects = {BIDS.subjects.name}';
   subjects = cellfun(@(x) x(5:end), subjects, 'UniformOutput', false);
@@ -208,7 +208,7 @@ function copy_session_scan_tsv(BIDS, derivatives_folder, p)
       target = fullfile(derivatives_folder, ...
                         BIDS.subjects(keep(i)).name, ...
                         bids.internal.file_utils(src, 'filename'));
-      copy_tsv(src, target, p);
+      copy_tsv(src, target, args);
     end
 
     if ~isempty(BIDS.subjects(keep(i)).scans)
@@ -217,7 +217,7 @@ function copy_session_scan_tsv(BIDS, derivatives_folder, p)
                         BIDS.subjects(keep(i)).name, ...
                         BIDS.subjects(keep(i)).session, ...
                         bids.internal.file_utils(src, 'filename'));
-      copy_tsv(src, target, p);
+      copy_tsv(src, target, args);
     end
 
   end

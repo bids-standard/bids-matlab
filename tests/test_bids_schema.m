@@ -6,6 +6,16 @@ function test_suite = test_bids_schema %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_return_entity_key()
+
+  schema = bids.Schema();
+  entity_key = schema.return_entity_key('description');
+  assertEqual(entity_key, 'desc');
+
+  assertExceptionThrown(@()schema.return_entity_key('foo'), 'Schema:UnknownEnitity');
+
+end
+
 function test_return_entities_for_suffix_modality()
 
   schema = bids.Schema();
@@ -162,7 +172,56 @@ function test_return_modality_entities_basic
 
 end
 
+function test_return_entity_order_default
+
+  if bids.internal.is_octave()
+    % TODO fix for octave in CI
+    return
+  end
+
+  schema = bids.Schema();
+
+  order = schema.entity_order();
+
+  expected = {'subject'; ...
+              'session'; ...
+              'sample'; ...
+              'task'; ...
+              'acquisition'; ...
+              'ceagent'; ...
+              'tracer'; ...
+              'stain'; ...
+              'reconstruction'; ...
+              'direction'; ...
+              'run'; ...
+              'modality'; ...
+              'echo'; ...
+              'flip'; ...
+              'inversion'; ...
+              'mtransfer'; ...
+              'part'; ...
+              'processing'; ...
+              'hemisphere'; ...
+              'space'; ...
+              'split'; ...
+              'recording'; ...
+              'chunk'; ...
+              'atlas'; ...
+              'resolution'; ...
+              'density'; ...
+              'label'; ...
+              'description'};
+
+  assertEqual(order, expected);
+
+end
+
 function test_return_entity_order
+
+  if bids.internal.is_octave()
+    % TODO fix for octave in CI
+    return
+  end
 
   schema = bids.Schema();
 
@@ -182,6 +241,11 @@ end
 
 function test_return_entity_order_new_entity
 
+  if bids.internal.is_octave()
+    % TODO fix for octave in CI
+    return
+  end
+
   schema = bids.Schema();
 
   %
@@ -191,14 +255,16 @@ function test_return_entity_order_new_entity
   %
   entity_list_to_order = {'description'
                           'run'
+                          'foo'
                           'subject'
-                          'foo'};
+                          'bar'};
 
   order = schema.entity_order(entity_list_to_order);
 
   expected = {'subject'
               'run'
               'description'
+              'bar'
               'foo'};
   assertEqual(order, expected);
 

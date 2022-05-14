@@ -6,16 +6,6 @@ function test_suite = test_tsvread %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_tsvread_basic()
-
-  [pth, expected] = fixture();
-
-  tsv_file = fullfile(pth, 'sub-01_task-auditory_events.tsv');
-  output = bids.util.tsvread(tsv_file);
-  assertEqual(output, expected);
-
-end
-
 function test_tsvread_gz()
 
   [pth, expected] = fixture();
@@ -23,8 +13,6 @@ function test_tsvread_gz()
   tsv_file = fullfile(pth, 'sub-01_task-auditory_events.tsv.gz');
   output = bids.util.tsvread(tsv_file);
   assertEqual(output, expected);
-
-  rmdir(pth, 's');
 
 end
 
@@ -36,6 +24,16 @@ function test_tsvread_subset()
   output = bids.util.tsvread(tsv_file, 'onset');
   assertEqual(output, expected.onset);
   assert(~isfield(output, 'duration'));
+
+end
+
+function test_tsvread_basic()
+
+  [pth, expected] = fixture();
+
+  tsv_file = fullfile(pth, 'sub-01_task-auditory_events.tsv');
+  output = bids.util.tsvread(tsv_file);
+  assertEqual(output, expected);
 
 end
 

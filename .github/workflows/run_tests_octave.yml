@@ -49,12 +49,3 @@ jobs:
         ext: JSONio tests/utils # External resources to add to the search put (excluded from coverage)
         # data: # Directory for test data
         with_coverage: false
-        # cover_xml_file: coverage.xml
-
-    # - name: Code coverage
-    #   uses: codecov/codecov-action@v1
-    #   with:
-    #    file:  coverage.xml # optional
-    #    flags: unittests # optional
-    #    name: codecov-umbrella # optional
-    #    fail_ci_if_error: true # optional (default = false)
