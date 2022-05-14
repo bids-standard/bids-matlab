@@ -63,7 +63,7 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
 
       suffix_group = schema.find_suffix_group(modality, p.suffix);
 
-      if isempty(suffix_group)
+      if isempty(suffix_group) || strcmp(suffix_group, '')
         [msg, id] = error_message('unknownSuffix', file, p.suffix);
         bids.internal.error_handling(mfilename, id, msg, true, schema.verbose);
         status = 0;
@@ -156,22 +156,24 @@ end
 
 function [msg, msg_id] = error_message(msg_id, file, extra)
 
-  msg = sprintf('Skipping file %s.\n', file);
+  msg = sprintf('Skipping file: %s.\n', file);
 
   switch msg_id
 
     case 'unknownExtension'
-      msg = sprintf('%s Unknown extension %s', msg, extra);
+      msg = sprintf('%s Unknown extension: ''%s''', msg, extra);
 
     case 'missingRequiredEntity'
-      msg = sprintf('%s Missing REQUIRED entity: %s', msg, extra);
+      msg = sprintf('%s Missing REQUIRED entity: ''%s''', msg, extra);
 
     case 'unknownEntity'
-      msg = sprintf('%s Unknown entities: %s', msg, extra);
+      msg = sprintf('%s Unknown entities: ''%s''', msg, extra);
 
     case 'unknownSuffix'
-      msg = sprintf('%s Unknown suffix: %s', msg, extra);
+      msg = sprintf('%s Unknown suffix: ''%s''', msg, extra);
 
   end
+
+  msg = sprintf('%s\nTry using the parameter: " ''use_schema'', false "\n', msg);
 
 end

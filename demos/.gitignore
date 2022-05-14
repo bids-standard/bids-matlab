@@ -5,6 +5,8 @@
 */*/sourcedata
 */*/derivatives
 
+spm/moae/MoAEpilot
+
 *.mat
 *.nii*
 *json

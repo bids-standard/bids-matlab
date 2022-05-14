@@ -128,10 +128,12 @@ function BIDS = layout(varargin)
 
     for iSess = 1:numel(sessions)
       if isempty(BIDS.subjects)
-        BIDS.subjects = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, schema, verbose);
+        BIDS.subjects = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, ...
+                                      schema, tolerant, verbose);
 
       else
-        new_subject = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, schema, verbose);
+        new_subject = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, ...
+                                    schema, tolerant, verbose);
         [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
                                                                             new_subject);
         % TODO: this can be added to "match_structure_fields"
@@ -203,7 +205,7 @@ function BIDS = index_derivatives_dir(BIDS, idx_deriv, verbose)
   end
 end
 
-function subject = parse_subject(pth, subjname, sesname, schema, verbose)
+function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbose)
   %
   % Parse a subject's directory
   %
@@ -244,9 +246,15 @@ function subject = parse_subject(pth, subjname, sesname, schema, verbose)
         otherwise
           % in case we are going schemaless
           % or the modality is not one of the usual suspect
+          if ~bids.internal.is_valid_fieldname(modalities{iModality})
+            msg = sprintf('subject ''%s'' contains an invalid subfolder ''%s''. Skipping.', ...
+                          subject.path, ...
+                          modalities{iModality});
+            bids.internal.error_handling(mfilename, 'invalidSubfolderName', ...
+                                         msg, tolerant, verbose);
+            continue
 
-          % in case folder names would lead to invalid MATLAB fieldnames
-          modalities{iModality} = regexprep(modalities{iModality}, '-', '_');
+          end
 
           subject.(modalities{iModality}) = struct([]);
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
