@@ -1,4 +1,7 @@
 function test_suite = test_plot_diagnostic_table %#ok<*STOUT>
+
+  close all;
+
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine

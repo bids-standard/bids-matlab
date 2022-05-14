@@ -129,8 +129,8 @@ function diagnostic_table = diagnostic(varargin)
     fig_name = [fig_name ' - split_by ' strjoin(args.Results.split_by, '-')];
   end
 
-  plot_diagnostic_table(diagnostic_table, headers, sub_ses, ...
-                        strrep(fig_name, '_', ' '));
+  bids.internal.plot_diagnostic_table(diagnostic_table, headers, sub_ses, ...
+                                      strrep(fig_name, '_', ' '));
 
   if ~isempty(args.Results.output_path)
     if exist(args.Results.output_path, 'dir')

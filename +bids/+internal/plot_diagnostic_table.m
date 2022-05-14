@@ -43,29 +43,17 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
       'xTickLabel', xticklabel, ...
       'TickLength', [0.001 0.001]);
 
-  ca = gca;
-  ca.XAxis.MinorTickValues = [1:nb_cols + 1] - 0.5;
-
   if any(cellfun('length', xticklabel) > 40)
     set(gca, ...
         'xTick', (1:nb_cols) - 0.25, ...
         'XTickLabelRotation', 25);
-    ca.XAxis.MinorTickValues = (1:nb_cols) - 0.25;
   end
 
-  %   % add horizontal borders
-  %   x_borders = [0 nb_cols] + 0.5;
-  %   y_borders = [[1:nb_rows]', [1:nb_rows]'] - 0.5;
-  %   plot(x_borders, y_borders, '-w');
-  %
-  %   % add horizontal borders
-  %   y_borders = [0 nb_rows] + 0.5;
-  %   x_borders = [[1:nb_cols]', [1:nb_cols]'] - 0.5;
-  %   plot(x_borders, y_borders, '-w');
+  ca = gca;
+  ca.XAxis.MinorTickValues = ca.XAxis.TickValues;
 
   % y axis
   set(gca, 'yTick', 1:nb_rows);
-  ca.YAxis.MinorTickValues = [1:nb_rows + 1] - 0.5;
 
   if nb_rows < 50
     set(gca, 'yTickLabel', yticklabel);
@@ -73,12 +61,30 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
 
   box(gca, 'on');
 
-  set(gca, 'XMinorGrid', 'on', 'YMinorGrid', 'on', ...
-      'MinorGridColor', 'w', ...
-      'MinorGridAlpha', 0.5, ...
-      'MinorGridLineStyle', '-', ...
-      'LineWidth', 2, ...
-      'Layer', 'top');
+  % TODO
+  % fix diagnonal line that appear for some table dimensions
+
+  % add horizontal borders
+  x_borders = [0 nb_cols] + 0.5;
+  y_borders = [[2:nb_rows]', [2:nb_rows]'] - 0.5;
+  plot(x_borders, y_borders, '-w');
+
+  % add vertical borders
+  y_borders = [0 nb_rows] + 0.5;
+  x_borders = [[2:nb_cols]', [2:nb_cols]'] - 0.5;
+  plot(x_borders, y_borders, '-w');
+
+  %   set(gca, 'XMinorGrid', 'on', 'YMinorGrid', 'off', ...
+  %             'MinorGridColor', 'w', ...
+  %             'MinorGridAlpha', 0.5, ...
+  %             'MinorGridLineStyle', '-', ...
+  %             'LineWidth', 2, ...
+  %             'Layer', 'top');
+  %
+  %   ca = gca;
+  %   ca.XAxis.TickValues
+  %   ca.XAxis.MinorTickValues = ca.XAxis.TickValues(1:) + 0.5;
+  %   ca.YAxis.MinorTickValues = ca.YAxis.TickValues + 0.5;
 
   axis tight;
 
