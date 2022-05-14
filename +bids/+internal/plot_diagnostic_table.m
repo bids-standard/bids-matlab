@@ -43,27 +43,42 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
       'xTickLabel', xticklabel, ...
       'TickLength', [0.001 0.001]);
 
+  ca = gca;
+  ca.XAxis.MinorTickValues = [1:nb_cols + 1] - 0.5;
+
   if any(cellfun('length', xticklabel) > 40)
     set(gca, ...
         'xTick', (1:nb_cols) - 0.25, ...
         'XTickLabelRotation', 25);
+    ca.XAxis.MinorTickValues = (1:nb_cols) - 0.25;
   end
 
-  % add horizontal borders
-  x_borders = [0 nb_cols] + 0.5;
-  y_borders = [[1:nb_rows]', [1:nb_rows]'] - 0.5;
-  plot(x_borders, y_borders, '-w');
-
-  % add horizontal borders
-  y_borders = [0 nb_rows] + 0.5;
-  x_borders = [[1:nb_cols]', [1:nb_cols]'] - 0.5;
-  plot(x_borders, y_borders, '-w');
+  %   % add horizontal borders
+  %   x_borders = [0 nb_cols] + 0.5;
+  %   y_borders = [[1:nb_rows]', [1:nb_rows]'] - 0.5;
+  %   plot(x_borders, y_borders, '-w');
+  %
+  %   % add horizontal borders
+  %   y_borders = [0 nb_rows] + 0.5;
+  %   x_borders = [[1:nb_cols]', [1:nb_cols]'] - 0.5;
+  %   plot(x_borders, y_borders, '-w');
 
   % y axis
   set(gca, 'yTick', 1:nb_rows);
+  ca.YAxis.MinorTickValues = [1:nb_rows + 1] - 0.5;
+
   if nb_rows < 50
-    set(gca, 'yTick', 1:nb_rows, 'yTickLabel', yticklabel);
+    set(gca, 'yTickLabel', yticklabel);
   end
+
+  box(gca, 'on');
+
+  set(gca, 'XMinorGrid', 'on', 'YMinorGrid', 'on', ...
+      'MinorGridColor', 'w', ...
+      'MinorGridAlpha', 0.5, ...
+      'MinorGridLineStyle', '-', ...
+      'LineWidth', 2, ...
+      'Layer', 'top');
 
   axis tight;
 

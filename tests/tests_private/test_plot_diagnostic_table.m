@@ -47,20 +47,22 @@ function test_plot_diagnostic_table_2X3()
 
 end
 
-function test_plot_diagnostic_table_3X3()
+function test_plot_diagnostic_table_4X4()
 
   headers{1}.modality = 'anat';
-  headers{1}.modality = 'adwi';
-  headers{2}.modality = 'func';
-  headers{2}.task = 'rhyme';
+  headers{2}.modality = 'dwi';
   headers{3}.modality = 'func';
-  headers{3}.task = 'listen';
+  headers{3}.task = 'rhyme';
+  headers{4}.modality = 'func';
+  headers{4}.task = 'listen';
 
-  data = [0, 1, 3; ...
-          4, 10, 5; ...
-          1, 2, 2];
+  data = [0, 1, 3, 0; ...
+          4, 10, 5, 6; ...
+          1, 2, 2, 5; ...
+          1, 3, 4, 5];
 
-  y_labels = {'sub-01 ses-02'; ...
+  y_labels = {'sub-01 ses-02'
+              'sub-01 ses-01'
               'sub-02 ses-02'
               'sub-02 ses-01'};
 
