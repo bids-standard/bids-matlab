@@ -8,6 +8,20 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_basic()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  assertEqual(bm.Name, 'NARPS');
+  assertEqual(bm.Description, 'NARPS Analysis model');
+  assertEqual(bm.BIDSModelVersion, '1.0.0');
+  assertEqual(bm.Input, struct('task', {{'MGT'}}));
+  assertEqual(numel(bm.Nodes), 5);
+  assertEqual(numel(bm.Edges), 4);
+  assertEqual(bm.Edges{1}, struct('Source', 'run', 'Destination', 'subject'));
+
+end
+
 function test_model_default_model()
 
   if bids.internal.is_octave()
@@ -50,22 +64,8 @@ function test_model_validate()
   bm.Nodes{1}.Transformations = rmfield(bm.Nodes{1}.Transformations, 'Transformer');
   assertWarning(@()bm.validate(), 'Model:missingField');
 
-  bm.Nodes{1}.Contrasts = rmfield(bm.Nodes{1}.Contrasts, 'ConditionList');
+  bm.Nodes{1}.Contrasts = rmfield(bm.Nodes{1}.Contrasts{1}, 'ConditionList');
   assertWarning(@()bm.validate(), 'Model:missingField');
-
-end
-
-function test_model_basic()
-
-  bm = bids.Model('file', model_file('narps'), 'verbose', false);
-
-  assertEqual(bm.Name, 'NARPS');
-  assertEqual(bm.Description, 'NARPS Analysis model');
-  assertEqual(bm.BIDSModelVersion, '1.0.0');
-  assertEqual(bm.Input, struct('task', 'MGT'));
-  assertEqual(numel(bm.Nodes), 5);
-  assertEqual(numel(bm.Edges), 4);
-  assertEqual(bm.Edges{1}, struct('Source', 'run', 'Destination', 'subject'));
 
 end
 
@@ -89,7 +89,7 @@ function test_model_get_nodes()
   assertEqual(numel(bm.get_nodes), 5);
   assertEqual(numel(bm.get_nodes('Level', 'Run')), 1);
   assertEqual(numel(bm.get_nodes('Level', 'Dataset')), 3);
-  assertEqual(numel(bm.get_nodes('Name', 'negative')), 1);
+  assertEqual(numel(bm.get_nodes('Name', 'negative-loss')), 1);
 
   bm.verbose = true;
   assertWarning(@()bm.get_nodes('Name', 'foo'), 'Model:missingNode');
@@ -105,6 +105,12 @@ function test_model_get_design_matrix()
                'gain'
                'loss'
                'demeaned_RT'
+               'rot_x'
+               'rot_y'
+               'rot_z'
+               'trans_x'
+               'trans_y'
+               'trans_z'
                1});
 
 end
@@ -114,14 +120,14 @@ function test_model_node_level_getters()
   bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
   assertEqual(bm.get_dummy_contrasts('Name', 'run'), ...
-              struct('Contrasts', {{'gain'; 'loss'}}, ...
+              struct('Conditions', {{'trials'; 'gain'; 'loss'}}, ...
                      'Test', 't'));
 
   assertEqual(fieldnames(bm.get_transformations('Name', 'run')), ...
               {'Transformer';  'Instructions'});
 
-  assertEqual(bm.get_contrasts('Name', 'positive'), ...
-              struct('Name', 'positive', 'ConditionList', 1, 'Weights', 1, 'Test', 't'));
+  assertEqual(bm.get_contrasts('Name', 'negative-loss'), ...
+              struct('Name', 'negative', 'ConditionList', 1, 'Weights', -1, 'Test', 't'));
 
 end
 
