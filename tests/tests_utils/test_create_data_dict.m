@@ -174,4 +174,7 @@ end
 
 function teardown()
   delete('*.json');
+  if exist('modified_levels.tsv', 'file') == 2
+    delete('modified_levels.tsv');
+  end
 end

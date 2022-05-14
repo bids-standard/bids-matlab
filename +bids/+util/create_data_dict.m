@@ -86,19 +86,34 @@ function data_dict = create_data_dict(varargin)
 
   headers = fieldnames(content);
 
+  % keep track of modified levels to print them in a TSV at the end
+  modified_levels = struct('header', {{}}, ...
+                           'original_level_name', {{}}, ...
+                           'new_level_name', {{}});
+
   for i = 1:numel(headers)
     data_dict.(headers{i}) = set_dict(headers{i}, schema);
-    data_dict = add_levels_desc(data_dict, headers{i}, content, level_limit, verbose);
+    [data_dict, modified_levels] = add_levels_desc(data_dict, ...
+                                                   headers{i}, ...
+                                                   content, ...
+                                                   level_limit, ...
+                                                   modified_levels, ...
+                                                   verbose);
   end
 
-  if ~isempty(output)
-    if exist(output, 'file')
-      if force
-        bids.util.jsonwrite(output, data_dict);
-      end
-    else
-      bids.util.jsonwrite(output, data_dict);
+  if isempty(output)
+    return
+  end
+
+  if ~exist(output, 'file') || force
+
+    bids.util.jsonwrite(output, data_dict);
+
+    if ~isempty(modified_levels.header)
+      bids.util.tsvwrite(fullfile(fileparts(output), 'modified_levels.tsv'), ...
+                         modified_levels);
     end
+
   end
 
 end
@@ -160,18 +175,18 @@ function content = get_content_from_tsv_files(tsv_file)
 
 end
 
-function json_content = add_levels_desc(json_content, header, tsv_content, level_limit, verbose)
+function [json, modified] = add_levels_desc(json, hdr, tsv, lvl_limit, modified, verbose)
 
-  levels = unique(tsv_content.(header));
+  levels = unique(tsv.(hdr));
 
   % we do not list non integer numeric values
   % as this is most likely not categorical
-  if numel(levels) > level_limit || ...
+  if numel(levels) > lvl_limit || ...
      (isnumeric(levels) && not(all(isinteger(levels))))
     return
   end
 
-  json_content.(header).Levels = struct();
+  json.(hdr).Levels = struct();
 
   for i = 1:numel(levels)
 
@@ -214,20 +229,27 @@ function json_content = add_levels_desc(json_content, header, tsv_content, level
     end
 
     if ~strcmp(level_name_before, this_level)
-      warning_modified_level_name(level_name_before, header, this_level, verbose);
+      modified.header{end + 1} = hdr;
+      modified.original_level_name{end + 1} = level_name_before;
+      modified.new_level_name{end + 1} = this_level;
+      warning_modified_level_name(level_name_before, hdr, this_level, verbose);
     end
 
-    json_content.(header).Levels.(this_level) = 'TODO';
+    json.(hdr).Levels.(this_level) = 'TODO';
 
   end
 
 end
 
 function warning_modified_level_name(level, header, new_name, verbose)
+
   tolerant = true;
+
   msg = sprintf(['Level "%s" of column "%s" modified to "%s".\n', ...
-    'Check the HED tools to help you create better data dictionaries: %s.\n'],...
-    level, header, new_name, HED_URL);
+                 'Check the HED tools to help you create better data dictionaries: %s.\n'], ...
+                level, header, new_name, ...
+                'https://hedtools.ucsd.edu/hed/');
+
   bids.internal.error_handling(mfilename(), 'modifiedLevel', msg, tolerant, verbose);
 end
 
