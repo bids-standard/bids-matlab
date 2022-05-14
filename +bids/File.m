@@ -89,7 +89,7 @@ classdef File
 
     metadata_files = {} % list of metadata files related
 
-    metadata
+    metadata  % list of metadata for this file
 
     entity_required = {}  % Required entities
 
@@ -238,7 +238,7 @@ classdef File
         obj.validate_word(val, 'Entity value');
       end
 
-      if ~contain_value
+      if ~strcmp(obj.filename, 'participants.tsv') && ~contain_value
         obj.bids_file_error('noEntity', 'No entity-label pairs');
       end
 
@@ -363,9 +363,17 @@ classdef File
       if nargin > 1 && ~isempty(entity_order)
         order = entity_order;
 
-      elseif ~isempty(obj.schema)
-        obj = get_entity_order_from_schema(obj);
-        order = obj.entity_order;
+      else
+        if ~isempty(obj.schema)
+          obj = get_entity_order_from_schema(obj);
+          order = obj.entity_order;
+        else
+          schema = bids.Schema;
+          entities = schema.entity_order();
+          for i = 1:numel(entities)
+            order{i, 1} = schema.return_entity_key(entities{i});
+          end
+        end
       end
 
       if size(order, 2) > 1
@@ -673,6 +681,7 @@ classdef File
       switch id
         case 'noEntity'
           msg = 'No entity-label pairs.';
+          obj.tolerant = false;
 
         case 'schemaMissing'
           msg = 'no schema specified: run file.use_schema()';
@@ -684,6 +693,8 @@ classdef File
           msg = 'no extension specified';
 
       end
+
+      id = bids.internal.camel_case(id);
 
       bids.internal.error_handling(mfilename(), id, msg, obj.tolerant, obj.verbose);
 
@@ -714,8 +725,8 @@ classdef File
       obj.validate_string(extension, 'Extension', '^\.[.A-Za-z0-9]+$');
     end
 
-    function validate_word(obj, extension, type)
-      obj.validate_string(extension, type, '^[A-Za-z0-9]+$');
+    function validate_word(obj, word, type)
+      obj.validate_string(word, type, '^[A-Za-z0-9]+$');
     end
 
     function validate_prefix(obj, prefix)

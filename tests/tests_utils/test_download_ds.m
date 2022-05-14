@@ -8,11 +8,16 @@ end
 
 function test_download_ds_basic()
 
+  bu_folder = fixture_moae();
+
   pth = bids.util.download_ds('source', 'spm', ...
                               'demo', 'moae', ...
-                              'force', false, ...
-                              'verbose', false);
+                              'force', true, ...
+                              'verbose', false, ...
+                              'delete_previous', true);
 
-  rmdir(pth, 's');
+  bids.layout(pth);
+
+  teardown_moae(bu_folder);
 
 end

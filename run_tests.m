@@ -2,7 +2,7 @@ function success = run_tests()
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
-  with_coverage = false;
+  with_coverage = true;
 
   addpath(fullfile(pwd, 'tests', 'utils'));
 
