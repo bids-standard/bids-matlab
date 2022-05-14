@@ -110,6 +110,10 @@ classdef Schema
 
     end
 
+    function sts = eq(obj)
+      sts = true;
+    end
+
     function modalities = return_modalities(obj, subject, modality_group)
       % if we go schema-less or use another schema than the "official" one
       % we list directories in the subject/session folder
@@ -453,6 +457,33 @@ classdef Schema
       suffixes = obj.return_modality_suffixes_regex(modality);
       extensions = obj.return_modality_extensions_regex(modality);
       reg_ex = ['^%s.*' suffixes extensions '$'];
+    end
+
+    function [def, status] = get_definition(obj, word)
+      %
+      % finds definition of a column header in a the BIDS schema
+      %
+      % USAGE::
+      %
+      %   [def, status] = schema.get_definition(word)
+      %
+
+      status =  false;
+      if ~isfield(obj.content.objects, 'metadata')
+        obj.load_schema_metadata = true;
+        obj = obj.load();
+      end
+
+      if isfield(obj.content.objects.columns, word)
+        status = true;
+        def = obj.content.objects.columns.(word);
+      else
+        def = struct('LongName', word, ...
+                     'Description', 'TODO', ...
+                     'Units', 'TODO', ...
+                     'TermURL', 'TODO');
+      end
+
     end
 
   end

@@ -39,6 +39,24 @@ function test_find_suffix_group()
 
 end
 
+function test_metadata_get_definition()
+
+  schema = bids.Schema();
+  def = schema.get_definition('onset');
+
+  assertEqual(def.name, 'onset');
+  assertEqual(def.type, 'number');
+  assertEqual(def.unit, 's');
+
+end
+
+function test_metadata_object()
+
+  schema = bids.Schema();
+  assert(schema.eq);
+
+end
+
 function test_return_modality_suffixes_regex
 
   schema = bids.Schema();
