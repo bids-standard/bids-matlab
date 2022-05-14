@@ -1,5 +1,5 @@
-[
-  {
+{
+  "ieeg": {
     "suffixes": [
       "ieeg"
     ],
@@ -14,6 +14,9 @@
       ".fdt",
       ".nwb"
     ],
+    "datatypes": [
+      "ieeg"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
@@ -22,7 +25,7 @@
       "run": "optional"
     }
   },
-  {
+  "channels": {
     "suffixes": [
       "channels"
     ],
@@ -30,6 +33,9 @@
       ".json",
       ".tsv"
     ],
+    "datatypes": [
+      "ieeg"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
@@ -38,12 +44,15 @@
       "run": "optional"
     }
   },
-  {
+  "coordsystem": {
     "suffixes": [
       "coordsystem"
     ],
     "extensions": [
       ".json"
+    ],
+    "datatypes": [
+      "ieeg"
     ],
     "entities": {
       "subject": "required",
@@ -52,7 +61,7 @@
       "space": "optional"
     }
   },
-  {
+  "electrodes": {
     "suffixes": [
       "electrodes"
     ],
@@ -60,6 +69,9 @@
       ".json",
       ".tsv"
     ],
+    "datatypes": [
+      "ieeg"
+    ],
     "entities": {
       "subject": "required",
       "session": "optional",
@@ -67,13 +79,16 @@
       "space": "optional"
     }
   },
-  {
+  "events": {
     "suffixes": [
       "events"
     ],
     "extensions": [
       ".json",
       ".tsv"
+    ],
+    "datatypes": [
+      "ieeg"
     ],
     "entities": {
       "subject": "required",
@@ -83,12 +98,14 @@
       "run": "optional"
     }
   },
-  {
+  "photo": {
     "suffixes": [
       "photo"
     ],
     "extensions": [
-      ".jpg"
+      ".jpg",
+      ".png",
+      ".tif"
     ],
     "entities": {
       "subject": "required",
@@ -96,7 +113,7 @@
       "acquisition": "optional"
     }
   },
-  {
+  "timeseries": {
     "suffixes": [
       "physio",
       "stim"
@@ -104,6 +121,9 @@
     "extensions": [
       ".tsv.gz",
       ".json"
+    ],
+    "datatypes": [
+      "ieeg"
     ],
     "entities": {
       "subject": "required",
@@ -114,4 +134,4 @@
       "recording": "optional"
     }
   }
-]
+}

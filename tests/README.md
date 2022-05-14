@@ -54,9 +54,6 @@ git clone git://github.com/bids-standard/bids-examples.git --depth 1
 
 #### Datasets with content
 
-The function `download_moae_ds.m` will download a lightweight dataset from the
-SPM website.
-
 To get more complex data sets, to test things you can use datalad.
 
 ```bash

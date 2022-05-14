@@ -31,28 +31,28 @@ function error_handling(varargin)
   default_tolerant = true;
   default_verbose = false;
 
-  p = inputParser;
+  args = inputParser;
 
-  addOptional(p, 'function_name', default_function_name, @ischar);
-  addOptional(p, 'id', default_id, @ischar);
-  addOptional(p, 'msg', default_msg, @ischar);
-  addOptional(p, 'tolerant', default_tolerant, @islogical);
-  addOptional(p, 'verbose', default_verbose, @islogical);
+  addOptional(args, 'function_name', default_function_name, @ischar);
+  addOptional(args, 'id', default_id, @ischar);
+  addOptional(args, 'msg', default_msg, @ischar);
+  addOptional(args, 'tolerant', default_tolerant, @islogical);
+  addOptional(args, 'verbose', default_verbose, @islogical);
 
-  parse(p, varargin{:});
+  parse(args, varargin{:});
 
-  function_name = bids.internal.file_utils(p.Results.function_name, 'basename');
+  function_name = bids.internal.file_utils(args.Results.function_name, 'basename');
 
-  id = [function_name, ':' p.Results.id];
-  msg = p.Results.msg;
+  id = [function_name, ':' args.Results.id];
+  msg = args.Results.msg;
 
-  if ~p.Results.tolerant
+  if ~args.Results.tolerant
     errorStruct.identifier = id;
     errorStruct.message = msg;
     error(errorStruct);
   end
 
-  if p.Results.verbose
+  if args.Results.verbose
     warning(id, msg);
   end
 

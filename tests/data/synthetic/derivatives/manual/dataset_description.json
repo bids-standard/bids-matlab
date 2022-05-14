@@ -1,0 +1,10 @@
+{
+  "BIDSVersion": "1.7.0",
+  "Name": "For testing 'invalid' layout",
+  "DatasetType": "derivative",
+  "GeneratedBy": [
+      {
+          "Name": "manual"
+      }
+  ]
+}

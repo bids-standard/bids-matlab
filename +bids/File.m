@@ -11,10 +11,13 @@ classdef File
   %
   % :param input:
   % :type input: filename or structure
+  %
   % :param use_schema:
   % :type use_schema: boolean
+  %
   % :param tolerant: turns errors into warning
   % :type tolerant: boolean
+  %
   % :param verbose: silences warnings
   % :type verbose: boolean
   %
@@ -84,19 +87,24 @@ classdef File
 
     json_filename = ''  % bidsified name for json file
 
+    metadata_files = {} % list of metadata files related
+
+    metadata  % list of metadata for this file
+
     entity_required = {}  % Required entities
 
     entity_order = {}   % Expected order of entities
 
     schema = []     % BIDS schema used
 
+    tolerant = true
+
+    verbose = false
+
   end
 
   properties (SetAccess = private)
     changed = false
-    tolerant = true
-    verbose = false
-
   end
 
   methods
@@ -150,6 +158,8 @@ classdef File
       if args.Results.use_schema
         obj = obj.use_schema();
       end
+
+      obj = obj.set_metadata();
 
       obj = obj.update();
     end
@@ -228,7 +238,7 @@ classdef File
         obj.validate_word(val, 'Entity value');
       end
 
-      if ~contain_value
+      if ~strcmp(obj.filename, 'participants.tsv') && ~contain_value
         obj.bids_file_error('noEntity', 'No entity-label pairs');
       end
 
@@ -242,12 +252,27 @@ classdef File
       obj.changed = true;
     end
 
+    function obj = set_metadata(obj)
+      if isempty(obj.metadata_files)
+        pattern = '^.*%s\\.json$';
+        obj.metadata_files = bids.internal.get_meta_list(obj.path, pattern);
+      end
+      obj.metadata =  bids.internal.get_metadata(obj.metadata_files);
+    end
+
     function obj = set_entity(obj, label, value)
       obj.validate_word(label, 'Entity label');
       obj.validate_word(value, 'Entity value');
 
       obj.entities(1).(label) = bids.internal.camel_case(value);
       obj.changed = true;
+    end
+
+    function obj = set_metadata_files(obj, pattern)
+      if nargin < 2
+        pattern = '^.*%s\\.json$';
+      end
+      obj.metadata_files = bids.internal.get_meta_list(obj.path, pattern);
     end
 
     %% other methods
@@ -338,9 +363,17 @@ classdef File
       if nargin > 1 && ~isempty(entity_order)
         order = entity_order;
 
-      elseif ~isempty(obj.schema)
-        obj = get_entity_order_from_schema(obj);
-        order = obj.entity_order;
+      else
+        if ~isempty(obj.schema)
+          obj = get_entity_order_from_schema(obj);
+          order = obj.entity_order;
+        else
+          schema = bids.Schema;
+          entities = schema.entity_order();
+          for i = 1:numel(entities)
+            order{i, 1} = schema.return_entity_key(entities{i});
+          end
+        end
       end
 
       if size(order, 2) > 1
@@ -364,6 +397,73 @@ classdef File
     end
 
     function obj = rename(obj, varargin)
+      %
+      % Renames a file according following some specification
+      %
+      % USAGE::
+      %
+      %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', [], 'force', false);
+      %
+      % :param spec: struture specifying what entities, suffix, extension, prefix to apply
+      %              renaming
+      % :type spec: structure
+      %
+      % :param dry_run: If ``true`` no file is actually renamed. ``false`` is the default to avoid
+      %                 renaming files by mistake.
+      % :type dry_run: boolean
+      %
+      % :param verbose: displays input --> output
+      % :type verbose: boolean
+      %
+      % :param force: overwrites existing file. Default: ``false``
+      % :type force: boolean
+      %
+      % EXAMPLE:
+      %
+      % .. code-block:: matlab
+      %
+      %   %% rename an SPM preprocessed file
+      %
+      %   % expected_name = fullfile(pwd, ...
+      %   %                         'sub-01', ...
+      %   %                         'sub-01_task-faceRep_space-individual_desc-preproc_bold.nii');
+      %
+      %   input_filename = 'uasub-01_task-faceRep_bold.nii';
+      %
+      %   file = bids.File(input_filename, 'use_schema', false);
+      %
+      %   spec.prefix = ''; % remove prefix
+      %   spec.entities.desc = 'preproc'; % add description entity
+      %   spec.entity_order = {'sub', 'task', 'desc'};
+      %
+      %   file = file.rename('spec', spec, 'dry_run', false, 'verbose', true);
+      %
+      %
+      %   %% Get a specific file from a dataset to rename
+      %
+      %   BIDS = bids.layout(path_to_dataset)
+      %
+      %   % construct a filter to get only the file we want/
+      %   subject = '001';
+      %   run = '001';
+      %   suffix = 'bold';
+      %   task = 'faceRep';
+      %   filter = struct('sub', subject, 'task', task, 'run', run, 'suffix', suffix);
+      %
+      %   file_to_rename = bids.query(BIDS, 'data', filter);
+      %
+      %   file = bids.File(file_to_rename, 'use_schema', false);
+      %
+      %   % specification to remove run entity
+      %   spec.entities.run = '';
+      %
+      %   % first run with dry_run = true to make sure we will get the expected output
+      %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', true);
+      %
+      %   % rename the file by setting dry_run to false
+      %   file = file.rename('spec', spec, 'dry_run', false, 'verbose', true);
+      %
+
       args = inputParser;
       args.addParameter('dry_run', true, @islogical);
       args.addParameter('force', false, @islogical);
@@ -405,6 +505,7 @@ classdef File
       end
 
       if ~args.Results.dry_run
+        % TODO update obj.path
         output_file = fullfile(fileparts(obj.path), obj.filename);
         if ~exist(output_file, 'file') || args.Results.force
           movefile(obj.path, output_file);
@@ -580,6 +681,7 @@ classdef File
       switch id
         case 'noEntity'
           msg = 'No entity-label pairs.';
+          obj.tolerant = false;
 
         case 'schemaMissing'
           msg = 'no schema specified: run file.use_schema()';
@@ -591,6 +693,8 @@ classdef File
           msg = 'no extension specified';
 
       end
+
+      id = bids.internal.camel_case(id);
 
       bids.internal.error_handling(mfilename(), id, msg, obj.tolerant, obj.verbose);
 
@@ -621,8 +725,8 @@ classdef File
       obj.validate_string(extension, 'Extension', '^\.[.A-Za-z0-9]+$');
     end
 
-    function validate_word(obj, extension, type)
-      obj.validate_string(extension, type, '^[A-Za-z0-9]+$');
+    function validate_word(obj, word, type)
+      obj.validate_string(word, type, '^[A-Za-z0-9]+$');
     end
 
     function validate_prefix(obj, prefix)

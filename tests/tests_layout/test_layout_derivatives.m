@@ -6,13 +6,43 @@ function test_suite = test_layout_derivatives %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_warning_invalid_subfolder_struct_fieldname()
+
+  % https://github.com/bids-standard/bids-matlab/issues/332
+
+  invalid_subfolder = fullfile(get_test_data_dir(), '..', ...
+                               'data', 'synthetic', 'derivatives', 'invalid_subfolder');
+
+  % 'Octave:mixed-string-concat'
+  if ~bids.internal.is_octave
+    assertWarning(@()bids.layout(invalid_subfolder, ...
+                                 'use_schema', false, ...
+                                 'verbose', true), ...
+                  'layout:invalidSubfolderName');
+  end
+
+end
+
 function test_layout_nested()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000117'), ...
-                     'use_schema', true, ...
-                     'index_derivatives', true);
+  dataset_to_test = {'ds000117'
+                     'qmri_irt1'
+                     'qmri_mese'
+                     'qmri_mp2rage'
+                     'qmri_mp2rageme'
+                     'qmri_mtsat'
+                     'qmri_sa2rage'
+                     'qmri_vfa'
+                     'qmri_mpm'};
+
+  for i = 1:numel(dataset_to_test)
+    BIDS = bids.layout(fullfile(pth_bids_example, dataset_to_test{i}), ...
+                       'use_schema', true, 'tolerant', false, ...
+                       'index_derivatives', true);
+    fprintf(1, '.');
+  end
 
 end
 

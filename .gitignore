@@ -3,10 +3,10 @@
 tmp*
 
 *.zip*
-*.jpg
 
-examples/brainstorm
-examples/MoAEpilot
+*.jpg
+*.png
+*.ps
 
 # virtual env
 env/*
@@ -14,6 +14,9 @@ env/*
 # other bids repos
 bids-specification/*
 bids-examples
+
+# examples
+MoAEpilot
 
 # input and output data involved in tests
 derivatives/*
@@ -23,6 +26,7 @@ env/*
 
 # coverage
 coverage_html
+coverage.xml
 
 # styling
 .prettierrc

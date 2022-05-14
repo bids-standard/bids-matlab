@@ -15,6 +15,53 @@ end
 %
 % end
 
+function test_participants
+
+  pth_bids_example = get_test_data_dir();
+
+  file = fullfile(pth_bids_example, 'pet002', 'participants.tsv');
+
+  bf = bids.File(file);
+
+end
+
+function test_get_metadata_suffixes_basic()
+  % ensures that "similar" suffixes are distinguished
+
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+
+  file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.shape.gii');
+  side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.json');
+
+  bf = bids.File(file);
+
+  % TODO only only json file per folder level allowed
+  % assertEqual(numel(bf.metadata_files), 1)
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+  file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.surf.gii');
+  side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.json');
+
+  bf = bids.File(file);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  side_car = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.json');
+
+  bf = bids.File(file);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+end
+
 function test_rename()
 
   input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
@@ -25,7 +72,7 @@ function test_rename()
   set_up(input_file);
   teardown(output_file);
 
-  file = bids.File(input_file, 'use_schema', false, 'verbose', true);
+  file = bids.File(input_file, 'use_schema', false, 'verbose', false);
 
   assertEqual(file.path, input_file);
 
@@ -78,13 +125,17 @@ function test_rename_force()
 
   system(sprintf('touch %s', input_file));
   system(sprintf('touch %s', output_file));
-  file = bids.File(input_file, 'use_schema', false, 'verbose', true);
+  file = bids.File(input_file, 'use_schema', false, 'verbose', false);
 
   assertEqual(file.path, input_file);
 
   file.prefix = '';
   file.entities.desc = 'preproc';
-  assertWarning(@() file.rename('dry_run', false), 'File:fileAlreadyExists');
+  file.verbose = true;
+  if bids.internal.is_github_ci && ~bids.internal.is_octave
+    % failure: warning 'Octave:mixed-string-concat' was raised, expected 'File:fileAlreadyExists'.
+    assertWarning(@() file.rename('dry_run', false), 'File:fileAlreadyExists');
+  end
 
   file = file.rename('dry_run', false, 'verbose', false);
   assertEqual(exist(input_file, 'file'), 2);
@@ -106,6 +157,20 @@ function test_camel_case()
 
   file.entities.task = 'test bla';
   assertEqual(file.filename, 'sub-01_ses-test_task-testBla_run-02_bold.nii');
+
+end
+
+function test_invalid_entity()
+
+  % https://github.com/bids-standard/bids-matlab/issues/362
+
+  input.suffix = 'eeg';
+  input.ext = '.bdf';
+  input.entities.sub = '01';
+  input.entities.task = '0-0 .%5';
+
+  bf =  bids.File(input, 'use_schema', false, 'tolerant', false);
+  assertEqual(bf.filename, 'sub-01_task-005_eeg.bdf');
 
 end
 
@@ -226,6 +291,75 @@ function test_reorder()
                                   'part'});
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 
+end
+
+function test_reorder_schemaless()
+
+  if bids.internal.is_octave
+    return
+  end
+
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+  file = file.reorder_entities();
+  assertEqual(file.entity_order, {'sub'
+                                  'ses'
+                                  'sample'
+                                  'task'
+                                  'acq'
+                                  'ce'
+                                  'trc'
+                                  'stain'
+                                  'rec'
+                                  'dir'
+                                  'run'
+                                  'mod'
+                                  'echo'
+                                  'flip'
+                                  'inv'
+                                  'mt'
+                                  'part'
+                                  'proc'
+                                  'hemi'
+                                  'space'
+                                  'split'
+                                  'recording'
+                                  'chunk'
+                                  'atlas'
+                                  'res'
+                                  'den'
+                                  'label'
+                                  'desc'});
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+end
+
+function test_reorder_schemaless_with_extra_entity()
+
+  if bids.internal.is_octave
+    return
+  end
+
+  filename = 'sub-01_foo-bar_task-face_ses-test_run-02_mask.nii';
+  file = bids.File(filename, 'use_schema', false);
+  file = file.reorder_entities();
+  assertEqual(file.json_filename, 'sub-01_ses-test_task-face_run-02_foo-bar_mask.json');
+end
+
+function test_reorder_with_schema()
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', true);
+  file = file.reorder_entities();
+  assertEqual(file.entity_order, {'sub'
+                                  'ses'
+                                  'task'
+                                  'acq'
+                                  'ce'
+                                  'rec'
+                                  'dir'
+                                  'run'
+                                  'echo'
+                                  'part'});
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 end
 
 function test_bids_file_derivatives_2()

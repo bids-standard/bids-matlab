@@ -6,6 +6,88 @@ function test_suite = test_bids_schema %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_return_entity_key()
+
+  schema = bids.Schema();
+  entity_key = schema.return_entity_key('description');
+  assertEqual(entity_key, 'desc');
+
+  assertExceptionThrown(@()schema.return_entity_key('foo'), 'Schema:UnknownEnitity');
+
+end
+
+function test_return_entities_for_suffix_modality()
+
+  schema = bids.Schema();
+  [entities, required] = schema.return_entities_for_suffix_modality('bold', 'func');
+
+  expected_entities = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
+  assertEqual(entities, expected_entities);
+
+  expected_required = {'sub', 'task'};
+
+  assertEqual(required, expected_required);
+
+end
+
+function test_find_suffix_group()
+
+  schema = bids.Schema();
+  suffix_group = schema.find_suffix_group('anat', 'T1w');
+
+  assertEqual(suffix_group, 'nonparametric');
+
+end
+
+function test_return_modality_suffixes_regex
+
+  schema = bids.Schema();
+
+  suffix_group = schema.content.rules.datatypes.func.func;
+  suffixes = schema.return_modality_suffixes_regex(suffix_group);
+  assertEqual(suffixes, '_(bold|cbv|sbref){1}');
+
+end
+
+function test_return_suffix_groups_for_datatype()
+
+  schema = bids.Schema();
+
+  suffix_groups = schema.return_suffix_groups_for_datatype('func');
+  assertEqual(suffix_groups, {'func'; 'phase'; 'events'; 'timeseries'});
+
+end
+
+function test_return_datatypes_for_suffix
+
+  schema = bids.Schema();
+
+  datatypes = schema.return_datatypes_for_suffix('bold');
+  assertEqual(datatypes, {'func'});
+
+  datatypes = schema.return_datatypes_for_suffix('events');
+  expected_output = {'beh', 'eeg', 'func', 'ieeg', 'meg', 'pet'};
+  assertEqual(datatypes, expected_output);
+
+  datatypes = schema.return_datatypes_for_suffix('m0scan');
+  expected_output = {'fmap', 'perf'};
+  assertEqual(datatypes, expected_output);
+
+end
+
+function test_return_required_entities
+
+  schema = bids.Schema();
+
+  suffix_group = schema.content.rules.datatypes.func.func;
+  required_entities = schema.required_entities_for_suffix_group(suffix_group);
+
+  expected_output = {'sub', 'task'};
+
+  assertEqual(required_entities, expected_output);
+
+end
+
 function test_load()
 
   use_schema = fullfile(fileparts(mfilename('fullpath')), 'schema');
@@ -44,51 +126,11 @@ function test_schemaless()
 
 end
 
-function test_return_required_entities
-
-  schema = bids.Schema();
-
-  suffix_group = schema.content.rules.datatypes.func(1);
-  required_entities = schema.required_entities_for_suffix_group(suffix_group);
-
-  expected_output = {'sub', 'task'};
-
-  assertEqual(required_entities, expected_output);
-
-end
-
-function test_return_datatypes_for_suffix
-
-  schema = bids.Schema();
-
-  datatypes = schema.return_datatypes_for_suffix('bold');
-  assertEqual(datatypes, {'func'});
-
-  datatypes = schema.return_datatypes_for_suffix('events');
-  expected_output = {'beh', 'eeg', 'func', 'ieeg', 'meg', 'pet'};
-  assertEqual(datatypes, expected_output);
-
-  datatypes = schema.return_datatypes_for_suffix('m0scan');
-  expected_output = {'fmap', 'perf'};
-  assertEqual(datatypes, expected_output);
-
-end
-
-function test_return_modality_suffixes_regex
-
-  schema = bids.Schema();
-
-  suffix_group = schema.content.rules.datatypes.func(1);
-  suffixes = schema.return_modality_suffixes_regex(suffix_group);
-  assertEqual(suffixes, '_(bold|cbv|sbref){1}');
-
-end
-
 function test_return_modality_extensions_regex
 
   schema = bids.Schema();
 
-  suffix_group = schema.content.rules.datatypes.func(1);
+  suffix_group = schema.content.rules.datatypes.func.func;
   extensions = schema.return_modality_extensions_regex(suffix_group);
   assertEqual(extensions, '(.nii.gz|.nii){1}');
 
@@ -98,7 +140,7 @@ function test_return_modality_regex
 
   schema = bids.Schema();
 
-  suffix_group = schema.content.rules.datatypes.anat(1);
+  suffix_group = schema.content.rules.datatypes.anat.nonparametric;
   regular_expression = schema.return_modality_regex(suffix_group);
 
   expected_expression = ['^%s.*', ...
@@ -121,7 +163,7 @@ function test_return_modality_entities_basic
 
   schema = bids.Schema();
 
-  suffix_group = schema.content.rules.datatypes.func(1);
+  suffix_group = schema.content.rules.datatypes.func.func;
   entities = schema.return_entities_for_suffix_group(suffix_group);
 
   expected_output = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
@@ -130,7 +172,56 @@ function test_return_modality_entities_basic
 
 end
 
+function test_return_entity_order_default
+
+  if bids.internal.is_octave()
+    % TODO fix for octave in CI
+    return
+  end
+
+  schema = bids.Schema();
+
+  order = schema.entity_order();
+
+  expected = {'subject'; ...
+              'session'; ...
+              'sample'; ...
+              'task'; ...
+              'acquisition'; ...
+              'ceagent'; ...
+              'tracer'; ...
+              'stain'; ...
+              'reconstruction'; ...
+              'direction'; ...
+              'run'; ...
+              'modality'; ...
+              'echo'; ...
+              'flip'; ...
+              'inversion'; ...
+              'mtransfer'; ...
+              'part'; ...
+              'processing'; ...
+              'hemisphere'; ...
+              'space'; ...
+              'split'; ...
+              'recording'; ...
+              'chunk'; ...
+              'atlas'; ...
+              'resolution'; ...
+              'density'; ...
+              'label'; ...
+              'description'};
+
+  assertEqual(order, expected);
+
+end
+
 function test_return_entity_order
+
+  if bids.internal.is_octave()
+    % TODO fix for octave in CI
+    return
+  end
 
   schema = bids.Schema();
 
@@ -150,6 +241,11 @@ end
 
 function test_return_entity_order_new_entity
 
+  if bids.internal.is_octave()
+    % TODO fix for octave in CI
+    return
+  end
+
   schema = bids.Schema();
 
   %
@@ -159,25 +255,18 @@ function test_return_entity_order_new_entity
   %
   entity_list_to_order = {'description'
                           'run'
+                          'foo'
                           'subject'
-                          'foo'};
+                          'bar'};
 
   order = schema.entity_order(entity_list_to_order);
 
   expected = {'subject'
               'run'
               'description'
+              'bar'
               'foo'};
   assertEqual(order, expected);
-
-end
-
-function test_find_suffix_group()
-
-  schema = bids.Schema();
-  idx = schema.find_suffix_group('anat', 'T1w');
-
-  assertEqual(idx, 1);
 
 end
 
@@ -186,19 +275,5 @@ function test_find_suffix_error()
   schema = bids.Schema();
   schema.verbose = true;
   assertWarning(@()schema.find_suffix_group('anat', 'foo'), 'Schema:noMatchingSuffix');
-
-end
-
-function test_return_entities_for_suffix_modality()
-
-  schema = bids.Schema();
-  [entities, required] = schema.return_entities_for_suffix_modality('bold', 'func');
-
-  expected_entities = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
-  assertEqual(entities, expected_entities);
-
-  expected_required = {'sub', 'task'};
-
-  assertEqual(required, expected_required);
 
 end

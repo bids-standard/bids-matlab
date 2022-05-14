@@ -6,6 +6,20 @@ function test_suite = test_append_to_layout %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_missing_subgroup()
+
+  % See https://github.com/bids-standard/bids-matlab/issues/363
+
+  synthetic_derivatives = fullfile(get_test_data_dir(), '..', ...
+                                   'data', 'synthetic', 'derivatives', 'manual');
+
+  if ~bids.internal.is_octave % skipping because Octave:mixed-string-concat
+    assertWarning(@()bids.layout(synthetic_derivatives, 'verbose', true), ...
+                  'append_to_layout:unknownSuffix');
+  end
+
+end
+
 function test_append_to_layout_schema_unknown_entity()
 
   if ~bids.internal.is_octave()

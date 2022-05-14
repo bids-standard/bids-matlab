@@ -103,16 +103,24 @@ end
 
 function test_report_moae_data()
 
-  % temporary silence
-  return
+  % no spm in CI
+  if bids.internal.is_github_ci()
+    return
+  end
 
   cfg = set_up();
 
   cfg.read_nifti = true;
 
-  BIDS = fullfile(bids.internal.root_dir(), 'examples', 'MoAEpilot');
+  bu_folder = fixture_moae();
 
-  BIDS = bids.layout(BIDS, 'use_schema', true);
+  bids.util.download_ds('source', 'spm', ...
+                        'demo', 'moae', ...
+                        'force', true, ...
+                        'verbose', false, ...
+                        'delete_previous', true);
+
+  BIDS = bids.layout(moae_dir(), 'use_schema', true);
 
   report = bids.report(BIDS, ...
                        'output_path', cfg.output_path, ...
@@ -127,6 +135,8 @@ function test_report_moae_data()
     return
   end
   assertEqual(content, expected);
+
+  teardown_moae(bu_folder);
 
 end
 

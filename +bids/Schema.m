@@ -11,6 +11,8 @@ classdef Schema
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  % TODO use schema to access regular expressions
+
   properties
     content
 
@@ -90,24 +92,16 @@ classdef Schema
 
           for j = 1:numel(mods)
 
-            suffix_grps = datatypes.(mods{j});
-            % need to use a tmp variable to avoid some errors in continuous
-            % integration to avoid some errors with octave
-            updated_suffix_grps = struct('suffixes', [], ...
-                                         'extensions', [], ...
-                                         'entities', [], ...
-                                         'required_entities', []);
+            suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
 
-            for k = 1:numel(suffix_grps)
-              this_suffix_group = obj.ci_check(suffix_grps(k));
+            for k = 1:numel(suffix_groups)
+              this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
               required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
-              this_suffix_group.required_entities = required_entities;
-              updated_suffix_grps(k, 1) = this_suffix_group;
+              datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
             end
 
-            datatypes.(mods{j}) = updated_suffix_grps;
-
           end
+
         end
 
         obj = obj.set_datatypes(datatypes);
@@ -142,7 +136,57 @@ classdef Schema
     end
 
     %% ENTITIES
-    function order = entity_order(obj, entity_list)
+    function order = entity_order(obj, varargin)
+      %
+      % Returns the 'correct' order for entities of entity list. If there are
+      % non BIDS entities they are added after the BIDS ones in alphabetical
+      % order.
+      %
+      % USAGE::
+      %
+      %     order = schema.entity_order(entity_list)
+      %
+      %
+      % EXAMPLE::
+      %
+      %     schema = bids.Schema();
+      %
+      %     %  get the order of all the BIDS entities
+      %     order = schema.entity_order()
+      %
+      %
+      %     % reorder typical BIDS entities
+      %     entity_list_to_order = {'description'
+      %                             'run'
+      %                             'subject'};
+      %     order = schema.entity_order(entity_list_to_order)
+      %
+      %         {'subject'
+      %          'run'
+      %          'description'};
+      %
+      %     % reorder non-BIDS and typical BIDS entities
+      %     entity_list_to_order = {'description'
+      %                             'run'
+      %                             'foo'
+      %                             'subject'};
+      %     order = schema.entity_order(entity_list_to_order)
+      %
+      %         {'subject'
+      %          'run'
+      %          'description'
+      %          'foo'};
+      %
+
+      default_list = fieldnames(obj.content.objects.entities);
+
+      ischar_or_iscell = @(x) ischar(x) || iscellstr(x);
+
+      args = inputParser;
+      args.addOptional('entity_list', default_list, ischar_or_iscell);
+      args.parse(varargin{:});
+
+      entity_list = args.Results.entity_list;
 
       if ischar(entity_list)
         entity_list = cellstr(entity_list);
@@ -152,7 +196,33 @@ classdef Schema
       is_in_schema = ismember(order, entity_list);
       is_not_in_schema = ~ismember(entity_list, order);
       order = order(is_in_schema);
-      order = cat(1, order, entity_list(is_not_in_schema));
+      order = cat(1, order, sort(entity_list(is_not_in_schema)));
+
+    end
+
+    function key = return_entity_key(obj, entity)
+      %
+      % Returns the key of an entity
+      %
+      % USAGE::
+      %
+      %     key = schema.return_entity_key(entity)
+      %
+      % EXAMPLE::
+      %
+      %     key = schema.return_entity_key('description')
+      %
+      %         'desc'
+      %
+
+      if ~ismember(entity, fieldnames(obj.content.objects.entities))
+        msg = sprintf('No entity ''%s'' in schema.\n Available entities are:\n- ', ...
+                      entity, ...
+                      strjoin(fieldnames(obj.content.objects.entities), '\n- '));
+        bids.internal.error_handling(mfilename, 'UnknownEnitity', msg, false);
+      end
+
+      key = obj.content.objects.entities.(entity).entity;
 
     end
 
@@ -170,6 +240,17 @@ classdef Schema
 
     % ----------------------------------------------------------------------- %
     %% SUFFIX GROUP
+
+    function  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      %
+      % USAGE::
+      %
+      %  suffix_groups = schema.return_suffix_groups_for_datatype('func')
+      %
+
+      all_datatypes = obj.get_datatypes();
+      suffix_groups = fieldnames(all_datatypes.(datatype));
+    end
 
     function entities = return_entities_for_suffix_group(obj, suffix_group)
       suffix_group = obj.ci_check(suffix_group);
@@ -216,40 +297,51 @@ classdef Schema
 
     end
 
-    function idx = find_suffix_group(obj, modality, suffix)
+    function suffix_group = find_suffix_group(obj, modality, suffix)
       %
       % For a given sufffix and modality, this returns the "suffix group" this
       % suffix belongs to
       %
       % USAGE::
       %
-      %  idx = schema.find_suffix_group(modality, suffix)
+      %  suffix_group = schema.find_suffix_group(modality, suffix)
+      %
+      % EXAMPLE::
+      %
+      %     schema = bids.Schema();
+      %     suffix_group = schema.find_suffix_group('anat', 'T1w');
+      %     suffix_group
+      %
+      %         'nonparametric'
       %
 
-      idx = [];
+      suffix_group = '';
 
       if isempty(obj.content)
         return
       end
 
-      % the following loop could probably be improved with some cellfun magic
-      %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
       datatypes = obj.get_datatypes();
-      for i = 1:size(datatypes.(modality), 1)
-        this_suffix_group = datatypes.(modality)(i);
+
+      suffix_groups = obj.return_suffix_groups_for_datatype(modality);
+
+      for i = 1:numel(suffix_groups)
+
+        this_suffix_group = datatypes.(modality).(suffix_groups{i});
         this_suffix_group = obj.ci_check(this_suffix_group);
         if any(strcmp(suffix, this_suffix_group.suffixes))
-          idx = i;
+          suffix_group = suffix_groups{i};
           break
         end
       end
 
-      if isempty(idx)
-        msg = sprintf('No corresponding suffix in schema for %s for datatype %s', ...
+      if strcmp(suffix_group, '')
+        msg = sprintf('No corresponding suffix in schema for ''%s'' for datatype ''%s''\n', ...
                       suffix, ...
                       modality);
         bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, obj.verbose);
       end
+
     end
 
     % ----------------------------------------------------------------------- %
@@ -276,13 +368,25 @@ classdef Schema
 
       for i = 1:numel(datatypes_names)
 
-        this_datatype = all_datatypes.(datatypes_names{i});
-        this_datatype = obj.ci_check(this_datatype);
+        this_datatype = datatypes_names{i};
 
-        suffix_list = cat(1, this_datatype.suffixes);
+        % TODO deal with derivatives
+        if strcmp(this_datatype, 'derivatives')
+          continue
+        end
 
-        if any(ismember(suffix_list, suffix))
-          datatypes{end + 1} = datatypes_names{i};
+        suffix_groups = obj.return_suffix_groups_for_datatype(this_datatype);
+
+        for j = 1:numel(suffix_groups)
+
+          this_suffix_group = suffix_groups{j};
+          datatype_spec = obj.ci_check(all_datatypes.(this_datatype).(this_suffix_group));
+
+          suffix_list = cat(1, datatype_spec.suffixes);
+
+          if any(ismember(suffix_list, suffix))
+            datatypes{end + 1} = this_datatype;
+          end
         end
 
       end
@@ -297,15 +401,15 @@ classdef Schema
       %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
       %
 
-      idx = obj.find_suffix_group(modality, suffix);
+      suffix_group = obj.find_suffix_group(modality, suffix);
 
       datatypes = obj.get_datatypes();
 
-      if ~isempty(idx)
-        this_suffix_group = datatypes.(modality)(idx);
+      if ~isempty(suffix_group)
+        this_suffix_group = datatypes.(modality).(suffix_group);
       end
 
-      if ~isempty(idx)
+      if ~isempty(suffix_group)
         required = obj.required_entities_for_suffix_group(this_suffix_group);
         entities = obj.return_entities_for_suffix_group(this_suffix_group);
       end
@@ -389,7 +493,7 @@ classdef Schema
       %
       % USAGE::
       %
-      %   structure = inspect_subdir(obj, structure, subdir_list)
+      %   structure = schema.inspect_subdir(structure, subdir_list)
       %
 
       for iDir = 1:size(subdir_list, 1)
