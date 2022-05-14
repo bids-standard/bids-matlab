@@ -43,7 +43,6 @@ The rules outlined below are inspired by the
 and heavily depend on the
 [GitHub Pull Request Review system](https://help.github.com/articles/about-pull-requests/).
 
-
 ## Rules
 
 1. Every modification of the specification (including a correction of a typo,
@@ -103,12 +102,13 @@ The `main` branch holds the stable version of the toolbox.
 The `dev` branch is where the latest version can be fetched.
 
 Version bumps and new releases are triggered:
+
 - by hotfixes of bug
 - by a merge of the develop branch in the main branch.
 
 A diagram version of the decision-making flow we are aiming for is shown below. ([source](https://blog.axosoft.com/gitflow/))
 
-![git_flow](commenting_images/gitflow_diagram.png "gitflow_diagram")
+![git_flow](images/gitflow_diagram.png "gitflow_diagram")
 
 #### Conditions for merge into `dev`
 
@@ -125,6 +125,7 @@ Conditions:
 Eventually though this technical debt must be paid back before a new release and merging into the main branch.
 
 Conditions:
+
 - All unit and integration tests must pass.
 - All checks for code style and quality must pass.
 

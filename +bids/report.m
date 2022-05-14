@@ -47,29 +47,29 @@ function filename = report(varargin)
   default_read_nifti = false;
   default_verbose = false;
 
-  p = inputParser;
+  args = inputParser;
 
   charOrStruct = @(x) ischar(x) || isstruct(x);
 
-  addOptional(p, 'BIDS', default_BIDS, charOrStruct);
-  addParameter(p, 'output_path', default_output_path, @ischar);
-  addParameter(p, 'filter', default_filter, @isstruct);
-  addParameter(p, 'read_nifti', default_read_nifti);
-  addParameter(p, 'verbose', default_verbose);
+  addOptional(args, 'BIDS', default_BIDS, charOrStruct);
+  addParameter(args, 'output_path', default_output_path, @ischar);
+  addParameter(args, 'filter', default_filter, @isstruct);
+  addParameter(args, 'read_nifti', default_read_nifti);
+  addParameter(args, 'verbose', default_verbose);
 
-  parse(p, varargin{:});
+  parse(args, varargin{:});
 
-  BIDS = bids.layout(p.Results.BIDS);
+  BIDS = bids.layout(args.Results.BIDS);
 
-  filter = check_filter(BIDS, p);
+  filter = check_filter(BIDS, args);
 
   nb_sub = numel(filter.sub);
 
-  read_nii = p.Results.read_nifti & exist('spm_vol', 'file') == 2;
+  read_nii = args.Results.read_nifti & exist('spm_vol', 'file') == 2;
 
-  [file_id, filename] = open_output_file(BIDS, p.Results.output_path, p.Results.verbose);
+  [file_id, filename] = open_output_file(BIDS, args.Results.output_path, args.Results.verbose);
 
-  if p.Results.verbose
+  if args.Results.verbose
     fprintf(1, '\n%s\n', repmat('-', 80, 1));
   end
 
@@ -90,7 +90,7 @@ function filename = report(varargin)
 
       if numel(sessions) > 1
         text = sprintf('\n Working on session: %s\n', this_filter.ses);
-        print_to_output(text, file_id, p.Results.verbose);
+        print_to_output(text, file_id, args.Results.verbose);
       end
 
       modalities = bids.query(BIDS, 'modalities', this_filter);
@@ -101,24 +101,24 @@ function filename = report(varargin)
 
         print_to_output([upper(this_filter.modality{1}) ' REPORT'], ...
                         file_id, ...
-                        p.Results.verbose);
+                        args.Results.verbose);
 
         switch this_filter.modality{1}
 
           case  {'anat', 'perf', 'dwi', 'fmap', 'pet'}
-            report_nifti(BIDS, this_filter, read_nii, p.Results.verbose, file_id);
+            report_nifti(BIDS, this_filter, read_nii, args.Results.verbose, file_id);
 
           case  {'func'}
-            report_func(BIDS, this_filter, read_nii, p.Results.verbose, file_id);
+            report_func(BIDS, this_filter, read_nii, args.Results.verbose, file_id);
 
           case  {'eeg', 'meg', 'ieeg'}
-            report_meeg(BIDS, this_filter, p.Results.verbose, file_id);
+            report_meeg(BIDS, this_filter, args.Results.verbose, file_id);
 
           case  {'beh'}
-            not_supported(this_filter.modality{1}, p.Results.verbose);
+            not_supported(this_filter.modality{1}, args.Results.verbose);
 
           otherwise
-            not_supported(this_filter.modality{1}, p.Results.verbose);
+            not_supported(this_filter.modality{1}, args.Results.verbose);
 
         end
 
@@ -128,7 +128,7 @@ function filename = report(varargin)
 
   end
 
-  print_text('credit', file_id, p.Results.verbose);
+  print_text('credit', file_id, args.Results.verbose);
 
 end
 
@@ -316,9 +316,9 @@ function not_supported(thing_not_supported, verbose)
                                verbose);
 end
 
-function filter = check_filter(BIDS, p)
+function filter = check_filter(BIDS, args)
 
-  filter = p.Results.filter;
+  filter = args.Results.filter;
 
   if ~isfield(filter, 'sub')
     filter.sub = '';

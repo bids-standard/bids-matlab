@@ -24,7 +24,7 @@ end
 
 function test_model_default_model()
 
-  if bids.internal.is_octave() && bids.internal.is_github_ci()
+  if bids.internal.is_octave()
     % TODO fix for octave in CI
     return
   end
@@ -46,7 +46,7 @@ end
 
 function test_model_validate()
 
-  if bids.internal.is_octave() && bids.internal.is_github_ci()
+  if bids.internal.is_octave()
     % TODO fix Octave error in CI
     % failure: warning 'Octave:mixed-string-concat' was raised,
     % expected 'Model:missingField'. Stack trace:

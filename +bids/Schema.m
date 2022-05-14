@@ -93,24 +93,15 @@ classdef Schema
           for j = 1:numel(mods)
 
             suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
-            % need to use a tmp variable to avoid some errors with octave
-            % in continuous integration
-            updated_suffix_grps = struct('suffixes', [], ...
-                                         'extensions', [], ...
-                                         'entities', [], ...
-                                         'required_entities', []);
 
             for k = 1:numel(suffix_groups)
               this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
               required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
-              %               this_suffix_group.required_entities = required_entities;
-              % updated_suffix_grps(k, 1) = this_suffix_group;
               datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
             end
 
-            %             datatypes.(mods{j}).(suffix_grps{k}) = updated_suffix_grps;
-
           end
+
         end
 
         obj = obj.set_datatypes(datatypes);
@@ -145,7 +136,57 @@ classdef Schema
     end
 
     %% ENTITIES
-    function order = entity_order(obj, entity_list)
+    function order = entity_order(obj, varargin)
+      %
+      % Returns the 'correct' order for entities of entity list. If there are
+      % non BIDS entities they are added after the BIDS ones in alphabetical
+      % order.
+      %
+      % USAGE::
+      %
+      %     order = schema.entity_order(entity_list)
+      %
+      %
+      % EXAMPLE::
+      %
+      %     schema = bids.Schema();
+      %
+      %     %  get the order of all the BIDS entities
+      %     order = schema.entity_order()
+      %
+      %
+      %     % reorder typical BIDS entities
+      %     entity_list_to_order = {'description'
+      %                             'run'
+      %                             'subject'};
+      %     order = schema.entity_order(entity_list_to_order)
+      %
+      %         {'subject'
+      %          'run'
+      %          'description'};
+      %
+      %     % reorder non-BIDS and typical BIDS entities
+      %     entity_list_to_order = {'description'
+      %                             'run'
+      %                             'foo'
+      %                             'subject'};
+      %     order = schema.entity_order(entity_list_to_order)
+      %
+      %         {'subject'
+      %          'run'
+      %          'description'
+      %          'foo'};
+      %
+
+      default_list = fieldnames(obj.content.objects.entities);
+
+      ischar_or_iscell = @(x) ischar(x) || iscellstr(x);
+
+      args = inputParser;
+      args.addOptional('entity_list', default_list, ischar_or_iscell);
+      args.parse(varargin{:});
+
+      entity_list = args.Results.entity_list;
 
       if ischar(entity_list)
         entity_list = cellstr(entity_list);
@@ -155,7 +196,33 @@ classdef Schema
       is_in_schema = ismember(order, entity_list);
       is_not_in_schema = ~ismember(entity_list, order);
       order = order(is_in_schema);
-      order = cat(1, order, entity_list(is_not_in_schema));
+      order = cat(1, order, sort(entity_list(is_not_in_schema)));
+
+    end
+
+    function key = return_entity_key(obj, entity)
+      %
+      % Returns the key of an entity
+      %
+      % USAGE::
+      %
+      %     key = schema.return_entity_key(entity)
+      %
+      % EXAMPLE::
+      %
+      %     key = schema.return_entity_key('description')
+      %
+      %         'desc'
+      %
+
+      if ~ismember(entity, fieldnames(obj.content.objects.entities))
+        msg = sprintf('No entity ''%s'' in schema.\n Available entities are:\n- ', ...
+                      entity, ...
+                      strjoin(fieldnames(obj.content.objects.entities), '\n- '));
+        bids.internal.error_handling(mfilename, 'UnknownEnitity', msg, false);
+      end
+
+      key = obj.content.objects.entities.(entity).entity;
 
     end
 
@@ -248,14 +315,12 @@ classdef Schema
       %         'nonparametric'
       %
 
-      suffix_group = "";
+      suffix_group = '';
 
       if isempty(obj.content)
         return
       end
 
-      % the following loop could probably be improved with some cellfun magic
-      %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
       datatypes = obj.get_datatypes();
 
       suffix_groups = obj.return_suffix_groups_for_datatype(modality);
@@ -270,10 +335,12 @@ classdef Schema
         end
       end
 
-      msg = sprintf('No corresponding suffix in schema for %s for datatype %s', ...
-                    suffix, ...
-                    modality);
-      bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, obj.verbose);
+      if strcmp(suffix_group, '')
+        msg = sprintf('No corresponding suffix in schema for ''%s'' for datatype ''%s''\n', ...
+                      suffix, ...
+                      modality);
+        bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, obj.verbose);
+      end
 
     end
 
