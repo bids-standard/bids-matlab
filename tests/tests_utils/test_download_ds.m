@@ -8,14 +8,7 @@ end
 
 function test_download_ds_basic()
 
-  target_dir = bids.internal.file_utils(fullfile(get_test_data_dir(), ...
-                                                 '..', '..', ...
-                                                 'demos', 'spm', 'moae'), ...
-                                        'cpath');
-
-  % back up content
-  tmp = tempname;
-  copyfile(target_dir, tmp);
+  bu_folder = fixture_moae();
 
   pth = bids.util.download_ds('source', 'spm', ...
                               'demo', 'moae', ...
@@ -23,12 +16,8 @@ function test_download_ds_basic()
                               'verbose', false, ...
                               'delete_previous', true);
 
-  bids.layout(target_dir);
+  bids.layout(pth);
 
-  % remove data
-  rmdir(pth, 's');
-
-  % bring backup back
-  copyfile(tmp, target_dir);
+  teardown_moae(bu_folder);
 
 end

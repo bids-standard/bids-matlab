@@ -106,7 +106,7 @@ end
 
 function test_copy_to_derivative_unzip
 
-  [pth, out_path, filter, cfg] = fixture('MoAEpilot');
+  [pth, out_path, filter, cfg, bu_folder] = fixture('MoAEpilot');
 
   pipeline_name = 'bids-matlab';
   unzip = true;
@@ -131,7 +131,7 @@ function test_copy_to_derivative_unzip
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
 
-  % teardown(out_path);
+  teardown_moae(bu_folder);
 
   % rmdir(pth, 's');
 
@@ -222,7 +222,9 @@ function test_copy_to_derivative_sessions_scans_tsv
 
 end
 
-function [BIDS, out_path, filter, cfg] = fixture(dataset)
+function [BIDS, out_path, filter, cfg, bu_folder] = fixture(dataset)
+
+  bu_folder = '';
 
   cfg = set_test_cfg();
 
@@ -265,14 +267,17 @@ function [BIDS, out_path, filter, cfg] = fixture(dataset)
 
     case 'MoAEpilot'
 
-      BIDS = fullfile(get_test_data_dir(), '..', '..', 'demos', 'spm', 'moae', 'MoAEpilot');
+      BIDS = moae_dir();
 
-      if ~isdir(BIDS)
+      if ~isdir(fullfile(BIDS, 'sub-01'))
 
-        BIDS = bids.util.download_ds('source', 'spm', ...
-                                     'demo', 'moae', ...
-                                     'force', false, ...
-                                     'verbose', false);
+        bu_folder = fixture_moae();
+
+        bids.util.download_ds('source', 'spm', ...
+                              'demo', 'moae', ...
+                              'force', true, ...
+                              'verbose', false, ...
+                              'delete_previous', true);
       end
 
       anat = fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii');
