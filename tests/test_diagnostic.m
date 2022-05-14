@@ -17,7 +17,7 @@ function test_diagnostic_basic()
   data_sets_to_test = '^ds000.*[0-9]$'; % '^ds.*[0-9]$'
   examples = bids.internal.file_utils('FPList', get_test_data_dir(), 'dir', data_sets_to_test);
 
-  for i = 1 % :size(examples, 1)
+  for i = 1:size(examples, 1)
 
     BIDS = bids.layout(deblank(examples(i, :)));
 
