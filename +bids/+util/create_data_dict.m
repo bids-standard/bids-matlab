@@ -1,15 +1,23 @@
 function data_dict = create_data_dict(varargin)
   %
-  % Create a data dictionnary for a TSV file
+  % Create a data dictionnary for a TSV file. The output may need manual
+  % cleaning.
   %
-  % data_dict = bids.util.create_data_dict(tsv_file, ...
-  %                                        'output', [], ...
-  %                                        'schema', true, ...
-  %                                        'force', false, ...
-  %                                        'level_limit', 10);
+  % To create better data dictionaries, please see the tools
+  % for `hierarchical event descriptions <https://hedtools.ucsd.edu/hed/>`_.
+  %
+  % USAGE::
+  %
+  %   data_dict = bids.util.create_data_dict(tsv_file, ...
+  %                                          'output', [], ...
+  %                                          'schema', true, ...
+  %                                          'force', false, ...
+  %                                          'level_limit', 10, ...
+  %                                          'verbose', true);
   %
   %
-  % :param output:           filename for the output file
+  % :param output:          filename for the output files. Can pass be a cell
+  %                         string of paths
   %
   % :param force:           If set to ``false`` it will not overwrite any file already
   %                         present in the destination.
@@ -18,6 +26,23 @@ function data_dict = create_data_dict(varargin)
   % :param schema:          If set to ``true`` it will use the schema to try to
   %                         find definitions for the column headers
   % :type  schema:          boolean or a schema object
+  %
+  % :param level_limit:     Maximum number of levels to list. Defauts to 10;
+  % :type  level_limit:
+  %
+  %
+  % EXAMPLE::
+  %
+  %   BIDS = bids.layout(pth_bids_example, 'ds001'));
+  %
+  %   tsv_files = bids.query(BIDS, 'data', ...
+  %                          'sub', '01', ...
+  %                          'suffix', 'events');
+  %
+  %   data_dict = bids.util.create_data_dict(tsv_files{1}, ...
+  %                                          'output', 'tmp.json', ...
+  %                                          'schema', true);
+  %
   %
   %
   % (C) Copyright 2021 Remi Gau
@@ -63,7 +88,7 @@ function data_dict = create_data_dict(varargin)
 
   for i = 1:numel(headers)
     data_dict.(headers{i}) = set_dict(headers{i}, schema);
-    data_dict = add_levels_description(data_dict, headers{i}, content, level_limit);
+    data_dict = add_levels_desc(data_dict, headers{i}, content, level_limit, verbose);
   end
 
   if ~isempty(output)
@@ -82,6 +107,9 @@ function content = get_content_from_tsv_files(tsv_file)
 
   content = bids.util.tsvread(tsv_file{1});
 
+  % if there is more than one TSV file,
+  % the content of all files is concatenated together
+  % to create a single data dictionnary across TSVfiles.
   if numel(tsv_file) > 1
 
     for f = 2:numel(tsv_file)
@@ -119,6 +147,7 @@ function content = get_content_from_tsv_files(tsv_file)
 
         content.(headers{h}) = cat(1, append_to, to_append);
 
+        % ???
         if (ischar(content.(headers{h})) || iscellstr(content.(headers{h}))) && ...
             any(strcmp(content.(headers{h}), ' '))
         end
@@ -131,10 +160,12 @@ function content = get_content_from_tsv_files(tsv_file)
 
 end
 
-function json_content = add_levels_description(json_content, header, tsv_content, level_limit)
+function json_content = add_levels_desc(json_content, header, tsv_content, level_limit, verbose)
 
   levels = unique(tsv_content.(header));
 
+  % we do not list non integer numeric values
+  % as this is most likely not categorical
   if numel(levels) > level_limit || ...
      (isnumeric(levels) && not(all(isinteger(levels))))
     return
@@ -150,11 +181,21 @@ function json_content = add_levels_description(json_content, header, tsv_content
       this_level = this_level{1};
     end
 
+    if strcmp(this_level, 'n/a')
+      continue
+    end
+
+    level_name_before = this_level;
+
+    % assume that numeric values (should be integers) are dummy coding for
+    % something categorical
+    % if not the user will have some clean up to do manually
     if isnumeric(this_level)
       % add a prefix because fieldnames cannot be numbers in matlab
       this_level = ['level_' num2str(this_level)];
     end
 
+    % remove any illegal character to turn it into a valid structure fieldname
     this_level = regexprep(this_level, '[^a-zA-Z0-9]', '_');
 
     pre = regexprep(this_level(1), '[0-9_]', ['level_' this_level(1)]);
@@ -165,7 +206,15 @@ function json_content = add_levels_description(json_content, header, tsv_content
     end
 
     if strcmp(this_level, '_')
+      bids.internal.error_handling(mfilename(), 'skippingLevel', ...
+                                   sprintf('\nSkipping level %s.', level_name_before), ...
+                                   true, ...
+                                   verbose);
       continue
+    end
+
+    if ~strcmp(level_name_before, this_level)
+      warning_modified_level_name(level_name_before, header, this_level, verbose);
     end
 
     json_content.(header).Levels.(this_level) = 'TODO';
@@ -174,7 +223,16 @@ function json_content = add_levels_description(json_content, header, tsv_content
 
 end
 
+function warning_modified_level_name(level, header, new_name, verbose)
+  tolerant = true;
+  msg = sprintf('Level "%s" of column "%s" modified to "%s"\n', level, header, new_name);
+  bids.internal.error_handling(mfilename(), 'modifiedLevel', msg, tolerant, verbose);
+end
+
 function dict = set_dict(header, schema)
+  %
+  % get default description from the schema
+  %
 
   dict = default_dict(header);
 

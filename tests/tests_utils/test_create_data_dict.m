@@ -60,6 +60,31 @@ function test_create_data_dict_schema()
 
 end
 
+function test_create_data_dict_warning
+
+  dataset = 'ds000248';
+
+  schema = bids.Schema();
+  schema.load_schema_metadata = true;
+  schema = schema.load();
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, dataset));
+
+  tasks =  bids.query(BIDS, 'tasks');
+
+  tsv_files = bids.query(BIDS, 'data', ...
+                         'task', tasks{1}, ...
+                         'suffix', 'events');
+
+  assertWarning(@()bids.util.create_data_dict(tsv_files, ...
+                                              'schema', schema, ...
+                                              'level_limit', 50), ...
+                'create_data_dict:modifiedLevel');
+
+end
+
 function test_create_data_dict_several_tsv()
 
   %% WITH SCHEMA
@@ -113,8 +138,6 @@ function test_create_data_dict_several_tsv()
               'ds002'; ...
               'ds051'  };
 
-  dataset = 'ds008';
-
   schema = bids.Schema();
   schema.load_schema_metadata = true;
   schema = schema.load();
@@ -138,7 +161,8 @@ function test_create_data_dict_several_tsv()
       data_dict = bids.util.create_data_dict(tsv_files, ...
                                              'output', [dataset '_' tasks{i_task} '.json'], ...
                                              'schema', schema, ...
-                                             'level_limit', 50);
+                                             'level_limit', 50, ...
+                                             'verbose', false);
 
     end
 
