@@ -49,9 +49,6 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
         'XTickLabelRotation', 25);
   end
 
-  ca = gca;
-  ca.XAxis.MinorTickValues = ca.XAxis.TickValues;
-
   % y axis
   set(gca, 'yTick', 1:nb_rows);
 
@@ -74,6 +71,9 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
   x_borders = [[2:nb_cols]', [2:nb_cols]'] - 0.5;
   plot(x_borders, y_borders, '-w');
 
+  %   % tried using grid to use as borders
+  %   % but there seems to always be the main grid overlaid on the values
+  %
   %   set(gca, 'XMinorGrid', 'on', 'YMinorGrid', 'off', ...
   %             'MinorGridColor', 'w', ...
   %             'MinorGridAlpha', 0.5, ...
@@ -82,7 +82,8 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
   %             'Layer', 'top');
   %
   %   ca = gca;
-  %   ca.XAxis.TickValues
+  %
+  %   % the following lines crash on Octave
   %   ca.XAxis.MinorTickValues = ca.XAxis.TickValues(1:) + 0.5;
   %   ca.YAxis.MinorTickValues = ca.YAxis.TickValues + 0.5;
 
