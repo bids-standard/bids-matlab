@@ -2,7 +2,10 @@
   "README": {
     "required": true,
     "extensions": [
-      "None"
+      "None",
+      ".md",
+      ".rst",
+      ".txt"
     ]
   },
   "CHANGES": {

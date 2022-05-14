@@ -146,8 +146,7 @@ function copy_participants_tsv(BIDS, derivatives_folder, p)
   %
   % Very "brutal" approach where we copy the whole file
   %
-  % TODO:
-  %   -  if only certain subjects are copied only copy those entries from the TSV
+  % TODO: if only certain subjects are copied only copy those entries from the TSV
   %
 
   if ~isempty(BIDS.participants)
@@ -187,8 +186,7 @@ function copy_session_scan_tsv(BIDS, derivatives_folder, p)
   %
   % Very "brutal" approach wehere we copy the whole file
   %
-  % TODO:
-  %   -  only copy the entries of the sessions / files that are copied
+  % TODO: only copy the entries of the sessions / files that are copied
   %
 
   % identify in the BIDS layout the subjects / sessions combination that we
@@ -285,8 +283,7 @@ end
 
 function copy_with_symlink(src, target, unzip_files, verbose)
   %
-  % TODO:
-  % - test with actual datalad datasets on all OS
+  % TODO: test with actual datalad datasets on all OS
   %
 
   if verbose
@@ -309,11 +306,11 @@ function copy_with_symlink(src, target, unzip_files, verbose)
     end
 
   elseif ispc
-    msg = 'Unknown system: copy may fail';
-    bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
     use_copyfile(src, target, unzip_files, verbose);
 
   else
+    msg = 'Unknown system: copy may fail';
+    bids.internal.error_handling(mfilename, 'copyError', msg, true, verbose);
     use_copyfile(src, target, unzip_files, verbose);
 
   end
@@ -338,6 +335,11 @@ function use_copyfile(src, target, unzip_files, verbose)
 
   if ~status
     msg = [messageId ': ' message];
+    if strcmp(messageId, 'MATLAB:COPYFILE:OSError')
+      msg = [msg, ...
+             '\n If you are on Windows and using a datalad dataset,', ...
+             '\n try to ''datalad unlock'' your input dataset.'];
+    end
     bids.internal.error_handling(mfilename, 'copyError', msg, false, verbose);
   end
 
@@ -351,8 +353,7 @@ function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_de
 
     for dep = 1:numel(dependencies)
 
-      %         % TODO
-      %         % Dirty hack to prevent the copy of ASL data to crash here.
+      %         % TODO Dirty hack to prevent the copy of ASL data to crash here.
       %         % But this means that dependencies of ASL data will not be copied until
       %         % this is fixed.
       %         if ismember(dependencies{dep}, {'context', 'm0'})

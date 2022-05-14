@@ -1,0 +1,88 @@
+{
+  "MRIFieldmapB0FieldIdentifier": {
+    "selectors": [
+      "modality == \"MRI\"",
+      "datatype == \"fmap\""
+    ],
+    "fields": {
+      "B0FieldIdentifier": "recommended"
+    }
+  },
+  "MRIFieldmapIntendedFor": {
+    "selectors": [
+      "modality == \"MRI\"",
+      "datatype == \"fmap\""
+    ],
+    "fields": {
+      "IntendedFor": {
+        "level": "optional",
+        "description_addendum": "This field is optional, and in case the fieldmaps do not correspond\nto any particular scans, it does not have to be filled.\n"
+      }
+    }
+  },
+  "MRIFieldmapPhaseDifferencePhasediff": {
+    "selectors": [
+      "modality == \"MRI\"",
+      "datatype == \"fmap\"",
+      "suffix == \"phasediff\""
+    ],
+    "fields": {
+      "EchoTime1": "required",
+      "EchoTime2": "required"
+    }
+  },
+  "MRIFieldmapPhaseDifferenceMagnitude1": {
+    "selectors": [
+      "modality == \"MRI\"",
+      "datatype == \"fmap\"",
+      "suffix == \"magnitude1\""
+    ],
+    "fields": {
+      "EchoTime1": "required"
+    }
+  },
+  "MRIFieldmapPhaseDifferenceMagnitude2": {
+    "selectors": [
+      "modality == \"MRI\"",
+      "datatype == \"fmap\"",
+      "suffix == \"magnitude2\""
+    ],
+    "fields": {
+      "EchoTime2": "required"
+    }
+  },
+  "MRIFieldmapTwoPhase": {
+    "selectors": [
+      "modality == \"MRI\"",
+      "datatype == \"fmap\"",
+      "[\"phase1\", \"phase2\", \"magnitude1\", \"magnitude2\"].includes(suffix)"
+    ],
+    "fields": {
+      "EchoTime__fmap": "required"
+    }
+  },
+  "MRIFieldmapDirectFieldMapping": {
+    "selectors": [
+      "modality == \"MRI\"",
+      "datatype == \"fmap\"",
+      "[\"phase\", \"fieldmap\"].includes(suffix)"
+    ],
+    "fields": {
+      "Units": {
+        "level": "required",
+        "description_addendum": "Fieldmaps must be in units of Hertz (`\"Hz\"`),\nradians per second (`\"rad/s\"`), or Tesla (`\"T\"`).\n"
+      }
+    }
+  },
+  "MRIFieldmapPepolar": {
+    "selectors": [
+      "modality == \"MRI\"",
+      "datatype == \"fmap\"",
+      "suffix == \"epi\""
+    ],
+    "fields": {
+      "PhaseEncodingDirection": "required",
+      "TotalReadoutTime": "required"
+    }
+  }
+}

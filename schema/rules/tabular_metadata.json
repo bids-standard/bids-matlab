@@ -1,0 +1,27 @@
+[
+  {
+    "suffixes": [
+      "scans"
+    ],
+    "extensions": [
+      ".tsv",
+      ".json"
+    ],
+    "entities": {
+      "subject": "required",
+      "session": "optional"
+    }
+  },
+  {
+    "suffixes": [
+      "sessions"
+    ],
+    "extensions": [
+      ".tsv",
+      ".json"
+    ],
+    "entities": {
+      "subject": "required"
+    }
+  }
+]

@@ -106,7 +106,7 @@ end
 
 function test_copy_to_derivative_unzip
 
-  [BIDS, out_path, filter, cfg] = fixture('MoAEpilot');
+  [pth, out_path, filter, cfg] = fixture('MoAEpilot');
 
   pipeline_name = 'bids-matlab';
   unzip = true;
@@ -115,7 +115,7 @@ function test_copy_to_derivative_unzip
   verbose = cfg.verbose;
   skip_dependencies = true;
 
-  bids.copy_to_derivative(BIDS, ...
+  bids.copy_to_derivative(pth, ...
                           'pipeline_name', pipeline_name, ...
                           'out_path', out_path, ...
                           'filter', filter, ...
@@ -132,6 +132,8 @@ function test_copy_to_derivative_unzip
   assertEqual(numel(zipped_files), 0);
 
   teardown(out_path);
+
+  rmdir(pth, 's');
 
 end
 
@@ -263,13 +265,24 @@ function [BIDS, out_path, filter, cfg] = fixture(dataset)
 
     case 'MoAEpilot'
 
-      BIDS = bids.internal.download_moae_ds(true);
+      bids.util.mkdir(fullfile(get_test_data_dir(), '..', '..', 'demos', 'spm'));
 
-      gzip(fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii'));
-      delete(fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii'));
+      BIDS = bids.util.download_ds('source', 'spm', ...
+                                   'demo', 'moae', ...
+                                   'force', false, ...
+                                   'verbose', false);
 
-      gzip(fullfile(BIDS, 'sub-01', 'func', 'sub-01_task-auditory_bold.nii'));
-      delete(fullfile(BIDS, 'sub-01', 'func', 'sub-01_task-auditory_bold.nii'));
+      anat = fullfile(BIDS, 'sub-01', 'anat', 'sub-01_T1w.nii');
+      if exist(anat, 'file')
+        gzip(anat);
+        delete(anat);
+      end
+
+      func = fullfile(BIDS, 'sub-01', 'func', 'sub-01_task-auditory_bold.nii');
+      if exist(func, 'file')
+        gzip(func);
+        delete(func);
+      end
 
     otherwise
 

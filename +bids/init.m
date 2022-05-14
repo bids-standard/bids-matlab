@@ -49,7 +49,11 @@ function init(varargin)
   if ~isempty(fieldnames(p.Results.folders))
 
     subjects = create_folder_names(p, 'subjects');
-    sessions = create_folder_names(p, 'sessions');
+    if isfield(p.Results.folders, 'sessions')
+      sessions = create_folder_names(p, 'sessions');
+    else
+      sessions = '';
+    end
 
     bids.util.mkdir(p.Results.pth, ...
                     subjects, ...

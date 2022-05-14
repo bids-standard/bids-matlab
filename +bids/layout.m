@@ -345,8 +345,7 @@ function BIDS = validate_description(BIDS, tolerant, verbose)
       bids.internal.error_handling(mfilename, 'invalidDescripton', msg, tolerant, verbose);
     end
 
-    % TODO
-    % Add warning if bids version does not match schema version
+    % TODO Add warning if bids version does not match schema version
 
   end
 
@@ -381,12 +380,10 @@ function file_list = return_file_list(modality, subject, schema)
   %  - can inlude a prefix
   %  - can be json
 
-  % TODO
-  % it should be possible to create some of those patterns for the regexp
+  % TODO it should be possible to create some of those patterns for the regexp
   % based on some of the required entities written down in the schema
 
-  % TODO
-  % this does not cover coordsystem.json
+  % TODO this does not cover coordsystem.json
 
   % prefix only for shemaless data
   if isempty(schema.content)

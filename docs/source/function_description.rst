@@ -28,4 +28,4 @@ Function description
 .. figure::  images/MultisubjectMultimodalFaceProcessing_splitby-task.png
    :align:   center
 
-   output of ``diagsnotic`` split by task 
+   output of ``diagsnotic`` split by task

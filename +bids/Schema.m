@@ -11,6 +11,8 @@ classdef Schema
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  % TODO use schema to access regular expressions
+
   properties
     content
 
@@ -90,22 +92,23 @@ classdef Schema
 
           for j = 1:numel(mods)
 
-            suffix_grps = datatypes.(mods{j});
-            % need to use a tmp variable to avoid some errors in continuous
-            % integration to avoid some errors with octave
+            suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
+            % need to use a tmp variable to avoid some errors with octave
+            % in continuous integration
             updated_suffix_grps = struct('suffixes', [], ...
                                          'extensions', [], ...
                                          'entities', [], ...
                                          'required_entities', []);
 
-            for k = 1:numel(suffix_grps)
-              this_suffix_group = obj.ci_check(suffix_grps(k));
+            for k = 1:numel(suffix_groups)
+              this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
               required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
-              this_suffix_group.required_entities = required_entities;
-              updated_suffix_grps(k, 1) = this_suffix_group;
+              %               this_suffix_group.required_entities = required_entities;
+              % updated_suffix_grps(k, 1) = this_suffix_group;
+              datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
             end
 
-            datatypes.(mods{j}) = updated_suffix_grps;
+            %             datatypes.(mods{j}).(suffix_grps{k}) = updated_suffix_grps;
 
           end
         end
@@ -175,6 +178,17 @@ classdef Schema
     % ----------------------------------------------------------------------- %
     %% SUFFIX GROUP
 
+    function  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      %
+      % USAGE::
+      %
+      %  suffix_groups = schema.return_suffix_groups_for_datatype('func')
+      %
+
+      all_datatypes = obj.get_datatypes();
+      suffix_groups = fieldnames(all_datatypes.(datatype));
+    end
+
     function entities = return_entities_for_suffix_group(obj, suffix_group)
       suffix_group = obj.ci_check(suffix_group);
 
@@ -220,17 +234,25 @@ classdef Schema
 
     end
 
-    function idx = find_suffix_group(obj, modality, suffix)
+    function suffix_group = find_suffix_group(obj, modality, suffix)
       %
       % For a given sufffix and modality, this returns the "suffix group" this
       % suffix belongs to
       %
       % USAGE::
       %
-      %  idx = schema.find_suffix_group(modality, suffix)
+      %  suffix_group = schema.find_suffix_group(modality, suffix)
+      %
+      % EXAMPLE::
+      %
+      %     schema = bids.Schema();
+      %     suffix_group = schema.find_suffix_group('anat', 'T1w');
+      %     suffix_group
+      %
+      %         'nonparametric'
       %
 
-      idx = [];
+      suffix_group = "";
 
       if isempty(obj.content)
         return
@@ -239,21 +261,24 @@ classdef Schema
       % the following loop could probably be improved with some cellfun magic
       %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
       datatypes = obj.get_datatypes();
-      for i = 1:size(datatypes.(modality), 1)
-        this_suffix_group = datatypes.(modality)(i);
+
+      suffix_groups = obj.return_suffix_groups_for_datatype(modality);
+
+      for i = 1:numel(suffix_groups)
+
+        this_suffix_group = datatypes.(modality).(suffix_groups{i});
         this_suffix_group = obj.ci_check(this_suffix_group);
         if any(strcmp(suffix, this_suffix_group.suffixes))
-          idx = i;
+          suffix_group = suffix_groups{i};
           break
         end
       end
 
-      if isempty(idx)
-        msg = sprintf('No corresponding suffix in schema for %s for datatype %s', ...
-                      suffix, ...
-                      modality);
-        bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, obj.verbose);
-      end
+      msg = sprintf('No corresponding suffix in schema for %s for datatype %s', ...
+                    suffix, ...
+                    modality);
+      bids.internal.error_handling(mfilename, 'noMatchingSuffix', msg, true, obj.verbose);
+
     end
 
     % ----------------------------------------------------------------------- %
@@ -280,13 +305,25 @@ classdef Schema
 
       for i = 1:numel(datatypes_names)
 
-        this_datatype = all_datatypes.(datatypes_names{i});
-        this_datatype = obj.ci_check(this_datatype);
+        this_datatype = datatypes_names{i};
 
-        suffix_list = cat(1, this_datatype.suffixes);
+        % TODO deal with derivatives
+        if strcmp(this_datatype, 'derivatives')
+          continue
+        end
 
-        if any(ismember(suffix_list, suffix))
-          datatypes{end + 1} = datatypes_names{i};
+        suffix_groups = obj.return_suffix_groups_for_datatype(this_datatype);
+
+        for j = 1:numel(suffix_groups)
+
+          this_suffix_group = suffix_groups{j};
+          datatype_spec = obj.ci_check(all_datatypes.(this_datatype).(this_suffix_group));
+
+          suffix_list = cat(1, datatype_spec.suffixes);
+
+          if any(ismember(suffix_list, suffix))
+            datatypes{end + 1} = this_datatype;
+          end
         end
 
       end
@@ -301,15 +338,15 @@ classdef Schema
       %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
       %
 
-      idx = obj.find_suffix_group(modality, suffix);
+      suffix_group = obj.find_suffix_group(modality, suffix);
 
       datatypes = obj.get_datatypes();
 
-      if ~isempty(idx)
-        this_suffix_group = datatypes.(modality)(idx);
+      if ~isempty(suffix_group)
+        this_suffix_group = datatypes.(modality).(suffix_group);
       end
 
-      if ~isempty(idx)
+      if ~isempty(suffix_group)
         required = obj.required_entities_for_suffix_group(this_suffix_group);
         entities = obj.return_entities_for_suffix_group(this_suffix_group);
       end
@@ -420,7 +457,7 @@ classdef Schema
       %
       % USAGE::
       %
-      %   structure = inspect_subdir(obj, structure, subdir_list)
+      %   structure = schema.inspect_subdir(structure, subdir_list)
       %
 
       for iDir = 1:size(subdir_list, 1)

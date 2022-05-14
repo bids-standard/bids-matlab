@@ -1,10 +1,10 @@
-function p = parse_filename(filename, fields, tolerant)
+function p = parse_filename(filename, fields, tolerant, verbose)
   %
   % Split a filename into its building constituents
   %
   % USAGE::
   %
-  %   p = bids.internal.parse_filename(filename, fields)
+  %   p = bids.internal.parse_filename(filename, fields, tolerant, verbose)
   %
   % :param filename: fielname to parse that follows the pattern
   %                  ``sub-label[_entity-label]*_suffix.extension``
@@ -62,6 +62,10 @@ function p = parse_filename(filename, fields, tolerant)
     tolerant = true;
   end
 
+  if nargin < 4 || isempty(verbose)
+    verbose = true;
+  end
+
   if isempty(filename)
     p = struct([]);
     return
@@ -86,7 +90,7 @@ function p = parse_filename(filename, fields, tolerant)
   % Identify extention
   [basename, p.ext] = strtok(basename, '.');
 
-  p = parse_entity_label_pairs(p, basename, tolerant);
+  p = parse_entity_label_pairs(p, basename, tolerant, verbose);
 
   % Extra fields can be added to the structure and ordered specifically.
   if ~isempty(fields)
@@ -98,14 +102,14 @@ function p = parse_filename(filename, fields, tolerant)
       p.entities = orderfields(p.entities, fields);
     catch
       msg = sprintf('Ignoring file %s not matching template.', filename);
-      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, true);
+      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, verbose);
       p = struct([]);
     end
   end
 
 end
 
-function p = parse_entity_label_pairs(p, basename, tolerant)
+function p = parse_entity_label_pairs(p, basename, tolerant, verbose)
 
   p.entities = struct();
   p.suffix = '';
@@ -172,7 +176,7 @@ function p = parse_entity_label_pairs(p, basename, tolerant)
       bids.internal.error_handling(mfilename, error_id, ...
                                    msg, ...
                                    tolerant, ...
-                                   true);
+                                   verbose);
 
       if tolerant
         p = struct([]);

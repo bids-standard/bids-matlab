@@ -13,7 +13,7 @@ env:
   OCTFLAGS: --no-gui --no-window-system --silent
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-20.04
 
@@ -36,9 +36,8 @@ jobs:
         cd JSONio
         mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
 
-    - name: Install bids-example and data
+    - name: Install bids-example
       run: |
-        octave $OCTFLAGS --eval "addpath(pwd); bids.internal.download_moae_ds()"
         cd tests
         make data
 
@@ -51,12 +50,6 @@ jobs:
         # data: # Directory for test data
         with_coverage: false
         # cover_xml_file: coverage.xml
-
-    # - name: Upload coverage
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: coverage_file
-    #     path: coverage.xml
 
     # - name: Code coverage
     #   uses: codecov/codecov-action@v1

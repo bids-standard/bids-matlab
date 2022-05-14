@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-20.04
 
     steps:
@@ -43,12 +43,6 @@ jobs:
         uses: matlab-actions/run-command@v1.0.1
         with:
           command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); addpath(getenv('GITHUB_WORKSPACE')); success = run_tests(); assert(success);
-
-      # - name: Upload coverage
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     name: coverage_file
-      #     path: coverage.xml
 
       # - name: Code coverage
       #   uses: codecov/codecov-action@v1
