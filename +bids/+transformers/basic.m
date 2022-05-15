@@ -31,8 +31,6 @@ function data = basic(transformer, data)
   inputs = bids.transformers.get_input(transformer, data);
   outputs = bids.transformers.get_output(transformer, data);
 
-  assert(numel(inputs) == numel(numel(inputs)));
-
   for i = 1:numel(inputs)
 
     value = transformer.Value;

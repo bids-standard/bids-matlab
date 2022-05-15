@@ -542,6 +542,22 @@ function test_power
 
 end
 
+function test_divide_several_inputs
+
+  % GIVEN
+  transformers(1).Name = 'Divide';
+  transformers(1).Input = {'onset', 'duration'};
+  transformers(1).Value = 2;
+
+  % WHEN
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
+
+  % THEN
+  assertEqual(new_content.onset, [1; 2]);
+  assertEqual(new_content.duration, [1; 1]);
+
+end
+
 function test_constant()
 
   %% GIVEN
