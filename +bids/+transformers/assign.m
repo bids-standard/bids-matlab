@@ -149,7 +149,7 @@ end
 function data = pad_with_nans(data, field, to_assign)
 
   if iscell(data.(field))
-    data.(field) = cat(1, data.(field), repmat({'NaN'}, numel(to_assign), 1));
+    data.(field) = cat(1, data.(field), repmat({nan}, numel(to_assign), 1));
   else
     data.(field) = cat(1, data.(field), nan(size(to_assign)));
   end

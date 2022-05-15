@@ -245,7 +245,7 @@ function test_assign_with_target_attribute()
   new_content = bids.transformers.assign(transformers, data);
 
   % check non involved fields are padded correctly
-  expected.familiarity = cat(1, data.familiarity, repmat({'NaN'}, 4, 1));
+  expected.familiarity = cat(1, data.familiarity, repmat({nan}, 4, 1));
   expected.onset = [data.onset; data.onset];
 
   assertEqual(new_content.familiarity, expected.familiarity);

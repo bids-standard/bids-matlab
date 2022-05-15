@@ -139,10 +139,17 @@ function data = split(transformer, data)
       end
       field = bids.transformers.coerce_fieldname(field);
 
+      % store rows, source and input for next iteration
+      if strcmp(this_level, 'NaN')
+        new_rows_to_keep{end + 1} = all([transformer.rows_to_keep{i} ...
+                                         cellfun(@(x) all(isnan(x)), this_by)], ...
+                                        2);
+      else
+        new_rows_to_keep{end + 1} = all([transformer.rows_to_keep{i} ...
+                                         ismember(this_by, this_level)], ...
+                                        2);
+      end
       new_source{end + 1} = transformer.source{i};
-      new_rows_to_keep{end + 1} = all([transformer.rows_to_keep{i} ...
-                                       ismember(this_by, this_level)], ...
-                                      2);
       new_input{end + 1} = field;
 
     end
