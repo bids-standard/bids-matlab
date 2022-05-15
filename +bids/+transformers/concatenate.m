@@ -2,8 +2,9 @@ function data = concatenate(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
+
   input = bids.transformers.get_input(transformer, data);
-  output = bids.transformers.get_output(transformer, data);
+  output = bids.transformers.get_output(transformer, data, false);
 
   for row = 1:numel(data.onset)
 

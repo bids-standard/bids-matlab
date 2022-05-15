@@ -163,7 +163,7 @@ function test_combine_columns()
   % THEN
   % TODO assert whole content
   assertEqual(fieldnames(tsv_content), fieldnames(new_content));
-  assertEqual(unique(new_content.trial_type), {'FamousFirstRep'; 'face'});
+  assertEqual(unique(new_content.trial_type), {'face'});
 
 end
 
@@ -311,6 +311,40 @@ function test_concatenate()
 
   assertEqual(unique(new_content.trial_type), ...
               {'famous_1'; 'famous_2';  'unfamiliar_1'; 'unfamiliar_2'});
+
+end
+
+function test_concatenate_strings()
+
+  % GIVEN
+  transformers = struct('Name', 'Concatenate', ...
+                        'Input', {{'trial_type', 'familiarity'}}, ...
+                        'Output', 'trial_type');
+
+  % WHEN
+  new_content = bids.transformers.concatenate(transformers, face_rep_events());
+
+  assertEqual(unique(new_content.trial_type), ...
+              {'Face_Famous face'; ...
+               'Face_Unfamiliar face'});
+
+end
+
+function test_concatenate_numbers()
+
+  % GIVEN
+  transformers = struct('Name', 'Concatenate', ...
+                        'Input', {{'onset', 'response_time'}}, ...
+                        'Output', 'trial_type');
+
+  % WHEN
+  new_content = bids.transformers.concatenate(transformers, face_rep_events());
+
+  assertEqual(unique(new_content.trial_type), ...
+              {    '2_1.5'
+               '4_2'
+               '5_1.56'
+               '8_2.1'});
 
 end
 
@@ -462,7 +496,7 @@ function test_replace_with_output()
 
   %% GIVEN
   transformers(1).Name = 'Replace';
-  transformers(1).Input = 'face_type';
+  transformers(1).Input = 'familiarity';
   transformers(1).Output = 'tmp';
   transformers(1).Replace(1).key = 2;
   transformers(1).Replace(1).value = 1;
@@ -473,7 +507,7 @@ function test_replace_with_output()
 
   % THEN
   assertEqual(unique(new_content.tmp), 1);
-  assertEqual(unique(new_content.duration), data.duration);
+  assertEqual(unique(new_content.duration), 2);
 
 end
 
