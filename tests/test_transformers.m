@@ -40,7 +40,7 @@ function test_get_input()
 
   % WHEN
   assertExceptionThrown(@()bids.transformers.get_input(transformers, data), ...
-                        'get_input:missingInput');
+                        'check_field:missingInput');
 
 end
 
@@ -192,6 +192,14 @@ function test_complex_filter_with_and()
 end
 
 %% single step
+
+function test_assign()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face');
+
+end
 
 function test_filter()
 
@@ -440,6 +448,7 @@ function test_split_nested()
 
   % THEN
   assert(isfield(new_content, 'age_BY_handedness_left_BY_sex_M'));
+  assertEqual(numel(fieldnames(new_content)), 11);
   assertEqual(new_content.age_BY_handedness_left_BY_sex_M,  18);
 
 end

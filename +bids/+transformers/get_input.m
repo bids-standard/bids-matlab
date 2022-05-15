@@ -28,11 +28,6 @@ function input = get_input(transformer, data)
     input = {input};
   end
 
-  available_variables = fieldnames(data);
-  available_input = ismember(input, available_variables);
-  if ~all(available_input)
-    msg = sprintf('missing variable(s): "%s"', strjoin(input(~available_input), '", "'));
-    bids.internal.error_handling(mfilename(), 'missingInput', msg, false);
-  end
+  bids.transformers.check_field(input, data, 'Input');
 
 end

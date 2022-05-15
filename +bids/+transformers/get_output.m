@@ -2,6 +2,7 @@ function output = get_output(transformer, data, overwrite)
   %
   %
   % (C) Copyright 2022 Remi Gau
+
   if nargin < 3
     overwrite = true;
   end
@@ -25,4 +26,9 @@ function output = get_output(transformer, data, overwrite)
     end
 
   end
+
+  for i = 1:numel(output)
+    output{i} = bids.transformers.coerce_fieldname(output{i});
+  end
+
 end

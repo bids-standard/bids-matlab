@@ -36,9 +36,6 @@ function data = split(transformer, data)
   %  - we keep track of which rows to keep for each original source input
   %  - we keep track of the source input through the recursions
 
-  % TODO
-  % outputs = bids.transformers.get_output(transformer, data);
-
   % We are done recursing. Do the actual splitting
   if isempty(transformer.By)
 
@@ -51,6 +48,9 @@ function data = split(transformer, data)
     end
 
     inputs = transformer.Input;
+
+    % TODO
+    % outputs = bids.transformers.get_output(transformer, data);
 
     for i = 1:numel(inputs)
 
@@ -82,13 +82,7 @@ function data = split(transformer, data)
     end
 
     % make sure all variables to split by are there
-    available_variables = fieldnames(data);
-    available_by = ismember(transformer.By, available_variables);
-    if ~all(available_by)
-      msg = sprintf('missing variable(s) to split by: "%s"', ...
-                    strjoin(input(~available_input), '", "'));
-      bids.internal.error_handling(mfilename(), 'missingInput', msg, false);
-    end
+    bids.transformers.check_field(transformer.By, data, 'By');
 
     transformer.source = inputs;
 
@@ -143,7 +137,7 @@ function data = split(transformer, data)
       else
         field = [inputs{i} '_BY_' by '_' this_level];
       end
-      field = regexprep(field, '[^a-zA-Z0-9_]', '');
+      field = bids.transformers.coerce_fieldname(field);
 
       new_source{end + 1} = transformer.source{i};
       new_rows_to_keep{end + 1} = all([transformer.rows_to_keep{i} ...

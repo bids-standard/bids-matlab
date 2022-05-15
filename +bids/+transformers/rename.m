@@ -2,6 +2,7 @@ function data = rename(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
+
   inputs = bids.transformers.get_input(transformer, data);
   outputs = bids.transformers.get_output(transformer, data);
 
