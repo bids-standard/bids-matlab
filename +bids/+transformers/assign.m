@@ -61,6 +61,8 @@ function data = assign(transformer, data)
   % In case where in-place assignment is desired (essentially, renaming a column),
   % either use the rename transformation, or set output to the same value as the input.
 
+  % TODO check if attr are cells
+
   input = bids.transformers.get_input(transformer, data);
   target = get_target(transformer, data);
 
@@ -70,6 +72,12 @@ function data = assign(transformer, data)
   target_attr = get_attribute(transformer, input, 'TargetAttr');
 
   for i = 1:numel(input)
+
+    if ~isempty(output)
+      assign_to = output{i};
+    else
+      assign_to = target{i};
+    end
 
     % grab the data that is being assigned somewhere else
     % TODO deal with cell
@@ -83,6 +91,8 @@ function data = assign(transformer, data)
         attr_to_assign = data.(input_attr{i});
         if strcmp(target_attr, 'value')
           to_assign = attr_to_assign;
+        else
+          to_assign = data.(input{i});
         end
 
       otherwise
@@ -92,27 +102,54 @@ function data = assign(transformer, data)
 
     end
 
-    if ~strcmp(target_attr, 'value')
-      data.(input{i}) = cat(1, to_assign, nan(size(to_assign)));
-      to_assign =  cat(1, nan(size(to_assign)), to_assign);
+    if ~ismember(target_attr{i}, {'value', 'onset', 'duration'})
+      bids.internal.error_handling(mfilename(), 'wrongAttribute', ...
+                                   'InputAttr must be one of "value", "onset", "duration"', ...
+                                   false);
     end
 
-    switch target_attr{i}
-      case 'value'
-      case {'onset', 'duration'}
-        assign_to = input_attr{i};
-      otherwise
-        bids.internal.error_handling(mfilename(), 'wrongAttribute', ...
-                                     'InputAttr must be one of "value", "onset", "duration"', ...
-                                     false);
-    end
+    if strcmp(target_attr, 'value')
 
-    if ~isempty(output)
-      data.(output{i}) = to_assign;
+      data.(assign_to) = to_assign;
+
     else
-      data.(target{i}) = to_assign;
+
+      fields = fieldnames(data);
+      for j = 1:numel(fields)
+
+        if ismember(fields{j}, {assign_to, input{i}})
+          continue
+
+        elseif ismember(fields{j}, {target_attr{i}})
+          data.(target_attr{i}) = cat(1, data.(target_attr{i}), to_assign);
+
+        elseif ismember(fields{j}, {'onset', 'duration'})
+          data.(fields{j}) = repmat(data.(fields{j}), 2, 1);
+
+        else
+
+          % pad non concerned fields with nan
+          data = pad_with_nans(data, fields{j}, to_assign);
+        end
+
+      end
+
+      % pad concerned fields
+      data.(assign_to) = cat(1, nan(size(to_assign)), data.(assign_to));
+      data = pad_with_nans(data, input{i}, to_assign);
+
     end
 
+  end
+
+end
+
+function data = pad_with_nans(data, field, to_assign)
+
+  if iscell(data.(field))
+    data.(field) = cat(1, data.(field), repmat({'NaN'}, numel(to_assign), 1));
+  else
+    data.(field) = cat(1, data.(field), nan(size(to_assign)));
   end
 
 end

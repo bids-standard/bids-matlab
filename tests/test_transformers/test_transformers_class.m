@@ -50,44 +50,6 @@ end
 
 %% Helper functions
 
-function value = participants()
-
-  value.sex_m = [true; true; false; false; false];
-  value.handedness = {'right'; 'left'; nan; 'left'; 'right'};
-  value.sex = {'M'; 'M'; 'F'; 'F'; 'F'};
-  value.age_gt_twenty = [true; false; true; false; false];
-  value.age = [21; 18; 46; 10; nan];
-
-end
-
-function value = face_rep_events()
-
-  value.onset = [2; 4];
-  value.duration = [2; 2];
-  value.repetition = [1; 1; 2; 2];
-  value.familiarity = {'Famous face'; 'Unfamiliar face'; 'Famous face'; 'Unfamiliar face'};
-  value.trial_type = {'Face'; 'Face'; 'Face'; 'Face'};
-
-end
-
-function value = vis_motion_events()
-
-  value.onset = [2; 4];
-  value.duration = [2; 2];
-  value.trial_type = {'VisMot'; 'VisStat'};
-  value.intensity = [2; -4];
-
-end
-
-function value = vis_motion_to_threshold_events()
-
-  value.onset = [2; 4; 6; 8];
-  value.duration = [2; 2; 2; 2];
-  value.trial_type = {'VisMot'; 'VisStat'; 'VisMot'; 'VisStat'};
-  value.to_threshold = [1; 2; -1; -2];
-
-end
-
 function cfg = set_up()
   cfg = set_test_cfg();
   cfg.this_path = fileparts(mfilename('fullpath'));
