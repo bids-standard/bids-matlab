@@ -1,29 +1,38 @@
 function data = split(transformer, data)
   %
-  %
-  %
   % Split a variable into N variables as defined by the levels of one or more other variables.
+  %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %     {
+  %       "Name": "Split",
+  %       "Input": [
+  %           "sex",
+  %       ],
+  %       "By": [
+  %           "tmp_sex_m",
+  %           "tmp_age_gt_twenty"
+  %       ]
+  %     }
   %
   % Arguments:
   %
-  % Input(list, mandatory): The name of the variable(s) to operate on.
+  % :param Input: **mandatory**. The name of the variable(s) to operate on.
+  % :type  Input: array
   %
-  % By(string, mandatory): Name(s) for variable(s) to split on.
+  % :param By: optional. Name(s) for variable(s) to split on.
+  % :type  By: array
   %
-  % Output (list, optional): the optional list of column names to write out to.
-  %
-  % If an output list is provided,
-  % it must have the same number of values as the number of generated columns.
-  %
-  % If no output list is provided, name components will be separated by a period,
-  % and values of variables will be enclosed in square brackets.
-  %
-  % For example,  given a variable Condition
+  % For example, for given a variable Condition
   % that we wish to split on two categorical columns A and B,
   % where a given row has values A=a and B=1,
-  % the generated name will be Condition_BY_A_a_BY_B_1.
+  % the generated name will be ``Condition_BY_A_a_BY_B_1``.
   %
+  % **CODE EXAMPLE**::
   %
+  %   TODO
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
@@ -35,6 +44,8 @@ function data = split(transformer, data)
   %  - we keep track of the new input that will be used for the next element of By
   %  - we keep track of which rows to keep for each original source input
   %  - we keep track of the source input through the recursions
+
+  warning('outputs are not nan padded');
 
   % We are done recursing. Do the actual splitting
   if isempty(transformer.By)

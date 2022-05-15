@@ -1,35 +1,55 @@
 function data = replace(transformer, data)
   %
+  % Replaces values in one or more input columns.
+  %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %     {
+  %       "Name": "Copy",
+  %       "Input": [
+  %           "fruits",
+  %       ],
+  %       "Output": [
+  %               {"key": "apple",   "value": "bee"},
+  %               {"key": "elusive", "value": 5}]
+  %        ]
+  %     }
+  %
+  % Arguments:
+  %
+  % :param Input: **mandatory**. Name(s of column(s) to search and replace within.
+  % :type  Input: array
+  %
+  % :param Replace: **mandatory**. An array of objects mapping old values to new values.
+  % :type  Replace: array
+  %
+  % :param Attribute: optional. The column attribute to search/replace.
+  % :type  Attribute: array
+  %
+  % Valid values include:
+  %
+  % - ``"value"`` (the default),
+  % - ``"duration"``,
+  % - ``"onset"``,
+  % - and ``"all"``.
+  %
+  % In the last case, all three attributes ("value", "duration", and "onset") will be scanned.
+  %
+  % :param Output: optional. Optional names of columns to output.
+  %                          Must match length of input column(s) if provided,
+  %                          and columns will be mapped 1-to-1 in order.
+  %                          If no output values are provided,
+  %                          the replacement transformation is applied in-place
+  %                          to all the inputs.
+  % :type  Output: array
+  %
+  % **CODE EXAMPLE**::
+  %
+  %   TODO
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
-
-  % Replaces values in one or more input columns.
-
-  % Arguments:
-
-  % Input (list, mandatory):
-  % Name(s_ of column(s) to search and replace within.
-
-  % Replace (list of objects, mandatory):
-  % An associative array (dictionary) mapping old values to new values.
-  % For example,
-  % [{"key": "apple", "value": "bee"}, {"key":"elusive", "value": 5}]
-  % would replace all occurrences of "apple"
-  % in the input columns with the value "bee", and all occurrences of "elusive"
-  % with the value 5.
-
-  % Attribute (string, optional):
-  % The column attribute to search/replace. Valid values include "value" (the default),
-  % "duration", "onset", and "all".
-  % In the last case, all three attributes (value, duration, and onset) will be scanned.
-  % Note that level names for categorical columns (e.g., "trial_type")
-  % are invariably represented in the value attribute.
-  %
-  % Output (list, optional): Optional names of columns to output.
-  % Must match length of input column(s) if provided,
-  % and columns will be mapped 1-to-1 in order.
-  % If no output values are provided, the replacement transformation is applied in-place
-  % to all the inputs.
 
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);

@@ -28,7 +28,7 @@ function data = basic(transformer, data)
   % :param Value: **mandatory**.  The value to perform operation with (i.e. operand).
   % :type  Value: float
   %
-  % :Output): optional. List of column names to write out to.
+  % :Output: optional. List of column names to write out to.
   % :type  Output: array
   %
   % By default, computation is done in-place on the input

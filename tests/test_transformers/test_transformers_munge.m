@@ -603,6 +603,12 @@ function test_rename()
 
 end
 
+function test_select()
+
+  warning('select should carry onset and duration if present');
+
+end
+
 function test_split_empty_by()
 
   % GIVEN

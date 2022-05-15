@@ -1,17 +1,36 @@
 function data = delete(transformer, data)
   %
-  % USAGE::
-  %
-  %   data = delete(transformer, data)
-  %
   % Deletes column(s) from further analysis.
+  %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %     {
+  %       "Name": "Delete",
+  %       "Input": [
+  %           "sex_m",
+  %           "age_gt_twenty"
+  %       ]
+  %     }
   %
   % Arguments:
   %
-  % - Input (array; mandatory): The name(s) of the columns(s) to delete.
+  % :param Input: **mandatory**. The name(s) of the columns(s) to delete.
+  % :type  Input: array
   %
-  % Notes: The ``Select`` transformation provides the inverse function
-  % (selection of columns to keep for subsequent analysis).
+  %
+  % .. note::
+  %
+  %   The ``Select`` transformation provides the inverse function
+  %   (selection of columns to keep for subsequent analysis).
+  %
+  %
+  % **CODE EXAMPLE**::
+  %
+  %   % TODO
+  %   data = delete(transformer, data)
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

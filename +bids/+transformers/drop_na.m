@@ -1,16 +1,34 @@
 function data = drop_na(transformer, data)
   %
-  %
-  %
   % Drops all rows with "n/a".
+  %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %     {
+  %       "Name": "Drop_na",
+  %       "Input": [
+  %           "age_gt_twenty"
+  %       ],
+  %       "Output": [
+  %           "age_gt_twenty_clean"
+  %       ]
+  %     }
   %
   % Arguments:
   %
-  % Input(string; mandatory): The name of the variable to operate on.
-  % Output (string; optional): the optional list of column names to write out to.
-  % By default, computation is done in-place (i.e., input columnise overwritten).
+  % :param Input: **mandatory**.  The name of the variable to operate on.
+  % :type  Input: array
   %
+  % :param Output: optional. The list of column names to write out to.
+  %                          By default, computation is done in-place
+  %                          meaning that input columnise overwritten).
+  % :type  Output: array
   %
+  % **CODE EXAMPLE**::
+  %
+  %   TODO
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers

@@ -1,13 +1,38 @@
 function data = rename(transformer, data)
   %
+  %   Rename a variable.
+  %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %     {
+  %       "Name": "Rename",
+  %       "Input": [
+  %           "age_gt_70",
+  %           "age_lt_18",
+  %       ],
+  %       "Output": [
+  %           "senior",
+  %           "teenager",
+  %       ]
+  %     }
+  %
+  % Arguments:
+  %
+  % :param Input: **mandatory**. The name(s) of the variable(s) to rename.
+  % :type  Input: array
+  %
+  % :param Output: optional. New column names to output.
+  %                          Must match length of input column(s),
+  %                          and columns will be mapped 1-to-1 in order.
+  % :type  Output: array
+  %
+  % **CODE EXAMPLE**::
+  %
+  %   TODO
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
-
-  %   Rename a variable.
-  % Arguments:
-  % Input(list, mandatory): The name(s) of the variable(s) to rename.
-  % Output (list, mandatory): New column names to output.
-  % Must match length of input column(s), and columns will be mapped 1-to-1 in order.
 
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);

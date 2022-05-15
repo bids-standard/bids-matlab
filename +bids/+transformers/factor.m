@@ -1,16 +1,41 @@
 function data = factor(transformer, data)
   %
-  %
   % Converts a nominal/categorical variable with N unique levels
   % to either N indicators (i.e., dummy-coding).
   %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %     {
+  %       "Name": "Factor",
+  %       "Input": [
+  %           "gender",
+  %           "age"
+  %       ]
+  %     }
+  %
   % Arguments:
-  % Input (list; mandatory): the name(s) of the variable(s) to dummy-code.
+  %
+  % :param Input: **mandatory**. The name(s) of the variable(s) to dummy-code.
+  % :type  Input: array
   %
   % By default it is the first factor level when sorting in alphabetical order
   % (e.g., if a condition has levels 'dog', 'apple', and 'helsinki',
   % the default reference level will be 'apple').
   %
+  % The name of the ouput colums for 2 input columns ``gender`` and ``age``
+  % with 2 levels (``M``, ``F``) and (``20``, ``30``) respectivalyu
+  % will of the shape:
+  %
+  % - ``gender_F_age_20``
+  % - ``gender_F_age_20``
+  % - ``gender_M_age_30``
+  % - ``gender_M_age_30``
+  %
+  % **CODE EXAMPLE**::
+  %
+  %   TODO
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

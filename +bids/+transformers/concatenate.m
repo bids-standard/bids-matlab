@@ -1,5 +1,32 @@
 function data = concatenate(transformer, data)
   %
+  % Concatnate columns together.
+  %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %     {
+  %       "Name": "Concatenate",
+  %       "Input": [
+  %           "face_type",
+  %           "face_repetition"
+  %       ],
+  %       "Output": "face_type_repetition"
+  %     }
+  %
+  % Arguments:
+  %
+  % :param Input: **mandatory**. TODO
+  % :type  Input: array
+  %
+  % :param Output: optional. TODO
+  % :type  Output: array
+  %
+  % **CODE EXAMPLE**::
+  %
+  %   TODO
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
