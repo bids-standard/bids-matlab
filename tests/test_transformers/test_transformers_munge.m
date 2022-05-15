@@ -11,6 +11,8 @@ function test_suite = test_transformers_munge %#ok<*STOUT>
 
 end
 
+%%
+
 function test_no_transformation()
 
   transformers = struct([]);
@@ -116,7 +118,8 @@ function test_touch()
                            'Input', 'tmp', ...
                            'Output', 'duration', ...
                            'Attribute', 'duration', ...
-                           'Replace', struct('duration_1', 1));
+                           'Replace', struct('key', 1, ...
+                                             'value', 1));
   transformers{3} = struct('Name', 'Delete', ...
                            'Input', {{'tmp'}});
 
@@ -124,6 +127,7 @@ function test_touch()
   new_content = bids.transformers(tsv_content, transformers);
 
   % THEN
+  % TODO assert whole content
   assertEqual(fieldnames(tsv_content), fieldnames(new_content));
 
 end
@@ -148,7 +152,8 @@ function test_combine_columns()
   transformers{4} = struct('Name', 'Replace', ...
                            'Input', 'tmp', ...
                            'Output', 'trial_type', ...
-                           'Replace', struct('tmp_1', 'FamousFirstRep'));
+                           'Replace', struct('key', 'tmp_1', ...
+                                             'value', 'FamousFirstRep'));
   transformers{5} = struct('Name', 'Delete', ...
                            'Input', {{'tmp', 'Famous', 'FirstRep'}});
 
@@ -156,6 +161,7 @@ function test_combine_columns()
   new_content = bids.transformers(tsv_content, transformers);
 
   % THEN
+  % TODO assert whole content
   assertEqual(fieldnames(tsv_content), fieldnames(new_content));
   assertEqual(unique(new_content.trial_type), {'FamousFirstRep'; 'face'});
 
@@ -426,28 +432,26 @@ end
 function test_replace()
 
   %% GIVEN
-  tsvFile = fullfile(dummy_data_dir(), ...
-                     'sub-01_task-FaceRepetitionBefore_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
   transformers(1).Name = 'Replace';
-  transformers(1).Input = 'face_type';
-  transformers(1).Replace = struct('famous', 'foo');
+  transformers(1).Input = 'familiarity';
+  transformers(1).Replace(1) = struct('key', 'Famous face', 'value', 'foo');
+  transformers(1).Replace(2) = struct('key', 'Unfamiliar face', 'value', 'bar');
 
   % WHEN
-  new_content = bids.transformers.replace(transformers, tsv_content);
+  new_content = bids.transformers.replace(transformers, face_rep_events());
 
   % THEN
-  assertEqual(unique(new_content.face_type), {'foo'; 'unfamiliar'});
+  assertEqual(new_content.familiarity, {'foo'; 'bar'; 'foo'; 'bar'});
 
   %% GIVEN
   transformers(1).Name = 'Replace';
-  transformers(1).Input = 'face_type';
-  transformers(1).Replace = struct('duration_0', 1);
+  transformers(1).Input = 'familiarity';
+  transformers(1).Replace(1).key = 2;
+  transformers(1).Replace(1).value = 1;
   transformers(1).Attribute = 'duration';
 
   % WHEN
-  new_content = bids.transformers.replace(transformers, tsv_content);
+  new_content = bids.transformers.replace(transformers, face_rep_events());
 
   % THEN
   assertEqual(unique(new_content.duration), 1);
@@ -457,21 +461,19 @@ end
 function test_replace_with_output()
 
   %% GIVEN
-  tsvFile = fullfile(dummy_data_dir(), ...
-                     'sub-01_task-FaceRepetitionBefore_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
   transformers(1).Name = 'Replace';
   transformers(1).Input = 'face_type';
   transformers(1).Output = 'tmp';
-  transformers(1).Replace = struct('duration_0', 1);
+  transformers(1).Replace(1).key = 2;
+  transformers(1).Replace(1).value = 1;
   transformers(1).Attribute = 'duration';
 
   % WHEN
-  new_content = bids.transformers.replace(transformers, tsv_content);
+  new_content = bids.transformers.replace(transformers, face_rep_events());
 
   % THEN
   assertEqual(unique(new_content.tmp), 1);
+  assertEqual(unique(new_content.duration), data.duration);
 
 end
 

@@ -2,6 +2,35 @@ function data = replace(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
+
+  % Replaces values in one or more input columns.
+
+  % Arguments:
+
+  % Input (list, mandatory):
+  % Name(s_ of column(s) to search and replace within.
+
+  % Replace (list of objects, mandatory):
+  % An associative array (dictionary) mapping old values to new values.
+  % For example,
+  % [{"key": "apple", "value": "bee"}, {"key":"elusive", "value": 5}]
+  % would replace all occurrences of "apple"
+  % in the input columns with the value "bee", and all occurrences of "elusive"
+  % with the value 5.
+
+  % Attribute (string, optional):
+  % The column attribute to search/replace. Valid values include "value" (the default),
+  % "duration", "onset", and "all".
+  % In the last case, all three attributes (value, duration, and onset) will be scanned.
+  % Note that level names for categorical columns (e.g., "trial_type")
+  % are invariably represented in the value attribute.
+  %
+  % Output (list, optional): Optional names of columns to output.
+  % Must match length of input column(s) if provided,
+  % and columns will be mapped 1-to-1 in order.
+  % If no output values are provided, the replacement transformation is applied in-place
+  % to all the inputs.
+
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);
 
@@ -15,42 +44,33 @@ function data = replace(transformer, data)
       continue
     end
 
+    % in case we got "all" we must loop over value, onset, duration
     for ii = 1:numel(attributes)
 
-      switch lower(attributes{ii})
+      switch attributes{ii}
+
         case 'value'
+          this_output = data.(output{i});
+
+        case {'onset', 'duration'}
+          this_output = data.(attributes{ii});
           if strcmp(input{i}, output{i})
-            this_output = data.(input{i});
-          else
-            this_output = data.(output{i});
+            output{i} = attributes{ii};
           end
-        case 'onset'
-          this_output = data.onset;
-          if strcmp(input{i}, output{i})
-            output{i} = 'onset';
-          end
-        case 'duration'
-          this_output = data.duration;
-          if strcmp(input{i}, output{i})
-            output{i} = 'duration';
-          end
+
       end
 
-      toReplace = fieldnames(replace);
+      for iii = 1:numel(replace)
 
-      for iii = 1:numel(toReplace)
-
-        switch lower(attributes{ii})
+        switch attributes{ii}
           case 'value'
             this_input = data.(input{i});
-          case 'onset'
-            this_input = data.onset;
-          case 'duration'
-            this_input = data.duration;
+          case {'onset', 'duration'}
+            this_input = data.(attributes{ii});
         end
 
-        key = get_key_to_replace(input{i}, attributes{ii}, toReplace{iii});
-        value = replace.(toReplace{iii});
+        key = replace(iii).key;
+        value = replace(iii).value;
 
         if ischar(key)
           idx = strcmp(key, this_input);
@@ -59,15 +79,9 @@ function data = replace(transformer, data)
         end
 
         if isnumeric(this_output)
-          if ischar(value)
-            this_output = num2cell(this_output);
-          end
-          this_output(idx) = value;
+          this_output(idx) = repmat(value, sum(idx), 1);
 
         elseif iscellstr(this_output)
-          if isnumeric(value)
-            value = num2str(value);
-          end
           this_output(idx) = repmat({value}, sum(idx), 1);
 
         end
@@ -81,32 +95,24 @@ function data = replace(transformer, data)
 
 end
 
-function key = get_key_to_replace(input, attribute, to_replace)
-  % because matlab keys in structure cannot be numbers
-  % it won't be easily possible to replace
-  % when the value to replace is a number,
-  % but it could be sort of OK for onset and duration
-  key = to_replace;
-  if ismember(lower(attribute), {'onset', 'duration'})
-    key = strrep(key, [lower(attribute) '_'], '');
-    key = str2num(key);
-  end
-  if bids.internal.starts_with(key, [input '_'])
-    key = strrep(key, [input '_'], '');
-    key = str2num(key);
-  end
-
-end
-
 function attributes =  get_attribute_to_replace(transformer)
   attributes = {'value'};
   if isfield(transformer, 'Attribute')
     attributes = transformer.Attribute;
   end
+  if ~ismember(attributes, {'value', 'onset', 'duration', 'all'})
+    msg = sprintf(['Attribute must be one of ', ...
+                   '"values", "onset", "duration" or "all" for Replace.\nGot: %s'], ...
+                  char(attributes));
+    bids.internal.error_handling(mfilename(), ...
+                                 'invalidAttribute', ...
+                                 msg, ...
+                                 false);
+  end
   if ~iscell(attributes)
     attributes = {attributes};
   end
-  if strcmp(attributes, 'all')
+  if strcmpi(attributes, 'all')
     attributes =  {'values', 'onset', 'duration'};
   end
 end

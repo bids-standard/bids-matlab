@@ -88,7 +88,9 @@ function data = assign(transformer, data)
         to_assign = data.(input{i});
 
       case {'onset', 'duration'}
+
         attr_to_assign = data.(input_attr{i});
+
         if strcmp(target_attr, 'value')
           to_assign = attr_to_assign;
         else
