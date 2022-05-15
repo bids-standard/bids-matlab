@@ -11,6 +11,86 @@ function test_suite = test_transformers %#ok<*STOUT>
 
 end
 
+function test_assign()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face');
+
+  data = face_rep_events();
+  data.Face = [1; 1; 1; 1];
+
+  new_content = bids.transformers.assign(transformers, data);
+
+  assertEqual(new_content.Face, new_content.response_time);
+
+end
+
+function test_assign_with_output()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face', ...
+                        'Output', 'new_face');
+
+  data = face_rep_events();
+  data.Face = [1; 1; 1; 1];
+
+  new_content = bids.transformers.assign(transformers, data);
+
+  assertEqual(new_content.new_face, new_content.response_time);
+
+end
+
+function test_assign_with_output_and_input_attribute()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face', ...
+                        'Output', 'new_face', ...
+                        'InputAttr', 'onset');
+
+  data = face_rep_events();
+  data.Face = [1; 1; 1; 1];
+
+  new_content = bids.transformers.assign(transformers, data);
+
+  assertEqual(new_content.new_face, new_content.onset);
+
+end
+
+function test_assign_with_target_attribute()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face', ...
+                        'TargetAttr', 'duration');
+
+  data = face_rep_events();
+  data.Face = [1; 1; 1; 1];
+
+  new_content = bids.transformers.assign(transformers, data);
+
+  expected.response_time = [data.response_time; nan(size(data.response_time))];
+  expected.Face = [nan(size(data.response_time)); data.response_time];
+  expected.duration = [nan(size(data.duration)); data.duration];
+
+  assertEqual(new_content.response_time, expected.response_time);
+  assertEqual(new_content.Face, expected.Face);
+
+end
+
+function test_assign_missing_target()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face');
+
+  assertExceptionThrown(@()bids.transformers.assign(transformers, face_rep_events()), ...
+                        'check_field:missingTarget');
+
+end
+
 function test_no_transformation()
 
   transformers = struct([]);
@@ -192,14 +272,6 @@ function test_complex_filter_with_and()
 end
 
 %% single step
-
-function test_assign()
-
-  transformers = struct('Name', 'Assign', ...
-                        'Input', 'response_time', ...
-                        'Target', 'Face');
-
-end
 
 function test_filter()
 
@@ -885,11 +957,12 @@ end
 
 function value = face_rep_events()
 
-  value.onset = [2; 4];
-  value.duration = [2; 2];
+  value.onset = [2; 4; 5; 8];
+  value.duration = [2; 2; 2; 2];
   value.repetition = [1; 1; 2; 2];
   value.familiarity = {'Famous face'; 'Unfamiliar face'; 'Famous face'; 'Unfamiliar face'};
   value.trial_type = {'Face'; 'Face'; 'Face'; 'Face'};
+  value.response_time = [1.5; 2; 1.56; 2.1];
 
 end
 
