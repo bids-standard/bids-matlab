@@ -10,7 +10,8 @@ function data = logical(transformer, data)
   %
   % returning a single column as output.
   %
-  % If non-boolean input are passed, it is expected that all zero (for numeric data types), NaN
+  % If non-boolean input are passed, it is expected that all zero or nan (for numeric
+  % data types), "NaN"
   % and empty (for strings) values will evaluate to false,
   % and all other values will evaluate to true.
   %
@@ -46,8 +47,10 @@ function data = logical(transformer, data)
   % try coerce all input to logical
   for i = 1:numel(input)
 
-    if iscellstr(data.(input{i}))
-      tmp(:, i) = cellfun('isempty', data.(input{i}));
+    if iscell(data.(input{i}))
+      tmp1 = ~cellfun('isempty', data.(input{i}));
+      tmp2 = ~cellfun(@(x) all(isnan(x)), data.(input{i}));
+      tmp(:, i) = all([tmp1 tmp2], 2);
 
     else
       tmp2 = data.(input{i});

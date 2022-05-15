@@ -7,7 +7,6 @@ function data = filter(transformer, data)
   %
   % - Input(list; mandatory): The name(s) of the variable(s) to operate on.
   % - Query(str; mandatory): Boolean expression used to filter
-  % - By(str; optional): Name of column to group filter operation by
   % - Output (list; optional): the optional list of column names to write out to.
   %
   % By default, computation is done in-place (i.e., input columnise overwritten).
@@ -16,42 +15,81 @@ function data = filter(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
+  % TODO
+  % - By(str; optional): Name of column to group filter operation by
+
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);
 
-  if isfield(transformer, 'By')
-    % TODO
-    by = transformer.By;
-  end
+  [left, query_type, right] = bids.transformers.get_query(transformer);
+  bids.transformers.check_field(left, data, 'query', false);
 
-  for i = 1:numel(input)
+  % identify rows
+  if iscellstr(data.(left))
 
-    tokens = regexp(input{i}, '\.', 'split');
+    if ismember(query_type, {'>', '<', '>=', '<='})
+      msg = sprtinf(['Types "%s" are not supported for queries on string\n'...
+                     'in query %s'], ...
+                    {'>, <, >=, <='}, ...
+                    query);
+      bids.internal.error_handling(mfilename(), ...
+                                   'unsupportedQueryType', ...
+                                   msg, ...
+                                   false);
 
-    query = transformer.Query;
-    if isempty(regexp(query, tokens{1}, 'ONCE'))
-      return
     end
 
-    queryTokens = regexp(query, '==', 'split');
-    if numel(queryTokens) > 1
+    idx = strcmp(data.(left), right);
 
-      if iscellstr(data.(tokens{1}))
-        idx = strcmp(queryTokens{2}, data.(tokens{1}));
-        tmp(idx, 1) = data.(tokens{1})(idx);
-        tmp(~idx, 1) = repmat({''}, sum(~idx), 1);
-      end
+  elseif isnumeric(data.(left))
 
-      if isnumeric(data.(tokens{1}))
-        idx = data.(tokens{1}) == str2num(queryTokens{2});
-        tmp(idx, 1) = data.(tokens{1})(idx);
+    right = str2num(right);
+
+    switch query_type
+
+      case '=='
+        idx = data.(left) == right;
+
+      case '>'
+        idx = data.(left) > right;
+
+      case '<'
+        idx = data.(left) < right;
+
+      case '>='
+        idx = data.(left) >= right;
+
+      case '<='
+        idx = data.(left) <= right;
+
+    end
+
+  end
+
+  % filter rows of all inputs
+  for i = 1:numel(input)
+
+    clear tmp;
+
+    if iscellstr(data.(input{i}))
+
+      tmp(idx, 1) = data.(input{i})(idx);
+
+      tmp(~idx, 1) = repmat({nan}, sum(~idx), 1);
+
+    elseif isnumeric(data.(input{i}))
+
+      tmp(idx, 1) = data.(left)(idx);
+
+      if iscellstr(tmp)
+        tmp(~idx, 1) = repmat({nan}, sum(~idx), 1);
+      else
         tmp(~idx, 1) = nan;
       end
 
-      tmp(idx, 1) = data.(tokens{1})(idx);
-      data.(output{i}) = tmp;
-
     end
+
+    data.(output{i}) = tmp;
 
   end
 

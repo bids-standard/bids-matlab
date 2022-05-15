@@ -49,7 +49,19 @@ end
 function status = test_is_run_level()
 
   data = struct('onset', [], 'duration', []);
-  assert(is_run_level(data));
+  assert(bids.transfomers.is_run_level(data));
+
+end
+
+function test_get_query()
+
+  transformer.Query = 'R T == 1';
+
+  [left, type, right] = bids.transformers.get_query(transformer);
+
+  assertEqual(type, '==');
+  assertEqual(left, 'R T');
+  assertEqual(right, '1');
 
 end
 
@@ -67,6 +79,21 @@ function test_and()
 
   % THEN
   assertEqual(new_content.men_gt_twenty, [true; false; false; false; false]);
+
+end
+
+function test_and_nan()
+
+  % GIVEN
+  transformers = struct('Name', 'And', ...
+                        'Input', {{'handedness', 'age'}}, ...
+                        'Output', 'age_or_hand');
+
+  % WHEN
+  new_content = bids.transformers.logical(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.age_or_hand, [true; true; false; true; false]);
 
 end
 
@@ -188,7 +215,6 @@ function test_complex_filter_with_and()
   % THEN
   assert(all(ismember({'Famous'; 'FirstRep'}, fieldnames(new_content))));
   assertEqual(sum(strcmp(new_content.Famous, 'famous')), 52);
-  assertEqual(unique(new_content.Famous), {''; 'famous'});
   assertEqual(nansum(new_content.FirstRep), 52);
 
   %% GIVEN
@@ -341,7 +367,7 @@ function test_concatenate_numbers()
   new_content = bids.transformers.concatenate(transformers, face_rep_events());
 
   assertEqual(unique(new_content.trial_type), ...
-              {    '2_1.5'
+              {'2_1.5'
                '4_2'
                '5_1.56'
                '8_2.1'});
@@ -422,44 +448,92 @@ function test_factor_numeric()
 
 end
 
-function test_filter()
+function test_filter_numeric()
 
-  % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionAfter_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
+  types = {'>=', '<=', '==', '>', '<'};
+  expected = [nan 2 1.56 2.1
+              1.5 nan 1.56 nan
+              nan nan 1.56 nan
+              nan 2 nan 2.1
+              1.5 nan nan nan];
 
-  transformers = struct('Name', 'Filter', ...
-                        'Input', 'trial_type', ...
-                        'Query', 'trial_type==F1', ...
-                        'Output', 'Famous_1');
+  for i = 1:numel(types)
 
-  % WHEN
-  new_content = bids.transformers.filter(transformers, tsv_content);
+    % GIVEN
+    transformers = struct('Name', 'Filter', ...
+                          'Input', 'response_time', ...
+                          'Query', [' response_time ' types{i} ' 1.56']);
 
-  % THEN
-  assert(all(ismember({'Famous_1'}, fieldnames(new_content))));
-  assertEqual(numel(new_content.Famous_1), 104);
-  assertEqual(unique(new_content.Famous_1), {''; 'F1'});
+    % WHEN
+    new_content = bids.transformers.filter(transformers, face_rep_events());
+
+    % THEN
+    types{i};
+    assertEqual(new_content.response_time, expected(i, :)');
+
+  end
 
 end
 
-function test_filter_by()
+function test_filter_string()
 
   % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
   transformers = struct('Name', 'Filter', ...
-                        'Input', 'face_type', ...
-                        'Query', 'repetition_type==1', ...
-                        'By', 'repetition_type', ...
-                        'Output', 'face_type_repetition_1');
+                        'Input', 'familiarity', ...
+                        'Query', ' familiarity == Famous face ');
 
   % WHEN
-  new_content = bids.transformers.filter(transformers, tsv_content);
+  new_content = bids.transformers.filter(transformers, face_rep_events());
 
   % THEN
-  % TODO
+  assertEqual(new_content.familiarity, {'Famous face'; nan; 'Famous face'; nan});
+
+end
+
+function test_filter_string_ouput()
+
+  % GIVEN
+  transformers = struct('Name', 'Filter', ...
+                        'Input', 'familiarity', ...
+                        'Query', ' familiarity == Famous face ', ...
+                        'Output', 'famous_face');
+
+  % WHEN
+  new_content = bids.transformers.filter(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(new_content.familiarity, {'Famous face'
+                                        'Unfamiliar face'
+                                        'Famous face'
+                                        'Unfamiliar face'});
+  assertEqual(new_content.famous_face, {'Famous face'; nan'; 'Famous face'; nan});
+
+end
+
+function test_filter_across_columns()
+
+  transformers = struct('Name', 'Filter', ...
+                        'Input', 'familiarity', ...
+                        'Query', 'repetition==1', ....
+                        'Output', 'familiarity_repetition_1');
+
+  % WHEN
+  new_content = bids.transformers.filter(transformers, face_rep_events);
+
+  % THEN
+  assertEqual(new_content.familiarity_repetition_1, ...
+              {'Famous face'; 'Unfamiliar face'; nan; nan});
+
+end
+
+function test_filter_several_inputs()
+
+  transformers = struct('Name', 'Filter', ...
+                        'Input', {{'repetition', 'response_time'}}, ...
+                        'Query', 'repetition>1');
+
+  % WHEN
+  new_content = bids.transformers.filter(transformers, face_rep_events);
 
 end
 

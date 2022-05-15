@@ -1,0 +1,37 @@
+function [left, query_type, right] = get_query(transformer)
+  %
+  %
+  % (C) Copyright 2022 Remi Gau
+
+  supported_types = {'>=', '<=', '==', '>', '<'};
+
+  if isempty(transformer.Query)
+    bids.internal.error_handling(mfilename(), 'emptyQuery', ...
+                                 'empty query', ...
+                                 false);
+  else
+    query = transformer.Query;
+  end
+
+  % identify query type
+  for i = 1:numel(supported_types)
+    sts = strfind(query, supported_types{i});
+    if ~isempty(sts)
+      query_type = supported_types{i};
+      break
+    end
+  end
+
+  if isempty(query_type)
+    bids.internal.error_handling(mfilename(), ...
+                                 'unknownQueryType', ...
+                                 sprtinf(['Could not identify any of the supported types\n %s\n'...
+                                          'in query %s'], supported_types, query), ...
+                                 false);
+  end
+
+  tokens = regexp(query, query_type, 'split');
+  left = strtrim(tokens{1});
+  right = strtrim(tokens{2});
+
+end
