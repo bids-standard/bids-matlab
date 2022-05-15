@@ -40,21 +40,6 @@ end
 
 %% single step
 
-function test_subtract
-
-  % GIVEN
-  transformers(1).Name = 'Subtract';
-  transformers(1).Input = 'onset';
-  transformers(1).Value = 3;
-
-  % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
-
-  % THEN
-  assertEqual(new_content.onset, [-1; 1]);
-
-end
-
 function test_add_coerce_value
 
   %% GIVEN
@@ -82,49 +67,6 @@ function test_add_coerce_value
 
 end
 
-function test_power
-
-  %% GIVEN
-  transformers.Name = 'Power';
-  transformers.Input = 'intensity';
-  transformers.Value = 2;
-
-  % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
-
-  % THEN
-  assertEqual(new_content.intensity, [4; 16]);
-
-  %% GIVEN
-  transformers.Name = 'Power';
-  transformers.Input = 'intensity';
-  transformers.Value = 3;
-  transformers.Output = 'intensity_cubed';
-
-  % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
-
-  % THEN
-  assertEqual(new_content.intensity_cubed, [8; -64]);
-
-end
-
-function test_divide_several_inputs
-
-  % GIVEN
-  transformers(1).Name = 'Divide';
-  transformers(1).Input = {'onset', 'duration'};
-  transformers(1).Value = 2;
-
-  % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
-
-  % THEN
-  assertEqual(new_content.onset, [1; 2]);
-  assertEqual(new_content.duration, [1; 1]);
-
-end
-
 function test_constant()
 
   %% GIVEN
@@ -148,72 +90,34 @@ function test_constant()
 
 end
 
-function test_threshold_output()
+function test_drop_na()
 
-  transformers = struct('Name', 'Threshold', ...
-                        'Input', 'to_threshold', ...
-                        'Output', 'tmp');
+  % GIVEN
+  transformers = struct('Name', 'Factor', ...
+                        'Input', {{'age', 'handedness'}});
 
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+  % WHEN
+  new_content = bids.transformers.drop_na(transformers, participants());
 
-  assertEqual(new_content.tmp, [1; 2; 0; 0]);
+  % THEN
+  assertEqual(new_content.age,  [21; 18; 46; 10]);
+  assertEqual(new_content.handedness,  {'right'; 'left'; 'left'; 'right'});
 
 end
 
-function test_threshold()
+function test_divide_several_inputs
 
-  %% WHEN
-  transformers = struct('Name', 'Threshold', ...
-                        'Input', 'to_threshold');
+  % GIVEN
+  transformers(1).Name = 'Divide';
+  transformers(1).Input = {'onset', 'duration'};
+  transformers(1).Value = 2;
 
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
-
-  % THEN
-  assertEqual(new_content.to_threshold, [1; 2; 0; 0]);
-
-  %% WHEN
-  transformers = struct('Name', 'Threshold', ...
-                        'Input', 'to_threshold', ...
-                        'Threshold', 1);
-
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+  % WHEN
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
 
   % THEN
-  assertEqual(new_content.to_threshold, [0; 2; 0; 0]);
-
-  %% WHEN
-  transformers = struct('Name', 'Threshold', ...
-                        'Input', 'to_threshold', ...
-                        'Binarize', true);
-
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
-
-  % THEN
-  assertEqual(new_content.to_threshold, [1; 1; 0; 0]);
-
-  %% WHEN
-  transformers = struct('Name', 'Threshold', ...
-                        'Input', 'to_threshold', ...
-                        'Binarize', true, ...
-                        'Above', false);
-
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
-
-  % THEN
-  assertEqual(new_content.to_threshold, [0; 0; 1; 1]);
-
-  %% WHEN
-  transformers = struct('Name', 'Threshold', ...
-                        'Input', 'to_threshold', ...
-                        'Threshold', 1, ...
-                        'Binarize', true, ...
-                        'Above', true, ...
-                        'Signed', false);
-
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
-
-  % THEN
-  assertEqual(new_content.to_threshold, [0; 1; 0; 1]);
+  assertEqual(new_content.onset, [1; 2]);
+  assertEqual(new_content.duration, [1; 1]);
 
 end
 
@@ -240,6 +144,21 @@ function test_mean()
 
   % THEN
   assertEqual(new_content.age_mean_omitnan, 23.75);
+
+end
+
+function test_product()
+
+  % GIVEN
+  transformers = struct('Name', 'Product', ...
+                        'Input', {{'onset', 'duration'}}, ...
+                        'Output', 'onset_times_duration');
+
+  % WHEN
+  new_content = bids.transformers.product(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.onset_times_duration, [4; 8; 12; 16]);
 
 end
 
@@ -296,18 +215,30 @@ function test_sum()
 
 end
 
-function test_product()
+function test_power
 
-  % GIVEN
-  transformers = struct('Name', 'Product', ...
-                        'Input', {{'onset', 'duration'}}, ...
-                        'Output', 'onset_times_duration');
+  %% GIVEN
+  transformers.Name = 'Power';
+  transformers.Input = 'intensity';
+  transformers.Value = 2;
 
   % WHEN
-  new_content = bids.transformers.product(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
 
   % THEN
-  assertEqual(new_content.onset_times_duration, [4; 8; 12; 16]);
+  assertEqual(new_content.intensity, [4; 16]);
+
+  %% GIVEN
+  transformers.Name = 'Power';
+  transformers.Input = 'intensity';
+  transformers.Value = 3;
+  transformers.Output = 'intensity_cubed';
+
+  % WHEN
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
+
+  % THEN
+  assertEqual(new_content.intensity_cubed, [8; -64]);
 
 end
 
@@ -414,18 +345,87 @@ function test_scale_nan_before()
                             'absolute', 1e-3);
 end
 
-function test_drop_na()
+function test_subtract
 
   % GIVEN
-  transformers = struct('Name', 'Factor', ...
-                        'Input', {{'age', 'handedness'}});
+  transformers(1).Name = 'Subtract';
+  transformers(1).Input = 'onset';
+  transformers(1).Value = 3;
 
   % WHEN
-  new_content = bids.transformers.drop_na(transformers, participants());
+  new_content = bids.transformers.basic(transformers, vis_motion_events());
 
   % THEN
-  assertEqual(new_content.age,  [21; 18; 46; 10]);
-  assertEqual(new_content.handedness,  {'right'; 'left'; 'left'; 'right'});
+  assertEqual(new_content.onset, [-1; 1]);
+
+end
+
+function test_threshold_output()
+
+  transformers = struct('Name', 'Threshold', ...
+                        'Input', 'to_threshold', ...
+                        'Output', 'tmp');
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+
+  assertEqual(new_content.tmp, [1; 2; 0; 0]);
+
+end
+
+function test_threshold()
+
+  %% WHEN
+  transformers = struct('Name', 'Threshold', ...
+                        'Input', 'to_threshold');
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.to_threshold, [1; 2; 0; 0]);
+
+  %% WHEN
+  transformers = struct('Name', 'Threshold', ...
+                        'Input', 'to_threshold', ...
+                        'Threshold', 1);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.to_threshold, [0; 2; 0; 0]);
+
+  %% WHEN
+  transformers = struct('Name', 'Threshold', ...
+                        'Input', 'to_threshold', ...
+                        'Binarize', true);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.to_threshold, [1; 1; 0; 0]);
+
+  %% WHEN
+  transformers = struct('Name', 'Threshold', ...
+                        'Input', 'to_threshold', ...
+                        'Binarize', true, ...
+                        'Above', false);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.to_threshold, [0; 0; 1; 1]);
+
+  %% WHEN
+  transformers = struct('Name', 'Threshold', ...
+                        'Input', 'to_threshold', ...
+                        'Threshold', 1, ...
+                        'Binarize', true, ...
+                        'Above', true, ...
+                        'Signed', false);
+
+  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+
+  % THEN
+  assertEqual(new_content.to_threshold, [0; 1; 0; 1]);
 
 end
 

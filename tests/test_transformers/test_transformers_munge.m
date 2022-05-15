@@ -11,95 +11,6 @@ function test_suite = test_transformers_munge %#ok<*STOUT>
 
 end
 
-function test_assign_with_target_attribute()
-
-  transformers = struct('Name', 'Assign', ...
-                        'Input', 'response_time', ...
-                        'Target', 'Face', ...
-                        'TargetAttr', 'duration');
-
-  data = face_rep_events();
-  data.Face = [1; 1; 1; 1];
-
-  new_content = bids.transformers.assign(transformers, data);
-
-  % check non involved fields are padded correctly
-  expected.familiarity = cat(1, data.familiarity, repmat({'NaN'}, 4, 1));
-  expected.onset = [data.onset; data.onset];
-
-  assertEqual(new_content.familiarity, expected.familiarity);
-  assertEqual(new_content.onset, expected.onset);
-
-  % check involved fields
-  expected.response_time = [data.response_time; nan(size(data.response_time))];
-  expected.Face = [nan(size(data.response_time)); data.Face];
-  expected.duration = [data.duration; data.response_time];
-
-  assertEqual(new_content.response_time, expected.response_time);
-  assertEqual(new_content.Face, expected.Face);
-  assertEqual(new_content.duration, expected.duration);
-
-end
-
-function test_assign()
-
-  transformers = struct('Name', 'Assign', ...
-                        'Input', 'response_time', ...
-                        'Target', 'Face');
-
-  data = face_rep_events();
-  data.Face = [1; 1; 1; 1];
-
-  new_content = bids.transformers.assign(transformers, data);
-
-  assertEqual(new_content.Face, new_content.response_time);
-
-end
-
-function test_assign_with_output()
-
-  transformers = struct('Name', 'Assign', ...
-                        'Input', 'response_time', ...
-                        'Target', 'Face', ...
-                        'Output', 'new_face');
-
-  data = face_rep_events();
-  data.Face = [1; 1; 1; 1];
-
-  new_content = bids.transformers.assign(transformers, data);
-
-  assertEqual(new_content.new_face, new_content.response_time);
-
-end
-
-function test_assign_with_output_and_input_attribute()
-
-  transformers = struct('Name', 'Assign', ...
-                        'Input', 'response_time', ...
-                        'Target', 'Face', ...
-                        'Output', 'new_face', ...
-                        'InputAttr', 'onset');
-
-  data = face_rep_events();
-  data.Face = [1; 1; 1; 1];
-
-  new_content = bids.transformers.assign(transformers, data);
-
-  assertEqual(new_content.new_face, new_content.onset);
-
-end
-
-function test_assign_missing_target()
-
-  transformers = struct('Name', 'Assign', ...
-                        'Input', 'response_time', ...
-                        'Target', 'Face');
-
-  assertExceptionThrown(@()bids.transformers.assign(transformers, face_rep_events()), ...
-                        'check_field:missingTarget');
-
-end
-
 function test_no_transformation()
 
   transformers = struct([]);
@@ -130,6 +41,13 @@ function test_get_input()
   % WHEN
   assertExceptionThrown(@()bids.transformers.get_input(transformers, data), ...
                         'check_field:missingInput');
+
+end
+
+function status = test_is_run_level()
+
+  data = struct('onset', [], 'duration', []);
+  assert(is_run_level(data));
 
 end
 
@@ -282,6 +200,188 @@ end
 
 %% single step
 
+function test_assign_with_target_attribute()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face', ...
+                        'TargetAttr', 'duration');
+
+  data = face_rep_events();
+  data.Face = [1; 1; 1; 1];
+
+  new_content = bids.transformers.assign(transformers, data);
+
+  % check non involved fields are padded correctly
+  expected.familiarity = cat(1, data.familiarity, repmat({'NaN'}, 4, 1));
+  expected.onset = [data.onset; data.onset];
+
+  assertEqual(new_content.familiarity, expected.familiarity);
+  assertEqual(new_content.onset, expected.onset);
+
+  % check involved fields
+  expected.response_time = [data.response_time; nan(size(data.response_time))];
+  expected.Face = [nan(size(data.response_time)); data.Face];
+  expected.duration = [data.duration; data.response_time];
+
+  assertEqual(new_content.response_time, expected.response_time);
+  assertEqual(new_content.Face, expected.Face);
+  assertEqual(new_content.duration, expected.duration);
+
+end
+
+function test_assign()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face');
+
+  data = face_rep_events();
+  data.Face = [1; 1; 1; 1];
+
+  new_content = bids.transformers.assign(transformers, data);
+
+  assertEqual(new_content.Face, new_content.response_time);
+
+end
+
+function test_assign_with_output()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face', ...
+                        'Output', 'new_face');
+
+  data = face_rep_events();
+  data.Face = [1; 1; 1; 1];
+
+  new_content = bids.transformers.assign(transformers, data);
+
+  assertEqual(new_content.new_face, new_content.response_time);
+
+end
+
+function test_assign_with_output_and_input_attribute()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face', ...
+                        'Output', 'new_face', ...
+                        'InputAttr', 'onset');
+
+  data = face_rep_events();
+  data.Face = [1; 1; 1; 1];
+
+  new_content = bids.transformers.assign(transformers, data);
+
+  assertEqual(new_content.new_face, new_content.onset);
+
+end
+
+function test_assign_missing_target()
+
+  transformers = struct('Name', 'Assign', ...
+                        'Input', 'response_time', ...
+                        'Target', 'Face');
+
+  assertExceptionThrown(@()bids.transformers.assign(transformers, face_rep_events()), ...
+                        'check_field:missingTarget');
+
+end
+
+function test_concatenate()
+
+  % GIVEN
+  tsvFile = fullfile(dummy_data_dir(), ...
+                     'sub-01_task-FaceRepetitionBefore_events.tsv');
+  tsv_content = bids.util.tsvread(tsvFile);
+
+  transformers = struct('Name', 'Concatenate', ...
+                        'Input', {{'face_type', 'repetition_type'}}, ...
+                        'Output', 'trial_type');
+
+  % WHEN
+  new_content = bids.transformers.concatenate(transformers, tsv_content);
+
+  assertEqual(unique(new_content.trial_type), ...
+              {'famous_1'; 'famous_2';  'unfamiliar_1'; 'unfamiliar_2'});
+
+end
+
+function test_copy()
+
+  % GIVEN
+  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
+  tsv_content = bids.util.tsvread(tsvFile);
+
+  transformers = struct('Name', 'Copy', ...
+                        'Input', {{'face_type', 'repetition_type'}}, ...
+                        'Output', {{'foo', 'bar'}});
+  new_content = bids.transformers.copy(transformers, tsv_content);
+
+  assert(all(ismember({'foo'; 'bar'}, fieldnames(new_content))));
+  assertEqual(new_content.foo, new_content.face_type);
+  assertEqual(new_content.bar, new_content.repetition_type);
+
+end
+
+function test_delete_select()
+
+  % GIVEN
+  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
+  tsv_content = bids.util.tsvread(tsvFile);
+
+  transformers = struct('Name', 'Delete', ...
+                        'Input', 'face_type');
+
+  new_content = bids.transformers.delete(transformers, tsv_content);
+
+  assert(~(ismember({'face_type'}, fieldnames(new_content))));
+
+  % GIVEN
+  transformers = struct('Name', 'Select', ...
+                        'Input', 'face_type');
+
+  new_content = bids.transformers.select(transformers, tsv_content);
+
+  assertEqual({'face_type'}, fieldnames(new_content));
+
+end
+
+function test_factor()
+
+  % GIVEN
+  transformers = struct('Name', 'Factor', ...
+                        'Input', {{'familiarity'}});
+
+  % WHEN
+  new_content = bids.transformers.factor(transformers, face_rep_events());
+
+  % THEN
+  assert(isfield(new_content, 'familiarity_1'));
+  assert(isfield(new_content, 'familiarity_2'));
+  assertEqual(new_content.familiarity_1,  [true; false; true; false]);
+  assertEqual(new_content.familiarity_2,  [false; true; false; true]);
+
+end
+
+function test_factor_numeric()
+
+  % GIVEN
+  transformers = struct('Name', 'Factor', ...
+                        'Input', {{'age'}});
+
+  % WHEN
+  new_content = bids.transformers.factor(transformers, participants());
+
+  % THEN
+  assert(isfield(new_content, 'age_10'));
+  assert(isfield(new_content, 'age_NaN'));
+  assertEqual(new_content.age_10,  [false; false; false; true; false]);
+  assertEqual(new_content.age_NaN,  [false; false; false; false; true]);
+
+end
+
 function test_filter()
 
   % GIVEN
@@ -303,22 +403,23 @@ function test_filter()
 
 end
 
-function test_concatenate()
+function test_filter_by()
 
   % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), ...
-                     'sub-01_task-FaceRepetitionBefore_events.tsv');
+  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
   tsv_content = bids.util.tsvread(tsvFile);
 
-  transformers = struct('Name', 'Concatenate', ...
-                        'Input', {{'face_type', 'repetition_type'}}, ...
-                        'Output', 'trial_type');
+  transformers = struct('Name', 'Filter', ...
+                        'Input', 'face_type', ...
+                        'Query', 'repetition_type==1', ...
+                        'By', 'repetition_type', ...
+                        'Output', 'face_type_repetition_1');
 
   % WHEN
-  new_content = bids.transformers.concatenate(transformers, tsv_content);
+  new_content = bids.transformers.filter(transformers, tsv_content);
 
-  assertEqual(unique(new_content.trial_type), ...
-              {'famous_1'; 'famous_2';  'unfamiliar_1'; 'unfamiliar_2'});
+  % THEN
+  % TODO
 
 end
 
@@ -374,66 +475,6 @@ function test_replace_with_output()
 
 end
 
-function test_copy()
-
-  % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
-  transformers = struct('Name', 'Copy', ...
-                        'Input', {{'face_type', 'repetition_type'}}, ...
-                        'Output', {{'foo', 'bar'}});
-  new_content = bids.transformers.copy(transformers, tsv_content);
-
-  assert(all(ismember({'foo'; 'bar'}, fieldnames(new_content))));
-  assertEqual(new_content.foo, new_content.face_type);
-  assertEqual(new_content.bar, new_content.repetition_type);
-
-end
-
-function test_filter_by()
-
-  % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
-  transformers = struct('Name', 'Filter', ...
-                        'Input', 'face_type', ...
-                        'Query', 'repetition_type==1', ...
-                        'By', 'repetition_type', ...
-                        'Output', 'face_type_repetition_1');
-
-  % WHEN
-  new_content = bids.transformers.filter(transformers, tsv_content);
-
-  % THEN
-  % TODO
-
-end
-
-function test_delete_select()
-
-  % GIVEN
-  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
-  tsv_content = bids.util.tsvread(tsvFile);
-
-  transformers = struct('Name', 'Delete', ...
-                        'Input', 'face_type');
-
-  new_content = bids.transformers.delete(transformers, tsv_content);
-
-  assert(~(ismember({'face_type'}, fieldnames(new_content))));
-
-  % GIVEN
-  transformers = struct('Name', 'Select', ...
-                        'Input', 'face_type');
-
-  new_content = bids.transformers.select(transformers, tsv_content);
-
-  assertEqual({'face_type'}, fieldnames(new_content));
-
-end
-
 function test_rename()
 
   % GIVEN
@@ -449,40 +490,6 @@ function test_rename()
   assert(all(~ismember({'face_type'; 'repetition_type'}, fieldnames(new_content))));
   assertEqual(new_content.foo, tsv_content.face_type);
   assertEqual(new_content.bar, tsv_content.repetition_type);
-
-end
-
-function test_factor()
-
-  % GIVEN
-  transformers = struct('Name', 'Factor', ...
-                        'Input', {{'familiarity'}});
-
-  % WHEN
-  new_content = bids.transformers.factor(transformers, face_rep_events());
-
-  % THEN
-  assert(isfield(new_content, 'familiarity_1'));
-  assert(isfield(new_content, 'familiarity_2'));
-  assertEqual(new_content.familiarity_1,  [true; false; true; false]);
-  assertEqual(new_content.familiarity_2,  [false; true; false; true]);
-
-end
-
-function test_factor_numeric()
-
-  % GIVEN
-  transformers = struct('Name', 'Factor', ...
-                        'Input', {{'age'}});
-
-  % WHEN
-  new_content = bids.transformers.factor(transformers, participants());
-
-  % THEN
-  assert(isfield(new_content, 'age_10'));
-  assert(isfield(new_content, 'age_NaN'));
-  assertEqual(new_content.age_10,  [false; false; false; true; false]);
-  assertEqual(new_content.age_NaN,  [false; false; false; false; true]);
 
 end
 

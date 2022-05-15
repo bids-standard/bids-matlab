@@ -5,4 +5,5 @@ function new_field = coerce_fieldname(field)
   if ~strcmp(new_field, field)
     warning('Field "%s" renamed to "%s"', field, new_field);
   end
+
 end
