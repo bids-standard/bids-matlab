@@ -6,11 +6,22 @@ function input = get_input(transformer, data)
   assert(isstruct(transformer));
   assert(numel(transformer) == 1);
 
-  if isfield(transformer, 'Input') && ~isempty(transformer.Input)
+  if isfield(transformer, 'Input')
+
     input = transformer.Input;
+
+    if isempty(input)
+      input = {};
+      if isfield(transformer, 'verbose')
+        warning('empty "Input" field');
+      end
+      return
+    end
+
   else
     input = {};
     return
+
   end
 
   if ~iscell(input)

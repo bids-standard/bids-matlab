@@ -397,6 +397,21 @@ function test_factor_numeric()
 
 end
 
+function test_split_empty_by()
+
+  % GIVEN
+  transformers = struct('Name', 'Split', ...
+                        'Input', {{'age'}}, ...
+                        'By', {{}});
+
+  % WHEN'
+  new_content = bids.transformers.split(transformers, participants());
+
+  % THEN
+  assertEqual(new_content, participants);
+
+end
+
 function test_split_simple()
 
   % GIVEN
@@ -408,8 +423,8 @@ function test_split_simple()
   new_content = bids.transformers.split(transformers, participants());
 
   % THEN
-  assertEqual(new_content.age_M,  [21; 18]);
-  assertEqual(new_content.age_F,  [46; 10; nan]);
+  assertEqual(new_content.age_BY_sex_M,  [21; 18]);
+  assertEqual(new_content.age_BY_sex_F,  [46; 10; nan]);
 
 end
 
@@ -421,10 +436,11 @@ function test_split_nested()
                         'By', {{'sex', 'handedness'}});
 
   % WHEN'
-  %   new_content = bids.transformers.split(transformers, participants());
+  new_content = bids.transformers.split(transformers, participants());
 
   % THEN
-  %   assertEqual(new_content.handedness_left_sex_M,  [false; false; false; false; true]);
+  assert(isfield(new_content, 'age_BY_handedness_left_BY_sex_M'));
+  assertEqual(new_content.age_BY_handedness_left_BY_sex_M,  18);
 
 end
 
