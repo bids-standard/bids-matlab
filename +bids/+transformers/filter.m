@@ -16,17 +16,17 @@ function data = filter(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
   if isfield(transformer, 'By')
     % TODO
     by = transformer.By;
   end
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    tokens = regexp(inputs{i}, '\.', 'split');
+    tokens = regexp(input{i}, '\.', 'split');
 
     query = transformer.Query;
     if isempty(regexp(query, tokens{1}, 'ONCE'))
@@ -49,7 +49,7 @@ function data = filter(transformer, data)
       end
 
       tmp(idx, 1) = data.(tokens{1})(idx);
-      data.(outputs{i}) = tmp;
+      data.(output{i}) = tmp;
 
     end
 

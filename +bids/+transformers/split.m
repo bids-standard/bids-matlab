@@ -32,7 +32,7 @@ function data = split(transformer, data)
   % work recursively
   %
   %  - apply first element of By to all Input
-  %  - we keep track of the new inputs that will be used for the next element of By
+  %  - we keep track of the new input that will be used for the next element of By
   %  - we keep track of which rows to keep for each original source input
   %  - we keep track of the source input through the recursions
 
@@ -47,21 +47,21 @@ function data = split(transformer, data)
       return
     end
 
-    inputs = transformer.Input;
+    input = transformer.Input;
 
     % TODO
-    % outputs = bids.transformers.get_output(transformer, data);
+    % output = bids.transformers.get_output(transformer, data);
 
-    for i = 1:numel(inputs)
+    for i = 1:numel(input)
 
-      if isfield(data, inputs{i})
-        error('New field %s already exist in data.', inputs{i});
+      if isfield(data, input{i})
+        error('New field %s already exist in data.', input{i});
       end
 
       sourcefield = transformer.source{i};
       rows_to_keep = transformer.rows_to_keep{i};
 
-      data.(inputs{i}) = data.(sourcefield)(rows_to_keep);
+      data.(input{i}) = data.(sourcefield)(rows_to_keep);
 
     end
 
@@ -74,30 +74,30 @@ function data = split(transformer, data)
   % initialise for recursion
   if ~isfield(transformer, 'rows_to_keep')
 
-    inputs = bids.transformers.get_input(transformer, data);
-    inputs = unique(inputs);
+    input = bids.transformers.get_input(transformer, data);
+    input = unique(input);
 
-    if isempty(inputs)
+    if isempty(input)
       return
     end
 
     % make sure all variables to split by are there
     bids.transformers.check_field(transformer.By, data, 'By');
 
-    transformer.source = inputs;
+    transformer.source = input;
 
     % assume all rows are potentially ok at first
-    for i = 1:numel(inputs)
-      transformer.rows_to_keep{i} = ones(size(data.(inputs{i})));
+    for i = 1:numel(input)
+      transformer.rows_to_keep{i} = ones(size(data.(input{i})));
     end
 
   else
 
-    inputs = transformer.Input;
+    input = transformer.Input;
 
   end
 
-  new_inputs = {};
+  new_input = {};
   new_rows_to_keep = {};
   new_source = {};
 
@@ -106,8 +106,8 @@ function data = split(transformer, data)
   this_by = data.(by);
   transformer.By(1) = [];
 
-  % treat inputs as a queue
-  for i = 1:numel(inputs)
+  % treat input as a queue
+  for i = 1:numel(input)
 
     % deal with nans
     if iscell(this_by)
@@ -133,9 +133,9 @@ function data = split(transformer, data)
 
       % create the new field name and make sure it is valid
       if isnumeric(this_level)
-        field = [inputs{i} '_BY_' by '_' num2str(this_level)];
+        field = [input{i} '_BY_' by '_' num2str(this_level)];
       else
-        field = [inputs{i} '_BY_' by '_' this_level];
+        field = [input{i} '_BY_' by '_' this_level];
       end
       field = bids.transformers.coerce_fieldname(field);
 
@@ -143,13 +143,13 @@ function data = split(transformer, data)
       new_rows_to_keep{end + 1} = all([transformer.rows_to_keep{i} ...
                                        ismember(this_by, this_level)], ...
                                       2);
-      new_inputs{end + 1} = field;
+      new_input{end + 1} = field;
 
     end
 
   end
 
-  transformer.Input = new_inputs;
+  transformer.Input = new_input;
   transformer.rows_to_keep = new_rows_to_keep;
   transformer.source = new_source;
 

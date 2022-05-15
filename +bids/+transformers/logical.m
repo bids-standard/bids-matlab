@@ -10,7 +10,7 @@ function data = logical(transformer, data)
   %
   % returning a single column as output.
   %
-  % If non-boolean inputs are passed, it is expected that all zero (for numeric data types), NaN
+  % If non-boolean input are passed, it is expected that all zero (for numeric data types), NaN
   % and empty (for strings) values will evaluate to false,
   % and all other values will evaluate to true.
   %
@@ -38,19 +38,19 @@ function data = logical(transformer, data)
   % TODO
   % for Add Or, if not ouput just merge the name of the input variables
 
-  inputs = bids.transformers.get_input(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
 
-  outputs = bids.transformers.get_output(transformer, data);
-  assert(numel(outputs) == 1);
+  output = bids.transformers.get_output(transformer, data);
+  assert(numel(output) == 1);
 
-  % try coerce all inputs to logical
-  for i = 1:numel(inputs)
+  % try coerce all input to logical
+  for i = 1:numel(input)
 
-    if iscellstr(data.(inputs{i}))
-      tmp(:, i) = cellfun('isempty', data.(inputs{i}));
+    if iscellstr(data.(input{i}))
+      tmp(:, i) = cellfun('isempty', data.(input{i}));
 
     else
-      tmp2 = data.(inputs{i});
+      tmp2 = data.(input{i});
       tmp2(isnan(tmp2)) = 0;
       tmp(:, i) = logical(tmp2);
 
@@ -60,12 +60,12 @@ function data = logical(transformer, data)
 
   switch lower(transformer.Name)
     case 'and'
-      data.(outputs{1}) = all(tmp, 2);
+      data.(output{1}) = all(tmp, 2);
     case 'or'
-      data.(outputs{1}) = any(tmp, 2);
+      data.(output{1}) = any(tmp, 2);
     case 'not'
       % TODO "not" can only have one input
-      data.(outputs{1}) = ~tmp;
+      data.(output{1}) = ~tmp;
   end
 
 end

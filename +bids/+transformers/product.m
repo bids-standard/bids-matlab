@@ -13,12 +13,12 @@ function data = product(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
-  assert(numel(outputs) == 1);
+  assert(numel(output) == 1);
 
-  outputs = outputs{1};
+  output = output{1};
 
   if isfield(transformer, 'OmitNan')
     omit_nan = transformer.OmitNan;
@@ -28,25 +28,25 @@ function data = product(transformer, data)
 
   tmp = [];
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    if ~isnumeric(data.(inputs{i}))
-      error('non numeric variable: %s', inputs{i});
+    if ~isnumeric(data.(input{i}))
+      error('non numeric variable: %s', input{i});
     end
 
-    if ~isempty(tmp) && length(tmp) ~= length(data.(inputs{i}))
-      error('trying to concatenate variables of different lengths: %s', inputs{i});
+    if ~isempty(tmp) && length(tmp) ~= length(data.(input{i}))
+      error('trying to concatenate variables of different lengths: %s', input{i});
     end
 
-    tmp(:, i) = data.(inputs{i});
+    tmp(:, i) = data.(input{i});
 
   end
 
   if omit_nan
-    data.(outputs) = prod(tmp, 2, 'omitnan');
+    data.(output) = prod(tmp, 2, 'omitnan');
 
   else
-    data.(outputs) = prod(tmp, 2);
+    data.(output) = prod(tmp, 2);
 
   end
 

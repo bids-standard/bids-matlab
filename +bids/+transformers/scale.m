@@ -24,14 +24,14 @@ function data = scale(transformer, data)
   % Output(list, optional): Optional names of columns to output.
   % Must match length of input column if provided, and columns will be mapped 1-to-1 in order.
   % If no output values are provided,
-  % the scaling transformation is applied in-place to all the inputs.
+  % the scaling transformation is applied in-place to all the input.
   %
   %
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
   demean = true;
   if isfield(transformer, 'Demean')
@@ -48,12 +48,12 @@ function data = scale(transformer, data)
     replace_na = transformer.ReplaceNa;
   end
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    this_input = data.(inputs{i});
+    this_input = data.(input{i});
 
     if ~isnumeric(this_input)
-      error('non numeric variable: %s', inputs{i});
+      error('non numeric variable: %s', input{i});
     end
 
     nan_values = isnan(this_input);
@@ -80,7 +80,7 @@ function data = scale(transformer, data)
       this_input(nan_values) = zeros(sum(nan_values));
     end
 
-    data.(outputs{i}) = this_input;
+    data.(output{i}) = this_input;
 
   end
 

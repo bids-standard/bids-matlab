@@ -15,12 +15,12 @@ function data = drop_na(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    this_input = data.(inputs{i});
+    this_input = data.(input{i});
 
     if isnumeric(this_input)
       nan_values = isnan(this_input);
@@ -30,7 +30,7 @@ function data = drop_na(transformer, data)
 
     this_input(nan_values) = [];
 
-    data.(outputs{i}) = this_input;
+    data.(output{i}) = this_input;
 
   end
 

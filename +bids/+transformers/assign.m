@@ -15,7 +15,7 @@ function data = assign(transformer, data)
 
   % Target (list, mandatory):
   % the name(s) of the columns to which the attribute values taken
-  % from the inputs are to be assigned.
+  % from the input are to be assigned.
   % Must exactly match the length of the input argument.
   % Names are mapped 1-to-1 from input to target.
   % Note that if no output argument is specified, the columns named in target are modified in-place.

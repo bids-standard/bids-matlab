@@ -2,18 +2,18 @@ function data = concatenate(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
   for row = 1:numel(data.onset)
 
     tmp1 = {};
 
-    for i = 1:numel(inputs)
-      if isnumeric(data.(inputs{i}))
-        tmp1{1, i} = num2str(data.(inputs{i})(row));
-      elseif iscellstr(data.(inputs{i}))
-        tmp1{1, i} = data.(inputs{i}){row};
+    for i = 1:numel(input)
+      if isnumeric(data.(input{i}))
+        tmp1{1, i} = num2str(data.(input{i})(row));
+      elseif iscellstr(data.(input{i}))
+        tmp1{1, i} = data.(input{i}){row};
       end
     end
 
@@ -21,6 +21,6 @@ function data = concatenate(transformer, data)
 
   end
 
-  data.(outputs{1}) = tmp2;
+  data.(output{1}) = tmp2;
 
 end

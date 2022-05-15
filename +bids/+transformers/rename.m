@@ -3,14 +3,14 @@ function data = rename(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
-  assert(numel(inputs) == numel(outputs));
+  assert(numel(input) == numel(output));
 
-  for i = 1:numel(inputs)
-    data.(outputs{i}) = data.(inputs{i});
-    data = rmfield(data, inputs{i});
+  for i = 1:numel(input)
+    data.(output{i}) = data.(input{i});
+    data = rmfield(data, input{i});
   end
 
 end

@@ -2,10 +2,10 @@ function data = select(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
-  inputs = bids.transformers.get_input(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
 
-  for i = 1:numel(inputs)
-    tmp.(inputs{i}) = data.(inputs{i});
+  for i = 1:numel(input)
+    tmp.(input{i}) = data.(input{i});
   end
 
   data = tmp;

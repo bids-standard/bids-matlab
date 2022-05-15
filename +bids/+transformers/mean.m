@@ -12,11 +12,11 @@ function data = mean(transformer, data)
 
   overwrite = false;
 
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data, overwrite);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data, overwrite);
 
-  if ~isempty(outputs)
-    assert(numel(inputs) == numel(outputs));
+  if ~isempty(output)
+    assert(numel(input) == numel(output));
   end
 
   if isfield(transformer, 'OmitNan')
@@ -25,18 +25,18 @@ function data = mean(transformer, data)
     omit_nan = false;
   end
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    output_column = [inputs{i} '_mean'];
-    if ~isempty(outputs)
-      output_column = outputs{i};
+    output_column = [input{i} '_mean'];
+    if ~isempty(output)
+      output_column = output{i};
     end
 
     if omit_nan
-      data.(output_column) = mean(data.(inputs{i}), 'omitnan');
+      data.(output_column) = mean(data.(input{i}), 'omitnan');
 
     else
-      data.(output_column) = mean(data.(inputs{i}));
+      data.(output_column) = mean(data.(input{i}));
 
     end
 

@@ -15,10 +15,10 @@ function data = delete(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
 
-  for i = 1:numel(inputs)
-    data = rmfield(data, inputs{i});
+  for i = 1:numel(input)
+    data = rmfield(data, input{i});
   end
 
 end

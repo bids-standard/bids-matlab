@@ -15,17 +15,17 @@ function data = sum(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
-  assert(numel(outputs) == 1);
+  assert(numel(output) == 1);
 
-  outputs = outputs{1};
+  output = output{1};
 
   if isfield(transformer, 'Weights')
     weights = transformer.Weights;
   else
-    weights = ones(size(inputs));
+    weights = ones(size(input));
   end
 
   if isfield(transformer, 'OmitNan')
@@ -36,25 +36,25 @@ function data = sum(transformer, data)
 
   tmp = [];
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    if ~isnumeric(data.(inputs{i}))
-      error('non numeric variable: %s', inputs{i});
+    if ~isnumeric(data.(input{i}))
+      error('non numeric variable: %s', input{i});
     end
 
-    if ~isempty(tmp) && length(tmp) ~= length(data.(inputs{i}))
-      error('trying to concatenate variables of different lengths: %s', inputs{i});
+    if ~isempty(tmp) && length(tmp) ~= length(data.(input{i}))
+      error('trying to concatenate variables of different lengths: %s', input{i});
     end
 
-    tmp(:, i) = data.(inputs{i}) * weights(i);
+    tmp(:, i) = data.(input{i}) * weights(i);
 
   end
 
   if omit_nan
-    data.(outputs) = sum(tmp, 2, 'omitnan');
+    data.(output) = sum(tmp, 2, 'omitnan');
 
   else
-    data.(outputs) = sum(tmp, 2);
+    data.(output) = sum(tmp, 2);
 
   end
 

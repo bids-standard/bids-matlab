@@ -22,16 +22,16 @@ function data = basic(transformer, data)
   % - Value(float or str; mandatory): The value to perform operation with (i.e. operand)
   % - Output(array; optional): the optional list of column names to write out to.
   %
-  % By default, computation is done in-place on the inputs (i.e., input columns are overwritten).
+  % By default, computation is done in-place on the input (i.e., input columns are overwritten).
   % If provided, the number of values must exactly match the number of input values,
   % and the order will be mapped 1-to-1.
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
     value = transformer.Value;
 
@@ -52,23 +52,23 @@ function data = basic(transformer, data)
     switch lower(transformer.Name)
 
       case 'add'
-        tmp = data.(inputs{i}) + value;
+        tmp = data.(input{i}) + value;
 
       case 'subtract'
-        tmp = data.(inputs{i}) - value;
+        tmp = data.(input{i}) - value;
 
       case 'multiply'
-        tmp = data.(inputs{i}) * value;
+        tmp = data.(input{i}) * value;
 
       case 'divide'
-        tmp = data.(inputs{i}) / value;
+        tmp = data.(input{i}) / value;
 
       case 'power'
-        tmp = data.(inputs{i}).^value;
+        tmp = data.(input{i}).^value;
 
     end
 
-    data.(outputs{i}) = tmp;
+    data.(output{i}) = tmp;
 
   end
 

@@ -14,11 +14,11 @@ function data = factor(transformer, data)
   %
   % (C) Copyright 2022 Remi Gau
 
-  inputs = bids.transformers.get_input(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    this_input = data.(inputs{i});
+    this_input = data.(input{i});
 
     % coerce to cellstr
     % and get name to append for each level
@@ -42,7 +42,7 @@ function data = factor(transformer, data)
 
     % generate new variables
     for j = 1:numel(levels)
-      field = [inputs{i} '_' level_names{j}];
+      field = [input{i} '_' level_names{j}];
       field = regexprep(field, '[^a-zA-Z0-9_]', '');
       data.(field) = ismember(this_input, levels{j});
     end

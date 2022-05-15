@@ -2,16 +2,16 @@ function data = replace(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
   attributes =  get_attribute_to_replace(transformer);
 
   replace = transformer.Replace;
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    if ~isfield(data, inputs{i})
+    if ~isfield(data, input{i})
       continue
     end
 
@@ -19,20 +19,20 @@ function data = replace(transformer, data)
 
       switch lower(attributes{ii})
         case 'value'
-          if strcmp(inputs{i}, outputs{i})
-            this_output = data.(inputs{i});
+          if strcmp(input{i}, output{i})
+            this_output = data.(input{i});
           else
-            this_output = data.(outputs{i});
+            this_output = data.(output{i});
           end
         case 'onset'
           this_output = data.onset;
-          if strcmp(inputs{i}, outputs{i})
-            outputs{i} = 'onset';
+          if strcmp(input{i}, output{i})
+            output{i} = 'onset';
           end
         case 'duration'
           this_output = data.duration;
-          if strcmp(inputs{i}, outputs{i})
-            outputs{i} = 'duration';
+          if strcmp(input{i}, output{i})
+            output{i} = 'duration';
           end
       end
 
@@ -42,14 +42,14 @@ function data = replace(transformer, data)
 
         switch lower(attributes{ii})
           case 'value'
-            this_input = data.(inputs{i});
+            this_input = data.(input{i});
           case 'onset'
             this_input = data.onset;
           case 'duration'
             this_input = data.duration;
         end
 
-        key = get_key_to_replace(inputs{i}, attributes{ii}, toReplace{iii});
+        key = get_key_to_replace(input{i}, attributes{ii}, toReplace{iii});
         value = replace.(toReplace{iii});
 
         if ischar(key)
@@ -74,7 +74,7 @@ function data = replace(transformer, data)
 
       end
 
-      data.(outputs{i}) = this_output;
+      data.(output{i}) = this_output;
     end
 
   end

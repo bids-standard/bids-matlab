@@ -2,8 +2,8 @@ function data = threshold(transformer, data)
   %
   %
   % (C) Copyright 2022 Remi Gau
-  inputs = bids.transformers.get_input(transformer, data);
-  outputs = bids.transformers.get_output(transformer, data);
+  input = bids.transformers.get_input(transformer, data);
+  output = bids.transformers.get_output(transformer, data);
 
   threshold = 0;
   binarize = false;
@@ -26,9 +26,9 @@ function data = threshold(transformer, data)
     signed = transformer.Signed;
   end
 
-  for i = 1:numel(inputs)
+  for i = 1:numel(input)
 
-    valuesToThreshold = data.(inputs{i});
+    valuesToThreshold = data.(input{i});
 
     if ~signed
       valuesToThreshold = abs(valuesToThreshold);
@@ -40,14 +40,14 @@ function data = threshold(transformer, data)
       idx = valuesToThreshold < threshold;
     end
 
-    tmp = zeros(size(data.(inputs{i})));
-    tmp(idx) = data.(inputs{i})(idx);
+    tmp = zeros(size(data.(input{i})));
+    tmp(idx) = data.(input{i})(idx);
 
     if binarize
       tmp(idx) = 1;
     end
 
-    data.(outputs{i}) = tmp;
+    data.(output{i}) = tmp;
   end
 
 end
