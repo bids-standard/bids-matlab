@@ -1,7 +1,7 @@
 function data = rename(transformer, data)
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   %   Rename a variable.
   % Arguments:

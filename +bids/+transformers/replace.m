@@ -1,7 +1,7 @@
 function data = replace(transformer, data)
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   % Replaces values in one or more input columns.
 

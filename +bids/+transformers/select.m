@@ -1,7 +1,7 @@
 function data = select(transformer, data)
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   % The select transformation specifies which columns to retain for subsequent analysis.
   % Any columns that are not specified here will be dropped.

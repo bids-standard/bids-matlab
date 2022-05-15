@@ -11,7 +11,7 @@ function data = constant(transformer, data)
   % - Output(str; mandatory): Name of the newly generated column.
   % - Value(float; optional): The value of the constant, defaults to 1.
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
   output = bids.transformers.get_output(transformer, data);
 
   assert(numel(output) == 1);

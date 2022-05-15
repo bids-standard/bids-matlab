@@ -1,7 +1,7 @@
 function data = threshold(transformer, data)
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   % Thresholds input values at a specified cut-off and optionally binarizes the result.
 

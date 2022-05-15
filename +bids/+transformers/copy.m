@@ -12,7 +12,7 @@ function data = copy(transformer, data)
   %                             Must be same length as input, and columns are mapped one-to-one
   %                             from the input list to the output list.
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);
 

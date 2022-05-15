@@ -9,7 +9,7 @@ function data = std(transformer, data)
   %
   % OmitNan
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   overwrite = false;
 

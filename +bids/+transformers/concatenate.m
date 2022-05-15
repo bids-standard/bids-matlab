@@ -1,7 +1,7 @@
 function data = concatenate(transformer, data)
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data, false);

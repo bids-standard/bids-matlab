@@ -13,7 +13,7 @@ function data = filter(transformer, data)
   % If provided, the number of values must exactly match the number of input values,
   % and the order will be mapped 1-to-1.
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   % TODO
   % - By(str; optional): Name of column to group filter operation by

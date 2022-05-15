@@ -25,7 +25,7 @@ function data = split(transformer, data)
   %
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   % treat By as a stack
   %

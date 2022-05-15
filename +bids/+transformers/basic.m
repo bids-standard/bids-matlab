@@ -1,16 +1,17 @@
 function data = basic(transformer, data)
   %
-  % USAGE::
+  % Perfoms a basic operation with a ``Value`` on the ``Input``
   %
-  %   data = bids.transformers.basic(transformer, data)
+  % **JSON EXAMPLE**:
   %
-  % Perfoms a basic operation with a ``Value`` on the ``Input``::
+  % .. code-block:: json
   %
-  %   Add(Input, Value, [Output])
-  %   Divide(Input, Value, [Output])
-  %   Multiply(Input, Value, [Output])
-  %   Subtract(Input, Value, [Output])
-  %   Power(Input, Value, [Output])
+  %       {
+  %         "Name":  "Add",
+  %         "Input": "onset",
+  %         "Value": 0.5,
+  %         "Output": "delayed_onset"
+  %       }
   %
   % Each of these transformations takes one or more columns,
   % and performs a mathematical operation on the input column and a provided operand.
@@ -18,15 +19,46 @@ function data = basic(transformer, data)
   %
   % Arguments:
   %
-  % - Input(array; mandatory): A list of columns to perform operation on.
-  % - Value(float or str; mandatory): The value to perform operation with (i.e. operand)
-  % - Output(array; optional): the optional list of column names to write out to.
+  % :param Name: **mandatory**.  Any of ``Add``, ``Subtract``, ``Multiply``, ``Divide``, ``Power``.
+  % :type  Input: string
   %
-  % By default, computation is done in-place on the input (i.e., input columns are overwritten).
+  % :param Input: **mandatory**.  A list of columns to perform operation on.
+  % :type  Input: array
+  %
+  % :param Value: **mandatory**.  The value to perform operation with (i.e. operand).
+  % :type  Value: float
+  %
+  % :Output): optional. List of column names to write out to.
+  % :type  Output: array
+  %
+  % By default, computation is done in-place on the input
+  % (meaning that input columns are overwritten).
   % If provided, the number of values must exactly match the number of input values,
   % and the order will be mapped 1-to-1.
   %
-  % (C) Copyright 2022 Remi Gau
+  %
+  % **CODE EXAMPLE**::
+  %
+  %   transformer = struct('Name', 'Subtract', ...
+  %                         'Input', 'onset', ...
+  %                         'Value', 3, ...
+  %                         'Ouput', 'onset_minus_3');
+  %
+  %   data.onset = [1; 2; 5; 6];
+  %
+  %   data = bids.transformers.basic(transformer, data);
+  %
+  %   data.onset_minus_3
+  %
+  %   ans =
+  %
+  %         -2
+  %         -1
+  %          2
+  %          3
+  %
+  %
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);

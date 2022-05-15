@@ -13,7 +13,7 @@ function data = delete(transformer, data)
   % Notes: The ``Select`` transformation provides the inverse function
   % (selection of columns to keep for subsequent analysis).
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   input = bids.transformers.get_input(transformer, data);
 

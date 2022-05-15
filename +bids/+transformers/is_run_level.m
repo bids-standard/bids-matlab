@@ -1,6 +1,6 @@
 function status = is_run_level(data)
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   status = false;
 

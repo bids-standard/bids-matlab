@@ -1,6 +1,6 @@
 function attr = get_field_attribute(data, field, type)
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   if nargin < 3
     type = {'value'};

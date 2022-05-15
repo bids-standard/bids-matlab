@@ -1,7 +1,7 @@
 function input = get_input(transformer, data)
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   assert(isstruct(transformer));
   assert(numel(transformer) == 1);

@@ -4,7 +4,7 @@ function check_field(field_list, data, field_type, tolerant)
   % in the data strucuture
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   if nargin < 4
     tolerant = false;

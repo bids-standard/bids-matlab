@@ -12,7 +12,7 @@ function data = factor(transformer, data)
   % the default reference level will be 'apple').
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   input = bids.transformers.get_input(transformer, data);
 

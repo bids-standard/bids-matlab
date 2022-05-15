@@ -33,7 +33,7 @@ function new_content = transformers(varargin)
   % See also: bids.Model
   %
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
 
   SUPPORTED_TRANSFORMERS = {'Add', 'Subtract', 'Multiply', 'Power', 'Divide', 'Sum', 'Product'...
                             'Mean', 'StdDev', ...

@@ -1,6 +1,6 @@
 function data = assign(transformer, data)
   %
-  % (C) Copyright 2022 Remi Gau
+  % (C) Copyright 2022 BIDS-MATLAB developers
   %
   % Assign(Input, Target, Output=None, InputAttr="value", TargetOutputAttr="value")
 
