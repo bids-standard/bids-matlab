@@ -17,7 +17,7 @@ function test_no_transformation()
 
   transformers = struct([]);
 
-  new_content = bids.transformers(participants(), transformers);
+  new_content = bids.transformers(transformers, participants());
 
   assertEqual(new_content, participants());
 
@@ -75,7 +75,7 @@ function test_and()
                         'Output', 'men_gt_twenty');
 
   % WHEN
-  new_content = bids.transformers.logical(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.men_gt_twenty, [true; false; false; false; false]);
@@ -90,7 +90,7 @@ function test_and_nan()
                         'Output', 'age_or_hand');
 
   % WHEN
-  new_content = bids.transformers.logical(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.age_or_hand, [true; true; false; true; false]);
@@ -105,7 +105,7 @@ function test_or()
                         'Output', 'men_or_gt_twenty');
 
   % WHEN
-  new_content = bids.transformers.logical(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.men_or_gt_twenty, [true; true; true; false; false]);
@@ -120,7 +120,7 @@ function test_not()
                         'Output', 'ager_lt_twenty');
 
   % WHEN
-  new_content = bids.transformers.logical(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.ager_lt_twenty, [false; true; false; true; true]);
@@ -151,7 +151,7 @@ function test_touch()
                            'Input', {{'tmp'}});
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(transformers, tsv_content);
 
   % THEN
   % TODO assert whole content
@@ -185,7 +185,7 @@ function test_combine_columns()
                            'Input', {{'tmp', 'Famous', 'FirstRep'}});
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(transformers, tsv_content);
 
   % THEN
   % TODO assert whole content
@@ -210,7 +210,7 @@ function test_complex_filter_with_and()
                            'Output', 'FirstRep');
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(transformers, tsv_content);
 
   % THEN
   assert(all(ismember({'Famous'; 'FirstRep'}, fieldnames(new_content))));
@@ -223,7 +223,7 @@ function test_complex_filter_with_and()
                            'Output', 'FamousFirstRep');
 
   % WHEN
-  new_content = bids.transformers(tsv_content, transformers);
+  new_content = bids.transformers(transformers, tsv_content);
 
   % THEN
   assertEqual(sum(new_content.FamousFirstRep), 26);
@@ -242,7 +242,7 @@ function test_assign_with_target_attribute()
   data = face_rep_events();
   data.Face = [1; 1; 1; 1];
 
-  new_content = bids.transformers.assign(transformers, data);
+  new_content = bids.transformers(transformers, data);
 
   % check non involved fields are padded correctly
   expected.familiarity = cat(1, data.familiarity, repmat({nan}, 4, 1));
@@ -271,7 +271,7 @@ function test_assign()
   data = face_rep_events();
   data.Face = [1; 1; 1; 1];
 
-  new_content = bids.transformers.assign(transformers, data);
+  new_content = bids.transformers(transformers, data);
 
   assertEqual(new_content.Face, new_content.response_time);
 
@@ -287,7 +287,7 @@ function test_assign_with_output()
   data = face_rep_events();
   data.Face = [1; 1; 1; 1];
 
-  new_content = bids.transformers.assign(transformers, data);
+  new_content = bids.transformers(transformers, data);
 
   assertEqual(new_content.new_face, new_content.response_time);
 
@@ -304,7 +304,7 @@ function test_assign_with_output_and_input_attribute()
   data = face_rep_events();
   data.Face = [1; 1; 1; 1];
 
-  new_content = bids.transformers.assign(transformers, data);
+  new_content = bids.transformers(transformers, data);
 
   assertEqual(new_content.new_face, new_content.onset);
 
@@ -316,7 +316,7 @@ function test_assign_missing_target()
                         'Input', 'response_time', ...
                         'Target', 'Face');
 
-  assertExceptionThrown(@()bids.transformers.assign(transformers, face_rep_events()), ...
+  assertExceptionThrown(@()bids.transformers(transformers, face_rep_events()), ...
                         'check_field:missingTarget');
 
 end
@@ -333,7 +333,7 @@ function test_concatenate()
                         'Output', 'trial_type');
 
   % WHEN
-  new_content = bids.transformers.concatenate(transformers, tsv_content);
+  new_content = bids.transformers(transformers, tsv_content);
 
   assertEqual(unique(new_content.trial_type), ...
               {'famous_1'; 'famous_2';  'unfamiliar_1'; 'unfamiliar_2'});
@@ -348,7 +348,7 @@ function test_concatenate_strings()
                         'Output', 'trial_type');
 
   % WHEN
-  new_content = bids.transformers.concatenate(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   assertEqual(unique(new_content.trial_type), ...
               {'Face_Famous face'; ...
@@ -364,7 +364,7 @@ function test_concatenate_numbers()
                         'Output', 'trial_type');
 
   % WHEN
-  new_content = bids.transformers.concatenate(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   assertEqual(unique(new_content.trial_type), ...
               {'2_1.5'
@@ -383,7 +383,7 @@ function test_copy()
   transformers = struct('Name', 'Copy', ...
                         'Input', {{'face_type', 'repetition_type'}}, ...
                         'Output', {{'foo', 'bar'}});
-  new_content = bids.transformers.copy(transformers, tsv_content);
+  new_content = bids.transformers(transformers, tsv_content);
 
   assert(all(ismember({'foo'; 'bar'}, fieldnames(new_content))));
   assertEqual(new_content.foo, new_content.face_type);
@@ -400,7 +400,7 @@ function test_delete_select()
   transformers = struct('Name', 'Delete', ...
                         'Input', 'face_type');
 
-  new_content = bids.transformers.delete(transformers, tsv_content);
+  new_content = bids.transformers(transformers, tsv_content);
 
   assert(~(ismember({'face_type'}, fieldnames(new_content))));
 
@@ -408,11 +408,26 @@ function test_delete_select()
   transformers = struct('Name', 'Select', ...
                         'Input', 'face_type');
 
-  new_content = bids.transformers.select(transformers, tsv_content);
+  new_content = bids.transformers(transformers, tsv_content);
 
   assertEqual(fieldnames(new_content), {    'face_type'
                                         'onset'
                                         'duration'});
+
+end
+
+function test_drop_na()
+
+  % GIVEN
+  transformers = struct('Name', 'DropNA', ...
+                        'Input', {{'age', 'handedness'}});
+
+  % WHEN
+  new_content = bids.transformers(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.age,  [21; 18; 46; 10]);
+  assertEqual(new_content.handedness,  {'right'; 'left'; 'left'; 'right'});
 
 end
 
@@ -423,7 +438,7 @@ function test_factor()
                         'Input', {{'familiarity'}});
 
   % WHEN
-  new_content = bids.transformers.factor(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
   assert(isfield(new_content, 'familiarity_1'));
@@ -440,7 +455,7 @@ function test_factor_numeric()
                         'Input', {{'age'}});
 
   % WHEN
-  new_content = bids.transformers.factor(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assert(isfield(new_content, 'age_10'));
@@ -467,7 +482,7 @@ function test_filter_numeric()
                           'Query', [' response_time ' types{i} ' 1.56']);
 
     % WHEN
-    new_content = bids.transformers.filter(transformers, face_rep_events());
+    new_content = bids.transformers(transformers, face_rep_events());
 
     % THEN
     types{i};
@@ -485,7 +500,7 @@ function test_filter_string()
                         'Query', ' familiarity == Famous face ');
 
   % WHEN
-  new_content = bids.transformers.filter(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
   assertEqual(new_content.familiarity, {'Famous face'; nan; 'Famous face'; nan});
@@ -501,7 +516,7 @@ function test_filter_string_ouput()
                         'Output', 'famous_face');
 
   % WHEN
-  new_content = bids.transformers.filter(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
   assertEqual(new_content.familiarity, {'Famous face'
@@ -520,7 +535,7 @@ function test_filter_across_columns()
                         'Output', 'familiarity_repetition_1');
 
   % WHEN
-  new_content = bids.transformers.filter(transformers, face_rep_events);
+  new_content = bids.transformers(transformers, face_rep_events);
 
   % THEN
   assertEqual(new_content.familiarity_repetition_1, ...
@@ -535,7 +550,7 @@ function test_filter_several_inputs()
                         'Query', 'repetition>1');
 
   % WHEN
-  new_content = bids.transformers.filter(transformers, face_rep_events);
+  new_content = bids.transformers(transformers, face_rep_events);
 
 end
 
@@ -548,7 +563,7 @@ function test_replace()
   transformers(1).Replace(2) = struct('key', 'Unfamiliar face', 'value', 'bar');
 
   % WHEN
-  new_content = bids.transformers.replace(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
   assertEqual(new_content.familiarity, {'foo'; 'bar'; 'foo'; 'bar'});
@@ -561,7 +576,7 @@ function test_replace()
   transformers(1).Attribute = 'duration';
 
   % WHEN
-  new_content = bids.transformers.replace(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
   assertEqual(unique(new_content.duration), 1);
@@ -579,7 +594,7 @@ function test_replace_with_output()
   transformers(1).Attribute = 'duration';
 
   % WHEN
-  new_content = bids.transformers.replace(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
   assertEqual(unique(new_content.tmp), 1);
@@ -596,7 +611,7 @@ function test_rename()
   transformers = struct('Name', 'Rename', ...
                         'Input', {{'face_type', 'repetition_type'}}, ...
                         'Output', {{'foo', 'bar'}});
-  new_content = bids.transformers.rename(transformers, tsv_content);
+  new_content = bids.transformers(transformers, tsv_content);
 
   assert(all(ismember({'foo'; 'bar'}, fieldnames(new_content))));
   assert(all(~ismember({'face_type'; 'repetition_type'}, fieldnames(new_content))));
@@ -612,7 +627,7 @@ function test_select()
                         'Input', {{'age'}});
 
   % WHEN'
-  new_content = bids.transformers.select(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(fieldnames(new_content), {'age'});
@@ -626,7 +641,7 @@ function test_select_event()
                         'Input', {{'familiarity'}});
 
   % WHEN'
-  new_content = bids.transformers.select(transformers, face_rep_events());
+  new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
   assertEqual(fieldnames(new_content), {'familiarity'; 'onset'; 'duration'});
@@ -641,7 +656,7 @@ function test_split_empty_by()
                         'By', {{}});
 
   % WHEN'
-  new_content = bids.transformers.split(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content, participants);
@@ -656,7 +671,7 @@ function test_split_simple()
                         'By', {{'sex'}});
 
   % WHEN'
-  new_content = bids.transformers.split(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.age_BY_sex_M,  [21; 18; nan; nan; nan]);
@@ -672,7 +687,7 @@ function test_split_simple_string()
                         'By', {{'sex'}});
 
   % WHEN'
-  new_content = bids.transformers.split(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.handedness_BY_sex_F,  {nan; nan; nan; 'left'; 'right'});
@@ -688,7 +703,7 @@ function test_split_nested()
                         'By', {{'sex', 'handedness'}});
 
   % WHEN'
-  new_content = bids.transformers.split(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assert(isfield(new_content, 'age_BY_handedness_left_BY_sex_M'));

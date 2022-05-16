@@ -29,7 +29,7 @@ function test_add_subtract_with_output
   transformers(2).Output  = 'onset_plus_1';
 
   % WHEN
-  new_content = bids.transformers(vis_motion_events(), transformers);
+  new_content = bids.transformers(transformers, vis_motion_events());
 
   % THEN
   assert(all(ismember({'onset_plus_1'; 'onset_minus_3'}, fieldnames(new_content))));
@@ -48,7 +48,7 @@ function test_add_coerce_value
   transformers(1).Value = '3';
 
   % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
+  new_content = bids.transformers(transformers, vis_motion_events());
 
   % THEN
   assertEqual(new_content.onset, [5; 7]);
@@ -59,7 +59,7 @@ function test_add_coerce_value
   transformers(1).Value = '+';
 
   % WHEN
-  assertExceptionThrown(@()bids.transformers.basic(transformers, vis_motion_events()), ...
+  assertExceptionThrown(@()bids.transformers(transformers, vis_motion_events()), ...
                         'basic:numericOrCoercableToNumericRequired');
 
   % THEN
@@ -74,7 +74,7 @@ function test_constant()
                         'Output', 'cst');
 
   % WHEN
-  new_content = bids.transformers.constant(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   assertEqual(new_content.cst, ones(4, 1));
 
@@ -84,24 +84,9 @@ function test_constant()
                         'Output', 'cst');
 
   % WHEN
-  new_content = bids.transformers.constant(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   assertEqual(new_content.cst, ones(4, 1) * 2);
-
-end
-
-function test_drop_na()
-
-  % GIVEN
-  transformers = struct('Name', 'Factor', ...
-                        'Input', {{'age', 'handedness'}});
-
-  % WHEN
-  new_content = bids.transformers.drop_na(transformers, participants());
-
-  % THEN
-  assertEqual(new_content.age,  [21; 18; 46; 10]);
-  assertEqual(new_content.handedness,  {'right'; 'left'; 'left'; 'right'});
 
 end
 
@@ -113,7 +98,7 @@ function test_divide_several_inputs
   transformers(1).Value = 2;
 
   % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
+  new_content = bids.transformers(transformers, vis_motion_events());
 
   % THEN
   assertEqual(new_content.onset, [1; 2]);
@@ -128,7 +113,7 @@ function test_mean()
                         'Input', {{'age'}});
 
   % WHEN
-  new_content = bids.transformers.mean(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.age_mean, nan);
@@ -140,7 +125,7 @@ function test_mean()
                         'OmitNan', true);
 
   % WHEN
-  new_content = bids.transformers.mean(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.age_mean_omitnan, 23.75);
@@ -155,7 +140,7 @@ function test_product()
                         'Output', 'onset_times_duration');
 
   % WHEN
-  new_content = bids.transformers.product(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.onset_times_duration, [4; 8; 12; 16]);
@@ -169,7 +154,7 @@ function test_std()
                         'Input', {{'age'}});
 
   % WHEN
-  new_content = bids.transformers.std(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertEqual(new_content.age_std, nan);
@@ -181,7 +166,7 @@ function test_std()
                         'OmitNan', true);
 
   % WHEN
-  new_content = bids.transformers.std(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertElementsAlmostEqual(new_content.age_std_omitnan, 15.543, 'absolute', 1e-3);
@@ -196,7 +181,7 @@ function test_sum()
                         'Output', 'onset_plus_duration');
 
   % WHEN
-  new_content = bids.transformers.sum(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.onset_plus_duration, [4; 6; 8; 10]);
@@ -208,7 +193,7 @@ function test_sum()
                         'Output', 'onset_plus_duration_with_weight');
 
   % WHEN
-  new_content = bids.transformers.sum(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.onset_plus_duration_with_weight, [6; 10; 14; 18]);
@@ -223,7 +208,7 @@ function test_power
   transformers.Value = 2;
 
   % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
+  new_content = bids.transformers(transformers, vis_motion_events());
 
   % THEN
   assertEqual(new_content.intensity, [4; 16]);
@@ -235,7 +220,7 @@ function test_power
   transformers.Output = 'intensity_cubed';
 
   % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
+  new_content = bids.transformers(transformers, vis_motion_events());
 
   % THEN
   assertEqual(new_content.intensity_cubed, [8; -64]);
@@ -245,11 +230,11 @@ end
 function test_scale()
 
   %% GIVEN
-  transformers = struct('Name', 'Factor', ...
+  transformers = struct('Name', 'Scale', ...
                         'Input', {{'age'}});
 
   % WHEN
-  new_content = bids.transformers.scale(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertElementsAlmostEqual(new_content.age, ...
@@ -257,7 +242,7 @@ function test_scale()
                             'absolute', 1e-3);
 
   %% GIVEN
-  transformers = struct('Name', 'Factor', ...
+  transformers = struct('Name', 'Scale', ...
                         'Input', {{'age'}}, ...
                         'Demean', true, ...
                         'Rescale', true, ...
@@ -265,7 +250,7 @@ function test_scale()
                         'Output', {{'age_demeaned_centered'}});
 
   % WHEN
-  new_content = bids.transformers.scale(transformers, participants());
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertElementsAlmostEqual(new_content.age_demeaned_centered, ...
@@ -295,7 +280,7 @@ function test_scale_nan_after()
                            'Demean', false, ...
                            'Output', {{'age_not_demeaned_after'}});
   % WHEN
-  new_content = bids.transformers(participants(), transformers);
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertElementsAlmostEqual(new_content.age_not_rescaled, ...
@@ -331,7 +316,7 @@ function test_scale_nan_before()
                            'Output', {{'age_not_demeaned_before'}});
 
   % WHEN
-  new_content = bids.transformers(participants(), transformers);
+  new_content = bids.transformers(transformers, participants());
 
   % THEN
   assertElementsAlmostEqual(new_content.age_before, ...
@@ -353,7 +338,7 @@ function test_subtract
   transformers(1).Value = 3;
 
   % WHEN
-  new_content = bids.transformers.basic(transformers, vis_motion_events());
+  new_content = bids.transformers(transformers, vis_motion_events());
 
   % THEN
   assertEqual(new_content.onset, [-1; 1]);
@@ -366,7 +351,7 @@ function test_threshold_output()
                         'Input', 'to_threshold', ...
                         'Output', 'tmp');
 
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   assertEqual(new_content.tmp, [1; 2; 0; 0]);
 
@@ -378,7 +363,7 @@ function test_threshold()
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold');
 
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 2; 0; 0]);
@@ -388,7 +373,7 @@ function test_threshold()
                         'Input', 'to_threshold', ...
                         'Threshold', 1);
 
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 2; 0; 0]);
@@ -398,7 +383,7 @@ function test_threshold()
                         'Input', 'to_threshold', ...
                         'Binarize', true);
 
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 1; 0; 0]);
@@ -409,7 +394,7 @@ function test_threshold()
                         'Binarize', true, ...
                         'Above', false);
 
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 0; 1; 1]);
@@ -422,7 +407,7 @@ function test_threshold()
                         'Above', true, ...
                         'Signed', false);
 
-  new_content = bids.transformers.threshold(transformers, vis_motion_to_threshold_events());
+  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 1; 0; 1]);

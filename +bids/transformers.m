@@ -4,13 +4,13 @@ function new_content = transformers(varargin)
   %
   % USAGE::
   %
-  %   new_content = transformers(data, transformers)
-  %
-  % :param data:
-  % :type data: structure
+  %   new_content = transformers(transformers, data)
   %
   % :param transformers:
   % :type transformers: structure
+  %
+  % :param data:
+  % :type data: structure
   %
   % :returns: - :new_content: (structure)
   %
@@ -35,23 +35,17 @@ function new_content = transformers(varargin)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  SUPPORTED_TRANSFORMERS = {'Add', 'Subtract', 'Multiply', 'Power', 'Divide', 'Sum', 'Product'...
-                            'Mean', 'StdDev', ...
-                            'Filter', 'Factor', 'Scale', ...
-                            'And', 'Or', 'Not'...
-                            'Rename', 'Concatenate', 'Delete', 'Select', 'Copy', ...
-                            'Constant', 'DropNA', 'Split'...
-                            'Replace', ...
-                            'Threshold'};
+  SUPPORTED_TRANSFORMERS = lower(cat(1, basic_transfomers, ...
+                                     munge_transfomers, ...
+                                     logical_transfomers, ...
+                                     compute_transfomers));
 
   p = inputParser;
 
-  default_transformers = 'transformers';
-
   isStructOrCell = @(x) isstruct(x) || iscell(x);
 
+  addRequired(p, 'transformers', isStructOrCell);
   addRequired(p, 'data', @isstruct);
-  addOptional(p, 'transformers', default_transformers, isStructOrCell);
 
   parse(p, varargin{:});
 
@@ -72,10 +66,8 @@ function new_content = transformers(varargin)
       this_transformer = transformers(iTrans);
     end
 
-    if ~ismember(this_transformer.Name, SUPPORTED_TRANSFORMERS)
-      notImplemented(mfilename(), ...
-                     sprintf('Transformer %s not implemented', this_transformer.Name), ...
-                     true);
+    if ~ismember(lower(this_transformer.Name), SUPPORTED_TRANSFORMERS)
+      not_implemented(this_transformer.Name);
       return
     end
 
@@ -92,8 +84,80 @@ function output = apply_transformer(transformer, data)
 
   switch transformerName
 
-    case {'add', 'subtract', 'multiply', 'divide', 'power'}
+    case lower(basic_transfomers)
       output = bids.transformers.basic(transformer, data);
+
+    case lower(logical_transfomers)
+      output = bids.transformers.logical(transformer, data);
+
+    case lower(munge_transfomers)
+      output = apply_munge(transformer, data);
+
+    case lower(compute_transfomers)
+      output = apply_compute(transformer, data);
+
+    otherwise
+      not_implemented(transformer.Name);
+
+  end
+
+end
+
+function output = apply_munge(transformer, data)
+
+  transformerName = lower(transformer.Name);
+
+  switch transformerName
+
+    case 'assign'
+      output = bids.transformers.assign(transformer, data);
+
+    case 'concatenate'
+      output = bids.transformers.concatenate(transformer, data);
+
+    case 'constant'
+      output = bids.transformers.constant(transformer, data);
+
+    case 'copy'
+      output = bids.transformers.copy(transformer, data);
+
+    case 'delete'
+      output = bids.transformers.delete(transformer, data);
+
+    case 'dropna'
+      output = bids.transformers.drop_na(transformer, data);
+
+    case 'factor'
+      output = bids.transformers.factor(transformer, data);
+
+    case 'filter'
+      output = bids.transformers.filter(transformer, data);
+
+    case 'rename'
+      output = bids.transformers.rename(transformer, data);
+
+    case 'select'
+      output = bids.transformers.select(transformer, data);
+
+    case 'replace'
+      output = bids.transformers.replace(transformer, data);
+
+    case 'split'
+      output = bids.transformers.split(transformer, data);
+
+    otherwise
+
+      not_implemented(transformer.Name);
+
+  end
+
+end
+
+function output = apply_compute(transformer, data)
+
+  transformerName = lower(transformer.Name);
+
+  switch transformerName
 
     case 'sum'
       output = bids.transformers.sum(transformer, data);
@@ -107,50 +171,60 @@ function output = apply_transformer(transformer, data)
     case 'stddev'
       output = bids.transformers.std(transformer, data);
 
-    case 'filter'
-      output = bids.transformers.filter(transformer, data);
-
     case 'scale'
       output = bids.transformers.scale(transformer, data);
-
-    case 'split'
-      output = bids.transformers.split(transformer, data);
-
-    case 'factor'
-      output = bids.transformers.factor(transformer, data);
 
     case 'threshold'
       output = bids.transformers.threshold(transformer, data);
 
-    case 'rename'
-      output = bids.transformers.rename(transformer, data);
-
-    case 'concatenate'
-      output = bids.transformers.concatenate(transformer, data);
-
-    case 'replace'
-      output = bids.transformers.replace(transformer, data);
-
-    case 'constant'
-      output = bids.transformers.constant(transformer, data);
-
-    case 'copy'
-      output = bids.transformers.copy(transformer, data);
-
-    case 'delete'
-      output = bids.transformers.delete(transformer, data);
-
-    case 'select'
-      output = bids.transformers.select(transformer, data);
-
-    case {'and', 'or', 'not'}
-      output = bids.transformers.logical(transformer, data);
-
     otherwise
-      bids.internal.error_handling(mfilename(), 'notImplemented', ...
-                                   sprintf('Transformer %s not implemented', transformer.Name), ...
-                                   false);
+
+      not_implemented(transformer.Name);
 
   end
 
+end
+
+function not_implemented(name)
+  bids.internal.error_handling(mfilename(), 'notImplemented', ...
+                               sprintf('Transformer %s not implemented', name), ...
+                               false);
+end
+
+function BASIC = basic_transfomers()
+  BASIC = {'Add'
+           'Divide'
+           'Multiply'
+           'Power'
+           'Subtract'};
+end
+
+function LOGICAL = logical_transfomers()
+  LOGICAL = {'And'
+             'Or'
+             'Not'};
+end
+
+function MUNGE = munge_transfomers()
+  MUNGE = {'Assign'
+           'Concatenate'
+           'Constant'
+           'Copy'
+           'Delete'
+           'DropNA'
+           'Filter'
+           'Factor'
+           'Rename'
+           'Replace'
+           'Select'
+           'Split'};
+end
+
+function COMPUTE = compute_transfomers()
+  COMPUTE = {'Mean'
+             'Product'
+             'Scale'
+             'StdDev'
+             'Sum'
+             'Threshold'};
 end
