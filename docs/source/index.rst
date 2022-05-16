@@ -19,8 +19,9 @@ To see how to install BIDS-Matlab, please check
    layout_query
    file
    function_description
-   stats_model
    utility_functions
+   stats_model
+   transformers
    schema
 
 
