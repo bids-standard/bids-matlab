@@ -30,8 +30,19 @@ function data = delete(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   % TODO
-  %   data = delete(transformer, data)
+  %   transformer = struct('Name', 'Delete', ...
+  %                         'Input', {{'sex_m', age_gt_twenty}});
+  %
+  %   data.sex_m = ;
+  %   data.age_gt_twenty = ;
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data.
+  %
+  %   ans =
+  %
+  %
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers

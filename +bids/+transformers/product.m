@@ -23,8 +23,8 @@ function data = product(transformer, data)
   % :param Output: **mandatory**. Name of the newly generated column.
   % :type  Output: string or array
   %
-  % :param OmitNan: optional. If ``"false"`` any column with nan values will return a nan value.
-  %                           If ``"true"`` nan values are skipped. Defaults to ``"false"``.
+  % :param OmitNan: optional. If ``false`` any column with nan values will return a nan value.
+  %                           If ``true`` nan values are skipped. Defaults to ``false``.
   % :type  OmitNan: boolean
   %
   %
@@ -36,7 +36,7 @@ function data = product(transformer, data)
   %                         'Ouput', 'duration_X_reaction_time');
   %
   %
-  %   data = bids.transformers.product(transformer, data);
+  %   data = bids.transformers(transformer, data);
   %
   %
   %   ans =

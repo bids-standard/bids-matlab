@@ -33,7 +33,19 @@ function data = rename(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'Rename', ...
+  %                         'Input', {{'age_gt_70', 'age_lt_18'}}, ...
+  %                         'Ouput', {{'senior', 'teenager'}});
+  %
+  %   data. = ;
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data.
+  %
+  %   ans =
+  %
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

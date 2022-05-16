@@ -37,7 +37,20 @@ function data = filter(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'Filter', ...
+  %                         'Input', 'sex', ...
+  %                         'Query', 'age > 20');
+  %
+  %   data.sex = ;
+  %   data.age = ;
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data.sex
+  %
+  %   ans =
+  %
+  %
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers

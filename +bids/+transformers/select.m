@@ -15,7 +15,7 @@ function data = select(transformer, data)
   %     {
   %       "Name": "Select",
   %       "Input": [
-  %           "trial_type",
+  %           "valid_trials",
   %           "reaction_time"
   %       ]
   %     }
@@ -37,7 +37,21 @@ function data = select(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %     TODO
+  %
+  %   transformer = struct('Name', 'Select', ...
+  %                         'Input',  {{'valid_trials', 'reaction_time'}});
+  %
+  %   data.valid_trials =
+  %   data.invalid_trials =
+  %   data.reaction_time =
+  %   data.onset =
+  %   data.duration =
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data =
+  %
+  %   ans =
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

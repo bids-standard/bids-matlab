@@ -58,9 +58,11 @@ function data = scale(transformer, data)
   %                        'ReplaceNa', true,
   %                        'Output', 'scaled_reaction_time');
   %
+  %   data.reaction_time =
   %
-  %   data = bids.transformers.scale(transformer, data);
+  %   data = bids.transformers(transformer, data);
   %
+  %   data.scaled_reaction_time =
   %
   %   ans =
   %

@@ -24,8 +24,8 @@ function data = sum(transformer, data)
   % :param Output: **mandatory**. Name of the newly generated column.
   % :type  Output: string or array
   %
-  % :param OmitNan: optional. If ``"false"`` any column with nan values will return a nan value.
-  %                           If ``"true"`` nan values are skipped. Defaults to ``"false"``.
+  % :param OmitNan: optional. If ``false`` any column with nan values will return a nan value.
+  %                           If ``true`` nan values are skipped. Defaults to ``false``.
   % :type  OmitNan: boolean
   %
   % :param Weights: optional. Optional array of floats giving the weights of the columns.
@@ -45,9 +45,12 @@ function data = sum(transformer, data)
   %                         'Weights': [1, 0.5], ...
   %                         'Ouput', 'duration_plus_reaction_time');
   %
+  %   data.duration =
+  %   data.reaction_time =
   %
-  %   data = bids.transformers.sum(transformer, data);
+  %   data = bids.transformers(transformer, data);
   %
+  %   data.duration_plus_reaction_time =
   %
   %   ans =
   %

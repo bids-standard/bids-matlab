@@ -74,8 +74,8 @@ Delete
 
 .. autofunction:: delete
 
-Drop_na
--------
+DropNA
+------
 
 .. autofunction:: drop_na
 

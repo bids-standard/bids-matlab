@@ -27,7 +27,20 @@ function data = concatenate(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'Concatenate', ...
+  %                         'Input', {{'face_type', 'face_repetition'}}, ...
+  %                         'Ouput', 'face_type_repetition');
+  %
+  %   data.face_type = ;
+  %   data.face_repetition = ;
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data.
+  %
+  %   ans =
+  %
+  %
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers

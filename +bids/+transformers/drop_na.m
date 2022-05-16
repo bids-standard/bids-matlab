@@ -8,7 +8,7 @@ function data = drop_na(transformer, data)
   % .. code-block:: json
   %
   %     {
-  %       "Name": "Drop_na",
+  %       "Name": "DropNA",
   %       "Input": [
   %           "age_gt_twenty"
   %       ],
@@ -31,7 +31,19 @@ function data = drop_na(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'DropNA', ...
+  %                         'Input', 'age_gt_twenty', ...
+  %                         'Ouput', 'age_gt_twenty_clean');
+  %
+  %   data.age_gt_twenty = ;
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data.
+  %
+  %   ans =
+  %
+  %
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers

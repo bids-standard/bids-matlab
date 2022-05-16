@@ -35,7 +35,18 @@ function data = copy(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'Copy', ...
+  %                         'Input', 'onset', ...
+  %                         'Ouput', 'onset_copy');
+  %
+  %   data.onset = ;
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data.
+  %
+  %   ans =
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

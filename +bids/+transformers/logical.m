@@ -51,7 +51,7 @@ function data = logical(transformer, data)
   %     data.age_gt_twenty = [nan; 25; 51; 12];
   %     data.sex_m = {'M'; 'M'; nan; 'M'};
   %
-  %     data = bids.transformers.logical(transformer, data);
+  %     data = bids.transformers(transformer, data);
   %
   %     ans =
   %

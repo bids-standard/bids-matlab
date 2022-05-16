@@ -13,8 +13,8 @@ function data = split(transformer, data)
   %           "sex",
   %       ],
   %       "By": [
-  %           "tmp_sex_m",
-  %           "tmp_age_gt_twenty"
+  %           "sex_m",
+  %           "age_gt_twenty"
   %       ]
   %     }
   %
@@ -35,7 +35,20 @@ function data = split(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'Split', ...
+  %                         'Input', 'sex', ...
+  %                         'By', {{'sex_m', 'age_gt_twenty'}});
+  %
+  %   data.sex = ;
+  %   data.sex_m = ;
+  %   data.age_gt_twenty = ;
+  %
+  %   data = bids.transformers.split(transformer, data);
+  %
+  %   data.sex_BY % TODO
+  %
+  %   ans =
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

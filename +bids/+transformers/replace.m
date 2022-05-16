@@ -8,7 +8,7 @@ function data = replace(transformer, data)
   % .. code-block:: json
   %
   %     {
-  %       "Name": "Copy",
+  %       "Name": "Replace",
   %       "Input": [
   %           "fruits",
   %       ],
@@ -40,7 +40,8 @@ function data = replace(transformer, data)
   % - ``"onset"``,
   % - and ``"all"``.
   %
-  % In the last case, all three attributes ("value", "duration", and "onset") will be scanned.
+  % In the last case, all three attributes
+  % (``"value"``, ``"duration"``, and ``"onset"``) will be scanned.
   %
   % :param Output: optional. Optional names of columns to output.
   %                          Must match length of input column(s) if provided,
@@ -53,7 +54,21 @@ function data = replace(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'Replace', ...
+  %                         'Input', 'fruits', ...
+  %                         'Atribute', 'all', ...
+  %                         'Replace', struct('key', {'apple', 'elusive', -1}, ...
+  %                                           'key', {-1, 'value', 0}));
+  %
+  %   data. = ;
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data.
+  %
+  %   ans =
+  %
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

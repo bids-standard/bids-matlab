@@ -30,7 +30,7 @@ function data = constant(transformer, data)
   %                         'Ouput', 'intercept');
   %
   %
-  %   data = bids.transformers.constant(transformer, data);
+  %   data = bids.transformers(transformer, data);
   %
   %
   %   ans =

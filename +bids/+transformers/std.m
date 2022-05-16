@@ -20,8 +20,8 @@ function data = std(transformer, data)
   % :param Input: **mandatory**. The name of the variable to operate on.
   % :type  Input: string or array
   %
-  % :param OmitNan: optional. If ``"false"`` any column with nan values will return a nan value.
-  %                           If ``"true"`` nan values are skipped. Defaults to ``"false"``.
+  % :param OmitNan: optional. If ``false`` any column with nan values will return a nan value.
+  %                           If ``true`` nan values are skipped. Defaults to ``false``.
   % :type  OmitNan: boolean
   %
   % :param Output: optional. The optional column names to write out to.
@@ -36,9 +36,11 @@ function data = std(transformer, data)
   %                         'OmitNan', false, ...
   %                         'Ouput', 'std_RT');
   %
+  %   data.reaction_time =
   %
-  %   data = bids.transformers.std(transformer, data);
+  %   data = bids.transformers(transformer, data);
   %
+  %   data.std_RT =
   %
   %   ans =
   %

@@ -24,24 +24,24 @@ function data = threshold(transformer, data)
   % :param Threshold: optional. The cut-off to use for thresholding. Defaults to ``0``.
   % :type  Threshold: float
   %
-  % :param Binarize: optional. If ``"true"``, thresholded values will be binarized
+  % :param Binarize: optional. If ``true``, thresholded values will be binarized
   %                            (i.e., all non-zero values will be set to 1).
-  %                            Defaults to ``"false"``.
+  %                            Defaults to ``false``.
   % :type Binarize: boolean
   %
   % :param Above: optional. Specifies which values to retain with respect to the cut-off.
-  %                         If ``"true"``, all value above the threshold will be kept;
-  %                         if ``"false"``, all values below the threshold will be kept.
-  %                         Defaults to ``"true"``.
+  %                         If ``true``, all value above the threshold will be kept;
+  %                         if ``false``, all values below the threshold will be kept.
+  %                         Defaults to ``true``.
   % :type  Above: boolean
   %
   % :param Signed: optional. Specifies whether to treat the threshold
   %                          as signed (default) or unsigned.
   % :type  Signed: boolean
   %
-  % For example, when passing above=True and threshold=3,
-  % if signed=True, all and only values above +3 would be retained.
-  % If signed=False, all absolute values > 3 would be retained
+  % For example, when passing above=true and threshold=3,
+  % if signed=true, all and only values above +3 would be retained.
+  % If signed=false, all absolute values > 3 would be retained
   % (i.e.,values in  the range -3 < X < 3 would be set to 0).
   %
   % :param Output: optional. Optional names of columns to output.
@@ -60,9 +60,11 @@ function data = threshold(transformer, data)
   %                         'Value', 3, ...
   %                         'Ouput', 'onset_minus_3');
   %
+  %   data.onset =
   %
-  %   data = bids.transformers.threshold(transformer, data);
+  %   data = bids.transformers(transformer, data);
   %
+  %   data.onset_minus_3 =
   %
   %   ans =
   %

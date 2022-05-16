@@ -84,7 +84,23 @@ function data = assign(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'Assign', ...
+  %                         'Input', 'response_time', ...
+  %                         'Target', 'face', ...
+  %                         'TargetAttr', 'duration', ...
+  %                         'Ouput', 'face_modulated_by_RT');
+  %
+  %   data.response_time = ;
+  %   data.face = ;
+  %   data.duration = ;
+  %
+  %   data = bids.transformers. (transformer, data);
+  %
+  %   data.face_modulated_by_RT
+  %
+  %   ans =
+  %
+  %
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers

@@ -48,7 +48,7 @@ function data = basic(transformer, data)
   %
   %   data.onset = [1; 2; 5; 6];
   %
-  %   data = bids.transformers.basic(transformer, data);
+  %   data = bids.transformers(transformer, data);
   %
   %   data.onset_minus_3
   %

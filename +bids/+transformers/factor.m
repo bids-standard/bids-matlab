@@ -25,7 +25,7 @@ function data = factor(transformer, data)
   % the default reference level will be 'apple').
   %
   % The name of the ouput colums for 2 input columns ``gender`` and ``age``
-  % with 2 levels (``M``, ``F``) and (``20``, ``30``) respectivalyu
+  % with 2 levels (``M``, ``F``) and (``20``, ``30``) respectivaly
   % will of the shape:
   %
   % - ``gender_F_age_20``
@@ -35,7 +35,19 @@ function data = factor(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   TODO
+  %   transformer = struct('Name', 'Factor', ...
+  %                        'Input', {{'gender', 'age'}});
+  %
+  %   data.gender = ;
+  %   data.age = ;
+  %
+  %   data = bids.transformers(transformer, data);
+  %
+  %   data.gender_F_age_20
+  %
+  %   ans =
+  %
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
