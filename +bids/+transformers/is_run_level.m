@@ -4,9 +4,9 @@ function status = is_run_level(data)
 
   status = false;
 
-  fields = fieldname(data);
+  fields = fieldnames(data);
 
-  if ismember(fields, {'onset', 'duration'})
+  if all(ismember({'onset', 'duration'}, fields))
     status = true;
   end
 

@@ -97,3 +97,17 @@ Split
 -----
 
 .. autofunction:: split
+
+
+Compute operations
+==================
+
+Transformations that primarily involve numerical computation on variables.
+
+.. autofunction:: constant
+.. autofunction:: mean
+.. autofunction:: product
+.. autofunction:: scale
+.. autofunction:: std
+.. autofunction:: sum
+.. autofunction:: threshold

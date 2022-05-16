@@ -48,7 +48,7 @@ end
 
 function status = test_is_run_level()
 
-  data = struct('onset', [], 'duration', []);
+  data = struct('onset', [], 'duration', [], 'foo', 'bar');
   assert(bids.transfomers.is_run_level(data));
 
 end
@@ -410,7 +410,9 @@ function test_delete_select()
 
   new_content = bids.transformers.select(transformers, tsv_content);
 
-  assertEqual({'face_type'}, fieldnames(new_content));
+  assertEqual(fieldnames(new_content), {    'face_type'
+                                        'onset'
+                                        'duration'});
 
 end
 
@@ -605,7 +607,29 @@ end
 
 function test_select()
 
-  warning('select should carry onset and duration if present');
+  % GIVEN
+  transformers = struct('Name', 'Select', ...
+                        'Input', {{'age'}});
+
+  % WHEN'
+  new_content = bids.transformers.select(transformers, participants());
+
+  % THEN
+  assertEqual(fieldnames(new_content), {'age'});
+
+end
+
+function test_select_event()
+
+  % GIVEN
+  transformers = struct('Name', 'Select', ...
+                        'Input', {{'familiarity'}});
+
+  % WHEN'
+  new_content = bids.transformers.select(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(fieldnames(new_content), {'familiarity'; 'onset'; 'duration'});
 
 end
 
