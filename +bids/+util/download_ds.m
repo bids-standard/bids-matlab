@@ -114,6 +114,9 @@ function out_path = download_ds(varargin)
       case 'MoAEpilot.bids'
         copyfile(fullfile(out_path, 'MoAEpilot', '*'), out_path);
         rmdir(fullfile(out_path, 'MoAEpilot'), 's');
+      case 'face_rep'
+        copyfile(fullfile(out_path, basename, '*'), out_path);
+        rmdir(fullfile(out_path, basename), 's');
       case 'multimodal_eeg'
         copyfile(fullfile(bids.internal.root_dir, 'EEG', '*'), out_path);
       otherwise
