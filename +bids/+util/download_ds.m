@@ -104,19 +104,20 @@ function out_path = download_ds(varargin)
   [~, basename, ext] = fileparts(filename);
   if strcmp(ext, '.zip')
 
-    msg = sprintf('Unzipping dataset:\n %s\n\n', filename);
+    msg = sprintf('Unzipping dataset:\n %s to \n %s \n\n', filename, out_path);
     print_to_screen(msg, verbose);
 
-    unzip(filename);
+    unzip(filename, out_path);
     delete(filename);
 
     switch basename
       case 'MoAEpilot.bids'
-        movefile('MoAEpilot', fullfile(out_path));
+        copyfile(fullfile(out_path, 'MoAEpilot', '*'), out_path);
+        rmdir(fullfile(out_path, 'MoAEpilot'), 's');
       case 'multimodal_eeg'
-        movefile('EEG', fullfile(out_path));
+        copyfile(fullfile(bids.internal.root_dir, 'EEG', '*'), out_path);
       otherwise
-        movefile(basename, fullfile(out_path));
+        movefile(fullfile(bids.internal.root_dir, basename), out_path);
     end
 
   end

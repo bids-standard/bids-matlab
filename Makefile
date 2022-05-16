@@ -14,6 +14,6 @@ manual:
 
 update_schema:
 	git clone https://github.com/bids-standard/bids-specification.git --depth 1
-	rm -rf schema/objects schema/rules
+	rm -rf schema/objects schema/rules schema/meta
 	python convert_schema.py
 	rm -Rf bids-specification
