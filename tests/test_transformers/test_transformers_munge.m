@@ -659,8 +659,24 @@ function test_split_simple()
   new_content = bids.transformers.split(transformers, participants());
 
   % THEN
-  assertEqual(new_content.age_BY_sex_M,  [21; 18]);
-  assertEqual(new_content.age_BY_sex_F,  [46; 10; nan]);
+  assertEqual(new_content.age_BY_sex_M,  [21; 18; nan; nan; nan]);
+  assertEqual(new_content.age_BY_sex_F,  [nan; nan; 46; 10; nan]);
+
+end
+
+function test_split_simple_string()
+
+  % GIVEN
+  transformers = struct('Name', 'Split', ...
+                        'Input', {{'handedness'}}, ...
+                        'By', {{'sex'}});
+
+  % WHEN'
+  new_content = bids.transformers.split(transformers, participants());
+
+  % THEN
+  assertEqual(new_content.handedness_BY_sex_F,  {nan; nan; nan; 'left'; 'right'});
+  assertEqual(new_content.handedness_BY_sex_M,  {'right'; 'left'; nan; nan; nan});
 
 end
 
@@ -677,7 +693,7 @@ function test_split_nested()
   % THEN
   assert(isfield(new_content, 'age_BY_handedness_left_BY_sex_M'));
   assertEqual(numel(fieldnames(new_content)), 11);
-  assertEqual(new_content.age_BY_handedness_left_BY_sex_M,  18);
+  assertEqual(new_content.age_BY_handedness_left_BY_sex_M,  [NaN; 18; NaN; NaN; NaN]);
 
 end
 

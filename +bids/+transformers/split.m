@@ -45,8 +45,6 @@ function data = split(transformer, data)
   %  - we keep track of which rows to keep for each original source input
   %  - we keep track of the source input through the recursions
 
-  warning('outputs are not nan padded');
-
   % We are done recursing. Do the actual splitting
   if isempty(transformer.By)
 
@@ -72,7 +70,14 @@ function data = split(transformer, data)
       sourcefield = transformer.source{i};
       rows_to_keep = transformer.rows_to_keep{i};
 
-      data.(input{i}) = data.(sourcefield)(rows_to_keep);
+      if isnumeric(data.(sourcefield))
+        tmp = nan(size(data.(sourcefield)));
+      else
+        tmp = repmat({nan}, size(data.(sourcefield)));
+      end
+
+      tmp(rows_to_keep) = data.(sourcefield)(rows_to_keep);
+      data.(input{i}) = tmp;
 
     end
 
