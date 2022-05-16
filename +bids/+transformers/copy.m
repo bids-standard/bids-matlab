@@ -22,12 +22,12 @@ function data = copy(transformer, data)
   %
   % Arguments:
   %
-  % :param Input: **mandatory**.  A list of column names to copy.
+  % :param Input: **mandatory**.  A array of column names to copy.
   % :type  Input: array
   %
-  % :param Output: optional. A list of the names to copy the input columns to.
+  % :param Output: optional. A array of the names to copy the input columns to.
   %                          Must be same length as input, and columns are mapped one-to-one
-  %                          from the input list to the output list.
+  %                          from the input array to the output array.
   % :type Output: array
   %
   % **CODE EXAMPLE**::

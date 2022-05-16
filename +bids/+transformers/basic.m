@@ -22,7 +22,7 @@ function data = basic(transformer, data)
   % :param Name: **mandatory**.  Any of ``Add``, ``Subtract``, ``Multiply``, ``Divide``, ``Power``.
   % :type  Input: string
   %
-  % :param Input: **mandatory**.  A list of columns to perform operation on.
+  % :param Input: **mandatory**.  A array of columns to perform operation on.
   % :type  Input: array
   %
   % :param Value: **mandatory**.  The value to perform operation with (i.e. operand).

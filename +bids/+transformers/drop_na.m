@@ -21,7 +21,7 @@ function data = drop_na(transformer, data)
   % :param Input: **mandatory**.  The name of the variable to operate on.
   % :type  Input: array
   %
-  % :param Output: optional. The list of column names to write out to.
+  % :param Output: optional. The array of column names to write out to.
   %                          By default, computation is done in-place
   %                          meaning that input columnise overwritten).
   % :type  Output: array

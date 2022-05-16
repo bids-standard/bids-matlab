@@ -22,7 +22,7 @@ function data = select(transformer, data)
   % Arguments:
   %
   % :param Input: **mandatory**. The names of all columns to keep.
-  %                              Any columns not in this list will be deleted and
+  %                              Any columns not in this array will be deleted and
   %                              will not be available to any subsequent transformations
   %                              or downstream analyses.
   % :type  Input: array

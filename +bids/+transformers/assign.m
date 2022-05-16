@@ -39,25 +39,25 @@ function data = assign(transformer, data)
   %                          Must exactly match the length of the input and target arguments.
   % :type Output: array
   %
-  % If no output list is provided, columns named in target are modified in-place.
+  % If no output array is provided, columns named in target are modified in-place.
   %
-  % If an output list is provided:
+  % If an output array is provided:
   %
-  %  - each column in the target list is first cloned,
+  %  - each column in the target array is first cloned,
   %  - then the reassignment from the input to the target is applied;
   %  - finally, the new (cloned and modified) column is written out to the column named in output.
   %
   % :param InputAttr: optional. Specifies which attribute of the input column to assign.
   %                             Defaults to ``value``.
-  %                             If a list is passed, its length must exactly match
-  %                             that of the input and target lists.
+  %                             If a array is passed, its length must exactly match
+  %                             that of the input and target arrays.
   % :type  InputAttr: str or array
   %
   % :param TargetAttr: optional. Specifies which attribute of the output column to assign to.
   %                              Defaults to ``value``.
-  %                              If a list is passed, its length must exactly match
-  %                              that of the input and target lists.
-  % :type  TargetAttr: str or list
+  %                              If a array is passed, its length must exactly match
+  %                              that of the input and target arrays.
+  % :type  TargetAttr: str or array
   %
   % ``InputAttr`` and  ``TargetAttr`` must be one of:
   %

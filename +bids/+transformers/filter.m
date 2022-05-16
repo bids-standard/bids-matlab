@@ -25,7 +25,7 @@ function data = filter(transformer, data)
   % - ``>``, ``<``, ``>=``, ``<=``, ``==`` for numeric values
   % - ``==`` for string operation (case sensitive)
   %
-  % :param Output: optional. the optional list of column names to write out to.
+  % :param Output: optional. the optional array of column names to write out to.
   % :type  Output: array
   %
   % By default, computation is done in-place (i.e., input columnise overwritten).
