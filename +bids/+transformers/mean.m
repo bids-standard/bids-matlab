@@ -1,12 +1,47 @@
 function data = mean(transformer, data)
   %
   % Compute mean of a column.
-  % Arguments:
-  % Input(string, mandatory): The name of the variable to operate on.
-  % Output (string, optional): the optional list of column names to write out to.
-  % By default, computation is done in-place (i.e., input columnise overwritten).
   %
-  % OmitNan
+  %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %       {
+  %         "Name":  "Mean",
+  %         "Input": "reaction_time",
+  %         "OmitNan": false,
+  %         "Output": "mean_RT"
+  %       }
+  %
+  %
+  % Arguments:
+  %
+  % :param Input: **mandatory**. The name of the variable to operate on.
+  % :type  Input: string or array
+  %
+  % :param OmitNan: optional. If ``"false"`` any column with nan values will return a nan value.
+  %                           If ``"true"`` nan values are skipped. Defaults to ``"false"``.
+  % :type  OmitNan: boolean
+  %
+  % :param Output: optional. The optional column names to write out to.
+  %                    By default, computation is done in-place (i.e., input columnise overwritten).
+  % :type  Output: string or array
+  %
+  %
+  % **CODE EXAMPLE**::
+  %
+  %   transformer = struct('Name', 'Mean', ...
+  %                         'Input', 'reaction_time', ...
+  %                         'OmitNan', false, ...
+  %                         'Ouput', 'mean_RT');
+  %
+  %
+  %   data = bids.transformers.mean(transformer, data);
+  %
+  %
+  %   ans =
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

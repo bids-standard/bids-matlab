@@ -2,6 +2,7 @@ function data = delete(transformer, data)
   %
   % Deletes column(s) from further analysis.
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -14,10 +15,11 @@ function data = delete(transformer, data)
   %       ]
   %     }
   %
+  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the columns(s) to delete.
-  % :type  Input: array
+  % :type  Input: string or array
   %
   %
   % .. note::

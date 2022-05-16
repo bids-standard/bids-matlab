@@ -4,8 +4,9 @@ function data = select(transformer, data)
   % Any columns that are not specified here will be dropped.
   %
   % The only exception is when dealing with data with ``onset`` and ``duration``
-  % columns (from *_events.tsv files) in this case the onset and duration column
+  % columns (from ``*_events.tsv`` files) in this case the onset and duration column
   % are also automatically selected.
+  %
   %
   % **JSON EXAMPLE**:
   %
@@ -19,18 +20,20 @@ function data = select(transformer, data)
   %       ]
   %     }
   %
+  %
   % Arguments:
   %
   % :param Input: **mandatory**. The names of all columns to keep.
   %                              Any columns not in this array will be deleted and
   %                              will not be available to any subsequent transformations
   %                              or downstream analyses.
-  % :type  Input: array
+  % :type  Input: string or array
   %
   % .. note::
   %
   %   one can think of select as the inverse the ``Delete`` transformation
   %   that removes all named columns from further analysis.
+  %
   %
   % **CODE EXAMPLE**::
   %

@@ -4,6 +4,7 @@ function data = copy(transformer, data)
   % and a different name. Useful as a basis for subsequent transformations that need
   % to modify their input in-place.
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -20,15 +21,17 @@ function data = copy(transformer, data)
   %       ]
   %     }
   %
+  %
   % Arguments:
   %
-  % :param Input: **mandatory**.  A array of column names to copy.
-  % :type  Input: array
+  % :param Input: **mandatory**.  Column names to copy.
+  % :type  Input: string or array
   %
-  % :param Output: optional. A array of the names to copy the input columns to.
+  % :param Output: optional. Names to copy the input columns to.
   %                          Must be same length as input, and columns are mapped one-to-one
   %                          from the input array to the output array.
-  % :type Output: array
+  % :type Output: string or array
+  %
   %
   % **CODE EXAMPLE**::
   %

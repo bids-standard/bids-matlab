@@ -15,6 +15,12 @@ There is also an code example to show how to use them.
 The behavior and their "call" in JSON should (hopefully) be fairly close to the 
 `pybids-transformers <https://docs.google.com/document/d/1uxN6vPWbC7ciAx2XWtT5Y-lBrdckZKpPdNUNpwRxHoU/>`_.
 
+Applying transformations
+========================
+
+An "array" of transformations can be applied one after the other using
+``bids.transformers()``.
+
 .. automodule:: +bids
 
 .. autofunction:: transformers
@@ -104,10 +110,37 @@ Compute operations
 
 Transformations that primarily involve numerical computation on variables.
 
+Constant
+--------
+
 .. autofunction:: constant
+
+Mean
+-----
+
 .. autofunction:: mean
+
+Product
+-------
+
 .. autofunction:: product
+
+Scale
+-----
+
 .. autofunction:: scale
+
+Std
+---
+
 .. autofunction:: std
+
+Sum
+---
+
 .. autofunction:: sum
+
+Threshold
+---------
+
 .. autofunction:: threshold

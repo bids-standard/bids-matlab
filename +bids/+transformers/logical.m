@@ -11,6 +11,7 @@ function data = logical(transformer, data)
   %
   % - returning a single column as output.
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -28,6 +29,7 @@ function data = logical(transformer, data)
   %
   % will evaluate to false and all other values will evaluate to true.
   %
+  %
   % Arguments:
   %
   % :param Name: **mandatory**.  Any of ``And``, ``Or``, ``Not``.
@@ -36,8 +38,8 @@ function data = logical(transformer, data)
   % :param Input: **mandatory**.  An array of columns to perform operation on. Only 1 for ``Not``
   % :type  Input: array
   %
-  % :Output: optional. The name of the output column.
-  % :type  Output: str
+  % :param Output: optional. The name of the output column.
+  % :type  Output: string or array
   %
   %
   % **CODE EXAMPLE**::

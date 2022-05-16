@@ -2,6 +2,7 @@ function data = drop_na(transformer, data)
   %
   % Drops all rows with "n/a".
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -16,15 +17,17 @@ function data = drop_na(transformer, data)
   %       ]
   %     }
   %
+  %
   % Arguments:
   %
   % :param Input: **mandatory**.  The name of the variable to operate on.
-  % :type  Input: array
+  % :type  Input: string or array
   %
-  % :param Output: optional. The array of column names to write out to.
+  % :param Output: optional. The column names to write out to.
   %                          By default, computation is done in-place
   %                          meaning that input columnise overwritten).
-  % :type  Output: array
+  % :type  Output: string or array
+  %
   %
   % **CODE EXAMPLE**::
   %

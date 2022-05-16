@@ -2,6 +2,7 @@ function data = filter(transformer, data)
   %
   % Subsets rows using a boolean expression.
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -12,25 +13,27 @@ function data = filter(transformer, data)
   %       "Query": "age > 20"
   %     }
   %
+  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to operate on.
-  % :type  Input: array
+  % :type  Input: string or array
   %
   % :param Query: **mandatory**. Boolean expression used to filter
-  % :type  Query: array
+  % :type  Query: string
   %
   % Supports:
   %
   % - ``>``, ``<``, ``>=``, ``<=``, ``==`` for numeric values
   % - ``==`` for string operation (case sensitive)
   %
-  % :param Output: optional. the optional array of column names to write out to.
-  % :type  Output: array
+  % :param Output: optional. The optional column names to write out to.
+  % :type  Output: string or array
   %
   % By default, computation is done in-place (i.e., input columnise overwritten).
   % If provided, the number of values must exactly match the number of input values,
   % and the order will be mapped 1-to-1.
+  %
   %
   % **CODE EXAMPLE**::
   %

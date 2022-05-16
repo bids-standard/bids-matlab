@@ -2,6 +2,7 @@ function data = replace(transformer, data)
   %
   % Replaces values in one or more input columns.
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -11,19 +12,23 @@ function data = replace(transformer, data)
   %       "Input": [
   %           "fruits",
   %       ],
-  %       "Output": [
+  %       "Replace": [
   %               {"key": "apple",   "value": "bee"},
-  %               {"key": "elusive", "value": 5}]
-  %        ]
+  %               {"key": "elusive", "value": 5},
+  %               {"key": -1, "value": 0}]
+  %        ],
+  %        "Attribute": "all"
   %     }
+  %
   %
   % Arguments:
   %
   % :param Input: **mandatory**. Name(s of column(s) to search and replace within.
-  % :type  Input: array
+  % :type  Input: string or array
   %
-  % :param Replace: **mandatory**. An array of objects mapping old values to new values.
-  % :type  Replace: array
+  % :param Replace: **mandatory**. The mapping old values (``"key"``) to new values.
+  %                                (``"value"``)
+  % :type  Replace: array of objects
   %
   % :param Attribute: optional. The column attribute to search/replace.
   % :type  Attribute: array
@@ -43,7 +48,8 @@ function data = replace(transformer, data)
   %                          If no output values are provided,
   %                          the replacement transformation is applied in-place
   %                          to all the inputs.
-  % :type  Output: array
+  % :type  Output: string or array
+  %
   %
   % **CODE EXAMPLE**::
   %

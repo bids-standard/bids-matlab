@@ -1,13 +1,47 @@
 function data = std(transformer, data)
   %
   % Compute the sample standard deviation.
-  % Arguments:
-  % Input(list, mandatory): The name(s) of the variable(s) to operate on.
-  % Output (list, optional): Optional names of columns to output.
-  % Must match length of input column if provided, and columns will be mapped 1-to-1 in order.
-  % If no output values are provided, the transformation is applied in-place to all the input.
   %
-  % OmitNan
+  %
+  % **JSON EXAMPLE**:
+  %
+  % .. code-block:: json
+  %
+  %       {
+  %         "Name":  "Std",
+  %         "Input": "reaction_time",
+  %         "OmitNan": false,
+  %         "Output": "std_RT"
+  %       }
+  %
+  %
+  % Arguments:
+  %
+  % :param Input: **mandatory**. The name of the variable to operate on.
+  % :type  Input: string or array
+  %
+  % :param OmitNan: optional. If ``"false"`` any column with nan values will return a nan value.
+  %                           If ``"true"`` nan values are skipped. Defaults to ``"false"``.
+  % :type  OmitNan: boolean
+  %
+  % :param Output: optional. The optional column names to write out to.
+  %                    By default, computation is done in-place (i.e., input columnise overwritten).
+  % :type  Output: string or array
+  %
+  %
+  % **CODE EXAMPLE**::
+  %
+  %   transformer = struct('Name', 'Std', ...
+  %                         'Input', 'reaction_time', ...
+  %                         'OmitNan', false, ...
+  %                         'Ouput', 'std_RT');
+  %
+  %
+  %   data = bids.transformers.std(transformer, data);
+  %
+  %
+  %   ans =
+  %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

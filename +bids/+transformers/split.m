@@ -2,6 +2,7 @@ function data = split(transformer, data)
   %
   % Split a variable into N variables as defined by the levels of one or more other variables.
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -17,6 +18,7 @@ function data = split(transformer, data)
   %       ]
   %     }
   %
+  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name of the variable(s) to operate on.
@@ -29,6 +31,7 @@ function data = split(transformer, data)
   % that we wish to split on two categorical columns A and B,
   % where a given row has values A=a and B=1,
   % the generated name will be ``Condition_BY_A_a_BY_B_1``.
+  %
   %
   % **CODE EXAMPLE**::
   %

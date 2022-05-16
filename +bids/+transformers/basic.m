@@ -2,6 +2,7 @@ function data = basic(transformer, data)
   %
   % Perfoms a basic operation with a ``Value`` on the ``Input``
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -17,19 +18,20 @@ function data = basic(transformer, data)
   % and performs a mathematical operation on the input column and a provided operand.
   % The operations are performed on each column independently.
   %
+  %
   % Arguments:
   %
   % :param Name: **mandatory**.  Any of ``Add``, ``Subtract``, ``Multiply``, ``Divide``, ``Power``.
   % :type  Input: string
   %
   % :param Input: **mandatory**.  A array of columns to perform operation on.
-  % :type  Input: array
+  % :type  Input: string or array
   %
   % :param Value: **mandatory**.  The value to perform operation with (i.e. operand).
   % :type  Value: float
   %
-  % :Output: optional. List of column names to write out to.
-  % :type  Output: array
+  % :param Output: optional. List of column names to write out to.
+  % :type  Output: string or array
   %
   % By default, computation is done in-place on the input
   % (meaning that input columns are overwritten).

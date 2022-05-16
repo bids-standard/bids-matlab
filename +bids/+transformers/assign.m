@@ -3,6 +3,7 @@ function data = assign(transformer, data)
   % The Assign transformation assigns one or more variables or columns (specified as the input)
   % to one or more other columns (specified by target and/or output as described below).
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -15,20 +16,21 @@ function data = assign(transformer, data)
   %     "Output": ["face_modulated_by_RT"]
   %   }
   %
+  %
   % Arguments:
   %
   % :param Input: **mandatory**.  The name(s) of the columns
   %                               from which attribute values are to be drawn
   %                               (for assignment to the attributes of other columns).
   %                               Must exactly match the length of the target argument.
-  % :type  Input: array
+  % :type  Input: string or array
   %
   % :param Target: **mandatory**. the name(s) of the columns to which
   %                               the attribute values taken from the input
   %                               are to be assigned.
   %                               Must exactly match the length of the input argument.
   %                               Names are mapped 1-to-1 from input to target.
-  % :type  Target: array
+  % :type  Target: string or array
   %
   % .. note::
   %
@@ -37,7 +39,7 @@ function data = assign(transformer, data)
   %
   % :param Output: optional. Names of the columns to output the result of the assignment to.
   %                          Must exactly match the length of the input and target arguments.
-  % :type Output: array
+  % :type Output: string or array
   %
   % If no output array is provided, columns named in target are modified in-place.
   %
@@ -51,13 +53,13 @@ function data = assign(transformer, data)
   %                             Defaults to ``value``.
   %                             If a array is passed, its length must exactly match
   %                             that of the input and target arrays.
-  % :type  InputAttr: str or array
+  % :type  InputAttr: string or array
   %
   % :param TargetAttr: optional. Specifies which attribute of the output column to assign to.
   %                              Defaults to ``value``.
   %                              If a array is passed, its length must exactly match
   %                              that of the input and target arrays.
-  % :type  TargetAttr: str or array
+  % :type  TargetAttr: string or array
   %
   % ``InputAttr`` and  ``TargetAttr`` must be one of:
   %

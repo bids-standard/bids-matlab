@@ -2,6 +2,7 @@ function data = rename(transformer, data)
   %
   %   Rename a variable.
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -18,15 +19,17 @@ function data = rename(transformer, data)
   %       ]
   %     }
   %
+  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to rename.
-  % :type  Input: array
+  % :type  Input: string or array
   %
   % :param Output: optional. New column names to output.
   %                          Must match length of input column(s),
   %                          and columns will be mapped 1-to-1 in order.
-  % :type  Output: array
+  % :type  Output: string or array
+  %
   %
   % **CODE EXAMPLE**::
   %

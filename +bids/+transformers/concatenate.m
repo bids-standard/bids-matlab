@@ -2,6 +2,7 @@ function data = concatenate(transformer, data)
   %
   % Concatnate columns together.
   %
+  %
   % **JSON EXAMPLE**:
   %
   % .. code-block:: json
@@ -15,13 +16,14 @@ function data = concatenate(transformer, data)
   %       "Output": "face_type_repetition"
   %     }
   %
+  %
   % Arguments:
   %
   % :param Input: **mandatory**. TODO
   % :type  Input: array
   %
   % :param Output: optional. TODO
-  % :type  Output: array
+  % :type  Output: string or array
   %
   % **CODE EXAMPLE**::
   %
