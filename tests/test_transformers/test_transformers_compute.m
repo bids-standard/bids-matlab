@@ -2,6 +2,10 @@ function test_suite = test_transformers_compute %#ok<*STOUT>
   %
   % (C) Copyright 2022 Remi Gau
 
+  if bids.internal.is_octave
+    warning off;
+  end
+
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine
