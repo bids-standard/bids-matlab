@@ -681,7 +681,6 @@ classdef File
       switch id
         case 'noEntity'
           msg = 'No entity-label pairs.';
-          obj.tolerant = false;
 
         case 'schemaMissing'
           msg = 'no schema specified: run file.use_schema()';

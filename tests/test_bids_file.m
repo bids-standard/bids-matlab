@@ -15,6 +15,17 @@ end
 %
 % end
 
+function test_no_entity_warning
+
+  if bids.internal.is_octave
+    return
+  end
+
+  assertWarning(@()bids.File('TStatistic.nii', 'verbose', true), ...
+                'File:noEntity');
+
+end
+
 function test_participants
 
   pth_bids_example = get_test_data_dir();
