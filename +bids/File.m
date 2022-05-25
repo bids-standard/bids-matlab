@@ -123,6 +123,10 @@ classdef File
       obj.tolerant = args.Results.tolerant;
       obj.verbose = args.Results.verbose;
 
+      if args.Results.use_schema
+        obj.schema = bids.Schema();
+      end
+
       if isempty(args.Results.input)
         f_struct = struct([]);
       elseif ischar(args.Results.input)
@@ -133,9 +137,6 @@ classdef File
       elseif isstruct(args.Results.input)
         f_struct = args.Results.input;
       end
-
-      obj.verbose = args.Results.verbose;
-      obj.tolerant = args.Results.tolerant;
 
       if isfield(f_struct, 'prefix')
         obj.prefix = f_struct.prefix;
@@ -537,7 +538,10 @@ classdef File
       %   file = file.use_schema();
       %
 
-      obj.schema = bids.Schema();
+      if isempty(obj.schema)
+        obj.schema = bids.Schema();
+      end
+
       obj = obj.get_required_entities();
       obj = obj.get_entity_order_from_schema();
       obj.validate_entities();
@@ -676,6 +680,10 @@ classdef File
 
       if nargin < 2
         msg = '';
+      end
+
+      if isempty(obj.schema) && ismember(id, {'prefixDefined'})
+        return
       end
 
       switch id
