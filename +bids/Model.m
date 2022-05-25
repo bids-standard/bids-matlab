@@ -238,60 +238,76 @@ classdef Model
         value = obj.Nodes;
         idx = 1:numel(value);
 
+        if ~iscell(value)
+          value = {value};
+        end
+        return
+
+      end
+
+      value = {};
+
+      allowed_levels = @(x) all(ismember(lower(x), {'', 'run', 'session', 'subject', 'dataset'}));
+
+      args = inputParser;
+      args.addParameter('Level', '', allowed_levels);
+      args.addParameter('Name', '');
+      args.parse(varargin{:});
+
+      Level = lower(args.Results.Level);
+      Name = lower(args.Results.Name);  %#ok<*PROPLC>
+
+      if strcmp(Name, '') && strcmp(Level, '')
+        value = obj.Nodes;
+        idx = 1:numel(value);
+
+        if ~iscell(value)
+          value = {value};
+        end
+        return
+
+      end
+
+      if ~strcmp(Level, '')
+        if ischar(Level)
+          Level = {Level};
+        end
+        if iscell(obj.Nodes)
+          levels = cellfun(@(x) lower(x.Level), obj.Nodes, 'UniformOutput', false);
+        elseif isstruct(obj.Nodes)
+          levels = lower({obj.Nodes.Level}');
+        end
+        idx = ismember(levels, Level);
+      end
+
+      if ~strcmp(Name, '')
+        if ischar(Name)
+          Name = {Name};
+        end
+        if iscell(obj.Nodes)
+          names = cellfun(@(x) lower(x.Name), obj.Nodes, 'UniformOutput', false);
+        elseif isstruct(obj.Nodes)
+          names = lower({obj.Nodes.Name}');
+        end
+        idx = ismember(names, Name);
+      end
+
+      % TODO merge idx when both Level and Name are passed as parameters
+      if any(idx)
+        idx = find(idx);
+        for i = 1:numel(idx)
+          if iscell(obj.Nodes)
+            value{end + 1} = obj.Nodes{idx(i)};
+          elseif isstruct(obj.Nodes)
+            value{end + 1} = obj.Nodes(idx(i));
+          end
+        end
+
       else
-
-        value = {};
-
-        allowed_levels = @(x) all(ismember(lower(x), {'run', 'session', 'subject', 'dataset'}));
-
-        args = inputParser;
-        args.addParameter('Level', '', allowed_levels);
-        args.addParameter('Name', '');
-        args.parse(varargin{:});
-
-        Level = lower(args.Results.Level);
-        if ~strcmp(Level, '')
-          if ischar(Level)
-            Level = {Level};
-          end
-          if iscell(obj.Nodes)
-            levels = cellfun(@(x) lower(x.Level), obj.Nodes, 'UniformOutput', false);
-          elseif isstruct(obj.Nodes)
-            levels = lower({obj.Nodes.Level}');
-          end
-          idx = ismember(levels, Level);
-        end
-
-        Name = lower(args.Results.Name);  %#ok<*PROPLC>
-        if ~strcmp(Name, '')
-          if ischar(Name)
-            Name = {Name};
-          end
-          if iscell(obj.Nodes)
-            names = cellfun(@(x) lower(x.Name), obj.Nodes, 'UniformOutput', false);
-          elseif isstruct(obj.Nodes)
-            names = lower({obj.Nodes.Name}');
-          end
-          idx = ismember(names, Name);
-        end
-
-        % TODO merge idx when both Level and Name are passed as parameters
-        if any(idx)
-          idx = find(idx);
-          for i = 1:numel(idx)
-            if iscell(obj.Nodes)
-              value{end + 1} = obj.Nodes{idx(i)};
-            elseif isstruct(obj.Nodes)
-              value{end + 1} = obj.Nodes(idx(i));
-            end
-          end
-        else
-          msg = sprintf('Could not find a corresponding Node.');
-          bids.internal.error_handling(mfilename(), 'missingNode', msg, ...
-                                       obj.tolerant, ...
-                                       obj.verbose);
-        end
-
+        msg = sprintf('Could not find a corresponding Node.');
+        bids.internal.error_handling(mfilename(), 'missingNode', msg, ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
       end
 
       if ~iscell(value)

@@ -87,6 +87,9 @@ function test_model_get_nodes()
   bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
   assertEqual(numel(bm.get_nodes), 5);
+  assertEqual(numel(bm.get_nodes('Level', '')), 5);
+  assertEqual(numel(bm.get_nodes('Name', '')), 5);
+  assertEqual(numel(bm.get_nodes('Level', '', 'Name', '')), 5);
   assertEqual(numel(bm.get_nodes('Level', 'Run')), 1);
   assertEqual(numel(bm.get_nodes('Level', 'Dataset')), 3);
   assertEqual(numel(bm.get_nodes('Name', 'negative-loss')), 1);
