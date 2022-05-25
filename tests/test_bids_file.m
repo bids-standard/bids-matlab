@@ -512,7 +512,7 @@ end
 
 function test_name_validation()
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
-  assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
+  assertExceptionThrown(@() bids.File(filename, 'tolerant', false, 'use_schema', true), ...
                         'File:prefixDefined');
 
   filename = 'bold.nii';
