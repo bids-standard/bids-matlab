@@ -297,9 +297,9 @@ classdef Model
         idx = find(idx);
         for i = 1:numel(idx)
           if iscell(obj.Nodes)
-            value{end + 1} = obj.Nodes{idx};
+            value{end + 1} = obj.Nodes{idx(i)};
           elseif isstruct(obj.Nodes)
-            value{end + 1} = obj.Nodes(idx);
+            value{end + 1} = obj.Nodes(idx(i));
           end
         end
 
