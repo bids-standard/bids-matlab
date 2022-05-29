@@ -5,12 +5,18 @@ function [left, query_type, right] = get_query(transformer)
 
   supported_types = {'>=', '<=', '==', '>', '<'};
 
-  if isempty(transformer.Query)
+  if ~isfield(transformer, 'Query') || isempty(transformer.Query)
     bids.internal.error_handling(mfilename(), 'emptyQuery', ...
                                  'empty query', ...
-                                 false);
+                                 true);
+    left = '';
+    query_type = '';
+    right = '';
+    return
+
   else
     query = transformer.Query;
+
   end
 
   % should not happen because only one query is allowed

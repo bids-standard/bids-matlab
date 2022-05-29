@@ -65,6 +65,56 @@ function data = basic(transformer, data)
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);
 
+  rows = logical(size(data.(input{1})));
+
+  [left, query_type, right] = bids.transformers.get_query(transformer);
+  if ~isempty(query_type)
+    bids.transformers.check_field(left, data, 'query', false);
+    % identify rows
+    if iscellstr(data.(left))
+
+      if ismember(query_type, {'>', '<', '>=', '<='})
+        msg = sprtinf(['Types "%s" are not supported for queries on string\n'...
+                       'in query %s'], ...
+                      {'>, <, >=, <='}, ...
+                      query);
+        bids.internal.error_handling(mfilename(), ...
+                                     'unsupportedQueryType', ...
+                                     msg, ...
+                                     false);
+
+      end
+
+      rows = regexp(data.(left), right, 'match');
+      rows = ~cellfun('isempty', rows);
+
+    elseif isnumeric(data.(left))
+
+      right = str2num(right);
+
+      switch query_type
+
+        case '=='
+          rows = data.(left) == right;
+
+        case '>'
+          rows = data.(left) > right;
+
+        case '<'
+          rows = data.(left) < right;
+
+        case '>='
+          rows = data.(left) >= right;
+
+        case '<='
+          rows = data.(left) <= right;
+
+      end
+
+    end
+
+  end
+
   for i = 1:numel(input)
 
     value = transformer.Value;
@@ -102,7 +152,7 @@ function data = basic(transformer, data)
 
     end
 
-    data.(output{i}) = tmp;
+    data.(output{i})(rows, :) = tmp(rows, :);
 
   end
 
