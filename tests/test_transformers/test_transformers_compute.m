@@ -44,6 +44,33 @@ end
 
 %% single step
 
+function test_basic_to_specific_rows
+  %% GIVEN
+  transformers(1).Name = 'Add';
+  transformers(1).Input = 'onset';
+  transformers(1).Query = 'familiarity == Famous face';
+  transformers(1).Value = 3;
+
+  % WHEN
+  new_content = bids.transformers(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(new_content.onset, [5; 4; 8; 8]);
+
+  %% GIVEN
+  transformers(1).Name = 'Subtract';
+  transformers(1).Input = 'onset';
+  transformers(1).Query = 'response_time < 2';
+  transformers(1).Value = 1;
+
+  % WHEN
+  new_content = bids.transformers(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(new_content.onset, [1; 4; 4; 8]);
+
+end
+
 function test_add_coerce_value
 
   %% GIVEN

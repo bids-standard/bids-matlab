@@ -41,16 +41,21 @@ function data = filter(transformer, data)
   %                         'Input', 'sex', ...
   %                         'Query', 'age > 20');
   %
-  %   data.sex = ;
-  %   data.age = ;
+  %   data.sex = {'M', 'F', 'F', 'M'};
+  %   data.age = [10, 21, 15, 26];
   %
   %   data = bids.transformers(transformer, data);
   %
   %   data.sex
   %
-  %   ans =
+  %     ans =
   %
+  %     4X1 cell array
   %
+  %         [NaN]
+  %         'F'
+  %         [NaN]
+  %         'M'
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
@@ -64,69 +69,19 @@ function data = filter(transformer, data)
   [left, query_type, right] = bids.transformers.get_query(transformer);
   bids.transformers.check_field(left, data, 'query', false);
 
-  % identify rows
-  if iscellstr(data.(left))
-
-    if ismember(query_type, {'>', '<', '>=', '<='})
-      msg = sprtinf(['Types "%s" are not supported for queries on string\n'...
-                     'in query %s'], ...
-                    {'>, <, >=, <='}, ...
-                    query);
-      bids.internal.error_handling(mfilename(), ...
-                                   'unsupportedQueryType', ...
-                                   msg, ...
-                                   false);
-
-    end
-
-    idx = strcmp(data.(left), right);
-
-  elseif isnumeric(data.(left))
-
-    right = str2num(right);
-
-    switch query_type
-
-      case '=='
-        idx = data.(left) == right;
-
-      case '>'
-        idx = data.(left) > right;
-
-      case '<'
-        idx = data.(left) < right;
-
-      case '>='
-        idx = data.(left) >= right;
-
-      case '<='
-        idx = data.(left) <= right;
-
-    end
-
-  end
+  rows = bids.transformers.identify_rows(data, left, query_type, right);
 
   % filter rows of all inputs
   for i = 1:numel(input)
 
     clear tmp;
 
-    if iscellstr(data.(input{i}))
+    tmp(rows, 1) = data.(input{i})(rows);
 
-      tmp(idx, 1) = data.(input{i})(idx);
-
-      tmp(~idx, 1) = repmat({nan}, sum(~idx), 1);
-
-    elseif isnumeric(data.(input{i}))
-
-      tmp(idx, 1) = data.(left)(idx);
-
-      if iscellstr(tmp)
-        tmp(~idx, 1) = repmat({nan}, sum(~idx), 1);
-      else
-        tmp(~idx, 1) = nan;
-      end
-
+    if iscell(tmp)
+      tmp(~rows, 1) = repmat({nan}, sum(~rows), 1);
+    else
+      tmp(~rows, 1) = nan;
     end
 
     data.(output{i}) = tmp;

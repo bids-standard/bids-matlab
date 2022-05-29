@@ -16,6 +16,7 @@ To see how to install BIDS-Matlab, please check
    :maxdepth: 3
    :caption: Content
 
+   general_information
    layout_query
    file
    function_description

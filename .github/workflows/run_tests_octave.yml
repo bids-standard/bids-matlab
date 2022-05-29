@@ -6,8 +6,12 @@ on:
       - master
       - main
       - dev
+    paths:
+      - '**.m'      
   pull_request:
     branches: ['*']
+    paths:
+      - '**.m'    
 
 env:
   OCTFLAGS: --no-gui --no-window-system --silent

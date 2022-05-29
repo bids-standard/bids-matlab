@@ -510,7 +510,7 @@ function test_filter_string()
 
 end
 
-function test_filter_string_ouput()
+function test_filter_string_output()
 
   % GIVEN
   transformers = struct('Name', 'Filter', ...
@@ -527,6 +527,22 @@ function test_filter_string_ouput()
                                         'Famous face'
                                         'Unfamiliar face'});
   assertEqual(new_content.famous_face, {'Famous face'; nan'; 'Famous face'; nan});
+
+end
+
+function test_filter_string_output_across_columns()
+
+  % GIVEN
+  transformers = struct('Name', 'Filter', ...
+                        'Input', 'onset', ...
+                        'Query', ' familiarity == Famous face ', ...
+                        'Output', 'new');
+
+  % WHEN
+  new_content = bids.transformers(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(new_content.new, [2; nan; 5; nan]);
 
 end
 
@@ -554,6 +570,10 @@ function test_filter_several_inputs()
 
   % WHEN
   new_content = bids.transformers(transformers, face_rep_events);
+
+  assertEqual(new_content.repetition, [nan; nan; 2; 2]);
+
+  assertEqual(new_content.response_time, [nan; nan; 1.56; 2.1]);
 
 end
 

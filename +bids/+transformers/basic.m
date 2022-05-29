@@ -12,6 +12,7 @@ function data = basic(transformer, data)
   %         "Input": "onset",
   %         "Value": 0.5,
   %         "Output": "delayed_onset"
+  %         "Query": "familiarity == Famous face"
   %       }
   %
   % Each of these transformations takes one or more columns,
@@ -29,6 +30,10 @@ function data = basic(transformer, data)
   %
   % :param Value: **mandatory**.  The value to perform operation with (i.e. operand).
   % :type  Value: float
+  %
+  % :param Query: optional. Boolean expression used to select on which rows to
+  %               act.
+  % :type  Query: string
   %
   % :param Output: optional. List of column names to write out to.
   % :type  Output: string or array
@@ -64,6 +69,17 @@ function data = basic(transformer, data)
 
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);
+
+  rows = logical(size(data.(input{1})));
+
+  [left, query_type, right] = bids.transformers.get_query(transformer);
+  if ~isempty(query_type)
+
+    bids.transformers.check_field(left, data, 'query', false);
+
+    rows = bids.transformers.identify_rows(data, left, query_type, right);
+
+  end
 
   for i = 1:numel(input)
 
@@ -102,7 +118,7 @@ function data = basic(transformer, data)
 
     end
 
-    data.(output{i}) = tmp;
+    data.(output{i})(rows, :) = tmp(rows, :);
 
   end
 
