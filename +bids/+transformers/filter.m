@@ -41,16 +41,21 @@ function data = filter(transformer, data)
   %                         'Input', 'sex', ...
   %                         'Query', 'age > 20');
   %
-  %   data.sex = ;
-  %   data.age = ;
+  %   data.sex = {'M', 'F', 'F', 'M'};
+  %   data.age = [10, 21, 15, 26];
   %
   %   data = bids.transformers(transformer, data);
   %
   %   data.sex
   %
-  %   ans =
+  %     ans =
   %
+  %     4X1 cell array
   %
+  %         [NaN]
+  %         'F'
+  %         [NaN]
+  %         'M'
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
@@ -79,7 +84,8 @@ function data = filter(transformer, data)
 
     end
 
-    idx = strcmp(data.(left), right);
+    idx = regexp(data.(left), right, 'match');
+    idx = ~cellfun('isempty', idx);
 
   elseif isnumeric(data.(left))
 
@@ -111,22 +117,12 @@ function data = filter(transformer, data)
 
     clear tmp;
 
-    if iscellstr(data.(input{i}))
+    tmp(idx, 1) = data.(input{i})(idx);
 
-      tmp(idx, 1) = data.(input{i})(idx);
-
+    if iscell(tmp)
       tmp(~idx, 1) = repmat({nan}, sum(~idx), 1);
-
-    elseif isnumeric(data.(input{i}))
-
-      tmp(idx, 1) = data.(left)(idx);
-
-      if iscellstr(tmp)
-        tmp(~idx, 1) = repmat({nan}, sum(~idx), 1);
-      else
-        tmp(~idx, 1) = nan;
-      end
-
+    else
+      tmp(~idx, 1) = nan;
     end
 
     data.(output{i}) = tmp;

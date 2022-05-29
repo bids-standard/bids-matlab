@@ -13,6 +13,12 @@ function [left, query_type, right] = get_query(transformer)
     query = transformer.Query;
   end
 
+  % should not happen because only one query is allowed
+  % but in case the user did input things into a cell
+  if iscell(query)
+    query = query{1};
+  end
+
   % identify query type
   for i = 1:numel(supported_types)
     sts = strfind(query, supported_types{i});
