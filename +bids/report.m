@@ -223,10 +223,11 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
     % add mention of contrast
     for iTask = 1:numel(tasks)
 
+      this_filter =  filter;
       this_filter.task = tasks{iTask};
-      [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
+      [this_filter, nb_runs] = update_filter_with_run_label(BIDS, this_filter);
 
-      [~, metadata] = get_filemane_and_metadata(BIDS, filter);
+      [~, metadata] = get_filemane_and_metadata(BIDS, this_filter);
       boilerplate = bids.internal.replace_placeholders(boilerplate, metadata);
 
       acq_param = get_acq_param(BIDS, this_filter, read_nii, verbose);
