@@ -69,60 +69,19 @@ function data = filter(transformer, data)
   [left, query_type, right] = bids.transformers.get_query(transformer);
   bids.transformers.check_field(left, data, 'query', false);
 
-  % identify rows
-  if iscellstr(data.(left))
-
-    if ismember(query_type, {'>', '<', '>=', '<='})
-      msg = sprtinf(['Types "%s" are not supported for queries on string\n'...
-                     'in query %s'], ...
-                    {'>, <, >=, <='}, ...
-                    query);
-      bids.internal.error_handling(mfilename(), ...
-                                   'unsupportedQueryType', ...
-                                   msg, ...
-                                   false);
-
-    end
-
-    idx = regexp(data.(left), right, 'match');
-    idx = ~cellfun('isempty', idx);
-
-  elseif isnumeric(data.(left))
-
-    right = str2num(right);
-
-    switch query_type
-
-      case '=='
-        idx = data.(left) == right;
-
-      case '>'
-        idx = data.(left) > right;
-
-      case '<'
-        idx = data.(left) < right;
-
-      case '>='
-        idx = data.(left) >= right;
-
-      case '<='
-        idx = data.(left) <= right;
-
-    end
-
-  end
+  rows = bids.transformers.identify_rows(data, left, query_type, right);
 
   % filter rows of all inputs
   for i = 1:numel(input)
 
     clear tmp;
 
-    tmp(idx, 1) = data.(input{i})(idx);
+    tmp(rows, 1) = data.(input{i})(rows);
 
     if iscell(tmp)
-      tmp(~idx, 1) = repmat({nan}, sum(~idx), 1);
+      tmp(~rows, 1) = repmat({nan}, sum(~rows), 1);
     else
-      tmp(~idx, 1) = nan;
+      tmp(~rows, 1) = nan;
     end
 
     data.(output{i}) = tmp;
