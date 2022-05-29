@@ -23,7 +23,8 @@ copyright = "2018, BIDS-MATLAB developers"
 author = "BIDS-MATLAB developers"
 
 # The full version, including alpha/beta/rc tags
-release = "v0.1.0dev"
+with open('../../version.txt', encoding='utf-8') as version_file:
+    release = version_file.read()
 
 
 # -- General configuration ---------------------------------------------------
