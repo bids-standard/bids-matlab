@@ -2,6 +2,7 @@
 
 <!-- .. only:: html -->
 
+[![miss_hit](https://github.com/bids-standard/bids-matlab/actions/workflows/miss_hit.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/miss_hit.yml)
 [![tests_matlab](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml)
 [![tests_octave](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb)
