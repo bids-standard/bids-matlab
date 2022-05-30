@@ -135,7 +135,7 @@ function diagnostic_table = diagnostic(varargin)
   if ~isempty(args.Results.output_path)
     if exist(args.Results.output_path, 'dir')
       bids.util.mkdir(args.Results.output_path);
-      print(fig_name, '-dpng');
+      print(fullfile(args.Results.output_path, fig_name), '-dpng');
     end
   end
 
