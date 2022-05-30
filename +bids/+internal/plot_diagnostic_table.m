@@ -64,12 +64,16 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
   % add horizontal borders
   x_borders = [0 nb_cols] + 0.5;
   y_borders = [[2:nb_rows]', [2:nb_rows]'] - 0.5;
-  plot(x_borders, y_borders, '-w');
+  if numel(x_borders) == numel(y_borders)
+    plot(x_borders, y_borders, '-w');
+  end
 
   % add vertical borders
   y_borders = [0 nb_rows] + 0.5;
   x_borders = [[2:nb_cols]', [2:nb_cols]'] - 0.5;
-  plot(x_borders, y_borders, '-w');
+  if numel(x_borders) == numel(y_borders)
+    plot(x_borders, y_borders, '-w');
+  end
 
   %   % tried using grid to use as borders
   %   % but there seems to always be the main grid overlaid on the values
