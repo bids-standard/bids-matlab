@@ -39,7 +39,7 @@ function filename = report(varargin)
   % - report summary statistics on participants as suggested in COBIDAS report
   % - check if all subjects have the same content?
   % - take care of other recommended metafield in BIDS specs or COBIDAS?
-  % - add a dataset description (ethics, grant, scanner details...)
+  % - add a dataset description (ethics, grant...)
 
   default_BIDS = pwd;
   default_filter = struct('sub', '', 'ses', '');
@@ -59,6 +59,8 @@ function filename = report(varargin)
 
   parse(args, varargin{:});
 
+  schema = bids.Schema();
+
   BIDS = bids.layout(args.Results.BIDS);
 
   filter = check_filter(BIDS, args);
@@ -72,6 +74,9 @@ function filename = report(varargin)
   if args.Results.verbose
     fprintf(1, '\n%s\n', repmat('-', 80, 1));
   end
+
+  text = '\n# Data description\n';
+  print_to_output(text, file_id, args.Results.verbose);
 
   for i_sub = 1:nb_sub
 
@@ -89,7 +94,7 @@ function filename = report(varargin)
       this_filter.ses = sessions{i_sess};
 
       if numel(sessions) > 1
-        text = sprintf('\n Working on session: %s\n', this_filter.ses);
+        text = sprintf('\n ## session %s\n', this_filter.ses);
         print_to_output(text, file_id, args.Results.verbose);
       end
 
@@ -99,7 +104,9 @@ function filename = report(varargin)
 
         this_filter.modality = modalities(i_modality);
 
-        print_to_output([upper(this_filter.modality{1}) ' REPORT'], ...
+        desc = schema.content.objects.datatypes.(this_filter.modality{1}).name;
+
+        print_to_output(['### ' desc ' data'], ...
                         file_id, ...
                         args.Results.verbose);
 
@@ -139,6 +146,12 @@ function report_nifti(BIDS, filter, read_nii, verbose, file_id)
   for iType = 1:numel(suffixes)
 
     filter.suffix = suffixes{iType};
+
+    schema = bids.Schema();
+    suffix_fullname = schema.content.objects.suffixes.(filter.suffix).name;
+
+    print_to_output(['#### ' suffix_fullname], file_id, verbose);
+
     boilerplate = get_boilerplate(filter.modality{1}, verbose);
 
     if ismember(filter.suffix, {'blood', 'asllabeling'})
@@ -206,15 +219,15 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
   for iType = 1:numel(suffixes)
 
     filter.suffix = suffixes{iType};
-    boilerplate = get_boilerplate(filter.modality{1}, verbose);
 
-    if ismember(filter.suffix, {'physio'})
-      not_supported(filter.suffix, verbose);
-      continue
+    if ~ismember(filter.suffix, {'physio', 'events'})
+      print_to_output(['#### ' upper(filter.suffix) ' data'], file_id, verbose);
     end
 
-    % events are taken care of as part by print_events_info below
-    if ismember(filter.suffix, {'events'})
+    boilerplate = get_boilerplate(filter.modality{1}, verbose);
+
+    % events and physio are taken care of as part by print_X_info below
+    if ismember(filter.suffix, {'events', 'physio'})
       continue
     end
 
@@ -222,6 +235,8 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
 
     % add mention of contrast
     for iTask = 1:numel(tasks)
+
+      print_to_output(['##### Task ' tasks{iTask} ' data'], file_id, verbose);
 
       this_filter =  filter;
       this_filter.task = tasks{iTask};
@@ -245,7 +260,9 @@ function report_func(BIDS, filter, read_nii, verbose, file_id)
 
       print_text('task', file_id, verbose, acq_param);
 
-      print_events_info(file_id, BIDS, filter, verbose);
+      print_events_info(file_id, BIDS, this_filter, verbose);
+
+      print_physio_info(file_id, BIDS, this_filter, verbose);
 
     end
 
@@ -260,6 +277,8 @@ function report_meeg(BIDS, filter, verbose, file_id)
   for iType = 1:numel(suffixes)
 
     filter.suffix = suffixes{iType};
+
+    print_to_output(['#### ' upper(filter.suffix) ' data'], file_id, verbose);
 
     boilerplate = get_boilerplate(filter.modality{1}, verbose);
 
@@ -276,6 +295,8 @@ function report_meeg(BIDS, filter, verbose, file_id)
     tasks = bids.query(BIDS, 'tasks', filter);
 
     for iTask = 1:numel(tasks)
+
+      print_to_output(['##### Task ' tasks{iTask} ' data'], file_id, verbose);
 
       filter.task = tasks{iTask};
       [filter, nb_runs] = update_filter_with_run_label(BIDS, filter);
@@ -434,10 +455,9 @@ function template = get_boilerplate(type, verbose)
 end
 
 function param = get_acq_param(BIDS, filter, read_gz, verbose)
-  % Will get info from acquisition parameters from the BIDS structure or from
-  % the NIfTI files
+  % Will get info from acquisition parameters
+  % from the BIDS structure or from the NIfTI files
 
-  %   acq_param = set_default_acq_param();
   param = struct();
 
   [filename, metadata] = get_filemane_and_metadata(BIDS, filter);
@@ -468,6 +488,8 @@ function param = get_acq_param(BIDS, filter, read_gz, verbose)
   end
 
   param = convert_field_to_str(param);
+
+  param = define_multiband(param);
 
   param = define_slice_timing(param);
 
@@ -504,7 +526,7 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
       acq_param.vox_size = sprintf('%.2f X %.2f X %.2f', vs(1), vs(2), vs(3));
 
       % field of view
-      acq_param.fov = sprintf('%.2f X %.2f', vs(1) * dim(1), vs(2) * dim(2));
+      acq_param.fov = sprintf('%.0f X %.0f', round(vs(1) * dim(1)), round(vs(2) * dim(2)));
 
     catch
 
@@ -525,7 +547,7 @@ function acq_param = get_parameter(acq_param, metadata, fields_list)
 
   for iField = 1:size(fields_list, 1)
 
-    if isfield(metadata, fields_list{iField})
+    if isfield(metadata, fields_list{iField, 2})
       acq_param.(fields_list{iField, 1}) = metadata.(fields_list{iField, 2});
     end
 
@@ -545,17 +567,46 @@ function acq_param = convert_field_to_str(acq_param)
 
 end
 
-function acq_param = define_slice_timing(acq_param)
+function acq_param = define_multiband(acq_param)
 
   if ~isfield(acq_param, 'so_str') || isempty(acq_param.so_str)
     return
   end
 
   so_str = acq_param.so_str;
-
-  % Try to figure out the order the slices were acquired from their timing
   if iscell(so_str)
     so_str = cell2mat(so_str);
+  end
+  if ischar(so_str)
+    so_str = cellstr(so_str);
+    so_str = str2double(so_str);
+  end
+
+  % assume that all unique values of the slice time order
+  % are repeated the same number of time
+  tmp = unique(so_str);
+  mb_str = sum(so_str == tmp(1));
+
+  if mb_str > 1
+    acq_param.mb_str = mb_str;
+  end
+
+end
+
+function acq_param = define_slice_timing(acq_param)
+
+  if ~isfield(acq_param, 'so_str') || isempty(acq_param.so_str)
+    return
+  end
+
+  % Try to figure out the order the slices were acquired from their timing
+  so_str = acq_param.so_str;
+  if iscell(so_str)
+    so_str = cell2mat(so_str);
+  end
+  if ischar(so_str)
+    so_str = cellstr(so_str);
+    so_str = str2double(so_str);
   end
 
   [~, I] = sort(so_str);
@@ -638,12 +689,36 @@ function print_events_info(file_id, BIDS, filter, verbose)
 
   filter.suffix = 'events';
   [~, metadata] = get_filemane_and_metadata(BIDS, filter);
-  if isfield(metadata, 'StimulusPresentation')
-    print_text('events', file_id, verbose, metadata);
+
+  if ~isempty(metadata)
+    print_to_output('###### events data', file_id, verbose);
+
+    if isfield(metadata, 'StimulusPresentation')
+      print_text('events', file_id, verbose, metadata);
+    end
+    if isfield(metadata, 'trial_type')
+      % TODO
+      not_supported('trial_type description', verbose);
+    end
   end
-  if isfield(metadata, 'trial_type')
-    % TODO
-    not_supported('trial_type description', verbose);
+
+end
+
+function print_physio_info(file_id, BIDS, filter, verbose)
+
+  filter.suffix = 'physio';
+
+  [~, metadata] = get_filemane_and_metadata(BIDS, filter);
+
+  if ~isempty(metadata)
+    print_to_output('###### physiological data', file_id, verbose);
+
+    if isfield(metadata, 'Columns')
+      metadata.Columns = strjoin(metadata.Columns, ', ');
+      print_text('physio', file_id, verbose, metadata);
+    end
+
+    print_text('device_info', file_id, verbose, metadata);
   end
 
 end
