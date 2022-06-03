@@ -144,15 +144,15 @@ classdef Model
                                        obj.tolerant, ...
                                        obj.verbose);
         else
-          
+
           if iscell(obj.content.Nodes)
             obj.Nodes = obj.content.Nodes;
           elseif isstruct(obj.content.Nodes)
             for i = 1:numel(obj.content.Nodes)
-                obj.Nodes{i, 1} = obj.content.Nodes(i);
+              obj.Nodes{i, 1} = obj.content.Nodes(i);
             end
           end
-          
+
         end
 
         % Edges are coerced into cells
@@ -162,13 +162,13 @@ classdef Model
             obj.Edges = obj.content.Edges;
           elseif isstruct(obj.content.Edges)
             for i = 1:numel(obj.content.Edges)
-                obj.Edges{i, 1} = obj.content.Edges(i);
+              obj.Edges{i, 1} = obj.content.Edges(i);
             end
           end
-          
+
         else
           obj = get_edges_from_nodes(obj);
-          
+
         end
 
         obj.validate();
@@ -241,6 +241,11 @@ classdef Model
       % :type file: path
       %
       %
+      % Returns: value - Node(s) as struct if there is only one or a cell if
+      %                  more
+      %          idx   - Node index
+      %
+      %
       % EXAMPLE::
       %
       %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
@@ -258,9 +263,8 @@ classdef Model
         value = obj.Nodes;
         idx = 1:numel(value);
 
-        if ~iscell(value)
-          value = {value};
-        end
+        value = format_output(value, idx);
+
         return
 
       end
@@ -282,9 +286,8 @@ classdef Model
         value = obj.Nodes;
         idx = 1:numel(value);
 
-        if ~iscell(value)
-          value = {value};
-        end
+        value = format_output(value, idx);
+
         return
 
       end
@@ -311,7 +314,7 @@ classdef Model
       if any(idx)
         idx = find(idx);
         for i = 1:numel(idx)
-            value{end + 1} = obj.Nodes{idx(i)};
+          value{end + 1} = obj.Nodes{idx(i)};
         end
 
       else
@@ -321,9 +324,18 @@ classdef Model
                                      obj.verbose);
       end
 
-      if ~iscell(value)
-        value = {value};
+      value = format_output(value, idx);
+
+      % local subfunction to ensure that cells are returned if more than one
+      % node and struct otherwise
+      function value = format_output(value, idx)
+        if ~iscell(value) && numel(idx) > 1
+          value = {value};
+        elseif iscell(value) && numel(idx) == 1
+          value = value{1};
+        end
       end
+
     end
 
     function value = get.Edges(obj)
@@ -349,7 +361,7 @@ classdef Model
     end
 
     function value = node_names(obj)
-        value = cellfun(@(x) x.Name, obj.Nodes, 'UniformOutput', false);
+      value = cellfun(@(x) x.Name, obj.Nodes, 'UniformOutput', false);
     end
 
     function validate(obj)
@@ -456,14 +468,13 @@ classdef Model
 
         for i = 1:(numel(edges))
 
+          this_edge = edges{i, 1};
 
-            this_edge = edges{i, 1};
+          if ~isstruct(this_edge)
+            obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
+            continue
 
-            if ~isstruct(this_edge)
-              obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
-              continue
-
-            end
+          end
 
           fields_present = fieldnames(this_edge);
           if any(~ismember(REQUIRED_EDGES_FIELDS, fields_present))
@@ -504,8 +515,8 @@ classdef Model
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
-      if isfield(node{1}, 'Transformations')
-        value = node{1}.Transformations;
+      if isfield(node, 'Transformations')
+        value = node.Transformations;
       end
     end
 
@@ -521,8 +532,8 @@ classdef Model
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
-      if isfield(node{1}, 'DummyContrasts')
-        value = node{1}.DummyContrasts;
+      if isfield(node, 'DummyContrasts')
+        value = node.DummyContrasts;
       end
     end
 
@@ -538,8 +549,8 @@ classdef Model
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
-      if isfield(node{1}, 'Contrasts')
-        value = node{1}.Contrasts;
+      if isfield(node, 'Contrasts')
+        value = node.Contrasts;
       end
     end
 
@@ -554,7 +565,7 @@ classdef Model
       %
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
-      value = node{1}.Model;
+      value = node.Model;
     end
 
     function value = get_design_matrix(obj, varargin)
