@@ -364,7 +364,7 @@ classdef Model
       %
       % (C) Copyright 2022 CPP_SPM developers
 
-      edge = struct([]);
+      edge = {};
 
       if ~ismember(field, {'Source', 'Destination'})
         bids.internal.error_handling(mfilename(), ...
@@ -378,10 +378,11 @@ classdef Model
         obj = obj.get_edges_from_nodes;
       end
 
+      % for 'Destination' we should only get a single value
+      % for 'Source' we can get several
       for i = 1:numel(obj.Edges)
         if strcmp(obj.Edges{i}.(field), value)
-          edge = obj.Edges{i};
-          break
+          edge{end + 1} = obj.Edges{i};
         end
       end
 
@@ -390,6 +391,17 @@ classdef Model
         bids.internal.error_handling(mfilename(), 'missingEdge', msg, ...
                                      obj.tolerant, ...
                                      obj.verbose);
+      end
+
+      if strcmp(field, 'Destination') && numel(edge) > 1
+        msg = sprintf('Getting more than one Edge with Destination %s.', value);
+        bids.internal.error_handling(mfilename(), 'tooManyEdges', msg, ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
+      end
+
+      if numel(edge) == 1
+        edge = edge{1};
       end
 
     end
