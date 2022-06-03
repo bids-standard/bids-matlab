@@ -342,7 +342,7 @@ classdef Model
       function value = format_output(value, idx)
         if ~iscell(value) && numel(idx) > 1
           value = {value};
-        elseif iscell(value) && numel(idx) == 1
+        elseif iscell(value) && numel(value) == 1
           value = value{1};
         end
       end
