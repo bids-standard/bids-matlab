@@ -3,7 +3,9 @@
   "BIDSModelVersion": "1.0.0",
   "Description": "default BIDS stats model for rhymejudgment task",
   "Input": {
-    "task": ["rhymejudgment"]
+    "task": [
+      "rhymejudgment"
+    ]
   },
   "Nodes": [
     {
@@ -18,7 +20,9 @@
         "Instructions": [
           {
             "Name": "",
-            "Inputs": [""]
+            "Inputs": [
+              ""
+            ]
           }
         ]
       },
@@ -39,8 +43,12 @@
         "Options": {
           "HighPassFilterCutoffHz": 0.008,
           "Mask": {
-            "desc": ["brain"],
-            "suffix": ["mask"]
+            "desc": [
+              "brain"
+            ],
+            "suffix": [
+              "mask"
+            ]
           }
         },
         "Software": []
@@ -48,8 +56,12 @@
       "Contrasts": [
         {
           "Name": "",
-          "ConditionList": [""],
-          "Weights": [""],
+          "ConditionList": [
+            ""
+          ],
+          "Weights": [
+            ""
+          ],
           "Test": "t"
         }
       ],
@@ -64,15 +76,23 @@
     {
       "Level": "Subject",
       "Name": "subject",
-      "GroupBy": [""],
+      "GroupBy": [
+        ""
+      ],
       "Model": {
-        "X": [""],
+        "X": [
+          ""
+        ],
         "Type": "glm",
         "Options": {
           "HighPassFilterCutoffHz": 0.008,
           "Mask": {
-            "desc": ["brain"],
-            "suffix": ["mask"]
+            "desc": [
+              "brain"
+            ],
+            "suffix": [
+              "mask"
+            ]
           }
         },
         "Software": []
@@ -80,28 +100,42 @@
       "Contrasts": [
         {
           "Name": "",
-          "ConditionList": [""],
-          "Weights": [""],
+          "ConditionList": [
+            ""
+          ],
+          "Weights": [
+            ""
+          ],
           "Test": "t"
         }
       ],
       "DummyContrasts": {
         "Test": "t",
-        "Contrasts": [""]
+        "Contrasts": [
+          ""
+        ]
       }
     },
     {
       "Level": "Dataset",
       "Name": "dataset",
-      "GroupBy": [""],
+      "GroupBy": [
+        ""
+      ],
       "Model": {
-        "X": [""],
+        "X": [
+          ""
+        ],
         "Type": "glm",
         "Options": {
           "HighPassFilterCutoffHz": 0.008,
           "Mask": {
-            "desc": ["brain"],
-            "suffix": ["mask"]
+            "desc": [
+              "brain"
+            ],
+            "suffix": [
+              "mask"
+            ]
           }
         },
         "Software": []
@@ -109,14 +143,20 @@
       "Contrasts": [
         {
           "Name": "",
-          "ConditionList": [""],
-          "Weights": [""],
+          "ConditionList": [
+            ""
+          ],
+          "Weights": [
+            ""
+          ],
           "Test": "t"
         }
       ],
       "DummyContrasts": {
         "Test": "t",
-        "Contrasts": [""]
+        "Contrasts": [
+          ""
+        ]
       }
     }
   ],

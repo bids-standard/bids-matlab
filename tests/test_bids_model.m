@@ -8,6 +8,57 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_load_edges()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  edges = bm.Edges;
+
+  assertEqual(edges{1}, struct('Source', 'run', 'Destination', 'subject'));
+  assertEqual(edges{2}, struct('Source', 'subject', 'Destination', 'positive'));
+  assertEqual(edges{3}, struct('Source', 'subject', ...
+                               'Destination', 'negative-loss', ...
+                               'Filter', struct('contrast', {{'loss'}})));
+  assertEqual(edges{4}, struct('Source', 'subject', ...
+                               'Destination', 'between-groups', ...
+                               'Filter', struct('contrast', {{'loss'}})));
+
+end
+
+function test_model_get_source_nodes()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  assertEqual(bm.get_source_node('run'), {});
+
+  assertEqual(bm.get_source_node('subject'), bm.get_nodes('Name', 'run'));
+
+  assertEqual(bm.get_source_node('negative-loss'), bm.get_nodes('Name', 'subject'));
+
+end
+
+function test_model_get_edge()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  assertEqual(bm.get_edge('Source', 'run'), struct('Source', 'run', ...
+                                                   'Destination', 'subject'));
+
+  assertEqual(numel(bm.get_edge('Source', 'subject')), 3);
+
+  assertEqual(bm.get_edge('Destination', 'negative-loss'), ...
+              struct('Source', 'subject', ...
+                     'Destination', 'negative-loss', ...
+                     'Filter', struct('contrast', {{'loss'}})));
+
+end
+
+function test_model_bug_385()
+
+  bm = bids.Model('file', model_file('bug385'), 'verbose', false);
+
+end
+
 function test_model_basic()
 
   bm = bids.Model('file', model_file('narps'), 'verbose', false);
@@ -71,11 +122,20 @@ end
 
 function test_model_write()
 
+  filename = fullfile(pwd, 'tmp', 'model-foo_smdl.json');
+
   bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
-  filename = fullfile(pwd, 'tmp', 'foo.json');
   bm.write(filename);
   assertEqual(bids.util.jsondecode(model_file('narps')), ...
+              bids.util.jsondecode(filename));
+
+  delete(filename);
+
+  bm = bids.Model('file', model_file('bug385'), 'verbose', false);
+
+  bm.write(filename);
+  assertEqual(bids.util.jsondecode(model_file('bug385')), ...
               bids.util.jsondecode(filename));
 
   delete(filename);
@@ -130,7 +190,7 @@ function test_model_node_level_getters()
               {'Transformer';  'Instructions'});
 
   assertEqual(bm.get_contrasts('Name', 'negative-loss'), ...
-              struct('Name', 'negative', 'ConditionList', 1, 'Weights', -1, 'Test', 't'));
+              {struct('Name', 'negative', 'ConditionList', 1, 'Weights', -1, 'Test', 't')});
 
 end
 

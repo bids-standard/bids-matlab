@@ -59,7 +59,7 @@ classdef Model
 
     Nodes =  {'REQUIRED'} % Nodes of the model
 
-    Edges % Edges of the model
+    Edges = {} % Edges of the model
 
     tolerant = true % if ``true`` turns error into warning
 
@@ -135,6 +135,8 @@ classdef Model
           obj.Input = obj.content.Input;
         end
 
+        % Nodes are coerced into cells
+        % to make easier to deal with them later
         if ~isfield(obj.content, 'Nodes')
           bids.internal.error_handling(mfilename(), ...
                                        'NodesRequired', ...
@@ -142,13 +144,42 @@ classdef Model
                                        obj.tolerant, ...
                                        obj.verbose);
         else
-          obj.Nodes = obj.content.Nodes;
+
+          if iscell(obj.content.Nodes)
+            obj.Nodes = obj.content.Nodes;
+          elseif isstruct(obj.content.Nodes)
+            for iNode = 1:numel(obj.content.Nodes)
+              obj.Nodes{iNode, 1} = obj.content.Nodes(iNode);
+            end
+          end
+
         end
 
+        % Contrasts are coerced into cells
+        % to make easier to deal with them later
+        for iNode = 1:numel(obj.content.Nodes)
+          if isfield(obj.Nodes{iNode, 1}, 'Contrasts') && isstruct(obj.Nodes{iNode, 1}.Contrasts)
+            for iCon = 1:numel(obj.Nodes{iNode, 1}.Contrasts)
+              tmp{iCon, 1} = obj.Nodes{iNode, 1}.Contrasts(iCon);
+            end
+            obj.Nodes{iNode, 1}.Contrasts = tmp;
+          end
+        end
+
+        % Edges are coerced into cells
+        % to make easier to deal with them later
         if isfield(obj.content, 'Edges')
-          obj.Edges = obj.content.Edges;
+          if iscell(obj.content.Edges)
+            obj.Edges = obj.content.Edges;
+          elseif isstruct(obj.content.Edges)
+            for i = 1:numel(obj.content.Edges)
+              obj.Edges{i, 1} = obj.content.Edges(i);
+            end
+          end
+
         else
           obj = get_edges_from_nodes(obj);
+
         end
 
         obj.validate();
@@ -221,6 +252,11 @@ classdef Model
       % :type file: path
       %
       %
+      % Returns: value - Node(s) as struct if there is only one or a cell if
+      %                  more
+      %          idx   - Node index
+      %
+      %
       % EXAMPLE::
       %
       %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
@@ -238,9 +274,8 @@ classdef Model
         value = obj.Nodes;
         idx = 1:numel(value);
 
-        if ~iscell(value)
-          value = {value};
-        end
+        value = format_output(value, idx);
+
         return
 
       end
@@ -257,26 +292,24 @@ classdef Model
       Level = lower(args.Results.Level);
       Name = lower(args.Results.Name);  %#ok<*PROPLC>
 
+      % return all nodes if no argument is given
       if strcmp(Name, '') && strcmp(Level, '')
         value = obj.Nodes;
         idx = 1:numel(value);
 
-        if ~iscell(value)
-          value = {value};
-        end
+        value = format_output(value, idx);
+
         return
 
       end
 
+      % otherwise we identify them by the arguments given
+      % Name takes precedence as Name are supposed to be unique
       if ~strcmp(Level, '')
         if ischar(Level)
           Level = {Level};
         end
-        if iscell(obj.Nodes)
-          levels = cellfun(@(x) lower(x.Level), obj.Nodes, 'UniformOutput', false);
-        elseif isstruct(obj.Nodes)
-          levels = lower({obj.Nodes.Level}');
-        end
+        levels = cellfun(@(x) lower(x.Level), obj.Nodes, 'UniformOutput', false);
         idx = ismember(levels, Level);
       end
 
@@ -284,23 +317,15 @@ classdef Model
         if ischar(Name)
           Name = {Name};
         end
-        if iscell(obj.Nodes)
-          names = cellfun(@(x) lower(x.Name), obj.Nodes, 'UniformOutput', false);
-        elseif isstruct(obj.Nodes)
-          names = lower({obj.Nodes.Name}');
-        end
+        names = cellfun(@(x) lower(x.Name), obj.Nodes, 'UniformOutput', false);
         idx = ismember(names, Name);
       end
 
-      % TODO merge idx when both Level and Name are passed as parameters
+      % TODO merge idx when both Level and Name are passed as parameters ?
       if any(idx)
         idx = find(idx);
         for i = 1:numel(idx)
-          if iscell(obj.Nodes)
-            value{end + 1} = obj.Nodes{idx(i)};
-          elseif isstruct(obj.Nodes)
-            value{end + 1} = obj.Nodes(idx(i));
-          end
+          value{end + 1} = obj.Nodes{idx(i)};
         end
 
       else
@@ -310,13 +335,104 @@ classdef Model
                                      obj.verbose);
       end
 
-      if ~iscell(value)
-        value = {value};
+      value = format_output(value, idx);
+
+      % local subfunction to ensure that cells are returned if more than one
+      % node and struct otherwise
+      function value = format_output(value, idx)
+        if ~iscell(value) && numel(idx) > 1
+          value = {value};
+        elseif iscell(value) && numel(idx) == 1
+          value = value{1};
+        end
       end
+
+    end
+
+    function source_nodes = get_source_node(obj, node_name)
+
+      source_nodes = {};
+
+      if isempty(obj.Edges)
+        obj = obj.get_edges_from_nodes;
+      end
+
+      if strcmp(node_name, obj.Edges{1}.Source)
+        % The root node cannot have a source
+        return
+      end
+
+      % we should only get 1 value
+      for i = 1:numel(obj.Edges)
+        if strcmp(obj.Edges{i}.Destination, node_name)
+          source = obj.Edges{i}.Source;
+          source_nodes{end + 1} = obj.get_nodes('Name', source);
+        end
+      end
+
+      assert(numel(source_nodes) == 1);
+
+      if numel(source_nodes) == 1
+        source_nodes = source_nodes{1};
+      end
+
     end
 
     function value = get.Edges(obj)
       value = obj.Edges;
+    end
+
+    function edge = get_edge(obj, field, value)
+      %
+      % USAGE::
+      %
+      %     edge = bm.get_edges(field, value)
+      %
+      %
+      % field can be any of {'Source', 'Destination'}
+      %
+      % (C) Copyright 2022 CPP_SPM developers
+
+      edge = {};
+
+      if ~ismember(field, {'Source', 'Destination'})
+        bids.internal.error_handling(mfilename(), ...
+                                     'wrongEdgeQuery', ...
+                                     'Can only query Edges based on Source or Destination', ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
+      end
+
+      if isempty(obj.Edges)
+        obj = obj.get_edges_from_nodes;
+      end
+
+      % for 'Destination' we should only get a single value
+      % for 'Source' we can get several
+      for i = 1:numel(obj.Edges)
+        if strcmp(obj.Edges{i}.(field), value)
+          edge{end + 1} = obj.Edges{i};
+        end
+      end
+
+      if isempty(edge)
+        msg = sprintf('Could not find a corresponding Edge.');
+        bids.internal.error_handling(mfilename(), 'missingEdge', msg, ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
+      end
+
+      if strcmp(field, 'Destination') && numel(edge) > 1
+        msg = sprintf('Getting more than one Edge with Destination %s.', value);
+        bids.internal.error_handling(mfilename(), 'tooManyEdges', msg, ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
+      end
+
+      if numel(edge) == 1
+        edge = edge{1};
+      end
+
     end
 
     function obj = get_edges_from_nodes(obj)
@@ -338,11 +454,7 @@ classdef Model
     end
 
     function value = node_names(obj)
-      if iscell(obj.Nodes)
-        value = cellfun(@(x) x.Name, obj.Nodes, 'UniformOutput', false);
-      else
-        value = {obj.Nodes.Name};
-      end
+      value = cellfun(@(x) x.Name, obj.Nodes, 'UniformOutput', false);
     end
 
     function validate(obj)
@@ -359,18 +471,14 @@ classdef Model
       REQUIRED_TRANSFORMATIONS_FIELDS = {'Transformer', 'Instructions'};
       REQUIRED_MODEL_FIELDS = {'Type', 'X'};
       REQUIRED_HRF_FIELDS = {'Variables', 'Model'};
-      REQUIRED_CONTRASTS_FIELDS = {'Name', 'ConditionList'};
+      REQUIRED_CONTRASTS_FIELDS = {'Name', 'ConditionList', 'Weights', 'Test'};
       REQUIRED_DUMMY_CONTRASTS_FIELDS = {'Contrasts'};
 
       % Nodes
       nodes = obj.Nodes;
       for i = 1:(numel(nodes))
 
-        if iscell(nodes)
-          this_node = nodes{i, 1};
-        elseif isstruct(nodes)
-          this_node = nodes(i);
-        end
+        this_node = nodes{i, 1};
 
         fields_present = fieldnames(this_node);
         if any(~ismember(REQUIRED_NODES_FIELDS, fields_present))
@@ -402,6 +510,8 @@ classdef Model
               if any(~ismember(check.Contrasts, fields_present))
                 obj.model_validation_error('Contrasts', check.Contrasts);
               end
+
+              obj.validate_constrasts(this_node);
 
             end
 
@@ -453,19 +563,11 @@ classdef Model
 
         for i = 1:(numel(edges))
 
-          if iscell(edges)
+          this_edge = edges{i, 1};
 
-            this_edge = edges{i, 1};
-
-            if ~isstruct(this_edge)
-              obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
-              continue
-
-            end
-
-          elseif isstruct(edges)
-
-            this_edge = edges(1);
+          if ~isstruct(this_edge)
+            obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
+            continue
 
           end
 
@@ -508,8 +610,8 @@ classdef Model
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
-      if isfield(node{1}, 'Transformations')
-        value = node{1}.Transformations;
+      if isfield(node, 'Transformations')
+        value = node.Transformations;
       end
     end
 
@@ -525,8 +627,8 @@ classdef Model
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
-      if isfield(node{1}, 'DummyContrasts')
-        value = node{1}.DummyContrasts;
+      if isfield(node, 'DummyContrasts')
+        value = node.DummyContrasts;
       end
     end
 
@@ -542,8 +644,8 @@ classdef Model
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
-      if isfield(node{1}, 'Contrasts')
-        value = node{1}.Contrasts;
+      if isfield(node, 'Contrasts')
+        value = node.Contrasts;
       end
     end
 
@@ -558,7 +660,7 @@ classdef Model
       %
       [node, idx] = get_nodes(obj, varargin{:});
       assert(numel(node) == 1);
-      value = node{1}.Model;
+      value = node.Model;
     end
 
     function value = get_design_matrix(obj, varargin)
@@ -653,8 +755,45 @@ classdef Model
       obj.content.BIDSModelVersion = obj.BIDSModelVersion;
       obj.content.Description = obj.Description;
       obj.content.Input = obj.Input;
+
+      % coerce some fields of Nodes to make sure the output JSON is valid
       obj.content.Nodes = obj.Nodes;
+
+      for i = 1:numel(obj.content.Nodes)
+
+        this_node = obj.content.Nodes{i};
+
+        if isnumeric(this_node.Model.X) && numel(this_node.Model.X) == 1
+          this_node.Model.X = {this_node.Model.X};
+        end
+
+        if isfield(this_node, 'Contrasts')
+          for j = 1:numel(this_node.Contrasts)
+
+            this_contrast = this_node.Contrasts{j};
+
+            if ~isempty(this_contrast.Weights) && ...
+                ~iscell(this_contrast.Weights) && ...
+                numel(this_contrast.Weights) == 1
+              this_contrast.Weights = {this_contrast.Weights};
+            end
+
+            if isnumeric(this_contrast.ConditionList) && ...
+                numel(this_contrast.ConditionList) == 1
+              this_contrast.ConditionList = {this_contrast.ConditionList};
+            end
+
+            this_node.Contrasts{j} = this_contrast;
+
+          end
+        end
+
+        obj.content.Nodes{i} = this_node;
+
+      end
+
       obj.content.Edges = obj.Edges;
+
     end
 
     function write(obj, filename)
@@ -664,6 +803,7 @@ classdef Model
       %   bm.write(filename)
       %
 
+      obj = update(obj);
       bids.util.mkdir(fileparts(filename));
       bids.util.jsonencode(filename, obj.content);
 
@@ -737,6 +877,39 @@ classdef Model
       elseif isstruct(cell_or_struct)
         values = fieldnames(cell_or_struct);
       end
+    end
+
+    % could be made static
+    function validate_constrasts(node)
+
+      if ~isfield(node, 'Contrasts')
+        return
+      end
+
+      for iCon = 1:numel(node.Contrasts)
+
+        if ~isfield(node.Contrasts{iCon}, 'Weights')
+          msg = sprintf('No weights specified for Contrast %s of Node %s', ...
+                        node.Contrasts{iCon}.Name, node.Name);
+          bids.internal.error_handling(mfilename(), ...
+                                       'weightsRequired', ...
+                                       msg, ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
+        end
+
+        if numel(node.Contrasts{iCon}.Weights) ~= numel(node.Contrasts{iCon}.ConditionList)
+          msg = sprintf('Number of Weights and Conditions unequal for Contrast %s of Node %s', ...
+                        node.Contrasts{iCon}.Name, node.Name);
+          bids.internal.error_handling(mfilename(), ...
+                                       'numelWeightsConditionMismatch', ...
+                                       msg, ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
+        end
+
+      end
+
     end
 
   end

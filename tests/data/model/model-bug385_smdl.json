@@ -1,0 +1,131 @@
+{
+  "Name": "default_motion_model",
+  "BIDSModelVersion": "1.0.0",
+  "Description": "bug: https://github.com/bids-standard/bids-matlab/issues/385",
+  "Input": {
+    "task": [
+      "motion"
+    ],
+    "acq": [
+      ""
+    ],
+    "space": [
+      "MNI152NLin2009cAsym"
+    ]
+  },
+  "Nodes": [
+    {
+      "Level": "Run",
+      "Name": "run",
+      "GroupBy": [
+        "run",
+        "session",
+        "subject"
+      ],
+      "Model": {
+        "X": [
+          "trial_type.BioMot_LH",
+          "trial_type.BioMot_RH",
+          "trial_type.BioScr_LH",
+          "trial_type.BioScr_RH",
+          "trial_type.motion_LH",
+          "trial_type.motion_RH",
+          "trial_type.static_LH",
+          "trial_type.static_RH",
+          "1",
+          "trans_?",
+          "rot_?",
+          "non_steady_state_outlier*",
+          "motion_outlier*"
+        ],
+        "Type": "glm",
+        "HRF": {
+          "Variables": [
+            "trial_type.BioMot_LH",
+            "trial_type.BioMot_RH",
+            "trial_type.BioScr_LH",
+            "trial_type.BioScr_RH",
+            "trial_type.motion_LH",
+            "trial_type.motion_RH",
+            "trial_type.static_LH",
+            "trial_type.static_RH"
+          ],
+          "Model": "DoubleGamma"
+        },
+        "Options": {
+          "HighPassFilterCutoffHz": 0.008,
+          "Mask": {
+            "desc": [
+              "brain"
+            ],
+            "suffix": [
+              "mask"
+            ]
+          }
+        },
+        "Software": {
+          "SPM": {
+            "SerialCorrelation": "FAST",
+            "HRFderivatives": "Temporal"
+          }
+        }
+      },
+      "DummyContrasts": {
+        "Test": "t",
+        "Contrasts": [
+          "trial_type.BioMot_LH",
+          "trial_type.BioMot_RH",
+          "trial_type.BioScr_LH",
+          "trial_type.BioScr_RH",
+          "trial_type.motion_LH",
+          "trial_type.motion_RH",
+          "trial_type.static_LH",
+          "trial_type.static_RH"
+        ]
+      }
+    },
+    {
+      "Level": "Subject",
+      "Name": "subject",
+      "GroupBy": [
+        "subject",
+        "contrast"
+      ],
+      "Model": {
+        "X": [
+          1
+        ],
+        "Type": "glm"
+      },
+      "DummyContrasts": {
+        "Test": "t"
+      }
+    },
+    {
+      "Level": "Dataset",
+      "Name": "dataset",
+      "GroupBy": [
+        "contrast"
+      ],
+      "Model": {
+        "X": [
+          1
+        ],
+        "Type": "glm"
+      },
+      "DummyContrasts": {
+        "Test": "t"
+      }
+    }
+  ],
+  "Edges": [
+    {
+      "Source": "run",
+      "Destination": "subject"
+    },
+    {
+      "Source": "subject",
+      "Destination": "dataset"
+    }
+  ]
+}
