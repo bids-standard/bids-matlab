@@ -3,7 +3,9 @@
     "Description": "NARPS Analysis model",
     "BIDSModelVersion": "1.0.0",
     "Input": {
-        "task": ["MGT"]
+        "task": [
+            "MGT"
+        ]
     },
     "Nodes": [
         {

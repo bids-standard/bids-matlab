@@ -6,7 +6,9 @@
     "task": [
       "motion"
     ],
-    "acq": [""],
+    "acq": [
+      ""
+    ],
     "space": [
       "MNI152NLin2009cAsym"
     ]
@@ -53,8 +55,12 @@
         "Options": {
           "HighPassFilterCutoffHz": 0.008,
           "Mask": {
-            "desc": ["brain"],
-            "suffix": ["mask"]
+            "desc": [
+              "brain"
+            ],
+            "suffix": [
+              "mask"
+            ]
           }
         },
         "Software": {
@@ -86,7 +92,9 @@
         "contrast"
       ],
       "Model": {
-        "X": [1],
+        "X": [
+          1
+        ],
         "Type": "glm"
       },
       "DummyContrasts": {
@@ -96,14 +104,28 @@
     {
       "Level": "Dataset",
       "Name": "dataset",
-      "GroupBy": ["contrast"],
+      "GroupBy": [
+        "contrast"
+      ],
       "Model": {
-        "X": [1],
+        "X": [
+          1
+        ],
         "Type": "glm"
       },
       "DummyContrasts": {
         "Test": "t"
       }
+    }
+  ],
+  "Edges": [
+    {
+      "Source": "run",
+      "Destination": "subject"
+    },
+    {
+      "Source": "subject",
+      "Destination": "dataset"
     }
   ]
 }

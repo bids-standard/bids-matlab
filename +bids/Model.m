@@ -755,8 +755,45 @@ classdef Model
       obj.content.BIDSModelVersion = obj.BIDSModelVersion;
       obj.content.Description = obj.Description;
       obj.content.Input = obj.Input;
+
+      % coerce some fields of Nodes to make sure the output JSON is valid
       obj.content.Nodes = obj.Nodes;
+
+      for i = 1:numel(obj.content.Nodes)
+
+        this_node = obj.content.Nodes{i};
+
+        if isnumeric(this_node.Model.X) && numel(this_node.Model.X) == 1
+          this_node.Model.X = {this_node.Model.X};
+        end
+
+        if isfield(this_node, 'Contrasts')
+          for j = 1:numel(this_node.Contrasts)
+
+            this_contrast = this_node.Contrasts{j};
+
+            if ~isempty(this_contrast.Weights) && ...
+                ~iscell(this_contrast.Weights) && ...
+                numel(this_contrast.Weights) == 1
+              this_contrast.Weights = {this_contrast.Weights};
+            end
+
+            if isnumeric(this_contrast.ConditionList) && ...
+                numel(this_contrast.ConditionList) == 1
+              this_contrast.ConditionList = {this_contrast.ConditionList};
+            end
+
+            this_node.Contrasts{j} = this_contrast;
+
+          end
+        end
+
+        obj.content.Nodes{i} = this_node;
+
+      end
+
       obj.content.Edges = obj.Edges;
+
     end
 
     function write(obj, filename)
@@ -766,6 +803,7 @@ classdef Model
       %   bm.write(filename)
       %
 
+      obj = update(obj);
       bids.util.mkdir(fileparts(filename));
       bids.util.jsonencode(filename, obj.content);
 

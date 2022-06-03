@@ -122,11 +122,20 @@ end
 
 function test_model_write()
 
+  filename = fullfile(pwd, 'tmp', 'model-foo_smdl.json');
+
   bm = bids.Model('file', model_file('narps'), 'verbose', false);
 
-  filename = fullfile(pwd, 'tmp', 'foo.json');
   bm.write(filename);
   assertEqual(bids.util.jsondecode(model_file('narps')), ...
+              bids.util.jsondecode(filename));
+
+  delete(filename);
+
+  bm = bids.Model('file', model_file('bug385'), 'verbose', false);
+
+  bm.write(filename);
+  assertEqual(bids.util.jsondecode(model_file('bug385')), ...
               bids.util.jsondecode(filename));
 
   delete(filename);
