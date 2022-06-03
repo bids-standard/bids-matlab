@@ -353,6 +353,47 @@ classdef Model
       value = obj.Edges;
     end
 
+    function edge = get_edge(obj, field, value)
+      %
+      % USAGE::
+      %
+      %     edge = bm.get_edges(field, value)
+      %
+      %
+      % field can be any of {'Source', 'Destination'}
+      %
+      % (C) Copyright 2022 CPP_SPM developers
+
+      edge = struct([]);
+
+      if ~ismember(field, {'Source', 'Destination'})
+        bids.internal.error_handling(mfilename(), ...
+                                     'wrongEdgeQuery', ...
+                                     'Can only query Edges based on Source or Destination', ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
+      end
+
+      if isempty(obj.Edges)
+        obj = obj.get_edges_from_nodes;
+      end
+
+      for i = 1:numel(obj.Edges)
+        if strcmp(obj.Edges{i}.(field), value)
+          edge = obj.Edges{i};
+          break
+        end
+      end
+
+      if isempty(edge)
+        msg = sprintf('Could not find a corresponding Edge.');
+        bids.internal.error_handling(mfilename(), 'missingEdge', msg, ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
+      end
+
+    end
+
     function obj = get_edges_from_nodes(obj)
       %
       % Generates all the default edges from the list of nodes in the model.

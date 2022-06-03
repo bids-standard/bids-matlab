@@ -8,6 +8,20 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_get_edge()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  assertEqual(bm.get_edge('Source', 'run'), struct('Source', 'run', ...
+                                                   'Destination', 'subject'));
+
+  assertEqual(bm.get_edge('Destination', 'negative-loss'), ...
+              struct('Source', 'subject', ...
+                     'Destination', 'negative-loss', ...
+                     'Filter', struct('contrast', {{'loss'}})));
+
+end
+
 function test_model_bug_385()
 
   bm = bids.Model('file', model_file('bug385'), 'verbose', false);
