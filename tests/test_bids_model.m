@@ -136,7 +136,7 @@ function test_model_node_level_getters()
               {'Transformer';  'Instructions'});
 
   assertEqual(bm.get_contrasts('Name', 'negative-loss'), ...
-              struct('Name', 'negative', 'ConditionList', 1, 'Weights', -1, 'Test', 't'));
+              {struct('Name', 'negative', 'ConditionList', 1, 'Weights', -1, 'Test', 't')});
 
 end
 

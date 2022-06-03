@@ -148,11 +148,22 @@ classdef Model
           if iscell(obj.content.Nodes)
             obj.Nodes = obj.content.Nodes;
           elseif isstruct(obj.content.Nodes)
-            for i = 1:numel(obj.content.Nodes)
-              obj.Nodes{i, 1} = obj.content.Nodes(i);
+            for iNode = 1:numel(obj.content.Nodes)
+              obj.Nodes{iNode, 1} = obj.content.Nodes(iNode);
             end
           end
 
+        end
+
+        % Contrasts are coerced into cells
+        % to make easier to deal with them later
+        for iNode = 1:numel(obj.content.Nodes)
+          if isfield(obj.Nodes{iNode, 1}, 'Contrasts') && isstruct(obj.Nodes{iNode, 1}.Contrasts)
+            for iCon = 1:numel(obj.Nodes{iNode, 1}.Contrasts)
+              tmp{iCon, 1} = obj.Nodes{iNode, 1}.Contrasts(iCon);
+            end
+            obj.Nodes{iNode, 1}.Contrasts = tmp;
+          end
         end
 
         % Edges are coerced into cells
