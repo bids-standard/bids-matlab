@@ -430,7 +430,7 @@ classdef Model
       REQUIRED_TRANSFORMATIONS_FIELDS = {'Transformer', 'Instructions'};
       REQUIRED_MODEL_FIELDS = {'Type', 'X'};
       REQUIRED_HRF_FIELDS = {'Variables', 'Model'};
-      REQUIRED_CONTRASTS_FIELDS = {'Name', 'ConditionList'};
+      REQUIRED_CONTRASTS_FIELDS = {'Name', 'ConditionList', 'Weights', 'Test'};
       REQUIRED_DUMMY_CONTRASTS_FIELDS = {'Contrasts'};
 
       % Nodes
@@ -469,6 +469,8 @@ classdef Model
               if any(~ismember(check.Contrasts, fields_present))
                 obj.model_validation_error('Contrasts', check.Contrasts);
               end
+
+              obj.validate_constrasts(this_node);
 
             end
 
@@ -796,6 +798,39 @@ classdef Model
       elseif isstruct(cell_or_struct)
         values = fieldnames(cell_or_struct);
       end
+    end
+
+    % could be made static
+    function validate_constrasts(node)
+
+      if ~isfield(node, 'Contrasts')
+        return
+      end
+
+      for iCon = 1:numel(node.Contrasts)
+
+        if ~isfield(node.Contrasts{iCon}, 'Weights')
+          msg = sprintf('No weights specified for Contrast %s of Node %s', ...
+                        node.Contrasts{iCon}.Name, node.Name);
+          bids.internal.error_handling(mfilename(), ...
+                                       'weightsRequired', ...
+                                       msg, ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
+        end
+
+        if numel(node.Contrasts{iCon}.Weights) ~= numel(node.Contrasts{iCon}.ConditionList)
+          msg = sprintf('Number of Weights and Conditions unequal for Contrast %s of Node %s', ...
+                        node.Contrasts{iCon}.Name, node.Name);
+          bids.internal.error_handling(mfilename(), ...
+                                       'numelWeightsConditionMismatch', ...
+                                       msg, ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
+        end
+
+      end
+
     end
 
   end
