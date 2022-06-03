@@ -8,6 +8,12 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_bug_385()
+
+  bm = bids.Model('file', model_file('bug385'), 'verbose', false);
+
+end
+
 function test_model_basic()
 
   bm = bids.Model('file', model_file('narps'), 'verbose', false);

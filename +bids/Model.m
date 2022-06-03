@@ -59,7 +59,7 @@ classdef Model
 
     Nodes =  {'REQUIRED'} % Nodes of the model
 
-    Edges % Edges of the model
+    Edges = {} % Edges of the model
 
     tolerant = true % if ``true`` turns error into warning
 
@@ -135,6 +135,8 @@ classdef Model
           obj.Input = obj.content.Input;
         end
 
+        % Nodes are coerced into cells
+        % to make easier to deal with them later
         if ~isfield(obj.content, 'Nodes')
           bids.internal.error_handling(mfilename(), ...
                                        'NodesRequired', ...
@@ -142,13 +144,31 @@ classdef Model
                                        obj.tolerant, ...
                                        obj.verbose);
         else
-          obj.Nodes = obj.content.Nodes;
+          
+          if iscell(obj.content.Nodes)
+            obj.Nodes = obj.content.Nodes;
+          elseif isstruct(obj.content.Nodes)
+            for i = 1:numel(obj.content.Nodes)
+                obj.Nodes{i, 1} = obj.content.Nodes(i);
+            end
+          end
+          
         end
 
+        % Edges are coerced into cells
+        % to make easier to deal with them later
         if isfield(obj.content, 'Edges')
-          obj.Edges = obj.content.Edges;
+          if iscell(obj.content.Edges)
+            obj.Edges = obj.content.Edges;
+          elseif isstruct(obj.content.Edges)
+            for i = 1:numel(obj.content.Edges)
+                obj.Edges{i, 1} = obj.content.Edges(i);
+            end
+          end
+          
         else
           obj = get_edges_from_nodes(obj);
+          
         end
 
         obj.validate();
@@ -257,6 +277,7 @@ classdef Model
       Level = lower(args.Results.Level);
       Name = lower(args.Results.Name);  %#ok<*PROPLC>
 
+      % return all nodes if no argument is given
       if strcmp(Name, '') && strcmp(Level, '')
         value = obj.Nodes;
         idx = 1:numel(value);
@@ -268,15 +289,13 @@ classdef Model
 
       end
 
+      % otherwise we identify them by the arguments given
+      % Name takes precedence as Name are supposed to be unique
       if ~strcmp(Level, '')
         if ischar(Level)
           Level = {Level};
         end
-        if iscell(obj.Nodes)
-          levels = cellfun(@(x) lower(x.Level), obj.Nodes, 'UniformOutput', false);
-        elseif isstruct(obj.Nodes)
-          levels = lower({obj.Nodes.Level}');
-        end
+        levels = cellfun(@(x) lower(x.Level), obj.Nodes, 'UniformOutput', false);
         idx = ismember(levels, Level);
       end
 
@@ -284,23 +303,15 @@ classdef Model
         if ischar(Name)
           Name = {Name};
         end
-        if iscell(obj.Nodes)
-          names = cellfun(@(x) lower(x.Name), obj.Nodes, 'UniformOutput', false);
-        elseif isstruct(obj.Nodes)
-          names = lower({obj.Nodes.Name}');
-        end
+        names = cellfun(@(x) lower(x.Name), obj.Nodes, 'UniformOutput', false);
         idx = ismember(names, Name);
       end
 
-      % TODO merge idx when both Level and Name are passed as parameters
+      % TODO merge idx when both Level and Name are passed as parameters ?
       if any(idx)
         idx = find(idx);
         for i = 1:numel(idx)
-          if iscell(obj.Nodes)
             value{end + 1} = obj.Nodes{idx(i)};
-          elseif isstruct(obj.Nodes)
-            value{end + 1} = obj.Nodes(idx(i));
-          end
         end
 
       else
@@ -338,11 +349,7 @@ classdef Model
     end
 
     function value = node_names(obj)
-      if iscell(obj.Nodes)
         value = cellfun(@(x) x.Name, obj.Nodes, 'UniformOutput', false);
-      else
-        value = {obj.Nodes.Name};
-      end
     end
 
     function validate(obj)
@@ -366,11 +373,7 @@ classdef Model
       nodes = obj.Nodes;
       for i = 1:(numel(nodes))
 
-        if iscell(nodes)
-          this_node = nodes{i, 1};
-        elseif isstruct(nodes)
-          this_node = nodes(i);
-        end
+        this_node = nodes{i, 1};
 
         fields_present = fieldnames(this_node);
         if any(~ismember(REQUIRED_NODES_FIELDS, fields_present))
@@ -453,7 +456,6 @@ classdef Model
 
         for i = 1:(numel(edges))
 
-          if iscell(edges)
 
             this_edge = edges{i, 1};
 
@@ -462,12 +464,6 @@ classdef Model
               continue
 
             end
-
-          elseif isstruct(edges)
-
-            this_edge = edges(1);
-
-          end
 
           fields_present = fieldnames(this_edge);
           if any(~ismember(REQUIRED_EDGES_FIELDS, fields_present))
