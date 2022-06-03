@@ -198,6 +198,7 @@ Thanks goes to these wonderful people
   </tr>
   <tr>
     <td align="center"><a href="http://cpplab.be"><img src="https://avatars.githubusercontent.com/u/38101692?v=4?s=100" width="100px;" alt=""/><br /><sub><b>marcobarilari</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/pulls?q=is%3Apr+reviewed-by%3Amarcobarilari" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/mwmaclean"><img src="https://avatars.githubusercontent.com/u/54547865?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Michèle MacLean</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/issues?q=author%3Amwmaclean" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 

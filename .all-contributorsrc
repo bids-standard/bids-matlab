@@ -173,6 +173,15 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "mwmaclean",
+      "name": "Michèle MacLean",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54547865?v=4",
+      "profile": "https://github.com/mwmaclean",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
