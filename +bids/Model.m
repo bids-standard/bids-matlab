@@ -349,6 +349,35 @@ classdef Model
 
     end
 
+    function source_nodes = get_source_node(obj, node_name)
+
+      source_nodes = {};
+
+      if isempty(obj.Edges)
+        obj = obj.get_edges_from_nodes;
+      end
+
+      if strcmp(node_name, obj.Edges{1}.Source)
+        % The root node cannot have a source
+        return
+      end
+
+      % we should only get 1 value
+      for i = 1:numel(obj.Edges)
+        if strcmp(obj.Edges{i}.Destination, node_name)
+          source = obj.Edges{i}.Source;
+          source_nodes{end + 1} = obj.get_nodes('Name', source);
+        end
+      end
+
+      assert(numel(source_nodes) == 1);
+
+      if numel(source_nodes) == 1
+        source_nodes = source_nodes{1};
+      end
+
+    end
+
     function value = get.Edges(obj)
       value = obj.Edges;
     end

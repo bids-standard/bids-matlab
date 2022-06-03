@@ -8,6 +8,35 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_load_edges()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  edges = bm.Edges;
+
+  assertEqual(edges{1}, struct('Source', 'run', 'Destination', 'subject'));
+  assertEqual(edges{2}, struct('Source', 'subject', 'Destination', 'positive'));
+  assertEqual(edges{3}, struct('Source', 'subject', ...
+                               'Destination', 'negative-loss', ...
+                               'Filter', struct('contrast', {{'loss'}})));
+  assertEqual(edges{4}, struct('Source', 'subject', ...
+                               'Destination', 'between-groups', ...
+                               'Filter', struct('contrast', {{'loss'}})));
+
+end
+
+function test_model_get_source_nodes()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  assertEqual(bm.get_source_node('run'), {});
+
+  assertEqual(bm.get_source_node('subject'), bm.get_nodes('Name', 'run'));
+
+  assertEqual(bm.get_source_node('negative-loss'), bm.get_nodes('Name', 'subject'));
+
+end
+
 function test_model_get_edge()
 
   bm = bids.Model('file', model_file('narps'), 'verbose', false);
