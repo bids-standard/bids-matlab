@@ -163,6 +163,7 @@ classdef Model
               tmp{iCon, 1} = obj.Nodes{iNode, 1}.Contrasts(iCon);
             end
             obj.Nodes{iNode, 1}.Contrasts = tmp;
+            clear tmp;
           end
         end
 
