@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - main
-      - 
+      - dev
     paths:
       - '**.m'      
   pull_request:
