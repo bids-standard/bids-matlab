@@ -42,10 +42,17 @@ classdef Description
 
       args = inputParser;
 
+      char_or_struct = @(x) ischar(x) || isstruct(x);
+
       addOptional(args, 'pipeline', '', @ischar);
-      addRequired(args, 'BIDS', '');
+      addOptional(args, 'BIDS', '', char_or_struct);
 
       parse(args, varargin{:});
+
+      pipeline = args.Results.pipeline;
+      BIDS = args.Results.BIDS;
+
+      %%
 
       if ~isempty(pipeline)
         obj.is_derivative = true;
