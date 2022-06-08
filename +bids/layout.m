@@ -241,9 +241,16 @@ function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbo
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
       switch modalities{iModality}
+
         case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf', 'micr'}
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
+
         otherwise
+
+          if isempty(modalities{iModality})
+            continue
+          end
+
           % in case we are going schemaless
           % or the modality is not one of the usual suspect
           if ~bids.internal.is_valid_fieldname(modalities{iModality})
@@ -258,6 +265,7 @@ function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbo
 
           subject.(modalities{iModality}) = struct([]);
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
+
       end
     end
 

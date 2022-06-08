@@ -8,9 +8,11 @@ classdef Description
   %
   % :param pipeline: pipeline name
   % :type  pipeline: string
+  %
   % :param BIDS: output from BIDS layout to identify the source dataset
   %              used when creating a derivatives dataset
-  % :type  BIDS: structure
+  %              Can also be the path to a dataset_descriptin.json file
+  % :type  BIDS: structure or char
   %
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
@@ -31,24 +33,43 @@ classdef Description
 
   methods
 
-    function obj = Description(pipeline, BIDS)
+    function obj = Description(varargin)
       %
-      % Instance constructor
+      % USAGE::
+      %
+      %   ds_desc = bids.Description(pipeline, BIDS);
       %
 
-      if nargin > 0
+      args = inputParser;
+
+      char_or_struct = @(x) ischar(x) || isstruct(x);
+
+      addOptional(args, 'pipeline', '', @ischar);
+      addOptional(args, 'BIDS', '', char_or_struct);
+
+      parse(args, varargin{:});
+
+      pipeline = args.Results.pipeline;
+      BIDS = args.Results.BIDS;
+
+      %%
+
+      if ~isempty(pipeline)
         obj.is_derivative = true;
-        if ~isempty(pipeline)
-          obj.pipeline = pipeline;
+        obj.pipeline = pipeline;
+      end
+
+      if ~isempty(BIDS)
+        if isstruct(BIDS)
+          obj.source_description = BIDS.description;
+        elseif ischar(BIDS) && ...
+            exist(BIDS, 'file') && ...
+            strcmp(bids.internal.file_utils(BIDS,  'filename'), 'dataset_description.json')
+          obj.source_description = bids.util.jsondecode(BIDS);
         end
       end
 
-      if nargin > 1 && ~isempty(BIDS)
-        obj.source_description = BIDS.description;
-      end
-
-      obj.content = struct( ...
-                           'Name', '', ...
+      obj.content = struct('Name', '', ...
                            'BIDSVersion', '', ...
                            'DatasetType', 'raw', ...
                            'License', '', ...
