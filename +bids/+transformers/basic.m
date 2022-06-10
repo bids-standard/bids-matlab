@@ -70,7 +70,7 @@ function data = basic(transformer, data)
   input = bids.transformers.get_input(transformer, data);
   output = bids.transformers.get_output(transformer, data);
 
-  rows = logical(size(data.(input{1})));
+  rows = true(size(data.(input{1})));
 
   [left, query_type, right] = bids.transformers.get_query(transformer);
   if ~isempty(query_type)
