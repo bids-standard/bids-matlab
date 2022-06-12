@@ -35,7 +35,9 @@ function filename = download(URL, output_dir, verbose)
 
     % move file in case it was not downloaded in the root dir
     if ~exist(fullfile(output_dir, filename), 'file')
-      print_to_screen([filename ' --> ' output_dir], verbose);
+      print_to_screen([bids.internal.format_path(filename), ...
+                       ' --> ', ...
+                       bids.internal.format_path(output_dir)], verbose);
       movefile(filename, fullfile(output_dir, filename));
     end
     filename = fullfile(output_dir, filename);
