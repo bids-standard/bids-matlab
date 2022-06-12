@@ -532,7 +532,7 @@ function structure = manage_tsv(structure, pth, filename, verbose)
                                       ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
   if isempty(tsv_file)
-    msg = sprintf('Missing: %s', fullfile(pth, filename));
+    msg = sprintf('Missing: %s', bids.internal.format_path(fullfile(pth, filename)));
     bids.internal.error_handling(mfilename, 'tsvMissing', msg, tolerant, verbose);
 
   else
