@@ -112,7 +112,7 @@ function BIDS = layout(varargin)
   subjects = cellstr(bids.internal.file_utils('List', BIDS.pth, 'dir', '^sub-.*$'));
   if isequal(subjects, {''})
     msg = sprintf('No subjects found in BIDS directory: ''%s''', ...
-                  BIDS.pth);
+                  bids.internal.format_path(BIDS.pth));
     bids.internal.error_handling(mfilename, 'noSubject', msg, tolerant, verbose);
     return
   end
@@ -532,7 +532,7 @@ function structure = manage_tsv(structure, pth, filename, verbose)
                                       ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
   if isempty(tsv_file)
-    msg = sprintf('Missing: %s', fullfile(pth, filename));
+    msg = sprintf('Missing: %s', bids.internal.format_path(fullfile(pth, filename)));
     bids.internal.error_handling(mfilename, 'tsvMissing', msg, tolerant, verbose);
 
   else

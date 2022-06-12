@@ -104,7 +104,9 @@ function out_path = download_ds(varargin)
   [~, basename, ext] = fileparts(filename);
   if strcmp(ext, '.zip')
 
-    msg = sprintf('Unzipping dataset:\n %s to \n %s \n\n', filename, out_path);
+    msg = sprintf('Unzipping dataset:\n %s to \n %s \n\n', ...
+                  bids.internal.format_path(filename), ...
+                  bids.internal.format_path(out_path));
     print_to_screen(msg, verbose);
 
     unzip(filename, out_path);

@@ -369,7 +369,7 @@ function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_de
           copy_file(BIDS, derivatives_folder, dep_file, unzip, force, ~skip_dep, verbose);
         else
 
-          msg = sprintf('Dependency file %s not found', dep_file);
+          msg = sprintf('Dependency file %s not found', bids.internal.format_path(dep_file));
           bids.internal.error_handling(mfilename, 'missingDependencyFile', msg, true, verbose);
 
         end
