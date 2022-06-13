@@ -2,7 +2,7 @@
   "acquisition": {
     "name": "Acquisition",
     "entity": "acq",
-    "description": "The `acq-<label>` key/value pair corresponds to a custom label the\nuser MAY use to distinguish a different set of parameters used for\nacquiring the same modality.\nFor example this should be used when a study includes two T1w images - one\nfull brain low resolution and one restricted field of view but high\nresolution.\nIn such case two files could have the following names:\n`sub-01_acq-highres_T1w.nii.gz` and `sub-01_acq-lowres_T1w.nii.gz`, however\nthe user is free to choose any other label than `highres` and `lowres` as long\nas they are consistent across subjects and sessions.\nIn case different sequences are used to record the same modality\n(for example, `RARE` and `FLASH` for T1w)\nthis field can also be used to make that distinction.\nAt what level of detail to make the distinction (for example,\njust between `RARE` and `FLASH`, or between `RARE`, `FLASH`, and `FLASHsubsampled`)\nremains at the discretion of the researcher.\n",
+    "description": "The `acq-<label>` entity corresponds to a custom label the\nuser MAY use to distinguish a different set of parameters used for\nacquiring the same modality.\nFor example this should be used when a study includes two T1w images - one\nfull brain low resolution and one restricted field of view but high\nresolution.\nIn such case two files could have the following names:\n`sub-01_acq-highres_T1w.nii.gz` and `sub-01_acq-lowres_T1w.nii.gz`, however\nthe user is free to choose any other label than `highres` and `lowres` as long\nas they are consistent across subjects and sessions.\nIn case different sequences are used to record the same modality\n(for example, `RARE` and `FLASH` for T1w)\nthis field can also be used to make that distinction.\nAt what level of detail to make the distinction (for example,\njust between `RARE` and `FLASH`, or between `RARE`, `FLASH`, and `FLASHsubsampled`)\nremains at the discretion of the researcher.\n",
     "type": "string",
     "format": "label"
   },
@@ -16,7 +16,7 @@
   "ceagent": {
     "name": "Contrast Enhancing Agent",
     "entity": "ce",
-    "description": "The `ce-<label>` key/value can be used to distinguish\nsequences using different contrast enhanced images.\nThe label is the name of the contrast agent.\nThe key `\"ContrastBolusIngredient\"` MAY also be added in the JSON file,\nwith the same label.\n",
+    "description": "The `ce-<label>` entity can be used to distinguish\nsequences using different contrast enhanced images.\nThe label is the name of the contrast agent.\nThe key `\"ContrastBolusIngredient\"` MAY also be added in the JSON file,\nwith the same label.\n",
     "type": "string",
     "format": "label"
   },
@@ -37,28 +37,28 @@
   "description": {
     "name": "Description",
     "entity": "desc",
-    "description": "When necessary to distinguish two files that do not otherwise have a\ndistinguishing entity, the `_desc-<label>` keyword-value SHOULD be used.\n\nThis entity is only applicable to derivative data.\n",
+    "description": "When necessary to distinguish two files that do not otherwise have a\ndistinguishing entity, the `_desc-<label>` entity SHOULD be used.\n\nThis entity is only applicable to derivative data.\n",
     "type": "string",
     "format": "label"
   },
   "direction": {
     "name": "Phase-Encoding Direction",
     "entity": "dir",
-    "description": "The `dir-<label>` key/value can be set to an arbitrary alphanumeric label\n(for example, `dir-LR` or `dir-AP`) to distinguish different phase-encoding\ndirections.\n",
+    "description": "The `dir-<label>` entity can be set to an arbitrary alphanumeric label\n(for example, `dir-LR` or `dir-AP`) to distinguish different phase-encoding\ndirections.\n",
     "type": "string",
     "format": "label"
   },
   "echo": {
     "name": "Echo",
     "entity": "echo",
-    "description": "If files belonging to an entity-linked file collection are acquired at different\necho times, the `_echo-<index>` key/value pair MUST be used to distinguish\nindividual files.\nThis entity represents the `\"EchoTime\"` metadata field. Please note that the `<index>`\ndenotes the number/index (in the form of a nonnegative integer), not the\n`\"EchoTime\"` value which needs to be stored in the field `\"EchoTime\"` of the separate\nJSON file.\n",
+    "description": "If files belonging to an entity-linked file collection are acquired at different\necho times, the `_echo-<index>` entity MUST be used to distinguish\nindividual files.\nThis entity represents the `\"EchoTime\"` metadata field. Please note that the `<index>`\ndenotes the number/index (in the form of a nonnegative integer), not the\n`\"EchoTime\"` value which needs to be stored in the field `\"EchoTime\"` of the separate\nJSON file.\n",
     "type": "string",
     "format": "index"
   },
   "flip": {
     "name": "Flip Angle",
     "entity": "flip",
-    "description": "If files belonging to an entity-linked file collection are acquired at different\nflip angles, the `_flip-<index>` key/value pair MUST be used to distinguish\nindividual files.\nThis entity represents the `\"FlipAngle\"` metadata field. Please note that the `<index>`\ndenotes the number/index (in the form of a nonnegative integer), not the `\"FlipAngle\"`\nvalue which needs to be stored in the field `\"FlipAngle\"` of the separate JSON file.\n",
+    "description": "If files belonging to an entity-linked file collection are acquired at different\nflip angles, the `_flip-<index>` entity pair MUST be used to distinguish\nindividual files.\nThis entity represents the `\"FlipAngle\"` metadata field. Please note that the `<index>`\ndenotes the number/index (in the form of a nonnegative integer), not the `\"FlipAngle\"`\nvalue which needs to be stored in the field `\"FlipAngle\"` of the separate JSON file.\n",
     "type": "string",
     "format": "index"
   },
@@ -76,7 +76,7 @@
   "inversion": {
     "name": "Inversion Time",
     "entity": "inv",
-    "description": "If files belonging to an entity-linked file collection are acquired at different\ninversion times, the `_inv-<index>` key/value pair MUST be used to distinguish\nindividual files.\nThis entity represents the `\"InversionTime` metadata field. Please note that the `<index>`\ndenotes the number/index (in the form of a nonnegative integer), not the `\"InversionTime\"`\nvalue which needs to be stored in the field `\"InversionTime\"` of the separate JSON file.\n",
+    "description": "If files belonging to an entity-linked file collection are acquired at different\ninversion times, the `_inv-<index>` entity MUST be used to distinguish\nindividual files.\nThis entity represents the `\"InversionTime` metadata field. Please note that the `<index>`\ndenotes the number/index (in the form of a nonnegative integer), not the `\"InversionTime\"`\nvalue which needs to be stored in the field `\"InversionTime\"` of the separate JSON file.\n",
     "type": "string",
     "format": "index"
   },
@@ -90,14 +90,14 @@
   "modality": {
     "name": "Corresponding Modality",
     "entity": "mod",
-    "description": "The `mod-<label>` key/value pair corresponds to modality label for defacing\nmasks, for example, T1w, inplaneT1, referenced by a defacemask image.\nFor example, `sub-01_mod-T1w_defacemask.nii.gz`.\n",
+    "description": "The `mod-<label>` entity corresponds to modality label for defacing\nmasks, for example, T1w, inplaneT1, referenced by a defacemask image.\nFor example, `sub-01_mod-T1w_defacemask.nii.gz`.\n",
     "type": "string",
     "format": "label"
   },
   "mtransfer": {
     "name": "Magnetization Transfer",
     "entity": "mt",
-    "description": "If files belonging to an entity-linked file collection are acquired at different\nmagnetization transfer (MT) states, the `_mt-<label>` key/value pair MUST be used to\ndistinguish individual files.\nThis entity represents the `\"MTState\"` metadata field. Allowed label values for this\nentity are `on` and `off`, for images acquired in presence and absence of an MT pulse,\nrespectively.\n",
+    "description": "If files belonging to an entity-linked file collection are acquired at different\nmagnetization transfer (MT) states, the `_mt-<label>` entity MUST be used to\ndistinguish individual files.\nThis entity represents the `\"MTState\"` metadata field. Allowed label values for this\nentity are `on` and `off`, for images acquired in presence and absence of an MT pulse,\nrespectively.\n",
     "type": "string",
     "enum": [
       "on",
@@ -107,7 +107,7 @@
   "part": {
     "name": "Part",
     "entity": "part",
-    "description": "This entity is used to indicate which component of the complex\nrepresentation of the MRI signal is represented in voxel data.\nThe `part-<label>` key/value pair is associated with the DICOM Tag\n`0008, 9208`.\nAllowed label values for this entity are `phase`, `mag`, `real` and `imag`,\nwhich are typically used in `part-mag`/`part-phase` or\n`part-real`/`part-imag` pairs of files.\n\nPhase images MAY be in radians or in arbitrary units.\nThe sidecar JSON file MUST include the units of the `phase` image.\nThe possible options are `\"rad\"` or `\"arbitrary\"`.\n\nWhen there is only a magnitude image of a given type, the `part` key MAY be\nomitted.\n",
+    "description": "This entity is used to indicate which component of the complex\nrepresentation of the MRI signal is represented in voxel data.\nThe `part-<label>` entity is associated with the DICOM Tag\n`0008, 9208`.\nAllowed label values for this entity are `phase`, `mag`, `real` and `imag`,\nwhich are typically used in `part-mag`/`part-phase` or\n`part-real`/`part-imag` pairs of files.\n\nPhase images MAY be in radians or in arbitrary units.\nThe sidecar JSON file MUST include the units of the `phase` image.\nThe possible options are `\"rad\"` or `\"arbitrary\"`.\n\nWhen there is only a magnitude image of a given type, the `part` entity MAY be\nomitted.\n",
     "type": "string",
     "enum": [
       "mag",
@@ -126,7 +126,7 @@
   "reconstruction": {
     "name": "Reconstruction",
     "entity": "rec",
-    "description": "The `rec-<label>` key/value can be used to distinguish\ndifferent reconstruction algorithms (for example `MoCo` for the ones using motion\ncorrection).\n",
+    "description": "The `rec-<label>` entity can be used to distinguish\ndifferent reconstruction algorithms (for example `MoCo` for the ones using motion\ncorrection).\n",
     "type": "string",
     "format": "label"
   },
@@ -154,7 +154,7 @@
   "sample": {
     "name": "Sample",
     "entity": "sample",
-    "description": "A sample pertaining to a subject such as tissue, primary cell\nor cell-free sample.\nThe `sample-<label>` key/value pair is used to distinguish between different\nsamples from the same subject.\nThe label MUST be unique per subject and is RECOMMENDED to be unique\nthroughout the dataset.\n",
+    "description": "A sample pertaining to a subject such as tissue, primary cell\nor cell-free sample.\nThe `sample-<label>` entity is used to distinguish between different\nsamples from the same subject.\nThe label MUST be unique per subject and is RECOMMENDED to be unique\nthroughout the dataset.\n",
     "type": "string",
     "format": "label"
   },
@@ -203,7 +203,7 @@
   "tracer": {
     "name": "Tracer",
     "entity": "trc",
-    "description": "The `trc-<label>` key/value can be used to distinguish\nsequences using different tracers.\nThe key `\"TracerName\"` MUST also be included in the associated JSON file,\nalthough the label may be different.\n",
+    "description": "The `trc-<label>` entity can be used to distinguish\nsequences using different tracers.\nThe key `\"TracerName\"` MUST also be included in the associated JSON file,\nalthough the label may be different.\n",
     "type": "string",
     "format": "label"
   }

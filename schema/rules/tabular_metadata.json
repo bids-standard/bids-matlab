@@ -1,5 +1,5 @@
-[
-  {
+{
+  "scans": {
     "suffixes": [
       "scans"
     ],
@@ -12,7 +12,7 @@
       "session": "optional"
     }
   },
-  {
+  "sessions": {
     "suffixes": [
       "sessions"
     ],
@@ -24,4 +24,4 @@
       "subject": "required"
     }
   }
-]
+}

@@ -26,6 +26,9 @@ function test_bids_query_microscopy_basic()
   chunks = bids.query(BIDS, 'chunks');
   assertEqual(chunks, {'01', '02', '03', '04'});
 
+  stains = bids.query(BIDS, 'stains');
+  assertEqual(stains, {'LFB'});
+
   % make sure we can use indices for chunks
   data = bids.query(BIDS, 'data', 'sample', 'A', 'chunk', 1, 'ext', '.ome.tif');
   filename = bids.internal.file_utils(data{1}, 'filename');
