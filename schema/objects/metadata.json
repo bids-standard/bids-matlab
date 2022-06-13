@@ -84,7 +84,7 @@
   },
   "AnatomicalLandmarkCoordinates": {
     "name": "AnatomicalLandmarkCoordinates",
-    "description": "Key:value pairs of the labels and 3-D digitized locations of anatomical landmarks,\ninterpreted following the `\"AnatomicalLandmarkCoordinateSystem\"`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`.\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
+    "description": "Key-value pairs of the labels and 3-D digitized locations of anatomical landmarks,\ninterpreted following the `\"AnatomicalLandmarkCoordinateSystem\"`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`.\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
     "type": "object",
     "additionalProperties": {
       "type": "array",
@@ -97,7 +97,7 @@
   },
   "AnatomicalLandmarkCoordinates__mri": {
     "name": "AnatomicalLandmarkCoordinates",
-    "description": "Key:value pairs of any number of additional anatomical landmarks and their\ncoordinates in voxel units (where first voxel has index 0,0,0)\nrelative to the associated anatomical MRI\n(for example, `{\"AC\": [127,119,149], \"PC\": [128,93,141],\n\"IH\": [131,114,206]}`, or `{\"NAS\": [127,213,139], \"LPA\": [52,113,96],\n\"RPA\": [202,113,91]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
+    "description": "Key-value pairs of any number of additional anatomical landmarks and their\ncoordinates in voxel units (where first voxel has index 0,0,0)\nrelative to the associated anatomical MRI\n(for example, `{\"AC\": [127,119,149], \"PC\": [128,93,141],\n\"IH\": [131,114,206]}`, or `{\"NAS\": [127,213,139], \"LPA\": [52,113,96],\n\"RPA\": [202,113,91]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
     "type": "object",
     "additionalProperties": {
       "type": "array",
@@ -443,7 +443,7 @@
   },
   "Density": {
     "name": "Density",
-    "description": "Specifies the interpretation of the density keyword.\nIf an object is used, then the keys should be values for the ``den`` entity\nand values should be descriptions of those ``den`` values.\n",
+    "description": "Specifies the interpretation of the density keyword.\nIf an object is used, then the keys should be values for the `den` entity\nand values should be descriptions of those `den` values.\n",
     "anyOf": [
       {
         "type": "string"
@@ -629,7 +629,7 @@
   },
   "EchoTime": {
     "name": "EchoTime",
-    "description": "The echo time (TE) for the acquisition, specified in seconds.\nCorresponds to DICOM Tag 0018, 0081 `Echo Time`\n(please note that the DICOM term is in milliseconds not seconds).\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field, or to the files in a\n[file collection](SPEC_ROOT/99-appendices/10-file-collections.md)\nwhere the value of this field is iterated using the\n[echo entity](SPEC_ROOT/99-appendices/09-entities.md#echo).\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation\nof the data, such as in\n[ASL](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-imaging-data.md#\\\narterial-spin-labeling-perfusion-data)\nor variable echo time fMRI sequences.\n",
+    "description": "The echo time (TE) for the acquisition, specified in seconds.\nCorresponds to DICOM Tag 0018, 0081 `Echo Time`\n(please note that the DICOM term is in milliseconds not seconds).\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field, or to the files in a\n[file collection](SPEC_ROOT/99-appendices/10-file-collections.md)\nwhere the value of this field is iterated using the\n[`echo` entity](SPEC_ROOT/99-appendices/09-entities.md#echo).\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation\nof the data, such as in\n[ASL](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-imaging-data.md#\\\narterial-spin-labeling-perfusion-data)\nor variable echo time fMRI sequences.\n",
     "anyOf": [
       {
         "type": "number",
@@ -754,7 +754,7 @@
   },
   "FiducialsCoordinates": {
     "name": "FiducialsCoordinates",
-    "description": "Key:value pairs of the labels and 3-D digitized position of anatomical\nlandmarks, interpreted following the `\"FiducialsCoordinateSystem\"`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
+    "description": "Key-value pairs of the labels and 3-D digitized position of anatomical\nlandmarks, interpreted following the `\"FiducialsCoordinateSystem\"`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
     "type": "object",
     "additionalProperties": {
       "type": "array",
@@ -772,7 +772,7 @@
   },
   "FlipAngle": {
     "name": "FlipAngle",
-    "description": "Flip angle (FA) for the acquisition, specified in degrees.\nCorresponds to: DICOM Tag 0018, 1314 `Flip Angle`.\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field, or to the files in a\n[file collection](SPEC_ROOT/99-appendices/10-file-collections.md)\nwhere the value of this field is iterated using the\n[flip entity](SPEC_ROOT/99-appendices/09-entities.md#flip).\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation of\nthe data, such as in\n[ASL](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-imaging-data.md#\\\narterial-spin-labeling-perfusion-data)\nor variable flip angle fMRI sequences.\n",
+    "description": "Flip angle (FA) for the acquisition, specified in degrees.\nCorresponds to: DICOM Tag 0018, 1314 `Flip Angle`.\nThe data type number may apply to files from any MRI modality concerned with\na single value for this field, or to the files in a\n[file collection](SPEC_ROOT/99-appendices/10-file-collections.md)\nwhere the value of this field is iterated using the\n[`flip` entity](SPEC_ROOT/99-appendices/09-entities.md#flip).\nThe data type array provides a value for each volume in a 4D dataset and\nshould only be used when the volume timing is critical for interpretation of\nthe data, such as in\n[ASL](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-imaging-data.md#\\\narterial-spin-labeling-perfusion-data)\nor variable flip angle fMRI sequences.\n",
     "anyOf": [
       {
         "type": "number",
@@ -942,7 +942,7 @@
   },
   "HardwareFilters": {
     "name": "HardwareFilters",
-    "description": "Object of temporal hardware filters applied, or `\"n/a\"` if the data is not\navailable. Each key:value pair in the JSON object is a name of the filter and\nan object in which its parameters are defined as key:value pairs.\nFor example, `{\"Highpass RC filter\": {\"Half amplitude cutoff (Hz)\":\n0.0159, \"Roll-off\": \"6dB/Octave\"}}`.\n",
+    "description": "Object of temporal hardware filters applied, or `\"n/a\"` if the data is not\navailable. Each key-value pair in the JSON object is a name of the filter and\nan object in which its parameters are defined as key-value pairs.\nFor example, `{\"Highpass RC filter\": {\"Half amplitude cutoff (Hz)\":\n0.0159, \"Roll-off\": \"6dB/Octave\"}}`.\n",
     "anyOf": [
       {
         "type": "object",
@@ -1001,7 +1001,7 @@
   },
   "HeadCoilCoordinates": {
     "name": "HeadCoilCoordinates",
-    "description": "Key:value pairs describing head localization coil labels and their\ncoordinates, interpreted following the `HeadCoilCoordinateSystem`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`).\nNote that coils are not always placed at locations that have a known\nanatomical name (for example, for Elekta, Yokogawa systems); in that case\ngeneric labels can be used\n(for example, `{\"coil1\": [12.2,21.3,12.3], \"coil2\": [6.7,12.3,8.6],\n\"coil3\": [21.9,11.0,8.1]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
+    "description": "Key-value pairs describing head localization coil labels and their\ncoordinates, interpreted following the `HeadCoilCoordinateSystem`\n(for example, `{\"NAS\": [12.7,21.3,13.9], \"LPA\": [5.2,11.3,9.6],\n\"RPA\": [20.2,11.3,9.1]}`).\nNote that coils are not always placed at locations that have a known\nanatomical name (for example, for Elekta, Yokogawa systems); in that case\ngeneric labels can be used\n(for example, `{\"coil1\": [12.2,21.3,12.3], \"coil2\": [6.7,12.3,8.6],\n\"coil3\": [21.9,11.0,8.1]}`).\nEach array MUST contain three numeric values corresponding to x, y, and z\naxis of the coordinate system in that exact order.\n",
     "type": "object",
     "additionalProperties": {
       "type": "array",
@@ -1960,7 +1960,7 @@
   },
   "Resolution": {
     "name": "Resolution",
-    "description": "Specifies the interpretation of the resolution keyword.\nIf an object is used, then the keys should be values for the ``res`` entity\nand values should be descriptions of those ``res`` values.\n",
+    "description": "Specifies the interpretation of the resolution keyword.\nIf an object is used, then the keys should be values for the `res` entity\nand values should be descriptions of those `res` values.\n",
     "anyOf": [
       {
         "type": "string"
@@ -2200,7 +2200,7 @@
   },
   "SoftwareFilters": {
     "name": "SoftwareFilters",
-    "description": "[Object](https://www.json.org/json-en.html)\nof temporal software filters applied, or `\"n/a\"` if the data is\nnot available.\nEach key:value pair in the JSON object is a name of the filter and an object\nin which its parameters are defined as key:value pairs\n(for example, `{\"Anti-aliasing filter\":\n{\"half-amplitude cutoff (Hz)\": 500, \"Roll-off\": \"6dB/Octave\"}}`).\n",
+    "description": "[Object](https://www.json.org/json-en.html)\nof temporal software filters applied, or `\"n/a\"` if the data is\nnot available.\nEach key-value pair in the JSON object is a name of the filter and an object\nin which its parameters are defined as key-value pairs\n(for example, `{\"Anti-aliasing filter\":\n{\"half-amplitude cutoff (Hz)\": 500, \"Roll-off\": \"6dB/Octave\"}}`).\n",
     "anyOf": [
       {
         "type": "object",
@@ -2390,7 +2390,7 @@
   },
   "StimulusPresentation": {
     "name": "StimulusPresentation",
-    "description": "Object containing key value pairs related to the software used to present\nthe stimuli during the experiment, specifically:\n`\"OperatingSystem\"`, `\"SoftwareName\"`, `\"SoftwareRRID\"`, `\"SoftwareVersion\"` and\n`\"Code\"`.\nSee table below for more information.\n",
+    "description": "Object containing key-value pairs related to the software used to present\nthe stimuli during the experiment, specifically:\n`\"OperatingSystem\"`, `\"SoftwareName\"`, `\"SoftwareRRID\"`, `\"SoftwareVersion\"` and\n`\"Code\"`.\nSee table below for more information.\n",
     "type": "object",
     "properties": {
       "OperatingSystem": {

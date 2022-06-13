@@ -40,7 +40,7 @@
   },
   "derived_from": {
     "name": "derived_from",
-    "description": "`sample-<label>` key/value pair from which a sample is derived,\nfor example a slice of tissue (`sample-02`) derived from a block of tissue (`sample-01`).\n",
+    "description": "`sample-<label>` entity from which a sample is derived,\nfor example a slice of tissue (`sample-02`) derived from a block of tissue (`sample-01`).\n",
     "type": "string",
     "pattern": "^sample-[0-9a-zA-Z]+$"
   },
