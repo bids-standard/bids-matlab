@@ -7,6 +7,7 @@ function BIDS = layout(varargin)
   %   BIDS = bids.layout(pwd, ...
   %                      'use_schema', true, ...
   %                      'index_derivatives', false, ...
+  %                      'index_dependencies', true, ...
   %                      'tolerant', true, ...
   %                      'verbose', false)
   %
@@ -26,6 +27,10 @@ function BIDS = layout(varargin)
   %                           any ``derivatives`` folder in the BIDS dataset.
   % :type  index_derivatives: boolean
   %
+  % :param index_dependencies: if ``true`` this will index the dependencies (json files,
+  %                           assiciated TSV files for each file...)
+  % :type  index_dependencies: boolean
+  %
   % :param tolerant: Set to ``true`` to turn validation errors into warnings
   % :type  tolerant: boolean
   %
@@ -42,6 +47,7 @@ function BIDS = layout(varargin)
 
   default_root = pwd;
   default_index_derivatives = false;
+  default_index_dependencies = true;
   default_tolerant = true;
   default_use_schema = true;
   default_verbose = false;
@@ -52,6 +58,7 @@ function BIDS = layout(varargin)
 
   addOptional(args, 'root', default_root, is_dir_or_struct);
   addParameter(args, 'index_derivatives', default_index_derivatives);
+  addParameter(args, 'index_dependencies', default_index_dependencies);
   addParameter(args, 'tolerant', default_tolerant);
   addParameter(args, 'use_schema', default_use_schema);
   addParameter(args, 'verbose', default_verbose);
@@ -60,6 +67,7 @@ function BIDS = layout(varargin)
 
   root = args.Results.root;
   index_derivatives = args.Results.index_derivatives;
+  index_dependencies = args.Results.index_dependencies;
   tolerant = args.Results.tolerant;
   use_schema = args.Results.use_schema;
   verbose = args.Results.verbose;
@@ -145,7 +153,7 @@ function BIDS = layout(varargin)
 
   end
 
-  BIDS = manage_dependencies(BIDS, verbose);
+  BIDS = manage_dependencies(BIDS, index_dependencies, verbose);
 
   BIDS = index_derivatives_dir(BIDS, index_derivatives, verbose);
 
@@ -549,10 +557,14 @@ function structure = manage_tsv(structure, pth, filename, verbose)
 
 end
 
-function BIDS = manage_dependencies(BIDS, verbose)
+function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
   %
   % Loops over all files and retrieve all files that current file depends on
   %
+
+  if ~index_dependencies
+    return
+  end
 
   tolerant = true;
 
