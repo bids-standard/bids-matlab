@@ -20,8 +20,10 @@ function trial_type_list = list_all_trial_types(BIDS, task)
   % TODO probably faster ways to do this than a nested loop
   for i = 1:size(event_files, 1)
     tmp = bids.util.tsvread(event_files{i, 1});
-    for j = 1:numel(tmp.trial_type)
-      trial_type_list{end + 1, 1} = tmp.trial_type{j}; %#ok<*AGROW>
+    if isfield(tmp, 'trial_type')
+      for j = 1:numel(tmp.trial_type)
+        trial_type_list{end + 1, 1} = tmp.trial_type{j}; %#ok<*AGROW>
+      end
     end
   end
 
