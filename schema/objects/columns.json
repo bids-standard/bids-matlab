@@ -394,7 +394,7 @@
   },
   "status_description": {
     "name": "status_description",
-    "description": "Freeform text description of noise or artifact affecting data quality on the channel.\nIt is meant to explain why the channel was declared bad in `[status]`.\n",
+    "description": "Freeform text description of noise or artifact affecting data quality on the channel.\nIt is meant to explain why the channel was declared bad in the `status` column.\n",
     "type": "string"
   },
   "stim_file": {
