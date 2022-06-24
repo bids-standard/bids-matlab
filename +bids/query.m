@@ -159,7 +159,7 @@ function result = query(BIDS, query, varargin)
     bids.internal.error_handling(mfilename(), 'unknownQuery', msg, false, true);
   end
 
-%   bids_entities = schema_entities();
+  %   bids_entities = schema_entities();
 
   BIDS = bids.layout(BIDS);
 
