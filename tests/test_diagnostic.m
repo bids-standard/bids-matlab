@@ -22,7 +22,9 @@ function test_diagnostic_basic()
     BIDS = bids.layout(deblank(examples(i, :)));
 
     diagnostic_table = bids.diagnostic(BIDS, 'output_path', pwd);
+    diagnostic_table = bids.diagnostic(BIDS, 'split_by', {'suffix'}, 'output_path', pwd);
     diagnostic_table = bids.diagnostic(BIDS, 'split_by', {'task'}, 'output_path', pwd);
+    diagnostic_table = bids.diagnostic(BIDS, 'split_by', {'task', 'suffix'}, 'output_path', pwd);
 
   end
 
