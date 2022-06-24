@@ -41,7 +41,7 @@ function diagnostic_table = diagnostic(varargin)
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   default_BIDS = pwd;
-  default_schema = true;
+  default_schema = false;
   default_filter = struct();
   default_split = {''};
   default_output_path = '';
@@ -65,11 +65,9 @@ function diagnostic_table = diagnostic(varargin)
 
   subjects = bids.query(BIDS, 'subjects', filter);
 
-  modalities = bids.query(BIDS, 'modalities', filter);
+  headers = get_headers(BIDS, filter, args.Results.split_by);
 
-  headers = get_headers(BIDS, modalities, filter, args.Results.split_by);
-
-  diagnostic_table = nan(numel(subjects), numel(modalities));
+  diagnostic_table = nan(numel(subjects), numel(headers));
   % events_table = nan(numel(subjects), numel(tasks));
 
   row = 1;
@@ -101,6 +99,9 @@ function diagnostic_table = diagnostic(varargin)
         this_filter.modality = headers{i_col}.modality;
         if isfield(headers{i_col}, 'task')
           this_filter.task = headers{i_col}.task;
+        end
+        if isfield(headers{i_col}, 'suffix')
+          this_filter.suffix = headers{i_col}.suffix;
         end
 
         files = bids.query(BIDS, 'data', this_filter);
@@ -141,28 +142,49 @@ function diagnostic_table = diagnostic(varargin)
 
 end
 
-function headers = get_headers(BIDS, modalities, filter, split_by)
+function headers = get_headers(BIDS, filter, split_by)
   %
   % Get the headers to include in the output table
   %
 
+  % TODO will probably need to use a recursive way to build the header list
+
   headers = {};
+
+  modalities = bids.query(BIDS, 'modalities', filter);
+
   for i_modality = 1:numel(modalities)
 
-    if ismember('task', split_by) && ...
-        ismember(modalities(i_modality), {'func', 'eeg', 'meg', 'ieeg', 'pet', 'beh'})
+    this_filter = filter;
+    this_filter.modality = modalities(i_modality);
 
-      this_filter = filter;
-      this_filter.modality = modalities(i_modality);
-      tasks = bids.query(BIDS, 'tasks', this_filter);
+    this_header = struct('modality', {modalities(i_modality)});
 
-      for i_task = 1:numel(tasks)
-        headers{end + 1} = struct('modality', modalities(i_modality), ...
-                                  'task', tasks(i_task));
+    if ismember('suffix', split_by)
+
+      suffixes = bids.query(BIDS, 'suffixes', this_filter);
+
+      for i_suffix = 1:numel(suffixes)
+
+        this_filter.suffix = suffixes(i_suffix);
+
+        this_header.suffix = suffixes(i_suffix);
+
+        if ismember('task', split_by)
+          headers = add_task_based_headers(BIDS, headers, this_filter, this_header, split_by);
+        else
+          headers{end + 1} = this_header;
+        end
+
       end
 
     else
-      headers{end + 1} = struct('modality', modalities(i_modality));
+
+      if ismember('task', split_by)
+        headers = add_task_based_headers(BIDS, headers, this_filter, this_header, split_by);
+      else
+        headers{end + 1} = this_header;
+      end
 
     end
 
@@ -176,4 +198,19 @@ function this_filter = get_clean_filter(filter, sub, ses)
   if nargin > 2
     this_filter.ses = ses;
   end
+end
+
+function headers = add_task_based_headers(BIDS, headers, this_filter, this_header, split_by)
+
+  if ismember('task', split_by)
+
+    tasks = bids.query(BIDS, 'tasks', this_filter);
+
+    for i_task = 1:numel(tasks)
+      this_header.task = tasks(i_task);
+      headers{end + 1} = this_header;
+    end
+
+  end
+
 end

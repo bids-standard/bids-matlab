@@ -15,16 +15,7 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
 
   end
 
-  % prepare x tick labels
-  for col = 1:numel(headers)
-    xticklabel{col} = [headers{col}.modality];
-    if isfield(headers{col}, 'task')
-      xticklabel{col} = sprintf('%s - task: %s', headers{col}.modality,  headers{col}.task);
-    end
-    if length(xticklabel{col}) > 43
-      xticklabel{col} = [xticklabel{col}(1:40) '...'];
-    end
-  end
+  xticklabel = create_x_tick_label(headers);
 
   nb_rows = size(diagnostic_table, 1);
   nb_cols = size(diagnostic_table, 2);
@@ -52,9 +43,7 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
   % y axis
   set(gca, 'yTick', 1:nb_rows);
 
-  if nb_rows < 50
-    set(gca, 'yTickLabel', yticklabel);
-  end
+  set(gca, 'yTickLabel', yticklabel);
 
   box(gca, 'on');
 
@@ -109,5 +98,41 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
   colorbar();
 
   title(fig_name);
+
+end
+
+function xticklabel = create_x_tick_label(headers)
+
+  for col = 1:numel(headers)
+
+    if iscell(headers{col}.modality)
+      xticklabel{col} = headers{col}.modality{1};
+    else
+      xticklabel{col} = headers{col}.modality;
+    end
+
+    xticklabel = append_entity_to_label(headers, xticklabel, col, 'task');
+
+    xticklabel = append_entity_to_label(headers, xticklabel, col, 'suffix');
+
+    if length(xticklabel{col}) > 43
+      xticklabel{col} = [xticklabel{col}(1:40) '...'];
+    end
+
+  end
+
+end
+
+function label = append_entity_to_label(headers, label, col, entity)
+
+  if isfield(headers{col}, entity)
+
+    if iscell(headers{col}.(entity))
+      headers{col}.(entity) = headers{col}.(entity){1};
+    end
+
+    label{col} = sprintf(['%s - ' entity ': %s'], label{col},  headers{col}.(entity));
+
+  end
 
 end
