@@ -91,7 +91,7 @@ function test_add_coerce_value
 
   % WHEN
   assertExceptionThrown(@()bids.transformers(transformers, vis_motion_events()), ...
-                        'basic:numericOrCoercableToNumericRequired');
+                        'Basic:numericOrCoercableToNumericRequired');
 
   % THEN
   assertEqual(new_content.onset, [5; 7]);

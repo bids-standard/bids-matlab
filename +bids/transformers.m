@@ -85,10 +85,10 @@ function output = apply_transformer(transformer, data)
   switch transformerName
 
     case lower(basic_transfomers)
-      output = bids.transformers.basic(transformer, data);
+      output = bids.transformers.Basic(transformer, data);
 
     case lower(logical_transfomers)
-      output = bids.transformers.logical(transformer, data);
+      output = bids.transformers.Logical(transformer, data);
 
     case lower(munge_transfomers)
       output = apply_munge(transformer, data);
@@ -110,40 +110,40 @@ function output = apply_munge(transformer, data)
   switch transformerName
 
     case 'assign'
-      output = bids.transformers.assign(transformer, data);
+      output = bids.transformers.Assign(transformer, data);
 
     case 'concatenate'
-      output = bids.transformers.concatenate(transformer, data);
+      output = bids.transformers.Concatenate(transformer, data);
 
     case 'constant'
-      output = bids.transformers.constant(transformer, data);
+      output = bids.transformers.Constant(transformer, data);
 
     case 'copy'
-      output = bids.transformers.copy(transformer, data);
+      output = bids.transformers.Copy(transformer, data);
 
     case 'delete'
-      output = bids.transformers.delete(transformer, data);
+      output = bids.transformers.Delete(transformer, data);
 
     case 'dropna'
-      output = bids.transformers.drop_na(transformer, data);
+      output = bids.transformers.Drop_na(transformer, data);
 
     case 'factor'
-      output = bids.transformers.factor(transformer, data);
+      output = bids.transformers.Factor(transformer, data);
 
     case 'filter'
-      output = bids.transformers.filter(transformer, data);
+      output = bids.transformers.Filter(transformer, data);
 
     case 'rename'
-      output = bids.transformers.rename(transformer, data);
+      output = bids.transformers.Rename(transformer, data);
 
     case 'select'
-      output = bids.transformers.select(transformer, data);
+      output = bids.transformers.Select(transformer, data);
 
     case 'replace'
-      output = bids.transformers.replace(transformer, data);
+      output = bids.transformers.Replace(transformer, data);
 
     case 'split'
-      output = bids.transformers.split(transformer, data);
+      output = bids.transformers.Split(transformer, data);
 
     otherwise
 
@@ -160,22 +160,22 @@ function output = apply_compute(transformer, data)
   switch transformerName
 
     case 'sum'
-      output = bids.transformers.sum(transformer, data);
+      output = bids.transformers.Sum(transformer, data);
 
     case 'product'
-      output = bids.transformers.product(transformer, data);
+      output = bids.transformers.Product(transformer, data);
 
     case 'mean'
-      output = bids.transformers.mean(transformer, data);
+      output = bids.transformers.Mean(transformer, data);
 
     case 'stddev'
-      output = bids.transformers.std(transformer, data);
+      output = bids.transformers.Std(transformer, data);
 
     case 'scale'
-      output = bids.transformers.scale(transformer, data);
+      output = bids.transformers.Scale(transformer, data);
 
     case 'threshold'
-      output = bids.transformers.threshold(transformer, data);
+      output = bids.transformers.Threshold(transformer, data);
 
     otherwise
 
