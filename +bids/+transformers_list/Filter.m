@@ -63,13 +63,13 @@ function data = Filter(transformer, data)
   % TODO
   % - By(str; optional): Name of column to group filter operation by
 
-  input = bids.transformers.get_input(transformer, data);
-  output = bids.transformers.get_output(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
+  output = bids.transformers_list.get_output(transformer, data);
 
-  [left, query_type, right] = bids.transformers.get_query(transformer);
-  bids.transformers.check_field(left, data, 'query', false);
+  [left, query_type, right] = bids.transformers_list.get_query(transformer);
+  bids.transformers_list.check_field(left, data, 'query', false);
 
-  rows = bids.transformers.identify_rows(data, left, query_type, right);
+  rows = bids.transformers_list.identify_rows(data, left, query_type, right);
 
   % filter rows of all inputs
   for i = 1:numel(input)

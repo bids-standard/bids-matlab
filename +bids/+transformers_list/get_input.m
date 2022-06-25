@@ -28,6 +28,6 @@ function input = get_input(transformer, data)
     input = {input};
   end
 
-  bids.transformers.check_field(input, data, 'Input');
+  bids.transformers_list.check_field(input, data, 'Input');
 
 end

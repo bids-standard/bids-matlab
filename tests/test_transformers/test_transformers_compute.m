@@ -145,6 +145,11 @@ function test_mean()
   % THEN
   assertEqual(new_content.age_mean, nan);
 
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
+
   % GIVEN
   transformers = struct('Name', 'Mean', ...
                         'Input', {{'age'}}, ...
@@ -185,6 +190,11 @@ function test_std()
 
   % THEN
   assertEqual(new_content.age_std, nan);
+
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
 
   % GIVEN
   transformers = struct('Name', 'StdDev', ...
@@ -256,6 +266,11 @@ end
 
 function test_scale()
 
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
+
   %% GIVEN
   transformers = struct('Name', 'Scale', ...
                         'Input', {{'age'}});
@@ -286,6 +301,11 @@ function test_scale()
 end
 
 function test_scale_nan_after()
+
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
 
   %% GIVEN
   transformers{1} = struct('Name', 'Scale', ...
@@ -325,6 +345,11 @@ function test_scale_nan_after()
 end
 
 function test_scale_nan_before()
+
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
 
   %% GIVEN
   transformers{1} = struct('Name', 'Scale', ...

@@ -49,8 +49,8 @@ function data = Std(transformer, data)
 
   overwrite = false;
 
-  input = bids.transformers.get_input(transformer, data);
-  output = bids.transformers.get_output(transformer, data, overwrite);
+  input = bids.transformers_list.get_input(transformer, data);
+  output = bids.transformers_list.get_output(transformer, data, overwrite);
 
   if ~isempty(output)
     assert(numel(input) == numel(output));

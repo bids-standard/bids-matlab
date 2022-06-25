@@ -4,7 +4,7 @@ function new_content = transformers(varargin)
   %
   % USAGE::
   %
-  %   new_content = transformers(transformers, data)
+  %   new_content = transformers(trans, data)
   %
   % :param transformers:
   % :type transformers: structure
@@ -44,26 +44,26 @@ function new_content = transformers(varargin)
 
   isStructOrCell = @(x) isstruct(x) || iscell(x);
 
-  addRequired(p, 'transformers', isStructOrCell);
+  addRequired(p, 'trans', isStructOrCell);
   addRequired(p, 'data', @isstruct);
 
   parse(p, varargin{:});
 
   data = p.Results.data;
-  transformers = p.Results.transformers;
+  trans = p.Results.trans;
 
-  if isempty(transformers) || isempty(data)
+  if isempty(trans) || isempty(data)
     new_content = data;
     return
   end
 
   % apply all the transformers sequentially
-  for iTrans = 1:numel(transformers)
+  for iTrans = 1:numel(trans)
 
-    if iscell(transformers)
-      this_transformer = transformers{iTrans};
-    elseif isstruct(transformers)
-      this_transformer = transformers(iTrans);
+    if iscell(trans)
+      this_transformer = trans{iTrans};
+    elseif isstruct(trans)
+      this_transformer = trans(iTrans);
     end
 
     if ~ismember(lower(this_transformer.Name), SUPPORTED_TRANSFORMERS)
@@ -78,72 +78,74 @@ function new_content = transformers(varargin)
 
 end
 
-function output = apply_transformer(transformer, data)
+function output = apply_transformer(trans, data)
 
-  transformerName = lower(transformer.Name);
+  transformerName = lower(trans.Name);
 
   switch transformerName
 
     case lower(basic_transfomers)
-      output = bids.transformers.Basic(transformer, data);
+      output = bids.transformers_list.Basic(trans, data);
 
     case lower(logical_transfomers)
-      output = bids.transformers.Logical(transformer, data);
+      output = bids.transformers_list.Logical(trans, data);
 
     case lower(munge_transfomers)
-      output = apply_munge(transformer, data);
+      output = apply_munge(trans, data);
 
     case lower(compute_transfomers)
-      output = apply_compute(transformer, data);
+      output = apply_compute(trans, data);
 
     otherwise
-      not_implemented(transformer.Name);
+      not_implemented(trans.Name);
 
   end
 
 end
 
-function output = apply_munge(transformer, data)
+function output = apply_munge(trans, data)
 
-  transformerName = lower(transformer.Name);
+  transformerName = lower(trans.Name);
 
   switch transformerName
 
     case 'assign'
-      output = bids.transformers.Assign(transformer, data);
+      output = bids.transformers_list.Assign(trans, data);
 
     case 'concatenate'
-      output = bids.transformers.Concatenate(transformer, data);
+      output = bids.transformers_list.Concatenate(trans, data);
 
     case 'constant'
-      output = bids.transformers.Constant(transformer, data);
+      output = bids.transformers_list.Constant(trans, data);
 
     case 'copy'
-      output = bids.transformers.Copy(transformer, data);
+      output = bids.transformers_list.Copy(trans, data);
 
     case 'delete'
-      output = bids.transformers.Delete(transformer, data);
+      output = bids.transformers_list.Delete(trans, data);
 
     case 'dropna'
-      output = bids.transformers.Drop_na(transformer, data);
+      output = bids.transformers_list.Drop_na(trans, data);
 
     case 'factor'
-      output = bids.transformers.Factor(transformer, data);
+      output = bids.transformers_list.Factor(trans, data);
 
     case 'filter'
-      output = bids.transformers.Filter(transformer, data);
+      output = bids.transformers_list.Filter(trans, data);
 
     case 'rename'
-      output = bids.transformers.Rename(transformer, data);
+      output = bids.transformers_list.Rename(trans, data);
 
     case 'select'
-      output = bids.transformers.Select(transformer, data);
+      output = bids.transformers_list.Select(trans, data);
 
     case 'replace'
-      output = bids.transformers.Replace(transformer, data);
+      output = bids.transformers_list.Replace(trans, data);
 
     case 'split'
-      output = bids.transformers.Split(transformer, data);
+      trans;
+      data;
+      output = bids.transformers_list.Split(trans, data);
 
     otherwise
 
@@ -153,33 +155,33 @@ function output = apply_munge(transformer, data)
 
 end
 
-function output = apply_compute(transformer, data)
+function output = apply_compute(trans, data)
 
-  transformerName = lower(transformer.Name);
+  transformerName = lower(trans.Name);
 
   switch transformerName
 
     case 'sum'
-      output = bids.transformers.Sum(transformer, data);
+      output = bids.transformers_list.Sum(trans, data);
 
     case 'product'
-      output = bids.transformers.Product(transformer, data);
+      output = bids.transformers_list.Product(trans, data);
 
     case 'mean'
-      output = bids.transformers.Mean(transformer, data);
+      output = bids.transformers_list.Mean(trans, data);
 
     case 'stddev'
-      output = bids.transformers.Std(transformer, data);
+      output = bids.transformers_list.Std(trans, data);
 
     case 'scale'
-      output = bids.transformers.Scale(transformer, data);
+      output = bids.transformers_list.Scale(trans, data);
 
     case 'threshold'
-      output = bids.transformers.Threshold(transformer, data);
+      output = bids.transformers_list.Threshold(trans, data);
 
     otherwise
 
-      not_implemented(transformer.Name);
+      not_implemented(trans.Name);
 
   end
 

@@ -13,7 +13,7 @@ function rows = identify_rows(data, left, query_type, right)
   %   data.sex = {'M', 'F', 'F', 'M'};
   %   data.age = [10, 21, 15, 26];
   %
-  %   [left, query_type, right] = bids.transformers.get_query(transformer);
+  %   [left, query_type, right] = bids.transformers_list.get_query(transformer);
   %   rows = identify_rows(data, left, query_type, right);
   %
   %

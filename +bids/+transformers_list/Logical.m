@@ -68,9 +68,9 @@ function data = Logical(transformer, data)
   % for Add Or, if not ouput just merge the name of the input variables
   % TODO "not" can only have one input
 
-  input = bids.transformers.get_input(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
 
-  output = bids.transformers.get_output(transformer, data);
+  output = bids.transformers_list.get_output(transformer, data);
   assert(numel(output) == 1);
 
   % try coerce all input to logical

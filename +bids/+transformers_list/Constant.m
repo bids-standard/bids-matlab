@@ -38,7 +38,7 @@ function data = Constant(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  output = bids.transformers.get_output(transformer, data);
+  output = bids.transformers_list.get_output(transformer, data);
 
   assert(numel(output) == 1);
 

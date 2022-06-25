@@ -32,7 +32,7 @@ function test_get_input()
   data = vis_motion_to_threshold_events();
 
   % WHEN
-  inputs = bids.transformers.get_input(transformers, data);
+  inputs = bids.transformers_list.get_input(transformers, data);
 
   assertEqual(inputs, {'onset'});
 
@@ -41,7 +41,7 @@ function test_get_input()
   data = vis_motion_to_threshold_events();
 
   % WHEN
-  assertExceptionThrown(@()bids.transformers.get_input(transformers, data), ...
+  assertExceptionThrown(@()bids.transformers_list.get_input(transformers, data), ...
                         'check_field:missingInput');
 
 end
@@ -57,7 +57,7 @@ function test_get_query()
 
   transformer.Query = 'R T == 1';
 
-  [left, type, right] = bids.transformers.get_query(transformer);
+  [left, type, right] = bids.transformers_list.get_query(transformer);
 
   assertEqual(type, '==');
   assertEqual(left, 'R T');
@@ -215,7 +215,9 @@ function test_complex_filter_with_and()
   % THEN
   assert(all(ismember({'Famous'; 'FirstRep'}, fieldnames(new_content))));
   assertEqual(sum(strcmp(new_content.Famous, 'famous')), 52);
-  assertEqual(nansum(new_content.FirstRep), 52);
+  if ~bids.internal.is_octave
+    assertEqual(nansum(new_content.FirstRep), 52);
+  end
 
   %% GIVEN
   transformers{3} = struct('Name', 'And', ...
