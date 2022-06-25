@@ -21,7 +21,7 @@ function test_transformers_class_get_output()
 end
 
 function test_transformers_class_base()
-  
+
   bt = bids.transformers.BaseTransformer();
 
 end
