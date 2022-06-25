@@ -12,10 +12,6 @@ function test_suite = test_transformers_class %#ok<*STOUT>
 end
 
 function test_transformers_class_get_output()
-  
-  if bids.internal.is_octave
-    return
-  end
 
   transformer = struct('Input', {{'onset'}});
   bt = bids.transformers.BaseTransformer(transformer);
@@ -26,19 +22,11 @@ end
 
 function test_transformers_class_base()
   
-  if bids.internal.is_octave
-    return
-  end
-  
   bt = bids.transformers.BaseTransformer();
 
 end
 
 function test_transformers_class_get_input()
-  
-  if bids.internal.is_octave
-    return
-  end
 
   bt = bids.transformers.BaseTransformer();
   assert(isempty(bt.get_input()));
@@ -52,10 +40,6 @@ function test_transformers_class_get_input()
 end
 
 function test_transformers_class_check_input()
-  
-  if bids.internal.is_octave
-    return
-  end  
 
   transformer = struct('Input', {{'onset', 'foo', 'bar'}});
   data = vis_motion_to_threshold_events();
