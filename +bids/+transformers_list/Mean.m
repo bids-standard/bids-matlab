@@ -1,6 +1,6 @@
-function data = std(transformer, data)
+function data = Mean(transformer, data)
   %
-  % Compute the sample standard deviation.
+  % Compute mean of a column.
   %
   %
   % **JSON EXAMPLE**:
@@ -8,10 +8,10 @@ function data = std(transformer, data)
   % .. code-block:: json
   %
   %       {
-  %         "Name":  "Std",
+  %         "Name":  "Mean",
   %         "Input": "reaction_time",
   %         "OmitNan": false,
-  %         "Output": "std_RT"
+  %         "Output": "mean_RT"
   %       }
   %
   %
@@ -31,16 +31,16 @@ function data = std(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   transformer = struct('Name', 'Std', ...
+  %   transformer = struct('Name', 'Mean', ...
   %                         'Input', 'reaction_time', ...
   %                         'OmitNan', false, ...
-  %                         'Ouput', 'std_RT');
+  %                         'Ouput', 'mean_RT');
   %
   %   data.reaction_time =
   %
   %   data = bids.transformers(transformer, data);
   %
-  %   data.std_RT =
+  %   data.mean_RT =
   %
   %   ans =
   %
@@ -49,8 +49,8 @@ function data = std(transformer, data)
 
   overwrite = false;
 
-  input = bids.transformers.get_input(transformer, data);
-  output = bids.transformers.get_output(transformer, data, overwrite);
+  input = bids.transformers_list.get_input(transformer, data);
+  output = bids.transformers_list.get_output(transformer, data, overwrite);
 
   if ~isempty(output)
     assert(numel(input) == numel(output));
@@ -64,16 +64,16 @@ function data = std(transformer, data)
 
   for i = 1:numel(input)
 
-    output_column = [input{i} '_std'];
+    output_column = [input{i} '_mean'];
     if ~isempty(output)
       output_column = output{i};
     end
 
     if omit_nan
-      data.(output_column) = std(data.(input{i}), 'omitnan');
+      data.(output_column) = mean(data.(input{i}), 'omitnan');
 
     else
-      data.(output_column) = std(data.(input{i}));
+      data.(output_column) = mean(data.(input{i}));
 
     end
 

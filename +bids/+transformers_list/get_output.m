@@ -19,7 +19,7 @@ function output = get_output(transformer, data, overwrite)
 
     % will overwrite input columns
     if overwrite
-      input = bids.transformers.get_input(transformer, data);
+      input = bids.transformers_list.get_input(transformer, data);
       output = input;
     else
       output = {};
@@ -28,7 +28,7 @@ function output = get_output(transformer, data, overwrite)
   end
 
   for i = 1:numel(output)
-    output{i} = bids.transformers.coerce_fieldname(output{i});
+    output{i} = bids.transformers_list.coerce_fieldname(output{i});
   end
 
 end

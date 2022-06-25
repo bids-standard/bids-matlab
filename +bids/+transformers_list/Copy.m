@@ -1,4 +1,4 @@
-function data = copy(transformer, data)
+function data = Copy(transformer, data)
   %
   % Clones/copies each of the input columns to a new column with identical values
   % and a different name. Useful as a basis for subsequent transformations that need
@@ -50,8 +50,8 @@ function data = copy(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  input = bids.transformers.get_input(transformer, data);
-  output = bids.transformers.get_output(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
+  output = bids.transformers_list.get_output(transformer, data);
 
   assert(numel(input) == numel(output));
 

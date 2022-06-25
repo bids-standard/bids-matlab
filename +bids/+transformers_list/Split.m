@@ -1,4 +1,4 @@
-function data = split(transformer, data)
+function data = Split(transformer, data)
   %
   % Split a variable into N variables as defined by the levels of one or more other variables.
   %
@@ -43,7 +43,7 @@ function data = split(transformer, data)
   %   data.sex_m = ;
   %   data.age_gt_twenty = ;
   %
-  %   data = bids.transformers.split(transformer, data);
+  %   data = bids.transformers_list.split(transformer, data);
   %
   %   data.sex_BY % TODO
   %
@@ -75,7 +75,7 @@ function data = split(transformer, data)
     input = transformer.Input;
 
     % TODO
-    % output = bids.transformers.get_output(transformer, data);
+    % output = bids.transformers_list.get_output(transformer, data);
 
     for i = 1:numel(input)
 
@@ -106,7 +106,7 @@ function data = split(transformer, data)
   % initialise for recursion
   if ~isfield(transformer, 'rows_to_keep')
 
-    input = bids.transformers.get_input(transformer, data);
+    input = bids.transformers_list.get_input(transformer, data);
     input = unique(input);
 
     if isempty(input)
@@ -114,7 +114,7 @@ function data = split(transformer, data)
     end
 
     % make sure all variables to split by are there
-    bids.transformers.check_field(transformer.By, data, 'By');
+    bids.transformers_list.check_field(transformer.By, data, 'By');
 
     transformer.source = input;
 
@@ -169,7 +169,7 @@ function data = split(transformer, data)
       else
         field = [input{i} '_BY_' by '_' this_level];
       end
-      field = bids.transformers.coerce_fieldname(field);
+      field = bids.transformers_list.coerce_fieldname(field);
 
       % store rows, source and input for next iteration
       if strcmp(this_level, 'NaN')
@@ -192,6 +192,6 @@ function data = split(transformer, data)
   transformer.rows_to_keep = new_rows_to_keep;
   transformer.source = new_source;
 
-  data = bids.transformers.split(transformer, data);
+  data = bids.transformers_list.Split(transformer, data);
 
 end

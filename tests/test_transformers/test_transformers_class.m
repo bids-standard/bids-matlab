@@ -2,10 +2,6 @@ function test_suite = test_transformers_class %#ok<*STOUT>
   %
   % (C) Copyright 2022 Remi Gau
 
-  if bids.internal.is_octave
-    return
-  end
-
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine
@@ -18,7 +14,7 @@ end
 function test_transformers_class_get_output()
 
   transformer = struct('Input', {{'onset'}});
-  bt = bids.transformers.BaseTransformer(transformer);
+  bt = bids.transformers_list.BaseTransformer(transformer);
   assertEqual(bt.input, {'onset'});
   assertEqual(bt.output, {'onset'});
 
@@ -26,19 +22,19 @@ end
 
 function test_transformers_class_base()
 
-  bt = bids.transformers.BaseTransformer();
+  bt = bids.transformers_list.BaseTransformer();
 
 end
 
 function test_transformers_class_get_input()
 
-  bt = bids.transformers.BaseTransformer();
+  bt = bids.transformers_list.BaseTransformer();
   assert(isempty(bt.get_input()));
 
   bt.input = bt.get_input(struct('Input', {{'onset', 'foo', 'bar'}}));
   assertEqual(bt.input, {'onset', 'foo', 'bar'});
 
-  bt = bids.transformers.BaseTransformer(struct('Input', {{'onset', 'foo', 'bar'}}));
+  bt = bids.transformers_list.BaseTransformer(struct('Input', {{'onset', 'foo', 'bar'}}));
   assertEqual(bt.input, {'onset', 'foo', 'bar'});
 
 end
@@ -47,7 +43,7 @@ function test_transformers_class_check_input()
 
   transformer = struct('Input', {{'onset', 'foo', 'bar'}});
   data = vis_motion_to_threshold_events();
-  assertExceptionThrown(@()bids.transformers.BaseTransformer(transformer, data), ...
+  assertExceptionThrown(@()bids.transformers_list.BaseTransformer(transformer, data), ...
                         'BaseTransformer:missingInput');
 
 end

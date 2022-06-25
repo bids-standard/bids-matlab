@@ -1,4 +1,4 @@
-function data = threshold(transformer, data)
+function data = Threshold(transformer, data)
   %
   % Thresholds input values at a specified cut-off and optionally binarizes the result.
   %
@@ -71,8 +71,8 @@ function data = threshold(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  input = bids.transformers.get_input(transformer, data);
-  output = bids.transformers.get_output(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
+  output = bids.transformers_list.get_output(transformer, data);
 
   threshold = 0;
   binarize = false;

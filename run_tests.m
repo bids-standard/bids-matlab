@@ -1,8 +1,12 @@
-function success = run_tests()
+function success = run_tests(with_coverage)
   %
   % (C) Copyright 2021 BIDS-MATLAB developers
 
-  with_coverage = true;
+  fprintf('\nRunning tests\n');
+
+  if nargin < 1
+    with_coverage = true;
+  end
 
   addpath(fullfile(pwd, 'tests', 'utils'));
 

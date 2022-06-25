@@ -1,4 +1,4 @@
-function data = select(transformer, data)
+function data = Select(transformer, data)
   %
   % The select transformation specifies which columns to retain for subsequent analysis.
   % Any columns that are not specified here will be dropped.
@@ -55,14 +55,14 @@ function data = select(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  input = bids.transformers.get_input(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
 
   for i = 1:numel(input)
     tmp.(input{i}) = data.(input{i});
   end
 
   % also grab onset and duration for events
-  if bids.transformers.is_run_level(data)
+  if bids.transformers_list.is_run_level(data)
     tmp.onset = data.onset;
     tmp.duration = data.duration;
   end

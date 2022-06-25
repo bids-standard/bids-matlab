@@ -2,10 +2,6 @@ function test_suite = test_transformers_compute %#ok<*STOUT>
   %
   % (C) Copyright 2022 Remi Gau
 
-  if bids.internal.is_octave
-    return
-  end
-
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine
@@ -91,7 +87,7 @@ function test_add_coerce_value
 
   % WHEN
   assertExceptionThrown(@()bids.transformers(transformers, vis_motion_events()), ...
-                        'basic:numericOrCoercableToNumericRequired');
+                        'Basic:numericOrCoercableToNumericRequired');
 
   % THEN
   assertEqual(new_content.onset, [5; 7]);
@@ -149,6 +145,11 @@ function test_mean()
   % THEN
   assertEqual(new_content.age_mean, nan);
 
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
+
   % GIVEN
   transformers = struct('Name', 'Mean', ...
                         'Input', {{'age'}}, ...
@@ -189,6 +190,11 @@ function test_std()
 
   % THEN
   assertEqual(new_content.age_std, nan);
+
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
 
   % GIVEN
   transformers = struct('Name', 'StdDev', ...
@@ -260,6 +266,11 @@ end
 
 function test_scale()
 
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
+
   %% GIVEN
   transformers = struct('Name', 'Scale', ...
                         'Input', {{'age'}});
@@ -290,6 +301,11 @@ function test_scale()
 end
 
 function test_scale_nan_after()
+
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
 
   %% GIVEN
   transformers{1} = struct('Name', 'Scale', ...
@@ -329,6 +345,11 @@ function test_scale_nan_after()
 end
 
 function test_scale_nan_before()
+
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
 
   %% GIVEN
   transformers{1} = struct('Name', 'Scale', ...

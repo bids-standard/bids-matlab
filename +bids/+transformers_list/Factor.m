@@ -1,4 +1,4 @@
-function data = factor(transformer, data)
+function data = Factor(transformer, data)
   %
   % Converts a nominal/categorical variable with N unique levels
   % to either N indicators (i.e., dummy-coding).
@@ -51,7 +51,7 @@ function data = factor(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  input = bids.transformers.get_input(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
 
   for i = 1:numel(input)
 

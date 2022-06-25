@@ -1,4 +1,4 @@
-function data = delete(transformer, data)
+function data = Delete(transformer, data)
   %
   % Deletes column(s) from further analysis.
   %
@@ -47,7 +47,7 @@ function data = delete(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  input = bids.transformers.get_input(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
 
   for i = 1:numel(input)
     data = rmfield(data, input{i});

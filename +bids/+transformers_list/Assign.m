@@ -1,4 +1,4 @@
-function data = assign(transformer, data)
+function data = Assign(transformer, data)
   %
   % The Assign transformation assigns one or more variables or columns (specified as the input)
   % to one or more other columns (specified by target and/or output as described below).
@@ -94,7 +94,7 @@ function data = assign(transformer, data)
   %   data.face = ;
   %   data.duration = ;
   %
-  %   data = bids.transformers. (transformer, data);
+  %   data = bids.transformers(transformer, data);
   %
   %   data.face_modulated_by_RT
   %
@@ -107,10 +107,10 @@ function data = assign(transformer, data)
 
   % TODO check if attr are cells
 
-  input = bids.transformers.get_input(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
   target = get_target(transformer, data);
 
-  output = bids.transformers.get_output(transformer, data, false);
+  output = bids.transformers_list.get_output(transformer, data, false);
 
   input_attr = get_attribute(transformer, input, 'InputAttr');
   target_attr = get_attribute(transformer, input, 'TargetAttr');
@@ -232,7 +232,7 @@ function target = get_target(transformer, data)
       return
 
     else
-      bids.transformers.check_field(transformer.Target, data, 'Target', false);
+      bids.transformers_list.check_field(transformer.Target, data, 'Target', false);
 
     end
 

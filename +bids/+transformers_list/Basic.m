@@ -1,4 +1,4 @@
-function data = basic(transformer, data)
+function data = Basic(transformer, data)
   %
   % Perfoms a basic operation with a ``Value`` on the ``Input``
   %
@@ -67,17 +67,17 @@ function data = basic(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  input = bids.transformers.get_input(transformer, data);
-  output = bids.transformers.get_output(transformer, data);
+  input = bids.transformers_list.get_input(transformer, data);
+  output = bids.transformers_list.get_output(transformer, data);
 
   rows = true(size(data.(input{1})));
 
-  [left, query_type, right] = bids.transformers.get_query(transformer);
+  [left, query_type, right] = bids.transformers_list.get_query(transformer);
   if ~isempty(query_type)
 
-    bids.transformers.check_field(left, data, 'query', false);
+    bids.transformers_list.check_field(left, data, 'query', false);
 
-    rows = bids.transformers.identify_rows(data, left, query_type, right);
+    rows = bids.transformers_list.identify_rows(data, left, query_type, right);
 
   end
 
