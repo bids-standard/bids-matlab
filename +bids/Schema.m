@@ -182,15 +182,15 @@ classdef Schema
       %          'foo'};
       %
 
-      default_list = fieldnames(obj.content.objects.entities);
-
       ischar_or_iscell = @(x) ischar(x) || iscellstr(x);
 
-      args = inputParser;
-      args.addOptional('entity_list', default_list, ischar_or_iscell);
-      args.parse(varargin{:});
+      if numel(varargin) == 1
+        entity_list = varargin{1};
+      elseif numel(varargin) == 0
+        entity_list = fieldnames(obj.content.objects.entities);
+      end
 
-      entity_list = args.Results.entity_list;
+      assert(ischar_or_iscell(entity_list));
 
       if ischar(entity_list)
         entity_list = cellstr(entity_list);
