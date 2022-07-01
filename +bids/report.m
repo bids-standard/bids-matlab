@@ -148,7 +148,11 @@ function report_nifti(BIDS, filter, read_nii, verbose, file_id)
     filter.suffix = suffixes{iType};
 
     schema = bids.Schema();
-    suffix_fullname = schema.content.objects.suffixes.(filter.suffix).name;
+    try
+      suffix_fullname = schema.content.objects.suffixes.(filter.suffix).name;
+    catch
+      suffix_fullname = 'UNKNOWN';
+    end
 
     print_to_output(['#### ' suffix_fullname], file_id, verbose);
 
