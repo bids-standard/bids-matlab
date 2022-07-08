@@ -590,10 +590,14 @@ function test_replace()
   % THEN
   assertEqual(new_content.familiarity, {'foo'; 'bar'; 'foo'; 'bar'});
 
+end
+
+function test_replace_string_by_numeric()
+
   %% GIVEN
   transformers(1).Name = 'Replace';
   transformers(1).Input = 'familiarity';
-  transformers(1).Replace(1).key = 2;
+  transformers(1).Replace(1).key = 'Famous face';
   transformers(1).Replace(1).value = 1;
   transformers(1).Attribute = 'duration';
 
@@ -601,7 +605,7 @@ function test_replace()
   new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
-  assertEqual(unique(new_content.duration), 1);
+  assertEqual(new_content.duration, [1; 2; 1; 2]);
 
 end
 
@@ -611,16 +615,43 @@ function test_replace_with_output()
   transformers(1).Name = 'Replace';
   transformers(1).Input = 'familiarity';
   transformers(1).Output = 'tmp';
-  transformers(1).Replace(1).key = 2;
+  transformers(1).Replace(1).key = 'Famous face';
   transformers(1).Replace(1).value = 1;
-  transformers(1).Attribute = 'duration';
+  transformers(1).Attribute = 'all';
 
   % WHEN
   new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
-  assertEqual(unique(new_content.tmp), 1);
-  assertEqual(unique(new_content.duration), 2);
+  assertEqual(new_content.tmp, {1; 'Unfamiliar face'; 1; 'Unfamiliar face'});
+  assertEqual(new_content.duration, [1; 2; 1; 2]);
+  assertEqual(new_content.onset, [1; 4; 1; 8]);
+
+end
+
+function test_replace_string_in_numeric_output()
+
+  %% GIVEN
+  data.fruits = {'apple'; 'banana'; 'elusive'};
+  data.onset = {1; 2; 3};
+  data.duration = {0; 1; 3};
+
+  replace = struct('key', {'apple'; 'elusive'}, 'value', -1);
+  replace(end + 1).key = -1;
+  replace(end).value = 0;
+
+  transformer = struct('Name', 'Replace', ...
+                       'Input', 'fruits', ...
+                       'Attribute', 'all', ...
+                       'Replace', replace);
+
+  % WHEN
+  new_content = bids.transformers(transformer, data);
+
+  % THEN
+  assertEqual(new_content.fruits, {0; 'banana'; 0});
+  assertEqual(new_content.onset,  {0; 2; 0});
+  assertEqual(new_content.duration,  {0; 1; 0});
 
 end
 
