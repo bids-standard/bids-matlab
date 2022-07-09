@@ -70,50 +70,33 @@ function data = Label_identical_rows(transformer, data)
                                    false);
     end
 
-    % TODO: does not cover the edge case where data.(input{i}) has one row
-    % with non numeric content
-    if cumulative
-      label_counter = unique(data.(input{i}));
-      if ~iscell(label_counter)
-        label_counter = num2cell(label_counter);
-      end
-      label_counter = reset_label_counter(label_counter);
-    else
-      label_counter = 1;
+    this_input = data.(input{i});
+    if ischar(this_input)
+      this_input = {this_input};
     end
+
+    % Use a cell to keep track of the occurences of each value of this_input
+    label_counter = init_label_counter(this_input, cumulative);
 
     previous_value = [];
 
-    for j = 1:numel(data.(input{i}))
+    for j = 1:numel(this_input)
 
-      this_value = data.(input{i})(j);
+      this_value = this_input(j);
       if iscell(this_value)
         this_value = this_value{1};
       end
 
       is_same = compare_rows(this_value, previous_value);
 
-      if cumulative
-        if isnumeric(this_value)
-          idx = cellfun(@(x) isnumeric(x) && x == this_value, label_counter);
-        elseif ischar(this_value)
-          idx = cellfun(@(x) ischar(x) && strcmp(x, this_value), label_counter);
-        end
-        idx = find(idx);
-        label_counter{idx, 2} = label_counter{idx, 2} + 1;
-      end
-
-      if is_same && ~cumulative
-        label_counter = label_counter + 1;
+      if cumulative || (~cumulative && is_same)
+        label_counter = increment_label_counter(label_counter, this_value);
       elseif ~is_same && ~cumulative
-        label_counter = 1;
+        label_counter = reset_label_counter(label_counter, cumulative);
       end
 
-      if ~cumulative
-        data.(output{i})(j, 1) = label_counter;
-      else
-        data.(output{i})(j, 1) = label_counter{idx, 2};
-      end
+      idx = get_index(this_value, label_counter);
+      data.(output{i})(j, 1) = label_counter{idx, 2};
 
       previous_value = this_value;
 
@@ -123,9 +106,57 @@ function data = Label_identical_rows(transformer, data)
 
 end
 
-function label_counter = reset_label_counter(label_counter)
-  for i = 1:numel(label_counter)
-    label_counter{i, 2} = 0;
+function label_counter = init_label_counter(this_input, cumulative)
+
+  if isnumeric(this_input)
+    label_counter = unique(this_input);
+    % Only keep one nan
+    nan_values = find(isnan(label_counter));
+    label_counter(nan_values(2:end)) = [];
+    label_counter = num2cell(label_counter);
+
+  elseif iscellstr(this_input)
+    label_counter = unique(this_input);
+
+  else
+
+    for t = 1:numel(this_input)
+      if isnan(this_input{t})
+        this_input{t} = 'n/a';
+      end
+    end
+
+    label_counter = unique(this_input);
+
+  end
+
+  label_counter = reset_label_counter(label_counter, cumulative);
+
+end
+
+function argout = get_index(this_value, label_counter)
+  if isnan(this_value)
+    argout = cellfun(@(x) isnumeric(x) && isnan(x), label_counter(:, 1));
+  elseif isnumeric(this_value)
+    argout = cellfun(@(x) isnumeric(x) && x == this_value, label_counter(:, 1));
+  elseif ischar(this_value)
+    argout = cellfun(@(x) ischar(x) && strcmp(x, this_value), label_counter(:, 1));
+  end
+  argout = find(argout);
+end
+
+function label_counter = increment_label_counter(label_counter, this_value)
+  idx = get_index(this_value, label_counter);
+  label_counter{idx, 2} = label_counter{idx, 2} + 1;
+end
+
+function label_counter = reset_label_counter(label_counter, cumulative)
+  default_value = 1;
+  if cumulative
+    default_value = 0;
+  end
+  for i = 1:size(label_counter, 1)
+    label_counter{i, 2} = default_value;
   end
 end
 
