@@ -71,6 +71,9 @@ function new_data = Merge_identical_rows(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
+  % TODO: tests to see if works on columns with mixed content (cell of numbers and strings)
+  % TODO: merge only if cell content matches some condition
+
   fields = fieldnames(data);
 
   if all(ismember(fields, {'onset', 'duration'}))

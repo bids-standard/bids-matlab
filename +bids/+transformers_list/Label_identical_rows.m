@@ -49,6 +49,8 @@ function data = Label_identical_rows(transformer, data)
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
+  % TODO: label only if cell content matches some condition
+
   input = bids.transformers_list.get_input(transformer, data);
   output = bids.transformers_list.get_output(transformer, data);
 
@@ -91,6 +93,7 @@ function data = Label_identical_rows(transformer, data)
 
       if cumulative || (~cumulative && is_same)
         label_counter = increment_label_counter(label_counter, this_value);
+
       elseif ~is_same && ~cumulative
         label_counter = reset_label_counter(label_counter, cumulative);
       end
@@ -109,10 +112,13 @@ end
 function label_counter = init_label_counter(this_input, cumulative)
 
   if isnumeric(this_input)
+
     label_counter = unique(this_input);
+
     % Only keep one nan
     nan_values = find(isnan(label_counter));
     label_counter(nan_values(2:end)) = [];
+
     label_counter = num2cell(label_counter);
 
   elseif iscellstr(this_input)

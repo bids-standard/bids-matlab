@@ -609,7 +609,7 @@ function test_label_identical_rows_cumulative
 
 end
 
-function test_merge_identical_rows
+function test_merge_identical_rows_cellstr
 
   transformers(1).Name = 'MergeIdenticalRows';
   transformers(1).Input = {'trial_type'};
@@ -625,6 +625,25 @@ function test_merge_identical_rows
   assertEqual(new_content.stim_type, {'keep'; 'keep'; 'keep'});
   assertEqual(new_content.onset,     [1; 3; 7]);
   assertEqual(new_content.duration,  [2; 4; 2]);
+
+end
+
+function test_merge_identical_rows_numeric
+
+  transformers(1).Name = 'MergeIdenticalRows';
+  transformers(1).Input = {'trial_type'};
+
+  data.trial_type = [1; 2; 2; nan; 1; 3; 3];
+  data.duration =   [1; 1; 1; 1;   1; 1; 1];
+  data.onset =      [3; 1; 2; 6;   8; 4; 7];
+  data.stim_type =  {'keep'; 'delete'; 'keep'; 'keep'; 'keep'; 'keep'; 'keep'};
+
+  new_content = bids.transformers(transformers, data);
+
+  assertEqual(new_content.trial_type, [2; 1; 3; nan; 3; 1]);
+  assertEqual(new_content.stim_type, {'keep'; 'keep'; 'keep'; 'keep'; 'keep'; 'keep'});
+  assertEqual(new_content.onset,     [1; 3; 4; 6; 7; 8]);
+  assertEqual(new_content.duration,  [2; 1; 1; 1; 1; 1]);
 
 end
 
