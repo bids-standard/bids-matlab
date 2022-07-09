@@ -601,10 +601,12 @@ function test_merge_identical_rows
   data.trial_type = {'house'; 'face'; 'face'; 'house'; 'chair'; 'house'; 'chair'};
   data.duration =   [1; 1; 1; 1; 1; 1; 1];
   data.onset =      [3; 1; 2; 6; 8; 4; 7];
+  data.stim_type =  {'delete'; 'delete'; 'keep'; 'keep'; 'keep'; 'delete'; 'delete'};
 
   new_content = bids.transformers(transformers, data);
 
   assertEqual(new_content.trial_type, {'face'; 'house'; 'chair'});
+  assertEqual(new_content.stim_type, {'keep'; 'keep'; 'keep'});
   assertEqual(new_content.onset,     [1; 3; 7]);
   assertEqual(new_content.duration,  [2; 4; 2]);
 

@@ -1,6 +1,6 @@
 function new_data = Merge_identical_rows(transformer, data)
   %
-  % MErge consecutive identical rows
+  % Merge consecutive identical rows
   %
   %
   % **JSON EXAMPLE**:
@@ -18,10 +18,54 @@ function new_data = Merge_identical_rows(transformer, data)
   % :param Input: **mandatory**. The name(s) of the variable(s) to operate on.
   % :type  Input: string or array
   %
+  % .. note::
+  %
+  %    - Only works on data commit from event.tsv
+  %    - Content is sorted by onset time before merging
+  %    - If multiple variables are specified, they are merged in the order they are specified
+  %    - If a variable is not found, it is ignored
+  %    - If a variable is found, but is empty, it is ignored
+  %    - The content of the other columns corresponds to the last row being merged:
+  %      this means that the content from other columns but the one specified in will be deleted
+  %      execpt for the last one
   %
   % **CODE EXAMPLE**::
   %
+  %    transformers(1).Name = 'MergeIdenticalRows';
+  %    transformers(1).Input = {'trial_type'};
   %
+  %    data.trial_type = {'house' ; 'face'  ; 'face'; 'house'; 'chair'; 'house' ; 'chair'};
+  %    data.duration =   [1       ; 1       ; 1     ; 1      ; 1      ; 1       ; 1];
+  %    data.onset =      [3       ; 1       ; 2     ; 6      ; 8      ; 4       ; 7];
+  %    data.stim_type =  {'delete'; 'delete'; 'keep'; 'keep' ; 'keep' ; 'delete'; 'delete'};
+  %
+  %    new_content = bids.transformers(transformers, data);
+  %
+  %    new_content.trial_type
+  %    ans =
+  %      3X1 cell array
+  %        'face'
+  %        'house'
+  %        'chair'
+  %
+  %    new_content.stim_type
+  %    ans =
+  %      3X1 cell array
+  %        'keep'
+  %        'keep'
+  %        'keep'
+  %
+  %    new_content.onset
+  %    ans =
+  %         1
+  %         3
+  %         7
+  %
+  %    new_content.duration
+  %    ans =
+  %         2
+  %         4
+  %         2
   %
   %
   %
