@@ -13,6 +13,7 @@ function data = Label_identical_rows(transformer, data)
   %     {
   %       "Name": "LabelIdenticalRows",
   %       "Input": "trial_type",
+  %       "Cumulative": False
   %     }
   %
   %
@@ -20,6 +21,11 @@ function data = Label_identical_rows(transformer, data)
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to operate on.
   % :type  Input: string or array
+  %
+  % :param Cumulative: **optional**. Defaults to ``False``.
+  %                    If ``True``, the labels are not reset to 0
+  %                    when encoutering new row content.
+  % :type  Cumulative: boolean
   %
   % .. note::
   %
@@ -46,6 +52,11 @@ function data = Label_identical_rows(transformer, data)
   input = bids.transformers_list.get_input(transformer, data);
   output = bids.transformers_list.get_output(transformer, data);
 
+  cumulative = false;
+  if isfield(transformer, 'Cumulative')
+    cumulative = transformer.Cumulative;
+  end
+
   for i = 1:numel(input)
 
     if strcmp(output{i}, input{i})
@@ -59,37 +70,74 @@ function data = Label_identical_rows(transformer, data)
                                    false);
     end
 
+    % TODO: does not cover the edge case where data.(input{i}) has one row
+    % with non numeric content
+    if cumulative
+      label_counter = unique(data.(input{i}));
+      if ~iscell(label_counter)
+        label_counter = num2cell(label_counter);
+      end
+      label_counter = reset_label_counter(label_counter);
+    else
+      label_counter = 1;
+    end
+
     previous_value = [];
-    label = 1;
 
     for j = 1:numel(data.(input{i}))
-
-      is_same = false;
 
       this_value = data.(input{i})(j);
       if iscell(this_value)
         this_value = this_value{1};
       end
 
-      if isempty(previous_value) % first row
-      elseif all(isnumeric([this_value, previous_value])) && this_value == previous_value
-        is_same = true;
-      elseif all(ischar([this_value, previous_value])) && strcmp(this_value, previous_value)
-        is_same = true;
+      is_same = compare_rows(this_value, previous_value);
+
+      if cumulative
+        if isnumeric(this_value)
+          idx = cellfun(@(x) isnumeric(x) && x == this_value, label_counter);
+        elseif ischar(this_value)
+          idx = cellfun(@(x) ischar(x) && strcmp(x, this_value), label_counter);
+        end
+        idx = find(idx);
+        label_counter{idx, 2} = label_counter{idx, 2} + 1;
       end
 
-      if is_same
-        label = label + 1;
+      if is_same && ~cumulative
+        label_counter = label_counter + 1;
+      elseif ~is_same && ~cumulative
+        label_counter = 1;
+      end
+
+      if ~cumulative
+        data.(output{i})(j, 1) = label_counter;
       else
-        label = 1;
+        data.(output{i})(j, 1) = label_counter{idx, 2};
       end
-
-      data.(output{i})(j, 1) = label;
 
       previous_value = this_value;
 
     end
 
+  end
+
+end
+
+function label_counter = reset_label_counter(label_counter)
+  for i = 1:numel(label_counter)
+    label_counter{i, 2} = 0;
+  end
+end
+
+function is_same = compare_rows(this_value, previous_value)
+
+  is_same = false;
+
+  if isempty(previous_value)
+  elseif all(isnumeric([this_value, previous_value])) && this_value == previous_value
+    is_same = true;
+  elseif all(ischar([this_value, previous_value])) && strcmp(this_value, previous_value)
+    is_same = true;
   end
 
 end

@@ -593,6 +593,20 @@ function test_label_identical_rows
 
 end
 
+function test_label_identical_rows_cumulative
+
+  transformers(1).Name = 'LabelIdenticalRows';
+  transformers(1).Input = {'trial_type'};
+  transformers(1).Cumulative = true;
+
+  data.trial_type = {'face'; 'face'; 'house'; 'house'; 'face'; 'house'; 'chair'};
+
+  new_content = bids.transformers(transformers, data);
+
+  assertEqual(new_content.trial_type_label, [1; 2; 1; 2; 3; 3; 1]);
+
+end
+
 function test_merge_identical_rows
 
   transformers(1).Name = 'MergeIdenticalRows';

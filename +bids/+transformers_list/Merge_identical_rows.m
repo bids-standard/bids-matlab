@@ -1,6 +1,6 @@
 function new_data = Merge_identical_rows(transformer, data)
   %
-  % Merge consecutive identical rows
+  % Merge consecutive identical rows.
   %
   %
   % **JSON EXAMPLE**:
@@ -103,19 +103,12 @@ function new_data = Merge_identical_rows(transformer, data)
 
     for j = 2:numel(data.(input{i}))
 
-      is_same = false;
-
       this_value = data.(input{i})(j);
       if iscell(this_value)
         this_value = this_value{1};
       end
 
-      % compare consecutive rows content
-      if all(isnumeric([this_value, previous_value])) && this_value == previous_value
-        is_same = true;
-      elseif all(ischar([this_value, previous_value])) && strcmp(this_value, previous_value)
-        is_same = true;
-      end
+      is_same = compare_rows(this_value, previous_value);
 
       if ~is_same
 
@@ -132,6 +125,19 @@ function new_data = Merge_identical_rows(transformer, data)
     % for the last row
     new_data = add_row(data, new_data, onset, row, j);
 
+  end
+
+end
+
+function is_same = compare_rows(this_value, previous_value)
+
+  is_same = false;
+
+  if isempty(previous_value)
+  elseif all(isnumeric([this_value, previous_value])) && this_value == previous_value
+    is_same = true;
+  elseif all(ischar([this_value, previous_value])) && strcmp(this_value, previous_value)
+    is_same = true;
   end
 
 end
