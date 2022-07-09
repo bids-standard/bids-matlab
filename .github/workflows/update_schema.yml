@@ -53,10 +53,10 @@ jobs:
       run: make update_schema
 
     - name: Create Pull Request
+      id: cpr
       uses: peter-evans/create-pull-request@v3
       with:
         commit-message: BIDS schema update
-        id: cpr
         assignees: Remi-Gau, gllmflndn
         base: master
         delete-branch: true
