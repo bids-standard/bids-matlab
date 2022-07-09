@@ -36,6 +36,9 @@ function rows = identify_rows(data, left, query_type, right)
 
     rows = regexp(data.(left), right, 'match');
     rows = ~cellfun('isempty', rows);
+    if strcmp(query_type, '~=')
+      rows = ~rows;
+    end
 
   elseif isnumeric(data.(left))
 
@@ -45,6 +48,9 @@ function rows = identify_rows(data, left, query_type, right)
 
       case '=='
         rows = data.(left) == right;
+
+      case '~='
+        rows = data.(left) ~= right;
 
       case '>'
         rows = data.(left) > right;

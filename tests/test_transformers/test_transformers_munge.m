@@ -471,12 +471,13 @@ end
 
 function test_filter_numeric()
 
-  types = {'>=', '<=', '==', '>', '<'};
-  expected = [nan 2 1.56 2.1
+  types = {'>=', '<=', '==', '>', '<', '~='};
+  expected = [nan 2   1.56 2.1
               1.5 nan 1.56 nan
               nan nan 1.56 nan
-              nan 2 nan 2.1
-              1.5 nan nan nan];
+              nan 2   nan  2.1
+              1.5 nan nan  nan
+              1.5 2   nan  2.1];
 
   for i = 1:numel(types)
 
@@ -489,7 +490,6 @@ function test_filter_numeric()
     new_content = bids.transformers(transformers, face_rep_events());
 
     % THEN
-    types{i};
     assertEqual(new_content.response_time, expected(i, :)');
 
   end
@@ -508,6 +508,21 @@ function test_filter_string()
 
   % THEN
   assertEqual(new_content.familiarity, {'Famous face'; nan; 'Famous face'; nan});
+
+end
+
+function test_filter_string_unequal()
+
+  % GIVEN
+  transformers = struct('Name', 'Filter', ...
+                        'Input', 'familiarity', ...
+                        'Query', ' familiarity ~= Famous face ');
+
+  % WHEN
+  new_content = bids.transformers(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(new_content.familiarity, {nan; 'Unfamiliar face'; nan; 'Unfamiliar face'});
 
 end
 
