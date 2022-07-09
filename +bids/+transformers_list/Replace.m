@@ -30,7 +30,7 @@ function data = Replace(transformer, data)
   %                                (``"value"``)
   % :type  Replace: array of objects
   %
-  % :param Attribute: optional. The column attribute to search/replace.
+  % :param Attribute: optional. The column attribute to apply the replace to.
   % :type  Attribute: array
   %
   % Valid values include:
@@ -42,6 +42,13 @@ function data = Replace(transformer, data)
   %
   % In the last case, all three attributes
   % (``"value"``, ``"duration"``, and ``"onset"``) will be scanned.
+  %
+  % .. note:
+  %
+  %     The rows of the ``attributes`` colums matching the ``key`` from the
+  %     ``input`` will be replaced by ``value``.
+  %
+  %     All replacemenets are done in sequentially.
   %
   % :param Output: optional. Optional names of columns to output.
   %                          Must match length of input column(s) if provided,
@@ -55,29 +62,45 @@ function data = Replace(transformer, data)
   % **CODE EXAMPLE**::
   %
   %
-  %     data.fruits = {'apple'; 'banana'; 'elusive'};
-  %     data.onset = {1; 2; 3};
-  %     data.duration = {-1; 1; 3};
+  %       data.fruits = {'apple'; 'banana'; 'elusive'};
+  %       data.onset = {1; 2; 3};
+  %       data.duration = {-1; 1; 3};
   %
-  %     replace = struct('key', {'apple'; 'elusive'}, 'value', -1);
-  %     replace(end+1).key = -1;
-  %     replace(end).value = 0;
+  %       replace = struct('key', {'apple'; 'elusive'}, 'value', -1);
+  %       replace(end+1).key = -1;
+  %       replace(end).value = 0;
   %
-  %     transformer = struct('Name', 'Replace', ...
-  %                          'Input', 'fruits', ...
-  %                          'Atribute', 'all', ...
-  %                          'Replace', replace);
+  %       transformer = struct('Name', 'Replace', ...
+  %                            'Input', 'fruits', ...
+  %                            'Atribute', 'all', ...
+  %                            'Replace', replace);
   %
-  %
-  %
-  %     data = bids.transformers(transformer, data);
+  %       data = bids.transformers(transformer, data);
   %
   %
-  %   data.
+  %       data.fruits
   %
-  %   ans =
+  %         ans =
+  %           3X1 cell array
+  %             [     0]
+  %             'banana'
+  %             [     0]
   %
+  %       data.onset
   %
+  %         ans =
+  %           3x1 cell array
+  %             [1]
+  %             [2]
+  %             [3]
+  %
+  %       data.duration
+  %
+  %         ans =
+  %           3X1 cell array
+  %             [-1]
+  %             [ 1]
+  %             [ 3]
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 

@@ -133,6 +133,12 @@ function output = apply_munge(trans, data)
     case 'filter'
       output = bids.transformers_list.Filter(trans, data);
 
+    case 'labelidenticalrows'
+      output = bids.transformers_list.Label_identical_rows(trans, data);
+
+    case 'mergeidenticalrows'
+      output = bids.transformers_list.Merge_identical_rows(trans, data);
+
     case 'rename'
       output = bids.transformers_list.Rename(trans, data);
 
@@ -143,8 +149,6 @@ function output = apply_munge(trans, data)
       output = bids.transformers_list.Replace(trans, data);
 
     case 'split'
-      trans;
-      data;
       output = bids.transformers_list.Split(trans, data);
 
     otherwise
@@ -216,6 +220,8 @@ function MUNGE = munge_transfomers()
            'DropNA'
            'Filter'
            'Factor'
+           'LabelIdenticalRows'
+           'MergeIdenticalRows'
            'Rename'
            'Replace'
            'Select'

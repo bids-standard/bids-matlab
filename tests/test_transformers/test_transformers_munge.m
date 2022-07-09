@@ -234,6 +234,8 @@ end
 
 %% single step
 
+% ordered alphabetically
+
 function test_assign_with_target_attribute()
 
   transformers = struct('Name', 'Assign', ...
@@ -573,6 +575,38 @@ function test_filter_several_inputs()
   assertEqual(new_content.repetition, [nan; nan; 2; 2]);
 
   assertEqual(new_content.response_time, [nan; nan; 1.56; 2.1]);
+
+end
+
+function test_label_identical_rows
+
+  transformers(1).Name = 'LabelIdenticalRows';
+  transformers(1).Input = {'trial_type', 'stim_type'};
+
+  data.trial_type = {'face'; 'face'; 'house'; 'house'; 'house'; 'house'; 'chair'};
+  data.stim_type =  {1; 1; 1; 2; 5; 2; nan};
+
+  new_content = bids.transformers(transformers, data);
+
+  assertEqual(new_content.trial_type_label, [1; 2; 1; 2; 3; 4; 1]);
+  assertEqual(new_content.stim_type_label,  [1; 2; 3; 1; 1; 1; 1]);
+
+end
+
+function test_merge_identical_rows
+
+  transformers(1).Name = 'MergeIdenticalRows';
+  transformers(1).Input = {'trial_type'};
+
+  data.trial_type = {'house'; 'face'; 'face'; 'house'; 'chair'; 'house'; 'chair'};
+  data.duration =   [1; 1; 1; 1; 1; 1; 1];
+  data.onset =      [3; 1; 2; 6; 8; 4; 7];
+
+  new_content = bids.transformers(transformers, data);
+
+  assertEqual(new_content.trial_type, {'face'; 'house'; 'chair'});
+  assertEqual(new_content.onset,     [1; 3; 7]);
+  assertEqual(new_content.duration,  [2; 4; 2]);
 
 end
 
