@@ -120,13 +120,17 @@ function label_counter = init_label_counter(this_input, cumulative)
 
   else
 
-    for t = 1:numel(this_input)
-      if isnan(this_input{t})
-        this_input{t} = 'n/a';
-      end
-    end
+    % get unique char first then numeric
+    idx = cellfun(@(x) ischar(x), this_input);
+    tmp = this_input(idx);
+    label_counter_char = init_label_counter(tmp, cumulative);
 
-    label_counter = unique(this_input);
+    idx = cellfun(@(x) isnumeric(x), this_input);
+    tmp = this_input(idx);
+    tmp = cell2mat(tmp);
+    label_counter_num = init_label_counter(tmp, cumulative);
+
+    label_counter = cat(1, label_counter_char, label_counter_num);
 
   end
 

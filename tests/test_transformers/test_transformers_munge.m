@@ -581,15 +581,17 @@ end
 function test_label_identical_rows
 
   transformers(1).Name = 'LabelIdenticalRows';
-  transformers(1).Input = {'trial_type', 'stim_type'};
+  transformers(1).Input = {'trial_type', 'stim_type', 'other_type'};
 
   data.trial_type = {'face'; 'face'; 'house'; 'house'; 'house'; 'house'; 'house'; 'chair'};
   data.stim_type =  [1; 1; 1; 2; nan; 5; 2; nan];
+  data.other_type =  {'face'; 1; 1; 2; nan; 'chair'; 'chair'; nan};
 
   new_content = bids.transformers(transformers, data);
 
   assertEqual(new_content.trial_type_label, [1; 2; 1; 2; 3; 4; 5; 1]);
   assertEqual(new_content.stim_type_label,  [1; 2; 3; 1; 1; 1; 1; 1]);
+  assertEqual(new_content.other_type_label,  [1; 1; 2; 1; 1; 1; 2; 1]);
 
 end
 
