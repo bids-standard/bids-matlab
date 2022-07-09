@@ -85,15 +85,20 @@ function new_data = Merge_identical_rows(transformer, data)
 
   input = bids.transformers_list.get_input(transformer, data);
 
+  % create a new structure add a new row every time we encounter a new row
+  % with a different content (for the input of interest) from the previous one.
+  %
   new_data = struct();
   row = 1;
 
   for i = 1:numel(input)
 
+    % start with values from the first row and start loop at row 2
     previous_value = data.(input{i})(1);
     if iscell(previous_value)
       previous_value = previous_value{1};
     end
+
     onset = data.onset(1);
 
     for j = 2:numel(data.(input{i}))
@@ -105,6 +110,7 @@ function new_data = Merge_identical_rows(transformer, data)
         this_value = this_value{1};
       end
 
+      % compare consecutive rows content
       if all(isnumeric([this_value, previous_value])) && this_value == previous_value
         is_same = true;
       elseif all(ischar([this_value, previous_value])) && strcmp(this_value, previous_value)
@@ -113,15 +119,10 @@ function new_data = Merge_identical_rows(transformer, data)
 
       if ~is_same
 
-        for i_field = 1:numel(fields)
-          new_data.(fields{i_field})(row, 1) = data.(fields{i_field})(j - 1);
-        end
-        new_data.onset(row, 1) = onset;
-        new_data.duration(row, 1) =  data.onset(j - 1) + data.duration(j - 1) - onset;
-
-        row = row + 1;
+        [new_data, row] = add_row(data, new_data, onset, row, j - 1);
 
         onset = data.onset(j);
+
       end
 
       previous_value = this_value;
@@ -129,12 +130,22 @@ function new_data = Merge_identical_rows(transformer, data)
     end
 
     % for the last row
-    for i_field = 1:numel(fields)
-      new_data.(fields{i_field})(row, 1) = data.(fields{i_field})(j);
-    end
-    new_data.duration(row, 1) =  data.onset(j) + data.duration(j) - onset;
-    new_data.onset(row, 1) = onset;
+    new_data = add_row(data, new_data, onset, row, j);
 
   end
+
+end
+
+function [new_data, new_data_row] = add_row(data, new_data, onset, new_data_row, data_row)
+
+  fields = fieldnames(data);
+
+  for i_field = 1:numel(fields)
+    new_data.(fields{i_field})(new_data_row, 1) = data.(fields{i_field})(data_row);
+  end
+  new_data.onset(new_data_row, 1) = onset;
+  new_data.duration(new_data_row, 1) =  data.onset(data_row) + data.duration(data_row) - onset;
+
+  new_data_row = new_data_row + 1;
 
 end
