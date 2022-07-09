@@ -53,8 +53,7 @@ jobs:
       run: make update_schema
 
     - name: Create Pull Request
-      id: cpr
-      uses: peter-evans/create-pull-request@v3
+      uses: peter-evans/create-pull-request@v4
       with:
         commit-message: BIDS schema update
         assignees: Remi-Gau, gllmflndn
@@ -62,8 +61,3 @@ jobs:
         delete-branch: true
         title: '[BOT] update  schema'
         body: 'done via this [GitHub Action](https://github.com/bids-standard/bids-matlab/blob/master/.github/workflows/update_schema.yml)'
-
-    - name: Check outputs
-      run: |
-        echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-        echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
