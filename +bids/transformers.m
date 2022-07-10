@@ -1,4 +1,4 @@
-function new_content = transformers(varargin)
+function [new_content, json] = transformers(varargin)
   %
   % Apply transformers to a structure
   %
@@ -13,6 +13,7 @@ function new_content = transformers(varargin)
   % :type data: structure
   %
   % :returns: - :new_content: (structure)
+  %           - :json: (structure) json equivalent of the transformers
   %
   % EXAMPLE::
   %
@@ -51,6 +52,13 @@ function new_content = transformers(varargin)
 
   data = p.Results.data;
   trans = p.Results.trans;
+
+  json =  struct('Transformer', ['bids-matlab_' bids.internal.get_version], ...
+                 'Instructions', trans);
+  if iscell(trans)
+    json =  struct('Transformer', ['bids-matlab_' bids.internal.get_version], ...
+                   'Instructions', {trans});
+  end
 
   if isempty(trans) || isempty(data)
     new_content = data;

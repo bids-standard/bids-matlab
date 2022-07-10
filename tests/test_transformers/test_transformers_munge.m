@@ -17,9 +17,12 @@ function test_no_transformation()
 
   transformers = struct([]);
 
-  new_content = bids.transformers(transformers, participants());
+  [new_content, json] = bids.transformers(transformers, participants());
 
   assertEqual(new_content, participants());
+
+  assertEqual(json, struct('Transformer', ['bids-matlab_' bids.internal.get_version], ...
+                           'Instructions', struct([])));
 
 end
 
@@ -151,11 +154,13 @@ function test_touch()
                            'Input', {{'tmp'}});
 
   % WHEN
-  new_content = bids.transformers(transformers, tsv_content);
+  [new_content, json] = bids.transformers(transformers, tsv_content);
 
   % THEN
   % TODO assert whole content
   assertEqual(fieldnames(tsv_content), fieldnames(new_content));
+  assertEqual(json, struct('Transformer', ['bids-matlab_' bids.internal.get_version], ...
+                           'Instructions', {transformers}));
 
 end
 
