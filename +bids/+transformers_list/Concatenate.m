@@ -1,6 +1,6 @@
 function data = Concatenate(transformer, data)
   %
-  % Concatnate columns together.
+  % Concatenate columns together.
   %
   %
   % **JSON EXAMPLE**:
@@ -19,11 +19,11 @@ function data = Concatenate(transformer, data)
   %
   % Arguments:
   %
-  % :param Input: **mandatory**. TODO
+  % :param Input: **mandatory**. Column(s) to concatenate. Must all be of the same length. 
   % :type  Input: array
   %
-  % :param Output: optional. TODO
-  % :type  Output: string or array
+  % :param Output: optional. Name of the output column.
+  % :type  Output: string
   %
   % **CODE EXAMPLE**::
   %
@@ -48,6 +48,8 @@ function data = Concatenate(transformer, data)
   input = bids.transformers_list.get_input(transformer, data);
   output = bids.transformers_list.get_output(transformer, data, false);
 
+  % TODO: remove assumption that this is an event.tsv file 
+  % and that we can rely on a onset column being present
   for row = 1:numel(data.onset)
 
     tmp1 = {};
