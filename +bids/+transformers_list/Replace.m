@@ -125,7 +125,7 @@ function data = Replace(transformer, data)
       key = replace(ii).key;
 
       if ischar(key) && iscellstr(this_input)
-        key = regexify(key);
+        key = bids.internal.regexify(key);
         idx = ~cellfun('isempty', regexp(this_input, key, 'match'));
 
       elseif isnumeric(key) && isnumeric(this_input)

@@ -19,7 +19,7 @@ function data = Concatenate(transformer, data)
   %
   % Arguments:
   %
-  % :param Input: **mandatory**. Column(s) to concatenate. Must all be of the same length. 
+  % :param Input: **mandatory**. Column(s) to concatenate. Must all be of the same length.
   % :type  Input: array
   %
   % :param Output: optional. Name of the output column.
@@ -48,7 +48,7 @@ function data = Concatenate(transformer, data)
   input = bids.transformers_list.get_input(transformer, data);
   output = bids.transformers_list.get_output(transformer, data, false);
 
-  % TODO: remove assumption that this is an event.tsv file 
+  % TODO: remove assumption that this is an event.tsv file
   % and that we can rely on a onset column being present
   for row = 1:numel(data.onset)
 

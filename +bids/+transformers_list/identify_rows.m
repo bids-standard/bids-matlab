@@ -34,6 +34,7 @@ function rows = identify_rows(data, left, query_type, right)
 
     end
 
+    right = bids.internal.regexify(right);
     rows = regexp(data.(left), right, 'match');
     rows = ~cellfun('isempty', rows);
     if strcmp(query_type, '~=')
