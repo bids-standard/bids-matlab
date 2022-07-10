@@ -1,6 +1,7 @@
 function data = Scale(transformer, data)
   %
   % Scales the values of one or more columns.
+  %
   % Semantics mimic scikit-learn, such that demeaning and
   % rescaling are treated as independent arguments,
   % with the default being to apply both
@@ -35,8 +36,7 @@ function data = Scale(transformer, data)
   %
   % :param ReplaceNa: optional. Whether/when to replace missing values with 0.
   %                             If ``"off"``, no replacement is performed.
-  %                             If ``"before"``, missing values are replaced with 0's
-  %                             before scaling.
+  %                             If ``"before"``, missing values are replaced with 0 before scaling.
   %                             If ``"after"``, missing values are replaced with 0 after scaling.
   %                             Defaults to ``"off"``
   % :type  ReplaceNa: boolean

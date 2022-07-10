@@ -31,16 +31,22 @@ function data = Concatenate(transformer, data)
   %                         'Input', {{'face_type', 'face_repetition'}}, ...
   %                         'Ouput', 'face_type_repetition');
   %
-  %   data.face_type = ;
-  %   data.face_repetition = ;
+  %   data.face_type = {'familiar'; 'unknwown'; 'new'; 'familiar'; 'unknwown'; 'new'};
+  %   data.face_repetition = [1;1;1;2;2;2];
   %
   %   data = bids.transformers(transformer, data);
   %
-  %   data.
+  %   data.face_type_repetition
   %
   %   ans =
-  %
-  %
+  %      {
+  %        'familiar_1'
+  %        'unknwown_1'
+  %        'new_1'
+  %        'familiar_2'
+  %        'unknwown_2'
+  %        'new_2'
+  %      }
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers

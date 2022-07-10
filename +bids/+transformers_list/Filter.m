@@ -24,9 +24,10 @@ function data = Filter(transformer, data)
   %
   % Supports:
   %
-  % - ``>``, ``<``, ``>=``, ``<=``, ``==``, ``~=`` for numeric values
-  % - ``==``, ``~=`` for string operation (case sensitive). Regular expressions
-  %   are supported
+  %   - ``>``, ``<``, ``>=``, ``<=``, ``==``, ``~=`` for numeric values
+  %
+  %   - ``==``, ``~=`` for string operation (case sensitive).
+  %     Regular expressions are supported
   %
   % :param Output: optional. The optional column names to write out to.
   % :type  Output: string or array

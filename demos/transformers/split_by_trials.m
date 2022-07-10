@@ -1,4 +1,9 @@
-% Example of how to use transformers to "split" the trials of certain condition
+% Example of how to use transformers to:
+%
+% - "merge" certain trial type by renaming them using the Replace transformer
+% - "split" the trials of certain conditions
+%
+% For MVPA analyses, this can be used to have 1 beta per trial (and not 1 per run per condition).
 %
 % (C) Copyright 2021 Remi Gau
 
@@ -19,10 +24,12 @@ data;
 %                        'V_LEFT'
 %                        'V_RIGHT'};
 
+% same but expressed as regular expressions
 conditions_to_split = {'^.*LEFT$'
                        '^.*RIGHT$'
                        '^INCONG.*$'};
 
+% columns headers where to store the new conditions
 headers = {'LEFT'
            'RIGHT'
            'INCONG'};
@@ -69,5 +76,8 @@ end
 
 [new_content, json] = bids.transformers(transformers, data);
 
+% save the new TSV for inspection sto make sure it looks like what we expect
 bids.util.tsvwrite(fullfile(pwd, 'new_events.tsv'), new_content);
+
+% generate the transformation section that can be added to the bids stats model
 bids.util.jsonencode(fullfile(pwd, 'transformers.json'), json);

@@ -1,6 +1,7 @@
 function data = Select(transformer, data)
   %
   % The select transformation specifies which columns to retain for subsequent analysis.
+  %
   % Any columns that are not specified here will be dropped.
   %
   % The only exception is when dealing with data with ``onset`` and ``duration``
