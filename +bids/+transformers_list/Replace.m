@@ -27,7 +27,8 @@ function data = Replace(transformer, data)
   % :type  Input: string or array
   %
   % :param Replace: **mandatory**. The mapping old values (``"key"``) to new values.
-  %                                (``"value"``)
+  %                                (``"value"``).
+  %                                ``key`` can be a regular expression.
   % :type  Replace: array of objects
   %
   % :param Attribute: optional. The column attribute to apply the replace to.
@@ -124,15 +125,21 @@ function data = Replace(transformer, data)
       key = replace(ii).key;
 
       if ischar(key) && iscellstr(this_input)
-        idx = strcmp(key, this_input);
+        key = regexify(key);
+        idx = ~cellfun('isempty', regexp(this_input, key, 'match'));
+
       elseif isnumeric(key) && isnumeric(this_input)
         idx = this_input == key;
+
       elseif ischar(key) && iscell(this_input)
-        idx = cellfun(@(x) ischar(x) && strcmp(x, key), this_input);
+        idx = cellfun(@(x) ischar(x) && ~isempty(regexp(x, key, 'match')), this_input);
+
       elseif isnumeric(key) && iscell(this_input)
         idx = cellfun(@(x) isnumeric(x) && x == key, this_input);
+
       else
         continue
+
       end
 
       value = replace(ii).value;
@@ -162,6 +169,31 @@ function [this_output, output] = get_this_output(data, attr, output, this_input)
 
   end
 
+end
+
+function string = regexify(string)
+  %
+  % Turns a string into a simple regex. Useful to query bids dataset with
+  % bids.query that by default expects will treat its inputs as regex.
+  %
+  %   Input   -->    Output
+  %
+  %   ``foo`` --> ``^foo$``
+  %
+  % USAGE::
+  %
+  %   string = regexify(string)
+
+  if isempty(string)
+    string = '^$';
+    return
+  end
+  if ~strcmp(string(1), '^')
+    string = ['^' string];
+  end
+  if ~strcmp(string(end), '$')
+    string = [string '$'];
+  end
 end
 
 function data = replace_for_attributes(data, attributes, output, this_input, idx, value)

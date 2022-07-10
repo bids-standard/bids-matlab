@@ -53,11 +53,22 @@ function data = Concatenate(transformer, data)
     tmp1 = {};
 
     for i = 1:numel(input)
+
       if isnumeric(data.(input{i}))
         tmp1{1, i} = num2str(data.(input{i})(row));
+
       elseif iscellstr(data.(input{i}))
         tmp1{1, i} = data.(input{i}){row};
+
+      elseif iscell(data.(input{i}))
+        tmp1{1, i} = data.(input{i}){row};
+
+        if isnumeric(tmp1{1, i})
+          tmp1{1, i} = num2str(tmp1{1, i});
+        end
+
       end
+
     end
 
     tmp2{row, 1} = strjoin(tmp1, '_');

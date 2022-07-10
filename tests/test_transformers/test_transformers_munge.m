@@ -678,6 +678,21 @@ function test_replace()
 
 end
 
+function test_replace_regexp()
+
+  %% GIVEN
+  transformers(1).Name = 'Replace';
+  transformers(1).Input = 'familiarity';
+  transformers(1).Replace(1) = struct('key', '.*face', 'value', 'foo');
+
+  % WHEN
+  new_content = bids.transformers(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(new_content.familiarity, {'foo'; 'foo'; 'foo'; 'foo'});
+
+end
+
 function test_replace_string_by_numeric()
 
   %% GIVEN
