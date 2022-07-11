@@ -22,6 +22,7 @@
     "extensions": [
       ".ome.tif",
       ".ome.btf",
+      ".ome.zarr/",
       ".png",
       ".tif",
       ".json"
