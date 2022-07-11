@@ -226,7 +226,7 @@ classdef Schema
         bids.internal.error_handling(mfilename, 'UnknownEnitity', msg, false);
       end
 
-      key = obj.content.objects.entities.(entity).entity;
+      key = obj.content.objects.entities.(entity).name;
 
     end
 

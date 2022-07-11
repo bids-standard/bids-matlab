@@ -104,7 +104,7 @@ function filename = report(varargin)
 
         this_filter.modality = modalities(i_modality);
 
-        desc = schema.content.objects.datatypes.(this_filter.modality{1}).name;
+        desc = schema.content.objects.datatypes.(this_filter.modality{1}).display_name;
 
         print_to_output(['### ' desc ' data'], ...
                         file_id, ...
@@ -149,7 +149,7 @@ function report_nifti(BIDS, filter, read_nii, verbose, file_id)
 
     schema = bids.Schema();
     try
-      suffix_fullname = schema.content.objects.suffixes.(filter.suffix).name;
+      suffix_fullname = schema.content.objects.suffixes.(filter.suffix).display_name;
     catch
       suffix_fullname = 'UNKNOWN';
     end
