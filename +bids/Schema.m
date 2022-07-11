@@ -191,7 +191,7 @@ classdef Schema
       entity_names = fieldnames(suffix_group.entities);
 
       for i = 1:size(entity_names, 1)
-        entities{1, i} = obj.content.objects.entities.(entity_names{i}).entity; %#ok<*AGROW>
+        entities{1, i} = obj.content.objects.entities.(entity_names{i}).name; %#ok<*AGROW>
       end
 
     end
