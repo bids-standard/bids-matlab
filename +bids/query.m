@@ -521,8 +521,9 @@ function result = update_if_entity(query, result, dk)
     field =  'atlas';
 
   elseif ismember(query, long_valid_entity_queries())
+
     bids_entities = schema_entities();
-    field =  bids_entities.(query(1:end - 1)).entity;
+    field =  bids_entities.(query(1:end - 1)).name;
 
   else
     error('query ''%s'' not yet implemented', query);

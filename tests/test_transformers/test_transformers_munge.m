@@ -17,9 +17,12 @@ function test_no_transformation()
 
   transformers = struct([]);
 
-  new_content = bids.transformers(transformers, participants());
+  [new_content, json] = bids.transformers(transformers, participants());
 
   assertEqual(new_content, participants());
+
+  assertEqual(json, struct('Transformer', ['bids-matlab_' bids.internal.get_version], ...
+                           'Instructions', struct([])));
 
 end
 
@@ -151,11 +154,13 @@ function test_touch()
                            'Input', {{'tmp'}});
 
   % WHEN
-  new_content = bids.transformers(transformers, tsv_content);
+  [new_content, json] = bids.transformers(transformers, tsv_content);
 
   % THEN
   % TODO assert whole content
   assertEqual(fieldnames(tsv_content), fieldnames(new_content));
+  assertEqual(json, struct('Transformer', ['bids-matlab_' bids.internal.get_version], ...
+                           'Instructions', {transformers}));
 
 end
 
@@ -233,6 +238,8 @@ function test_complex_filter_with_and()
 end
 
 %% single step
+
+% ordered alphabetically
 
 function test_assign_with_target_attribute()
 
@@ -469,12 +476,13 @@ end
 
 function test_filter_numeric()
 
-  types = {'>=', '<=', '==', '>', '<'};
-  expected = [nan 2 1.56 2.1
+  types = {'>=', '<=', '==', '>', '<', '~='};
+  expected = [nan 2   1.56 2.1
               1.5 nan 1.56 nan
               nan nan 1.56 nan
-              nan 2 nan 2.1
-              1.5 nan nan nan];
+              nan 2   nan  2.1
+              1.5 nan nan  nan
+              1.5 2   nan  2.1];
 
   for i = 1:numel(types)
 
@@ -487,7 +495,6 @@ function test_filter_numeric()
     new_content = bids.transformers(transformers, face_rep_events());
 
     % THEN
-    types{i};
     assertEqual(new_content.response_time, expected(i, :)');
 
   end
@@ -506,6 +513,21 @@ function test_filter_string()
 
   % THEN
   assertEqual(new_content.familiarity, {'Famous face'; nan; 'Famous face'; nan});
+
+end
+
+function test_filter_string_unequal()
+
+  % GIVEN
+  transformers = struct('Name', 'Filter', ...
+                        'Input', 'familiarity', ...
+                        'Query', ' familiarity ~= Famous face ');
+
+  % WHEN
+  new_content = bids.transformers(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(new_content.familiarity, {nan; 'Unfamiliar face'; nan; 'Unfamiliar face'});
 
 end
 
@@ -576,6 +598,75 @@ function test_filter_several_inputs()
 
 end
 
+function test_label_identical_rows
+
+  transformers(1).Name = 'LabelIdenticalRows';
+  transformers(1).Input = {'trial_type', 'stim_type', 'other_type'};
+
+  data.trial_type = {'face'; 'face'; 'house'; 'house'; 'house'; 'house'; 'house'; 'chair'};
+  data.stim_type =  [1; 1; 1; 2; nan; 5; 2; nan];
+  data.other_type =  {'face'; 1; 1; 2; nan; 'chair'; 'chair'; nan};
+
+  new_content = bids.transformers(transformers, data);
+
+  assertEqual(new_content.trial_type_label, [1; 2; 1; 2; 3; 4; 5; 1]);
+  assertEqual(new_content.stim_type_label,  [1; 2; 3; 1; 1; 1; 1; 1]);
+  assertEqual(new_content.other_type_label,  [1; 1; 2; 1; 1; 1; 2; 1]);
+
+end
+
+function test_label_identical_rows_cumulative
+
+  transformers(1).Name = 'LabelIdenticalRows';
+  transformers(1).Input = {'trial_type'};
+  transformers(1).Cumulative = true;
+
+  data.trial_type = {'face'; 'face'; 'house'; 'house'; 'face'; 'house'; 'chair'};
+
+  new_content = bids.transformers(transformers, data);
+
+  assertEqual(new_content.trial_type_label, [1; 2; 1; 2; 3; 3; 1]);
+
+end
+
+function test_merge_identical_rows_cellstr
+
+  transformers(1).Name = 'MergeIdenticalRows';
+  transformers(1).Input = {'trial_type'};
+
+  data.trial_type = {'house'; 'face'; 'face'; 'house'; 'chair'; 'house'; 'chair'};
+  data.duration =   [1; 1; 1; 1; 1; 1; 1];
+  data.onset =      [3; 1; 2; 6; 8; 4; 7];
+  data.stim_type =  {'delete'; 'delete'; 'keep'; 'keep'; 'keep'; 'delete'; 'delete'};
+
+  new_content = bids.transformers(transformers, data);
+
+  assertEqual(new_content.trial_type, {'face'; 'house'; 'chair'});
+  assertEqual(new_content.stim_type, {'keep'; 'keep'; 'keep'});
+  assertEqual(new_content.onset,     [1; 3; 7]);
+  assertEqual(new_content.duration,  [2; 4; 2]);
+
+end
+
+function test_merge_identical_rows_numeric
+
+  transformers(1).Name = 'MergeIdenticalRows';
+  transformers(1).Input = {'trial_type'};
+
+  data.trial_type = [1; 2; 2; nan; 1; 3; 3];
+  data.duration =   [1; 1; 1; 1;   1; 1; 1];
+  data.onset =      [3; 1; 2; 6;   8; 4; 7];
+  data.stim_type =  {'keep'; 'delete'; 'keep'; 'keep'; 'keep'; 'keep'; 'keep'};
+
+  new_content = bids.transformers(transformers, data);
+
+  assertEqual(new_content.trial_type, [2; 1; 3; nan; 3; 1]);
+  assertEqual(new_content.stim_type, {'keep'; 'keep'; 'keep'; 'keep'; 'keep'; 'keep'});
+  assertEqual(new_content.onset,     [1; 3; 4; 6; 7; 8]);
+  assertEqual(new_content.duration,  [2; 1; 1; 1; 1; 1]);
+
+end
+
 function test_replace()
 
   %% GIVEN
@@ -590,10 +681,29 @@ function test_replace()
   % THEN
   assertEqual(new_content.familiarity, {'foo'; 'bar'; 'foo'; 'bar'});
 
+end
+
+function test_replace_regexp()
+
   %% GIVEN
   transformers(1).Name = 'Replace';
   transformers(1).Input = 'familiarity';
-  transformers(1).Replace(1).key = 2;
+  transformers(1).Replace(1) = struct('key', '.*face', 'value', 'foo');
+
+  % WHEN
+  new_content = bids.transformers(transformers, face_rep_events());
+
+  % THEN
+  assertEqual(new_content.familiarity, {'foo'; 'foo'; 'foo'; 'foo'});
+
+end
+
+function test_replace_string_by_numeric()
+
+  %% GIVEN
+  transformers(1).Name = 'Replace';
+  transformers(1).Input = 'familiarity';
+  transformers(1).Replace(1).key = 'Famous face';
   transformers(1).Replace(1).value = 1;
   transformers(1).Attribute = 'duration';
 
@@ -601,7 +711,7 @@ function test_replace()
   new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
-  assertEqual(unique(new_content.duration), 1);
+  assertEqual(new_content.duration, [1; 2; 1; 2]);
 
 end
 
@@ -611,16 +721,43 @@ function test_replace_with_output()
   transformers(1).Name = 'Replace';
   transformers(1).Input = 'familiarity';
   transformers(1).Output = 'tmp';
-  transformers(1).Replace(1).key = 2;
+  transformers(1).Replace(1).key = 'Famous face';
   transformers(1).Replace(1).value = 1;
-  transformers(1).Attribute = 'duration';
+  transformers(1).Attribute = 'all';
 
   % WHEN
   new_content = bids.transformers(transformers, face_rep_events());
 
   % THEN
-  assertEqual(unique(new_content.tmp), 1);
-  assertEqual(unique(new_content.duration), 2);
+  assertEqual(new_content.tmp, {1; 'Unfamiliar face'; 1; 'Unfamiliar face'});
+  assertEqual(new_content.duration, [1; 2; 1; 2]);
+  assertEqual(new_content.onset, [1; 4; 1; 8]);
+
+end
+
+function test_replace_string_in_numeric_output()
+
+  %% GIVEN
+  data.fruits = {'apple'; 'banana'; 'elusive'};
+  data.onset = {1; 2; 3};
+  data.duration = {0; 1; 3};
+
+  replace = struct('key', {'apple'; 'elusive'}, 'value', -1);
+  replace(end + 1).key = -1;
+  replace(end).value = 0;
+
+  transformer = struct('Name', 'Replace', ...
+                       'Input', 'fruits', ...
+                       'Attribute', 'all', ...
+                       'Replace', replace);
+
+  % WHEN
+  new_content = bids.transformers(transformer, data);
+
+  % THEN
+  assertEqual(new_content.fruits, {0; 'banana'; 0});
+  assertEqual(new_content.onset,  {0; 2; 0});
+  assertEqual(new_content.duration,  {0; 1; 0});
 
 end
 

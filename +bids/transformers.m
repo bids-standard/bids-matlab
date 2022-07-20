@@ -1,4 +1,4 @@
-function new_content = transformers(varargin)
+function [new_content, json] = transformers(varargin)
   %
   % Apply transformers to a structure
   %
@@ -13,6 +13,7 @@ function new_content = transformers(varargin)
   % :type data: structure
   %
   % :returns: - :new_content: (structure)
+  %           - :json: (structure) json equivalent of the transformers
   %
   % EXAMPLE::
   %
@@ -51,6 +52,13 @@ function new_content = transformers(varargin)
 
   data = p.Results.data;
   trans = p.Results.trans;
+
+  json =  struct('Transformer', ['bids-matlab_' bids.internal.get_version], ...
+                 'Instructions', trans);
+  if iscell(trans)
+    json =  struct('Transformer', ['bids-matlab_' bids.internal.get_version], ...
+                   'Instructions', {trans});
+  end
 
   if isempty(trans) || isempty(data)
     new_content = data;
@@ -133,6 +141,12 @@ function output = apply_munge(trans, data)
     case 'filter'
       output = bids.transformers_list.Filter(trans, data);
 
+    case 'labelidenticalrows'
+      output = bids.transformers_list.Label_identical_rows(trans, data);
+
+    case 'mergeidenticalrows'
+      output = bids.transformers_list.Merge_identical_rows(trans, data);
+
     case 'rename'
       output = bids.transformers_list.Rename(trans, data);
 
@@ -143,8 +157,6 @@ function output = apply_munge(trans, data)
       output = bids.transformers_list.Replace(trans, data);
 
     case 'split'
-      trans;
-      data;
       output = bids.transformers_list.Split(trans, data);
 
     otherwise
@@ -216,6 +228,8 @@ function MUNGE = munge_transfomers()
            'DropNA'
            'Filter'
            'Factor'
+           'LabelIdenticalRows'
+           'MergeIdenticalRows'
            'Rename'
            'Replace'
            'Select'

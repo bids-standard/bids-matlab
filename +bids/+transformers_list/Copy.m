@@ -39,13 +39,13 @@ function data = Copy(transformer, data)
   %                         'Input', 'onset', ...
   %                         'Ouput', 'onset_copy');
   %
-  %   data.onset = ;
+  %   data.onset = [1,2,3];
   %
   %   data = bids.transformers(transformer, data);
   %
-  %   data.
+  %   data.onset_copy
   %
-  %   ans =
+  %   ans = [1,2,3]
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers

@@ -25,7 +25,7 @@ An "array" of transformations can be applied one after the other using
 
 .. autofunction:: transformers
 
-.. automodule:: +bids.+transformers
+.. automodule:: +bids.+transformers_list
 
 Basic operations
 ================
@@ -36,7 +36,7 @@ Basic operations
 - Divide
 - Power
 
-.. autofunction:: basic
+.. autofunction:: Basic
 
 Logical operations
 ==================
@@ -45,7 +45,7 @@ Logical operations
 - Or
 - Not
 
-.. autofunction:: logical
+.. autofunction:: Logical
 
 
 Munge operations
@@ -57,52 +57,62 @@ other formats or shapes.
 Assign
 ------
 
-.. autofunction:: assign
+.. autofunction:: Assign
 
 Concatenate
 -----------
 
-.. autofunction:: concatenate
+.. autofunction:: Concatenate
 
 Copy
 ----
 
-.. autofunction:: copy
+.. autofunction:: Copy
 
 Delete
 ------
 
-.. autofunction:: delete
+.. autofunction:: Delete
 
 DropNA
 ------
 
-.. autofunction:: drop_na
+.. autofunction:: Drop_na
 
 Factor
 ------
 
-.. autofunction:: factor
+.. autofunction:: Factor
 
 Filter
 -------
 
-.. autofunction:: filter
+.. autofunction:: Filter
+
+Label identical rows
+--------------------
+
+.. autofunction:: Label_identical_rows
+
+Merge identical rows
+--------------------
+
+.. autofunction:: Merge_identical_rows
 
 Replace
 -------
 
-.. autofunction:: replace
+.. autofunction:: Replace
 
 Select
 ------
 
-.. autofunction:: select
+.. autofunction:: Select
 
 Split
 -----
 
-.. autofunction:: split
+.. autofunction:: Split
 
 
 Compute operations
@@ -113,34 +123,34 @@ Transformations that primarily involve numerical computation on variables.
 Constant
 --------
 
-.. autofunction:: constant
+.. autofunction:: Constant
 
 Mean
 -----
 
-.. autofunction:: mean
+.. autofunction:: Mean
 
 Product
 -------
 
-.. autofunction:: product
+.. autofunction:: Product
 
 Scale
 -----
 
-.. autofunction:: scale
+.. autofunction:: Scale
 
 Std
 ---
 
-.. autofunction:: std
+.. autofunction:: Std
 
 Sum
 ---
 
-.. autofunction:: sum
+.. autofunction:: Sum
 
 Threshold
 ---------
 
-.. autofunction:: threshold
+.. autofunction:: Threshold

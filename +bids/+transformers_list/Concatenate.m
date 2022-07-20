@@ -1,6 +1,6 @@
 function data = Concatenate(transformer, data)
   %
-  % Concatnate columns together.
+  % Concatenate columns together.
   %
   %
   % **JSON EXAMPLE**:
@@ -19,11 +19,11 @@ function data = Concatenate(transformer, data)
   %
   % Arguments:
   %
-  % :param Input: **mandatory**. TODO
+  % :param Input: **mandatory**. Column(s) to concatenate. Must all be of the same length.
   % :type  Input: array
   %
-  % :param Output: optional. TODO
-  % :type  Output: string or array
+  % :param Output: optional. Name of the output column.
+  % :type  Output: string
   %
   % **CODE EXAMPLE**::
   %
@@ -31,16 +31,22 @@ function data = Concatenate(transformer, data)
   %                         'Input', {{'face_type', 'face_repetition'}}, ...
   %                         'Ouput', 'face_type_repetition');
   %
-  %   data.face_type = ;
-  %   data.face_repetition = ;
+  %   data.face_type = {'familiar'; 'unknwown'; 'new'; 'familiar'; 'unknwown'; 'new'};
+  %   data.face_repetition = [1;1;1;2;2;2];
   %
   %   data = bids.transformers(transformer, data);
   %
-  %   data.
+  %   data.face_type_repetition
   %
   %   ans =
-  %
-  %
+  %      {
+  %        'familiar_1'
+  %        'unknwown_1'
+  %        'new_1'
+  %        'familiar_2'
+  %        'unknwown_2'
+  %        'new_2'
+  %      }
   %
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
@@ -48,16 +54,29 @@ function data = Concatenate(transformer, data)
   input = bids.transformers_list.get_input(transformer, data);
   output = bids.transformers_list.get_output(transformer, data, false);
 
+  % TODO: remove assumption that this is an event.tsv file
+  % and that we can rely on a onset column being present
   for row = 1:numel(data.onset)
 
     tmp1 = {};
 
     for i = 1:numel(input)
+
       if isnumeric(data.(input{i}))
         tmp1{1, i} = num2str(data.(input{i})(row));
+
       elseif iscellstr(data.(input{i}))
         tmp1{1, i} = data.(input{i}){row};
+
+      elseif iscell(data.(input{i}))
+        tmp1{1, i} = data.(input{i}){row};
+
+        if isnumeric(tmp1{1, i})
+          tmp1{1, i} = num2str(tmp1{1, i});
+        end
+
       end
+
     end
 
     tmp2{row, 1} = strjoin(tmp1, '_');

@@ -27,10 +27,11 @@ function data = Replace(transformer, data)
   % :type  Input: string or array
   %
   % :param Replace: **mandatory**. The mapping old values (``"key"``) to new values.
-  %                                (``"value"``)
+  %                                (``"value"``).
+  %                                ``key`` can be a regular expression.
   % :type  Replace: array of objects
   %
-  % :param Attribute: optional. The column attribute to search/replace.
+  % :param Attribute: optional. The column attribute to apply the replace to.
   % :type  Attribute: array
   %
   % Valid values include:
@@ -43,6 +44,13 @@ function data = Replace(transformer, data)
   % In the last case, all three attributes
   % (``"value"``, ``"duration"``, and ``"onset"``) will be scanned.
   %
+  % .. note:
+  %
+  %     The rows of the ``attributes`` colums matching the ``key`` from the
+  %     ``input`` will be replaced by ``value``.
+  %
+  %     All replacemenets are done in sequentially.
+  %
   % :param Output: optional. Optional names of columns to output.
   %                          Must match length of input column(s) if provided,
   %                          and columns will be mapped 1-to-1 in order.
@@ -54,21 +62,46 @@ function data = Replace(transformer, data)
   %
   % **CODE EXAMPLE**::
   %
-  %   transformer = struct('Name', 'Replace', ...
-  %                         'Input', 'fruits', ...
-  %                         'Atribute', 'all', ...
-  %                         'Replace', struct('key', {'apple', 'elusive', -1}, ...
-  %                                           'key', {-1, 'value', 0}));
   %
-  %   data. = ;
+  %       data.fruits = {'apple'; 'banana'; 'elusive'};
+  %       data.onset = {1; 2; 3};
+  %       data.duration = {-1; 1; 3};
   %
-  %   data = bids.transformers(transformer, data);
+  %       replace = struct('key', {'apple'; 'elusive'}, 'value', -1);
+  %       replace(end+1).key = -1;
+  %       replace(end).value = 0;
   %
-  %   data.
+  %       transformer = struct('Name', 'Replace', ...
+  %                            'Input', 'fruits', ...
+  %                            'Attribute', 'all', ...
+  %                            'Replace', replace);
   %
-  %   ans =
+  %       data = bids.transformers(transformer, data);
   %
   %
+  %       data.fruits
+  %
+  %         ans =
+  %           3X1 cell array
+  %             [     0]
+  %             'banana'
+  %             [     0]
+  %
+  %       data.onset
+  %
+  %         ans =
+  %           3x1 cell array
+  %             [1]
+  %             [2]
+  %             [3]
+  %
+  %       data.duration
+  %
+  %         ans =
+  %           3X1 cell array
+  %             [-1]
+  %             [ 1]
+  %             [ 3]
   %
   % (C) Copyright 2022 BIDS-MATLAB developers
 
@@ -85,52 +118,103 @@ function data = Replace(transformer, data)
       continue
     end
 
-    % in case we got "all" we must loop over value, onset, duration
-    for ii = 1:numel(attributes)
+    for ii = 1:numel(replace)
 
-      switch attributes{ii}
+      this_input = data.(input{i});
 
-        case 'value'
-          this_output = data.(output{i});
+      key = replace(ii).key;
 
-        case {'onset', 'duration'}
-          this_output = data.(attributes{ii});
-          if strcmp(input{i}, output{i})
-            output{i} = attributes{ii};
-          end
+      if ischar(key) && iscellstr(this_input)
+        key = bids.internal.regexify(key);
+        idx = ~cellfun('isempty', regexp(this_input, key, 'match'));
 
-      end
+      elseif isnumeric(key) && isnumeric(this_input)
+        idx = this_input == key;
 
-      for iii = 1:numel(replace)
+      elseif ischar(key) && iscell(this_input)
+        idx = cellfun(@(x) ischar(x) && ~isempty(regexp(x, key, 'match')), this_input);
 
-        switch attributes{ii}
-          case 'value'
-            this_input = data.(input{i});
-          case {'onset', 'duration'}
-            this_input = data.(attributes{ii});
-        end
+      elseif isnumeric(key) && iscell(this_input)
+        idx = cellfun(@(x) isnumeric(x) && x == key, this_input);
 
-        key = replace(iii).key;
-        value = replace(iii).value;
-
-        if ischar(key)
-          idx = strcmp(key, this_input);
-        elseif isnumeric(key)
-          idx = this_input == key;
-        end
-
-        if isnumeric(this_output)
-          this_output(idx) = repmat(value, sum(idx), 1);
-
-        elseif iscellstr(this_output)
-          this_output(idx) = repmat({value}, sum(idx), 1);
-
-        end
+      else
+        continue
 
       end
 
-      data.(output{i}) = this_output;
+      value = replace(ii).value;
+
+      data = replace_for_attributes(data, attributes, output{i}, this_input, idx, value);
+
     end
+
+  end
+
+end
+
+function [this_output, output] = get_this_output(data, attr, output, this_input)
+
+  switch attr
+
+    case 'value'
+      if isfield(data, output)
+        this_output = data.(output);
+      else
+        this_output = this_input;
+      end
+
+    case {'onset', 'duration'}
+      output = attr;
+      this_output = data.(attr);
+
+  end
+
+end
+
+function string = regexify(string)
+  %
+  % Turns a string into a simple regex. Useful to query bids dataset with
+  % bids.query that by default expects will treat its inputs as regex.
+  %
+  %   Input   -->    Output
+  %
+  %   ``foo`` --> ``^foo$``
+  %
+  % USAGE::
+  %
+  %   string = regexify(string)
+
+  if isempty(string)
+    string = '^$';
+    return
+  end
+  if ~strcmp(string(1), '^')
+    string = ['^' string];
+  end
+  if ~strcmp(string(end), '$')
+    string = [string '$'];
+  end
+end
+
+function data = replace_for_attributes(data, attributes, output, this_input, idx, value)
+
+  % in case we got "all" we must loop over value, onset, duration
+  for i = 1:numel(attributes)
+
+    [this_output, output] = get_this_output(data, attributes{i}, output, this_input);
+
+    if isnumeric(this_output)
+      this_output(idx) = repmat(value, sum(idx), 1);
+
+    elseif iscellstr(this_output)
+      this_output(idx) = repmat({value}, sum(idx), 1);
+
+    elseif iscell(this_output)
+      this_output(idx) = repmat({value}, sum(idx), 1);
+
+    end
+
+    data.(output) = this_output;
 
   end
 
@@ -143,7 +227,7 @@ function attributes =  get_attribute_to_replace(transformer)
   end
   if ~ismember(attributes, {'value', 'onset', 'duration', 'all'})
     msg = sprintf(['Attribute must be one of ', ...
-                   '"values", "onset", "duration" or "all" for Replace.\nGot: %s'], ...
+                   '"value", "onset", "duration" or "all" for Replace.\nGot: %s'], ...
                   char(attributes));
     bids.internal.error_handling(mfilename(), ...
                                  'invalidAttribute', ...
@@ -154,6 +238,6 @@ function attributes =  get_attribute_to_replace(transformer)
     attributes = {attributes};
   end
   if strcmpi(attributes, 'all')
-    attributes =  {'values', 'onset', 'duration'};
+    attributes =  {'value', 'onset', 'duration'};
   end
 end

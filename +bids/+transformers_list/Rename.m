@@ -37,7 +37,7 @@ function data = Rename(transformer, data)
   %                         'Input', {{'age_gt_70', 'age_lt_18'}}, ...
   %                         'Ouput', {{'senior', 'teenager'}});
   %
-  %   data. = ;
+  %   data.age_gt_70 = 75;
   %
   %   data = bids.transformers(transformer, data);
   %
