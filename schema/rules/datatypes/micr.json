@@ -47,7 +47,8 @@
     "extensions": [
       ".jpg",
       ".png",
-      ".tif"
+      ".tif",
+      ".json"
     ],
     "datatypes": [
       "micr"

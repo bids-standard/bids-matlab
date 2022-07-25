@@ -24,11 +24,11 @@
       "InstitutionalDepartmentName": "recommended",
       "Manufacturer": {
         "level": "recommended",
-        "description_addendum": "For MEG scanners, this must be one of:\n`\"CTF\"`, `\"Elekta/Neuromag\"`, `\"BTi/4D\"`, `\"KIT/Yokogawa\"`,\n`\"ITAB\"`, `\"KRISS\"`, `\"Other\"`.\nSee [Appendix VII](/99-appendices/07-meg-systems.html) for\npreferred names.\n"
+        "description_addendum": "For MEG scanners, this must be one of:\n`\"CTF\"`, `\"Elekta/Neuromag\"`, `\"BTi/4D\"`, `\"KIT/Yokogawa\"`,\n`\"ITAB\"`, `\"KRISS\"`, `\"Other\"`.\nSee [Appendix VII](SPEC_ROOT/99-appendices/07-meg-systems.md) for\npreferred names.\n"
       },
       "ManufacturersModelName": {
         "level": "recommended",
-        "description_addendum": "See [Appendix VII](/99-appendices/07-meg-systems.html) for\npreferred names.\n"
+        "description_addendum": "See [Appendix VII](SPEC_ROOT/99-appendices/07-meg-systems.md) for\npreferred names.\n"
       },
       "SoftwareVersions": "recommended",
       "TaskDescription": "recommended",
