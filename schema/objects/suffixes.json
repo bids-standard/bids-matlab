@@ -323,7 +323,7 @@
   "UNIT1": {
     "value": "UNIT1",
     "display_name": "Homogeneous (flat) T1-weighted MP2RAGE image",
-    "description": "In arbitrary units (arbitrary).\nUNIT1 images are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\nNote that although this image is T1-weighted, regions without MR signal will\ncontain white salt-and-pepper noise that most segmentation algorithms will\nfail on.\nTherefore, it is important to dissociate it from `T1w`.\nPlease see [`MP2RAGE` specific notes](/99-appendices/11-qmri.html#unit1-images)\nin the qMRI appendix for further information.\n"
+    "description": "In arbitrary units (arbitrary).\nUNIT1 images are REQUIRED to use this suffix regardless of the method used to\ngenerate them.\nNote that although this image is T1-weighted, regions without MR signal will\ncontain white salt-and-pepper noise that most segmentation algorithms will\nfail on.\nTherefore, it is important to dissociate it from `T1w`.\nPlease see [`MP2RAGE` specific notes](SPEC_ROOT/99-appendices/11-qmri.md#unit1-images)\nin the qMRI appendix for further information.\n"
   },
   "VFA": {
     "value": "VFA",

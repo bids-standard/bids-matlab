@@ -334,7 +334,7 @@
   "sample": {
     "name": "sample",
     "display_name": "Sample index",
-    "description": "Onset of the event according to the sampling scheme of the recorded modality\n(that is, referring to the raw data file that the `events.tsv` file accompanies).\n",
+    "description": "Onset of the event according to the sampling scheme of the recorded modality\n(that is, referring to the raw data file that the `events.tsv` file accompanies).\nWhen there are several sampling schemes present in the raw data file (as can be\nthe case for example for `.edf` files), this column is ambiguous and\nSHOULD NOT be used.\n",
     "type": "integer"
   },
   "sample_id": {
