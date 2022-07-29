@@ -395,6 +395,10 @@ classdef Schema
         end
 
       end
+
+      % in case we get duplicates
+      datatypes = unique(datatypes);
+
     end
 
     function [entities, required] = return_entities_for_suffix_modality(obj, suffix, modality)

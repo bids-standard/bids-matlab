@@ -403,6 +403,24 @@ function test_create_file_anat()
 
 end
 
+function test_create_file_meg()
+
+  name_spec.modality = 'meg';
+  name_spec.suffix = 'meg';
+  name_spec.ext = '.json';
+  name_spec.entities = struct('sub', '01', ...
+                              'acq', 'CTF', ...
+                              'ses', '01', ...
+                              'task', 'FullExample', ...
+                              'run', '1', ...
+                              'proc', 'sss');
+
+  bids_file = bids.File(name_spec, 'use_schema', true);
+
+  assertEqual(bids_file.filename, 'sub-01_ses-01_task-FullExample_acq-CTF_run-1_proc-sss_meg.json');
+
+end
+
 function test_bids_file_derivatives_2()
 
   % GIVEN
