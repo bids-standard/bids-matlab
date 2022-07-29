@@ -373,6 +373,36 @@ function test_reorder_with_schema()
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 end
 
+function test_create_file_with_schema_ignore_extra_entities()
+  name_spec.modality = 'fmap';
+  name_spec.suffix = 'phasediff';
+  name_spec.ext = '.json';
+  name_spec.entities = struct('ses', 'test', ...
+                              'task', 'face', ...
+                              'run', '02', ...
+                              'acq', 'low', ...
+                              'sub', '01');
+  file = bids.File(name_spec, 'use_schema', true);
+  assertEqual(file.filename, 'sub-01_ses-test_acq-low_run-02_phasediff.json');
+end
+
+function test_create_file_anat()
+
+  name_spec.modality = 'anat';
+  name_spec.suffix = 'T1w';
+  name_spec.ext = '.json';
+
+  name_spec.entities = struct('ses', '01', ...
+                              'acq', 'FullExample', ...
+                              'run', '01', ...
+                              'sub', '01');
+
+  file = bids.File(name_spec, 'use_schema', true);
+
+  assertEqual(file.filename, 'sub-01_ses-01_acq-FullExample_run-01_T1w.json');
+
+end
+
 function test_bids_file_derivatives_2()
 
   % GIVEN

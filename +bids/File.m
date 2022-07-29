@@ -382,7 +382,17 @@ classdef File
       end
       entity_names = fieldnames(obj.entities);
       idx = ismember(entity_names, order);
+
       obj.entity_order = cat(1, order, entity_names(~idx));
+      % forget about extra entities when using the schema
+      if ~isempty(obj.schema)
+        obj.entity_order = order;
+        if any(~idx)
+          obj.bids_file_error('extraEntityForSuffix', ...
+                              sprintf('Unknown entity for suffix "%s": "%s"', ...
+                                      obj.suffix, strjoin(entity_names(~idx), ', ')));
+        end
+      end
 
       % reorder obj.entities
       tmp = struct();
@@ -567,7 +577,7 @@ classdef File
       present_entities = fieldnames(obj.entities);
       forbidden_entity = ~ismember(present_entities, obj.entity_order);
       if any(forbidden_entity)
-        msg = sprintf(['Entitiy ''%s'' not allowed by BIDS schema.', ...
+        msg = sprintf(['Entitiy "%s" not allowed by BIDS schema.', ...
                        '\nAllowed entities are:\n - %s'], ...
                       present_entities{forbidden_entity}, ...
                       strjoin(obj.entity_order, '\n - '));
@@ -646,10 +656,18 @@ classdef File
 
       schema_entities = obj.schema.return_entities_for_suffix_modality(obj.suffix, ...
                                                                        obj.modality);
-      for i = 1:numel(schema_entities)
-        obj.entity_order{i, 1} = schema_entities{i};
+      % reorder entities because they are not always ordered in the schema
+      % TODO make faster
+      entity_order = {};
+      for i = 1:numel(obj.schema.entity_order)
+        this_entity = obj.schema.entity_order{i};
+        short_name = obj.schema.content.objects.entities.(this_entity).name;
+        if ismember(short_name, schema_entities)
+          entity_order{end + 1, 1} = short_name;
+        end
       end
-      entity_order = obj.entity_order;
+
+      obj.entity_order = entity_order;
 
     end
 

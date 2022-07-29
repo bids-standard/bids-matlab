@@ -257,6 +257,7 @@ classdef Schema
     end
 
     function entities = return_entities_for_suffix_group(obj, suffix_group)
+      % entities are returned in the expected order according to the schema
       suffix_group = obj.ci_check(suffix_group);
 
       entity_names = fieldnames(suffix_group.entities);
