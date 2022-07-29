@@ -133,18 +133,30 @@
   "AssociatedEmptyRoom": {
     "name": "AssociatedEmptyRoom",
     "display_name": "Associated Empty Room",
-    "description": "A path pointing to an empty-room file associated with\nthe subject's MEG recording.\nThe path is relative to the BIDS dataset root.\nThe path needs to use forward slashes instead of backward slashes\n(for example,\n\"sub-emptyroom/ses-rest/meg/sub-emptyroom_ses-rest_task-noise_run-01_meg.ds\").\nSupplying a list of several paths to empty-room files is possible.\n",
+    "description": "One or more [BIDS URIs](SPEC_ROOT/02-common-principles.md#bids-uri)\npointing to empty-room file(s) associated with the subject's MEG recording.\nUsing forward-slash separated paths relative to the dataset root is\n[DEPRECATED](SPEC_ROOT/02-common-principles.md#definitions).\n",
     "anyOf": [
       {
         "type": "array",
         "items": {
-          "type": "string",
-          "format": "dataset_relative"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "dataset_relative"
+            },
+            {
+              "type": "string",
+              "format": "bids_uri"
+            }
+          ]
         }
       },
       {
         "type": "string",
         "format": "dataset_relative"
+      },
+      {
+        "type": "string",
+        "format": "bids_uri"
       }
     ]
   },
@@ -240,7 +252,7 @@
   "BasedOn": {
     "name": "BasedOn",
     "display_name": "Based On",
-    "description": "List of files in a file collection to generate the map.\nFieldmaps are also listed, if involved in the processing.\n",
+    "description": "List of files in a file collection to generate the map.\nFieldmaps are also listed, if involved in the processing.\nThis field is DEPRECATED, and this metadata SHOULD be recorded in the\n`Sources` field using [BIDS URIs](SPEC_ROOT/02-common-principles.md#bids-uri)\nto distinguish sources from different datasets.\n",
     "anyOf": [
       {
         "type": "string",
@@ -458,6 +470,16 @@
     "description": "The Digital Object Identifier of the dataset (not the corresponding paper).\nDOIs SHOULD be expressed as a valid\n[URI](SPEC_ROOT/02-common-principles.md#uniform-resource-indicator);\nbare DOIs such as `10.0.2.3/dfjj.10` are\n[DEPRECATED](SPEC_ROOT/02-common-principles.md#definitions).\n",
     "type": "string",
     "format": "uri"
+  },
+  "DatasetLinks": {
+    "name": "DatasetLinks",
+    "display_name": "Dataset Links",
+    "description": "Used to map a given `<dataset-name>` from a [BIDS URI](SPEC_ROOT/02-common-principles.md#bids-uri)\nof the form `bids:<dataset-name>:path/within/dataset` to a local or remote location.\nThe `<dataset-name>`: `\"\"` (an empty string) is a reserved keyword that MUST NOT be a key in\n`DatasetLinks` (example: `bids::path/within/dataset`).\n",
+    "type": "object",
+    "additionalProperties": {
+      "type": "string",
+      "format": "uri"
+    }
   },
   "DatasetType": {
     "name": "DatasetType",
@@ -1307,8 +1329,12 @@
   "IntendedFor": {
     "name": "IntendedFor",
     "display_name": "Intended For",
-    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more filenames with paths relative to the participant\nsubdirectory.\nPaths need to use forward slashes instead of backward slashes,\nregardless of operating system.\n",
+    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more [BIDS URIs](SPEC_ROOT/02-common-principles.md#bids-uri).\nUsing forward-slash separated paths relative to the participant subdirectory is\n[DEPRECATED](SPEC_ROOT/02-common-principles.md#definitions).\n",
     "anyOf": [
+      {
+        "type": "string",
+        "format": "bids_uri"
+      },
       {
         "type": "string",
         "format": "participant_relative"
@@ -1316,8 +1342,16 @@
       {
         "type": "array",
         "items": {
-          "type": "string",
-          "format": "participant_relative"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "bids_uri"
+            },
+            {
+              "type": "string",
+              "format": "participant_relative"
+            }
+          ]
         }
       }
     ]
@@ -1325,8 +1359,12 @@
   "IntendedFor__ds_relative": {
     "name": "IntendedFor",
     "display_name": "Intended For",
-    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more filenames with paths relative to the dataset\nroot.\nPaths need to use forward slashes instead of backward slashes,\nregardless of operating system.\n",
+    "description": "The paths to files for which the associated file is intended to be used.\nContains one or more [BIDS URIs](SPEC_ROOT/02-common-principles.md#bids-uri).\nUsing forward-slash separated paths relative to the dataset root is\n[DEPRECATED](SPEC_ROOT/02-common-principles.md#definitions).\n",
     "anyOf": [
+      {
+        "type": "string",
+        "format": "bids_uri"
+      },
       {
         "type": "string",
         "format": "dataset_relative"
@@ -1334,8 +1372,16 @@
       {
         "type": "array",
         "items": {
-          "type": "string",
-          "format": "dataset_relative"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "bids_uri"
+            },
+            {
+              "type": "string",
+              "format": "dataset_relative"
+            }
+          ]
         }
       }
     ]
@@ -1779,7 +1825,7 @@
   "NumberShots": {
     "name": "NumberShots",
     "display_name": "Number Shots",
-    "description": "The number of RF excitations needed to reconstruct a slice or volume\n(may be referred to as partition).\nPlease mind that this is not the same as Echo Train Length which denotes the\nnumber of k-space lines collected after excitation in a multi-echo readout.\nThe data type array is applicable for specifying this parameter before and\nafter the k-space center is sampled.\nPlease see\n[`\"NumberShots\"` metadata field]\\\n(/99-appendices/11-qmri.html#numbershots-metadata-field)\nin the qMRI appendix for corresponding calculations.\n",
+    "description": "The number of RF excitations needed to reconstruct a slice or volume\n(may be referred to as partition).\nPlease mind that this is not the same as Echo Train Length which denotes the\nnumber of k-space lines collected after excitation in a multi-echo readout.\nThe data type array is applicable for specifying this parameter before and\nafter the k-space center is sampled.\nPlease see\n[`\"NumberShots\"` metadata field]\\\n(SPEC_ROOT/99-appendices/11-qmri.md#numbershots-metadata-field)\nin the qMRI appendix for corresponding calculations.\n",
     "anyOf": [
       {
         "type": "number"
@@ -1918,6 +1964,12 @@
       "k-"
     ]
   },
+  "PhotoDescription": {
+    "name": "PhotoDescription",
+    "display_name": "Photo Description",
+    "description": "Description of the photo.\n",
+    "type": "string"
+  },
   "PixelSize": {
     "name": "PixelSize",
     "display_name": "Pixel Size",
@@ -2040,7 +2092,7 @@
   "RawSources": {
     "name": "RawSources",
     "display_name": "Raw Sources",
-    "description": "A list of paths relative to dataset root pointing to the BIDS-Raw file(s)\nthat were used in the creation of this derivative.\n",
+    "description": "A list of paths relative to dataset root pointing to the BIDS-Raw file(s)\nthat were used in the creation of this derivative.\nThis field is DEPRECATED, and this metadata SHOULD be recorded in the\n`Sources` field using [BIDS URIs](SPEC_ROOT/02-common-principles.md#bids-uri)\nto distinguish sources from different datasets.\n",
     "type": "array",
     "items": {
       "type": "string",
@@ -2171,7 +2223,7 @@
   "RepetitionTimeExcitation": {
     "name": "RepetitionTimeExcitation",
     "display_name": "Repetition Time Excitation",
-    "description": "The interval, in seconds, between two successive excitations.\n[DICOM Tag 0018, 0080](http://dicomlookup.com/lookup.asp?sw=Tnumber&q=(0018,0080)\nbest refers to this parameter.\nThis field may be used together with the `\"RepetitionTimePreparation\"` for\ncertain use cases, such as\n[MP2RAGE](https://doi.org/10.1016/j.neuroimage.2009.10.002).\nUse `RepetitionTimeExcitation` (in combination with\n`\"RepetitionTimePreparation\"` if needed) for anatomy imaging data rather than\n`\"RepetitionTime\"` as it is already defined as the amount of time that it takes\nto acquire a single volume in the\n[task imaging data](/04-modality-specific-files/01-magnetic-resonance-\\\nimaging-data.html#task-including-resting-state-imaging-data)\nsection.\n",
+    "description": "The interval, in seconds, between two successive excitations.\n[DICOM Tag 0018, 0080](http://dicomlookup.com/lookup.asp?sw=Tnumber&q=(0018,0080)\nbest refers to this parameter.\nThis field may be used together with the `\"RepetitionTimePreparation\"` for\ncertain use cases, such as\n[MP2RAGE](https://doi.org/10.1016/j.neuroimage.2009.10.002).\nUse `RepetitionTimeExcitation` (in combination with\n`\"RepetitionTimePreparation\"` if needed) for anatomy imaging data rather than\n`\"RepetitionTime\"` as it is already defined as the amount of time that it takes\nto acquire a single volume in the\n[task imaging data](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-\\\nimaging-data.md#task-including-resting-state-imaging-data)\nsection.\n",
     "type": "number",
     "minimum": 0,
     "unit": "s"
@@ -2529,11 +2581,19 @@
   "Sources": {
     "name": "Sources",
     "display_name": "Sources",
-    "description": "A list of files with the paths specified relative to dataset root;\nthese files were directly used in the creation of this derivative data file.\nFor example, if a derivative A is used in the creation of another\nderivative B, which is in turn used to generate C in a chain of A->B->C,\nC should only list B in `\"Sources\"`, and B should only list A in `\"Sources\"`.\nHowever, in case both X and Y are directly used in the creation of Z,\nthen Z should list X and Y in `\"Sources\"`,\nregardless of whether X was used to generate Y.\n",
+    "description": "A list of files with the paths specified using\n[BIDS URIs](SPEC_ROOT/02-common-principles.md#bids-uri);\nthese files were directly used in the creation of this derivative data file.\nFor example, if a derivative A is used in the creation of another\nderivative B, which is in turn used to generate C in a chain of A->B->C,\nC should only list B in `\"Sources\"`, and B should only list A in `\"Sources\"`.\nHowever, in case both X and Y are directly used in the creation of Z,\nthen Z should list X and Y in `\"Sources\"`,\nregardless of whether X was used to generate Y.\nUsing paths specified relative to the dataset root is\n[DEPRECATED](SPEC_ROOT/02-common-principles.md#definitions).\n",
     "type": "array",
     "items": {
-      "type": "string",
-      "format": "dataset_relative"
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "dataset_relative"
+        },
+        {
+          "type": "string",
+          "format": "bids_uri"
+        }
+      ]
     }
   },
   "SpatialReference": {
@@ -3002,7 +3062,7 @@
   "iEEGCoordinateSystem": {
     "name": "iEEGCoordinateSystem",
     "display_name": "iEEG Coordinate System",
-    "description": "Defines the coordinate system for the iEEG sensors.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`iEEGCoordinateSystemDescription`.\nIf positions correspond to pixel indices in a 2D image\n(of either a volume-rendering, surface-rendering, operative photo, or\noperative drawing), this MUST be `\"Pixels\"`.\nFor more information, see the section on\n[2D coordinate systems](/04-modality-specific-files/04-intracranial\\\n-electroencephalography.html#allowed-2d-coordinate-systems).\n",
+    "description": "Defines the coordinate system for the iEEG sensors.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`iEEGCoordinateSystemDescription`.\nIf positions correspond to pixel indices in a 2D image\n(of either a volume-rendering, surface-rendering, operative photo, or\noperative drawing), this MUST be `\"Pixels\"`.\nFor more information, see the section on\n[2D coordinate systems](SPEC_ROOT/04-modality-specific-files/04-intracranial\\\n-electroencephalography.md#allowed-2d-coordinate-systems).\n",
     "anyOf": [
       {
         "$ref": "_iEEGCoordSys"

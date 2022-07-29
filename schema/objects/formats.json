@@ -76,7 +76,7 @@
   },
   "unit": {
     "display_name": "A standardized unit",
-    "description": "A unit.\nSI units in CMIXF formatting are RECOMMENDED\n(see [Units](/02-common-principles.html#units)).\n\nCurrently this matches any string.\n\nTODO: Somehow reference the actual unit options in the Units appendix.\n",
+    "description": "A unit.\nSI units in CMIXF formatting are RECOMMENDED\n(see [Units](SPEC_ROOT/02-common-principles.md#units)).\n\nCurrently this matches any string.\n\nTODO: Somehow reference the actual unit options in the Units appendix.\n",
     "pattern": ".*"
   },
   "uri": {
