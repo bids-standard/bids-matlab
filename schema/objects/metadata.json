@@ -397,10 +397,10 @@
     "display_name": "Chunk Transformation Matrix Axis",
     "description": "Describe the axis of the ChunkTransformationMatrix\n(for examples: `[\"X\", \"Y\"]` or `[\"Z\", \"Y\", \"X\"]`).\n",
     "type": "array",
+    "minItems": 2,
+    "maxItems": 3,
     "items": {
-      "type": "string",
-      "minItems": 2,
-      "maxItems": 3
+      "type": "string"
     }
   },
   "Code": {
