@@ -156,6 +156,10 @@ classdef File
         obj.entities = f_struct.entities;
       end
 
+      if isfield(f_struct, 'modality')
+        obj.modality = f_struct.modality;
+      end
+
       if args.Results.use_schema
         obj = obj.use_schema();
       end
@@ -597,7 +601,9 @@ classdef File
         obj.bids_file_error('schemaMissing');
       end
 
-      obj = obj.get_modality_from_schema();
+      if isempty(obj.modality)
+        obj = obj.get_modality_from_schema();
+      end
       if isempty(obj.modality) || iscell(obj.modality)
         return
       end
@@ -649,7 +655,9 @@ classdef File
         obj.bids_file_error('schemaMissing');
       end
 
-      obj = obj.get_modality_from_schema();
+      if isempty(obj.modality)
+        obj = obj.get_modality_from_schema();
+      end
       if isempty(obj.modality) || iscell(obj.modality)
         return
       end
