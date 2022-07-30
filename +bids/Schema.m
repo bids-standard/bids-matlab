@@ -482,7 +482,14 @@ classdef Schema
       if isfield(obj.content.objects.columns, word)
         status = true;
         def = obj.content.objects.columns.(word);
-      else
+      end
+
+      if ~status && isfield(obj.content.objects.metadata, word)
+        status = true;
+        def = obj.content.objects.metadata.(word);
+      end
+
+      if ~status
         def = struct('LongName', word, ...
                      'Description', 'TODO', ...
                      'Units', 'TODO', ...
