@@ -92,7 +92,7 @@
       "modality == \"meg\"",
       "datatype == \"meg\"",
       "suffix == \"meg\"",
-      "dataset.modalities.includes('\"EEG\")"
+      "dataset.modalities.includes(\"EEG\")"
     ],
     "fields": {
       "EEGPlacementScheme": "optional",

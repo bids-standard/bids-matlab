@@ -25,10 +25,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
       "reconstruction": "optional",
+      "run": "optional",
       "part": "optional"
     }
   },
@@ -63,10 +63,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
-      "reconstruction": "optional"
+      "reconstruction": "optional",
+      "run": "optional"
     }
   },
   "defacemask": {
@@ -84,10 +84,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
       "reconstruction": "optional",
+      "run": "optional",
       "modality": "optional"
     }
   },
@@ -107,10 +107,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
       "reconstruction": "optional",
+      "run": "optional",
       "echo": "required",
       "part": "optional"
     }
@@ -130,10 +130,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
       "reconstruction": "optional",
+      "run": "optional",
       "echo": "optional",
       "flip": "required",
       "part": "optional"
@@ -154,10 +154,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
       "reconstruction": "optional",
+      "run": "optional",
       "inversion": "required",
       "part": "optional"
     }
@@ -177,10 +177,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
       "reconstruction": "optional",
+      "run": "optional",
       "echo": "optional",
       "flip": "optional",
       "inversion": "required",
@@ -203,10 +203,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
       "reconstruction": "optional",
+      "run": "optional",
       "echo": "optional",
       "flip": "required",
       "mtransfer": "required",
@@ -228,10 +228,10 @@
     "entities": {
       "subject": "required",
       "session": "optional",
-      "run": "optional",
       "acquisition": "optional",
       "ceagent": "optional",
       "reconstruction": "optional",
+      "run": "optional",
       "mtransfer": "required",
       "part": "optional"
     }

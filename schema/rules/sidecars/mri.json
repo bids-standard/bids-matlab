@@ -68,7 +68,7 @@
       "dataset.modalities.includes(\"PET\")"
     ],
     "fields": {
-      "NonLinearGradientCorrection": "required"
+      "NonlinearGradientCorrection": "required"
     }
   },
   "ASLMRISequenceSpecifics": {
@@ -82,8 +82,7 @@
   },
   "MTParameters": {
     "selectors": [
-      "\"MTState\" in sidecar",
-      "sidecar.MTState == \"True\""
+      "sidecar.MTState == true"
     ],
     "fields": {
       "MTOffsetFrequency": "recommended",
@@ -95,7 +94,6 @@
   },
   "SpoilingType": {
     "selectors": [
-      "\"SpoilingState\" in sidecar",
       "sidecar.SpoilingState == true"
     ],
     "fields": {
@@ -104,7 +102,6 @@
   },
   "SpoilingRF": {
     "selectors": [
-      "\"SpoilingType\" in sidecar",
       "[\"RF\", \"COMBINED\"].includes(sidecar.SpoilingType)"
     ],
     "fields": {
@@ -113,7 +110,6 @@
   },
   "SpoilingGradient": {
     "selectors": [
-      "\"SpoilingType\" in sidecar",
       "[\"GRADIENT\", \"COMBINED\"].includes(sidecar.SpoilingType)"
     ],
     "fields": {
@@ -131,31 +127,51 @@
       "ParallelAcquisitionTechnique": "recommended",
       "PartialFourier": "recommended",
       "PartialFourierDirection": "recommended",
+      "EffectiveEchoSpacing": {
+        "level": "recommended",
+        "level_addendum": "required if corresponding fieldmap data present",
+        "description_addendum": "<sup>2</sup>"
+      },
+      "MixingTime": "recommended"
+    }
+  },
+  "PhaseEncodingDirectionRec": {
+    "selectors": [
+      "modality == \"mri\"",
+      "suffix != \"epi\""
+    ],
+    "fields": {
       "PhaseEncodingDirection": {
         "level": "recommended",
-        "level_addendum": "This parameter is required if corresponding fieldmap data is present\nor when using multiple runs with different phase encoding directions\n(which can be later used for field inhomogeneity correction).\n",
+        "level_addendum": "required if corresponding fieldmap data is present\nor when using multiple runs with different phase encoding directions\n(which can be later used for field inhomogeneity correction).\n"
+      },
+      "TotalReadoutTime": {
+        "level": "recommended",
+        "level_addendum": "required if corresponding 'field/distortion' maps\nacquired with opposing phase encoding directions are present\n(see [Case 4: Multiple phase encoded\ndirections](#case-4-multiple-phase-encoded-directions-pepolar))\n"
+      }
+    }
+  },
+  "PhaseEncodingDirectionReq": {
+    "selectors": [
+      "modality == \"mri\"",
+      "suffix == \"epi\""
+    ],
+    "fields": {
+      "PhaseEncodingDirection": {
+        "level": "required",
         "issue": {
           "name": "PHASE_ENCODING_DIRECTION_MUST_DEFINE",
           "issue": "You have to define 'PhaseEncodingDirection' for this file.\n"
         }
       },
-      "EffectiveEchoSpacing": {
-        "level": "recommended",
-        "level_addendum": "<sup>2</sup> This parameter is required if corresponding fieldmap data\nis present.\n",
-        "issue": {
-          "name": "EFFECTIVE_ECHO_SPACING_NOT_DEFINED",
-          "message": "You should define 'EffectiveEchoSpacing' for this file. If you don't\nprovide this information field map correction will not be possible.\n"
-        }
-      },
       "TotalReadoutTime": {
-        "level": "recommended",
-        "level_addendum": "<sup>3</sup> This parameter is required if corresponding 'field/distortion' maps\nacquired with opposing phase encoding directions are present\n(see [Case 4: Multiple phase encoded\ndirections](#case-4-multiple-phase-encoded-directions-pepolar)).\n",
+        "level": "required",
+        "description_addendum": "<sup>3</sup>",
         "issue": {
           "name": "TOTAL_READOUT_TIME_MUST_DEFINE",
           "message": "You have to define 'TotalReadoutTime' for this file.\n"
         }
-      },
-      "MixingTime": "recommended"
+      }
     }
   },
   "MRITimingParameters": {
@@ -185,17 +201,7 @@
       "modality == \"mri\"",
       "datatype == \"perf\"",
       "[\"asl\", \"m0scan\"].includes(suffix)",
-      "\"MRAcquisitionType\" in sidecar",
       "sidecar.MRAcquisitionType == \"2D\""
-    ],
-    "fields": {
-      "SliceTiming": "required"
-    }
-  },
-  "SliceTimingSparse": {
-    "selectors": [
-      "modality == \"mri\"",
-      "\"DelayTime\" in sidecar"
     ],
     "fields": {
       "SliceTiming": "required"
@@ -206,25 +212,34 @@
       "modality == \"mri\""
     ],
     "fields": {
+      "NegativeContrast": "optional"
+    }
+  },
+  "MRIFlipAngleLookLockerFalse": {
+    "selectors": [
+      "modality == \"mri\"",
+      "sidecar.LookLocker == false"
+    ],
+    "fields": {
       "FlipAngle": {
         "level": "recommended",
-        "level_addendum": "required if LookLocker is set to `true`.",
+        "level_addendum": "required if LookLocker is set to `true`"
+      }
+    }
+  },
+  "MRIFlipAngleLookLockerTrue": {
+    "selectors": [
+      "modality == \"mri\"",
+      "sidecar.LookLocker == true"
+    ],
+    "fields": {
+      "FlipAngle": {
+        "level": "required",
         "issue": {
           "name": "LOOK_LOCKER_FLIP_ANGLE_MISSING",
           "message": "You should define 'FlipAngle' for this file, in\ncase of a LookLocker acquisition. 'FlipAngle' is the\nflip angle (FA) for the acquisition, specified in degrees.\nCorresponds to: DICOM Tag 0018, 1314 `Flip Angle`. The data\ntype number may apply to files from any MRI modality concerned\nwith a single value for this field, or to the files in a file\ncollection where the value of this field is iterated using the\nflip entity. The data type array provides a value for each volume\nin a 4D dataset and should only be used when the volume timing is\ncritical for interpretation of the data, such as in ASL or\nvariable flip angle fMRI sequences.\n"
         }
-      },
-      "NegativeContrast": "optional"
-    }
-  },
-  "MRIFlipAngleLookLocker": {
-    "selectors": [
-      "modality == \"mri\"",
-      "\"LookLocker\" in sidecar",
-      "sidecar.LookLocker == True"
-    ],
-    "fields": {
-      "FlipAngle": "required"
+      }
     }
   },
   "MRISliceAcceleration": {

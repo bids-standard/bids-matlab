@@ -1,0 +1,10 @@
+{
+  "StimulusPresentation": {
+    "selectors": [
+      "suffix == \"events\""
+    ],
+    "fields": {
+      "StimulusPresentation": "recommended"
+    }
+  }
+}

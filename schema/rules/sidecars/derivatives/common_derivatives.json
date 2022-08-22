@@ -4,9 +4,12 @@
       "dataset.DatasetType == \"derivative\""
     ],
     "fields": {
-      "Description": "RECOMMENDED",
-      "Sources": "OPTIONAL",
-      "RawSources": "OPTIONAL"
+      "Description": {
+        "level": "recommended",
+        "description_addendum": "This describes the nature of the file."
+      },
+      "Sources": "optional",
+      "RawSources": "deprecated"
     }
   },
   "SpatialReferenceEntity": {
@@ -15,16 +18,19 @@
       "\"space\" in entities"
     ],
     "fields": {
-      "SpatialReference": "RECOMMENDED"
+      "SpatialReference": {
+        "level": "recommended",
+        "level_addendum": "if the derivative is aligned to a standard template listed in\n[Standard template identifiers][templates]. Required otherwise.\n"
+      }
     }
   },
   "SpatialReferenceNonStandard": {
     "selectors": [
       "dataset.DatasetType == \"derivative\"",
-      "schema.objects.metadata._StandardTemplateCoordSys).includes(not(entities.space)"
+      "!(schema.objects.metadata._StandardTemplateCoordSys).includes(entities.space)"
     ],
     "fields": {
-      "SpatialReference": "REQUIRED"
+      "SpatialReference": "required"
     }
   },
   "SpatialReferenceNoEntity": {
@@ -33,7 +39,7 @@
       "!(\"space\" in entities)"
     ],
     "fields": {
-      "SpatialReference": "REQUIRED"
+      "SpatialReference": "required"
     }
   },
   "MaskDerivatives": {
@@ -42,11 +48,9 @@
       "suffix == \"mask\""
     ],
     "fields": {
-      "RawSources": "REQUIRED",
-      "Type": "RECOMMENDED",
-      "Atlas": "OPTIONAL",
-      "Resolution": "OPTIONAL",
-      "Density": "OPTIONAL"
+      "Type": "recommended",
+      "Sources": "recommended",
+      "RawSources": "deprecated"
     }
   },
   "MaskDerivativesAtlas": {
@@ -56,7 +60,10 @@
       "\"label\" in entities"
     ],
     "fields": {
-      "atlas": "RECOMMENDED"
+      "Atlas": {
+        "level": "recommended",
+        "level_addendum": "if `label` entity is defined"
+      }
     }
   },
   "SegmentationCommon": {
@@ -65,10 +72,20 @@
       "[\"dseg\", \"probseg\"].includes(suffix)"
     ],
     "fields": {
-      "Type": "RECOMMENDED",
-      "Atlas": "OPTIONAL",
-      "Resolution": "OPTIONAL",
-      "Density": "OPTIONAL"
+      "Manual": "optional"
+    }
+  },
+  "SegmentationCommonAtlas": {
+    "selectors": [
+      "dataset.DatasetType == \"derivative\"",
+      "[\"dseg\", \"probseg\"].includes(suffix)",
+      "\"atlas\" in entities"
+    ],
+    "fields": {
+      "Atlas": {
+        "level": "recommended",
+        "level_addendum": "if `atlas` is present"
+      }
     }
   },
   "ImageDerivatives": {
@@ -78,7 +95,7 @@
       "[\".nii\", \".nii.gz\"].includes(extension)"
     ],
     "fields": {
-      "SkullStripped": "REQUIRED"
+      "SkullStripped": "required"
     }
   },
   "ImageDerivativeResEntity": {
@@ -88,7 +105,10 @@
       "\"res\" in entities"
     ],
     "fields": {
-      "Resolution": "REQUIRED"
+      "Resolution": {
+        "level": "required",
+        "level_addendum": "if `res` is present"
+      }
     }
   },
   "ImageDerivativeDenEntity": {
@@ -98,7 +118,10 @@
       "\"den\" in entities"
     ],
     "fields": {
-      "Density": "REQUIRED"
+      "Density": {
+        "level": "required",
+        "level_addendum": "if `den` is present"
+      }
     }
   }
 }

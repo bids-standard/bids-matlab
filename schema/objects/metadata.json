@@ -60,16 +60,16 @@
     "description": "Defines the coordinate system for the anatomical landmarks.\nSee [Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"AnatomicalLandmarkCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
-        "$ref": "_MEGCoordSys"
+        "$ref": "objects.metadata._MEGCoordSys"
       },
       {
-        "$ref": "_EEGCoordSys"
+        "$ref": "objects.metadata._EEGCoordSys"
       },
       {
-        "$ref": "_StandardTemplateCoordSys"
+        "$ref": "objects.metadata._StandardTemplateCoordSys"
       },
       {
-        "$ref": "_StandardTemplateDeprecatedCoordSys"
+        "$ref": "objects.metadata._StandardTemplateDeprecatedCoordSys"
       }
     ]
   },
@@ -573,16 +573,16 @@
     "description": "Defines the coordinate system for the digitized head points.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"DigitizedHeadPointsCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
-        "$ref": "_MEGCoordSys"
+        "$ref": "objects.metadata._MEGCoordSys"
       },
       {
-        "$ref": "_EEGCoordSys"
+        "$ref": "objects.metadata._EEGCoordSys"
       },
       {
-        "$ref": "_StandardTemplateCoordSys"
+        "$ref": "objects.metadata._StandardTemplateCoordSys"
       },
       {
-        "$ref": "_StandardTemplateDeprecatedCoordSys"
+        "$ref": "objects.metadata._StandardTemplateDeprecatedCoordSys"
       }
     ]
   },
@@ -663,16 +663,16 @@
     "description": "Defines the coordinate system for the EEG sensors.\n\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`EEGCoordinateSystemDescription`.\n",
     "anyOf": [
       {
-        "$ref": "_MEGCoordSys"
+        "$ref": "objects.metadata._MEGCoordSys"
       },
       {
-        "$ref": "_EEGCoordSys"
+        "$ref": "objects.metadata._EEGCoordSys"
       },
       {
-        "$ref": "_StandardTemplateCoordSys"
+        "$ref": "objects.metadata._StandardTemplateCoordSys"
       },
       {
-        "$ref": "_StandardTemplateDeprecatedCoordSys"
+        "$ref": "objects.metadata._StandardTemplateDeprecatedCoordSys"
       }
     ]
   },
@@ -836,16 +836,16 @@
     "description": "Defines the coordinate system for the fiducials.\nPreferably the same as the `\"EEGCoordinateSystem\"`.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"FiducialsCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
-        "$ref": "_MEGCoordSys"
+        "$ref": "objects.metadata._MEGCoordSys"
       },
       {
-        "$ref": "_EEGCoordSys"
+        "$ref": "objects.metadata._EEGCoordSys"
       },
       {
-        "$ref": "_StandardTemplateCoordSys"
+        "$ref": "objects.metadata._StandardTemplateCoordSys"
       },
       {
-        "$ref": "_StandardTemplateDeprecatedCoordSys"
+        "$ref": "objects.metadata._StandardTemplateDeprecatedCoordSys"
       }
     ]
   },
@@ -984,12 +984,12 @@
     "description": "Describes the level of analysis.\nValues MUST be one of `\"Genetic\"`, `\"Genomic\"`, `\"Epigenomic\"`,\n`\"Transcriptomic\"`, `\"Metabolomic\"`, or `\"Proteomic\"`.\n",
     "anyOf": [
       {
-        "$ref": "_GeneticLevelEnum"
+        "$ref": "objects.metadata._GeneticLevelEnum"
       },
       {
         "type": "array",
         "items": {
-          "$ref": "_GeneticLevelEnum"
+          "$ref": "objects.metadata._GeneticLevelEnum"
         }
       }
     ]
@@ -1102,16 +1102,16 @@
     "description": "Defines the coordinate system for the head coils.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`HeadCoilCoordinateSystemDescription`.\n",
     "anyOf": [
       {
-        "$ref": "_MEGCoordSys"
+        "$ref": "objects.metadata._MEGCoordSys"
       },
       {
-        "$ref": "_EEGCoordSys"
+        "$ref": "objects.metadata._EEGCoordSys"
       },
       {
-        "$ref": "_StandardTemplateCoordSys"
+        "$ref": "objects.metadata._StandardTemplateCoordSys"
       },
       {
-        "$ref": "_StandardTemplateDeprecatedCoordSys"
+        "$ref": "objects.metadata._StandardTemplateDeprecatedCoordSys"
       }
     ]
   },
@@ -1559,16 +1559,16 @@
     "description": "Defines the coordinate system for the MEG sensors.\nSee [Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`\"MEGCoordinateSystemDescription\"`.\n",
     "anyOf": [
       {
-        "$ref": "_MEGCoordSys"
+        "$ref": "objects.metadata._MEGCoordSys"
       },
       {
-        "$ref": "_EEGCoordSys"
+        "$ref": "objects.metadata._EEGCoordSys"
       },
       {
-        "$ref": "_StandardTemplateCoordSys"
+        "$ref": "objects.metadata._StandardTemplateCoordSys"
       },
       {
-        "$ref": "_StandardTemplateDeprecatedCoordSys"
+        "$ref": "objects.metadata._StandardTemplateDeprecatedCoordSys"
       }
     ]
   },
@@ -2736,19 +2736,19 @@
     "type": "object",
     "properties": {
       "OperatingSystem": {
-        "$ref": "OperatingSystem"
+        "$ref": "objects.metadata.OperatingSystem"
       },
       "SoftwareName": {
-        "$ref": "SoftwareName"
+        "$ref": "objects.metadata.SoftwareName"
       },
       "SoftwareRRID": {
-        "$ref": "SoftwareRRID"
+        "$ref": "objects.metadata.SoftwareRRID"
       },
       "SoftwareVersion": {
-        "$ref": "SoftwareVersion"
+        "$ref": "objects.metadata.SoftwareVersion"
       },
       "Code": {
-        "$ref": "Code"
+        "$ref": "objects.metadata.Code"
       }
     }
   },
@@ -3065,13 +3065,13 @@
     "description": "Defines the coordinate system for the iEEG sensors.\nSee\n[Appendix VIII](SPEC_ROOT/99-appendices/08-coordinate-systems.md)\nfor a list of restricted keywords for coordinate systems.\nIf `\"Other\"`, provide definition of the coordinate system in\n`iEEGCoordinateSystemDescription`.\nIf positions correspond to pixel indices in a 2D image\n(of either a volume-rendering, surface-rendering, operative photo, or\noperative drawing), this MUST be `\"Pixels\"`.\nFor more information, see the section on\n[2D coordinate systems](SPEC_ROOT/04-modality-specific-files/04-intracranial\\\n-electroencephalography.md#allowed-2d-coordinate-systems).\n",
     "anyOf": [
       {
-        "$ref": "_iEEGCoordSys"
+        "$ref": "objects.metadata._iEEGCoordSys"
       },
       {
-        "$ref": "_StandardTemplateCoordSys"
+        "$ref": "objects.metadata._StandardTemplateCoordSys"
       },
       {
-        "$ref": "_StandardTemplateDeprecatedCoordSys"
+        "$ref": "objects.metadata._StandardTemplateDeprecatedCoordSys"
       }
     ]
   },

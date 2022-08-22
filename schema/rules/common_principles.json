@@ -1,0 +1,17 @@
+[
+  "dataset",
+  "modality",
+  "data_type",
+  "subject",
+  "session",
+  "sample",
+  "data_acquisition",
+  "task",
+  "event",
+  "run",
+  "index",
+  "label",
+  "suffix",
+  "extension",
+  "deprecated"
+]
