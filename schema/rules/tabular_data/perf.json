@@ -5,7 +5,7 @@
       "suffix == \"aslcontext\""
     ],
     "columns": {
-      "volume_type": "REQUIRED"
+      "volume_type": "required"
     },
     "additional_columns": "not_allowed"
   }

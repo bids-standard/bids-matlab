@@ -1,7 +1,8 @@
 {
   "PETScannerHardware": {
     "selectors": [
-      "modality == \"pet\""
+      "modality == \"pet\"",
+      "suffix == \"pet\""
     ],
     "fields": {
       "Manufacturer": {
@@ -36,14 +37,17 @@
   },
   "PETRadioChemistry": {
     "selectors": [
-      "modality == \"pet\""
+      "modality == \"pet\"",
+      "suffix == \"pet\""
     ],
     "fields": {
       "TracerName": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "Corresponds to DICOM Tags (0008,0105) `Mapping Resource` and\n(0008,0122) `Mapping Resource Name`.\n"
       },
       "TracerRadionuclide": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "Corresponds to DICOM Tags (0008,0104) `CodeValue` and (0008,0104) `CodeMeaning`.\n"
       },
       "InjectedRadioactivity": {
         "level": "required"
@@ -98,23 +102,23 @@
       },
       "InfusionRadioactivity": {
         "level": "recommended",
-        "level_addendum": "required if PETRadioChemistry.fields.ModeOfAdministration == 'bolus-infusion'"
+        "level_addendum": "required if ModeOfAdministration is `'bolus-infusion'`"
       },
       "InfusionStart": {
         "level": "recommended",
-        "level_addendum": "required if PETRadioChemistry.fields.ModeOfAdministration == 'bolus-infusion'"
+        "level_addendum": "required if ModeOfAdministration is `'bolus-infusion'`"
       },
       "InfusionSpeed": {
         "level": "recommended",
-        "level_addendum": "required if PETRadioChemistry.fields.ModeOfAdministration == 'bolus-infusion'"
+        "level_addendum": "required if ModeOfAdministration is `'bolus-infusion'`"
       },
       "InfusionSpeedUnits": {
         "level": "recommended",
-        "level_addendum": "required if PETRadioChemistry.fields.ModeOfAdministration == 'bolus-infusion'"
+        "level_addendum": "required if ModeOfAdministration is `'bolus-infusion'`"
       },
       "InjectedVolume": {
         "level": "recommended",
-        "level_addendum": "required if PETRadioChemistry.fields.ModeOfAdministration == 'bolus-infusion'"
+        "level_addendum": "required if ModeOfAdministration is `'bolus-infusion'`"
       },
       "Purity": {
         "level": "recommended"
@@ -124,6 +128,7 @@
   "EntitiesBolusMetadata": {
     "selectors": [
       "modality == \"pet\"",
+      "suffix == \"pet\"",
       "sidecar.ModeOfAdministration == 'bolus-infusion'"
     ],
     "fields": {
@@ -146,23 +151,27 @@
   },
   "PETPharmaceuticals": {
     "selectors": [
-      "modality == \"pet\""
+      "modality == \"pet\"",
+      "suffix == \"pet\""
     ],
     "fields": {
       "PharmaceuticalName": {
-        "level": "recommended"
+        "level": "recommended",
+        "description_addendum": "Corresponds to DICOM Tag (0008,0034) `Intervention Drug Name`."
       },
       "PharmaceuticalDoseAmount": {
+        "level": "recommended",
+        "description_addendum": "Corresponds to DICOM Tag (0008,0028) `Intervention Drug Dose`."
+      },
+      "PharmaceuticalDoseUnits": {
         "level": "recommended"
       },
-      "PharmaCeuticalDoseUnits": {
+      "PharmaceuticalDoseRegimen": {
         "level": "recommended"
       },
-      "PharmaCeuticalDoseRegimen": {
-        "level": "recommended"
-      },
-      "PharmaCeuticalDoseTime": {
-        "level": "recommended"
+      "PharmaceuticalDoseTime": {
+        "level": "recommended",
+        "description_addendum": "Corresponds to a combination of DICOM Tags (0008,0027) `Intervention Drug Stop Time`\nand (0008,0035) `Intervention Drug Start Time`.\n"
       },
       "Anaesthesia": {
         "level": "optional"
@@ -171,7 +180,8 @@
   },
   "PETTime": {
     "selectors": [
-      "modality == \"pet\""
+      "modality == \"pet\"",
+      "suffix == \"pet\""
     ],
     "fields": {
       "TimeZero": {
@@ -181,25 +191,29 @@
         "level": "required"
       },
       "InjectionStart": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "Corresponds to DICOM Tag (0018,1072) `Radiopharmaceutical Start Time`."
       },
-      "FramesTimesStart": {
+      "FrameTimesStart": {
         "level": "required"
       },
       "FrameDuration": {
         "level": "required"
       },
       "InjectionEnd": {
-        "level": "recommended"
+        "level": "recommended",
+        "description_addendum": "Corresponds to DICOM Tag (0018,1073) `Radiopharmaceutical Stop Time`\nconverted to seconds relative to TimeZero.\n"
       },
       "ScanDate": {
-        "level": "deprecated"
+        "level": "deprecated",
+        "description_addendum": "Corresponds to DICOM Tag (0008,0022) `Acquisition Date`."
       }
     }
   },
   "PETReconstruction": {
     "selectors": [
-      "modality == \"pet\""
+      "modality == \"pet\"",
+      "suffix == \"pet\""
     ],
     "fields": {
       "AcquisitionMode": {
@@ -212,25 +226,32 @@
         "level": "required"
       },
       "ReconMethodName": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "This partly matches the DICOM Tag (0054,1103) `Reconstruction Method`."
       },
       "ReconMethodParameterLabels": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "This partly matches the DICOM Tag (0054,1103) `Reconstruction Method`."
       },
       "ReconMethodParameterUnits": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "This partly matches the DICOM Tag (0054,1103) `Reconstruction Method`."
       },
       "ReconMethodParameterValues": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "This partly matches the DICOM Tag (0054,1103) `Reconstruction Method`."
       },
       "ReconFilterType": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "This partly matches the DICOM Tag (0018,1210) `Convolution Kernel`."
       },
       "ReconFilterSize": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "This partly matches the DICOM Tag (0018,1210) `Convolution Kernel`."
       },
       "AttenuationCorrection": {
-        "level": "required"
+        "level": "required",
+        "description_addendum": "This corresponds to DICOM Tag (0054,1101) `Attenuation Correction Method`."
       },
       "ReconMethodImplementationVersion": {
         "level": "recommended"
@@ -242,19 +263,74 @@
         "level": "recommended"
       },
       "ScatterFraction": {
-        "level": "recommended"
+        "level": "recommended",
+        "description_addendum": "Corresponds to DICOM Tag (0054,1323) `Scatter Fraction Factor`."
       },
       "DecayCorrectionFactor": {
-        "level": "recommended"
+        "level": "recommended",
+        "description_addendum": "Corresponds to DICOM Tag (0054,1321) `Decay Factor`."
       },
       "DoseCalibrationFactor": {
-        "level": "recommended"
+        "level": "recommended",
+        "description_addendum": "Corresponds to DICOM Tag (0054,1322) `Dose Calibration Factor`."
       },
       "PromptRate": {
         "level": "recommended"
       },
       "SinglesRate": {
         "level": "recommended"
+      }
+    }
+  },
+  "BloodRecording": {
+    "selectors": [
+      "modality == \"pet\"",
+      "suffix == \"blood\""
+    ],
+    "fields": {
+      "PlasmaAvail": "required",
+      "MetaboliteAvail": "required",
+      "WholeBloodAvail": "required",
+      "DispersionCorrected": "required",
+      "WithdrawalRate": "recommended",
+      "TubingType": "recommended",
+      "TubingLength": "recommended",
+      "DispersionConstant": "recommended",
+      "Haematocrit": "recommended",
+      "BloodDensity": "recommended"
+    }
+  },
+  "BloodPlasmaFreeFraction": {
+    "selectors": [
+      "modality == \"pet\"",
+      "suffix == \"blood\"",
+      "sidecar.PlasmaAvail == true"
+    ],
+    "fields": {
+      "PlasmaFreeFraction": {
+        "level": "recommended",
+        "level_addendum": "if `PlasmaAvail` is `true`"
+      },
+      "PlasmaFreeFractionMethod": {
+        "level": "recommended",
+        "level_addendum": "if `PlasmaAvail` is `true`"
+      }
+    }
+  },
+  "BloodMetaboliteMethod": {
+    "selectors": [
+      "modality == \"pet\"",
+      "suffix == \"blood\"",
+      "sidecar.MetaboliteAvail == true"
+    ],
+    "fields": {
+      "MetaboliteMethod": {
+        "level": "required",
+        "level_addendum": "if `MetaboliteAvail` is `true`"
+      },
+      "MetaboliteRecoveryCorrectionApplied": {
+        "level": "required",
+        "level_addendum": "if `MetaboliteAvail` is `true`"
       }
     }
   }

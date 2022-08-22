@@ -1,0 +1,206 @@
+{
+  "NiftiHeaderUnreadable": {
+    "code": "NIFTI_HEADER_UNREADABLE",
+    "message": "We were unable to parse header data from this NIfTI file.\nPlease ensure it is not corrupted or mislabeled.\n",
+    "level": "error",
+    "selectors": [
+      "[\".nii\", \".nii.gz\"].includes(extension)"
+    ]
+  },
+  "JsonInvalid": {
+    "code": "JSON_INVALID",
+    "message": "Not a valid JSON file.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".json\""
+    ]
+  },
+  "GzNotGzipped": {
+    "code": "GZ_NOT_GZIPPED",
+    "message": "This file ends in the .gz extension but is not actually gzipped.\n",
+    "level": "error",
+    "selectors": [
+      "extension.includes(\".gz\")"
+    ]
+  },
+  "BvalMultipleRows": {
+    "code": "BVAL_MULTIPLE_ROWS",
+    "message": ".bval files should contain exactly one row of volumes.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".bval\""
+    ]
+  },
+  "BvecNumberRows": {
+    "code": "BVEC_NUMBER_ROWS",
+    "message": ".bvec files should contain exactly three rows of volumes.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".bvec\""
+    ]
+  },
+  "NiftiTooSmall": {
+    "code": "NIFTI_TOO_SMALL",
+    "message": "This file is too small to contain the minimal NIfTI header.\n",
+    "level": "error",
+    "selectors": [
+      "[\".nii\", \".nii.gz\"].includes(extension)"
+    ]
+  },
+  "OrphanedSymlink": {
+    "code": "ORPHANED_SYMLINK",
+    "message": "This file appears to be an orphaned symlink.\nMake sure it correctly points to its referent.\n",
+    "level": "error"
+  },
+  "FileRead": {
+    "code": "FILE_READ",
+    "message": "We were unable to read this file.\nMake sure it contains data (file size > 0 kB) and is not corrupted,\nincorrectly named, or incorrectly symlinked.\n",
+    "level": "error"
+  },
+  "BvecRowLength": {
+    "code": "BVEC_ROW_LENGTH",
+    "message": "Each row in a .bvec file should contain the same number of values.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".bvec\""
+    ]
+  },
+  "BFile": {
+    "code": "B_FILE",
+    "message": ".bval and .bvec files must be single space delimited\nand contain only numerical values.\n",
+    "level": "error",
+    "selectors": [
+      "[\".bval\", \".bvec\"].includes(extension)"
+    ]
+  },
+  "JsonSchemaValidationError": {
+    "code": "JSON_SCHEMA_VALIDATION_ERROR",
+    "message": "Invalid JSON file. The file is not formatted according the schema.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".json\""
+    ]
+  },
+  "NoValidDataFoundForSubject": {
+    "code": "NO_VALID_DATA_FOUND_FOR_SUBJECT",
+    "message": "No BIDS compatible data found for at least one subject.\n",
+    "level": "error"
+  },
+  "WrongNewLine": {
+    "code": "WRONG_NEW_LINE",
+    "message": "All TSV files must use Line Feed '\\n' characters to denote new lines.\nThis files uses Carriage Return '\\r'.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".tsv\""
+    ]
+  },
+  "MalformedBvec": {
+    "code": "MALFORMED_BVEC",
+    "message": "The contents of this .bvec file are undefined or severely malformed.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".bvec\""
+    ]
+  },
+  "MalformedBval": {
+    "code": "MALFORMED_BVAL",
+    "message": "The contents of this .bval file are undefined or severely malformed.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".bval\""
+    ]
+  },
+  "SidecarWithoutDatafile": {
+    "code": "SIDECAR_WITHOUT_DATAFILE",
+    "message": "A json sidecar file was found without a corresponding data file.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".json\""
+    ]
+  },
+  "MissingSession": {
+    "code": "MISSING_SESSION",
+    "message": "Not all subjects contain the same sessions.\n",
+    "level": "warning"
+  },
+  "InaccessibleRemoteFile": {
+    "code": "INACCESSIBLE_REMOTE_FILE",
+    "message": "This file appears to be a symlink to a remote annexed file,\nbut could not be accessed from any of the configured remotes.\n",
+    "level": "error"
+  },
+  "EmptyFile": {
+    "code": "EMPTY_FILE",
+    "message": "Empty files not allowed.\n",
+    "level": "error"
+  },
+  "BrainvisionLinksBroken": {
+    "code": "BRAINVISION_LINKS_BROKEN",
+    "message": "Internal file pointers in BrainVision file triplet (*.eeg, *.vhdr,\nand *.vmrk) are broken or some files do not exist.\n",
+    "level": "error",
+    "selectors": [
+      "[ \".eeg\", \".vhdr\", \".vmrk\"].includes(extension)"
+    ]
+  },
+  "HedError": {
+    "code": "HED_ERROR",
+    "message": "The validation on this HED string returned an error.\n",
+    "level": "error",
+    "selectors": [
+      "suffix == \"events\"",
+      "extension == \".tsv\""
+    ]
+  },
+  "HedWarning": {
+    "code": "HED_WARNING",
+    "message": "The validation on this HED string returned a warning.\n",
+    "level": "warning",
+    "selectors": [
+      "suffix == \"events\"",
+      "extension == \".tsv\""
+    ]
+  },
+  "HedInternalError": {
+    "code": "HED_INTERNAL_ERROR",
+    "message": "An internal error occurred during HED validation.\n",
+    "level": "error",
+    "selectors": [
+      "suffix == \"events\"",
+      "extension == \".tsv\""
+    ]
+  },
+  "HedInternalWarning": {
+    "code": "HED_INTERNAL_WARNING",
+    "message": "An internal warning occurred during HED validation.\n",
+    "level": "warning",
+    "selectors": [
+      "suffix == \"events\"",
+      "extension == \".tsv\""
+    ]
+  },
+  "HedMissingValueInSidecar": {
+    "code": "HED_MISSING_VALUE_IN_SIDECAR",
+    "message": "The json sidecar does not contain this column value as\na possible key to a HED string.\n",
+    "level": "warning",
+    "selectors": [
+      "suffix == \"events\"",
+      "extension == \".tsv\""
+    ]
+  },
+  "HedVersionNotDefined": {
+    "code": "HED_VERSION_NOT_DEFINED",
+    "message": "You should define 'HEDVersion' for this file.\nIf you don't provide this information, the HED validation will use\nthe latest version available.\n",
+    "level": "warning",
+    "selectors": [
+      "suffix == \"events\"",
+      "extension == \".tsv\""
+    ]
+  },
+  "InvalidJsonEncoding": {
+    "code": "INVALID_JSON_ENCODING",
+    "message": "JSON files must be valid utf-8.\n",
+    "level": "error",
+    "selectors": [
+      "extension == \".json\""
+    ]
+  }
+}

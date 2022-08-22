@@ -16,13 +16,13 @@
       "units": "required",
       "low_cutoff": "required",
       "high_cutoff": "required",
-      "reference": "optional",
-      "group": "optional",
+      "reference__ieeg": "optional",
+      "group__channel": "optional",
       "sampling_frequency": "optional",
       "description": "optional",
       "notch": "optional",
       "status": "optional",
-      "status_descriptions": "optional"
+      "status_description": "optional"
     },
     "additional_columns": "allowed_if_defined"
   },
@@ -46,7 +46,7 @@
       "size": "required",
       "material": "recommended",
       "manufacturer": "recommended",
-      "group": "recommended",
+      "group__channel": "recommended",
       "hemisphere": "recommended",
       "type__electrodes": "optional",
       "impedance": "optional",

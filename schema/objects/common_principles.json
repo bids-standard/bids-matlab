@@ -1,0 +1,77 @@
+{
+  "data_acquisition": {
+    "name": "Data acquisition",
+    "display_name": "Data acquisition",
+    "description": "A continuous uninterrupted block of time during which a brain scanning instrument was acquiring data according to\nparticular scanning sequence/protocol.\n"
+  },
+  "data_type": {
+    "name": "Data type",
+    "display_name": "Data type",
+    "description": "A functional group of different types of data.\nData files are contained in a directory named for the data type.\nIn raw datasets, the data type directory is nested inside subject and (optionally) session directories.\nBIDS defines the following data types:\n\n    1.  `func` (task based and resting state functional MRI)\n\n    2.  `dwi` (diffusion weighted imaging)\n\n    3.  `fmap` (field inhomogeneity mapping data such as field maps)\n\n    4.  `anat` (structural imaging such as T1, T2, PD, and so on)\n\n    5.  `perf` (perfusion)\n\n    6.  `meg` (magnetoencephalography)\n\n    7.  `eeg` (electroencephalography)\n\n    8.  `ieeg` (intracranial electroencephalography)\n\n    9.  `beh` (behavioral)\n\n    10. `pet` (positron emission tomography)\n\n    11. `micr` (microscopy)\n"
+  },
+  "dataset": {
+    "name": "Dataset",
+    "display_name": "Dataset",
+    "description": "A set of neuroimaging and behavioral data acquired for a purpose of a particular study.\nA dataset consists of data acquired from one or more subjects, possibly from multiple sessions.\n"
+  },
+  "deprecated": {
+    "name": "DEPRECATED",
+    "display_name": "DEPRECATED",
+    "description": "A \"deprecated\" entity or metadata field SHOULD NOT be used in the generation of new datasets.\nIt remains in the standard in order to preserve the interpretability of existing datasets.\nValidating software SHOULD warn when deprecated practices are detected\nand provide a suggestion for updating the dataset to preserve the curator's intent.\n"
+  },
+  "event": {
+    "name": "Event",
+    "display_name": "Event",
+    "description": "Something that happens or may be perceived by a test subject as happening\nat a particular instant during the recording.\nEvents are most commonly associated with on- or offset of stimulus presentations,\nor with the distinct marker of on- or offset of a subject's response or motor action.\nOther events may include unplanned incidents\n(for example, sudden onset of noise and vibrations due to construction work,\nlaboratory device malfunction),\nchanges in task instructions (for example, switching the response hand),\nor experiment control parameters (for example, changing the stimulus presentation rate over experimental blocks),\nand noted data feature occurrences (for example, a recording electrode producing noise).\nIn BIDS, each event has an onset time and duration.\nNote that not all tasks will have recorded events (for example, \"resting state\").\n"
+  },
+  "extension": {
+    "name": "File extension",
+    "display_name": "File extension",
+    "description": "A portion of the file name after the left-most period (`.`) preceded by any other alphanumeric.\nFor example, `.gitignore` does not have a file extension,\nbut the file extension of `test.nii.gz` is `.nii.gz`.\nNote that the left-most period is included in the file extension.\n"
+  },
+  "index": {
+    "name": "index",
+    "display_name": "index",
+    "description": "A nonnegative integer, possibly prefixed with arbitrary number of 0s for consistent indentation,\nfor example, it is `01` in `run-01` following `run-<index>` specification.\n"
+  },
+  "label": {
+    "name": "label",
+    "display_name": "label",
+    "description": "An alphanumeric value, possibly prefixed with arbitrary number of 0s for consistent indentation,\nfor example, it is `rest` in `task-rest` following `task-<label>` specification.\nNote that labels MUST not collide when casing is ignored\n(see [Case collision intolerance](SPEC_ROOT/02-common-principles.md#case-collision-intolerance)).\n"
+  },
+  "modality": {
+    "name": "Modality",
+    "display_name": "Modality",
+    "description": "The category of brain data recorded by a file.\nFor MRI data, different pulse sequences are considered distinct modalities,\nsuch as `T1w`, `bold` or `dwi`.\nFor passive recording techniques, such as EEG, MEG or iEEG,\nthe technique is sufficiently uniform to define the modalities `eeg`, `meg` and `ieeg`.\nWhen applicable, the modality is indicated in the **suffix**.\nThe modality may overlap with, but should not be confused with the **data type**.\n"
+  },
+  "run": {
+    "name": "Run",
+    "display_name": "Run",
+    "description": "An uninterrupted repetition of data acquisition that has the same acquisition parameters and task\n(however events can change from run to run due to different subject response\nor randomized nature of the stimuli).\nRun is a synonym of a data acquisition.\nNote that \"uninterrupted\" may look different by modality due to the nature of the recording.\nFor example, in [MRI](SPEC_ROOT/04-modality-specific-files/01-magnetic-resonance-imaging-data.md)\nor [MEG](SPEC_ROOT/04-modality-specific-files/02-magnetoencephalography.md),\nif a subject leaves the scanner, the acquisition must be restarted.\nFor some types of [PET](SPEC_ROOT/04-modality-specific-files/09-positron-emission-tomography.md) acquisitions,\na subject may leave and re-enter the scanner without interrupting the scan.\n"
+  },
+  "sample": {
+    "name": "Sample",
+    "display_name": "Sample",
+    "description": "A sample pertaining to a subject such as tissue, primary cell or cell-free sample.\nSample labels MUST be unique within a subject and it is RECOMMENDED\nthat they be unique throughout the dataset.\n"
+  },
+  "session": {
+    "name": "Session",
+    "display_name": "Session",
+    "description": "A logical grouping of neuroimaging and behavioral data consistent across subjects.\nSession can (but doesn't have to) be synonymous to a visit in a longitudinal study.\nIn general, subjects will stay in the scanner during one session.\nHowever, for example, if a subject has to leave the scanner room\nand then be re-positioned on the scanner bed,\nthe set of MRI acquisitions will still be considered as a session\nand match sessions acquired in other subjects.\nSimilarly, in situations where different data types are obtained over several visits\n(for example fMRI on one day followed by DWI the day after) those can be grouped in one session.\nDefining multiple sessions is appropriate when several identical or similar data acquisitions\nare planned and performed on all -or most- subjects,\noften in the case of some intervention between sessions (for example, training).\nIn the [PET](SPEC_ROOT/04-modality-specific-files/09-positron-emission-tomography.md) context,\na session may also indicate a group of related scans, taken in one or more visits.\n"
+  },
+  "suffix": {
+    "name": "suffix",
+    "display_name": "suffix",
+    "description": "An alphanumeric string that forms part of a filename, located after all\n[entities](SPEC_ROOT/02-common-principles.md#entities) and\nfollowing a final `_`, right before the **file extension**;\nfor example, it is `eeg` in `sub-05_task-matchingpennies_eeg.vhdr`.\n"
+  },
+  "subject": {
+    "name": "Subject",
+    "display_name": "Subject",
+    "description": "A person or animal participating in the study.\nUsed interchangeably with term **Participant**.\n"
+  },
+  "task": {
+    "name": "Task",
+    "display_name": "Task",
+    "description": "A set of structured activities performed by the participant.\nTasks are usually accompanied by stimuli and responses, and can greatly vary in complexity.\nFor the purpose of this specification we consider the so-called \"resting state\" a task.\nIn the context of brain scanning, a task is always tied to one data acquisition.\nTherefore, even if during one acquisition the subject performed multiple conceptually different behaviors\n(with different sets of instructions) they will be considered one (combined) task.\n"
+  }
+}

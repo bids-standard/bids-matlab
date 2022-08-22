@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - main
       - dev
   pull_request:
     branches: ['*']
@@ -25,10 +24,10 @@ jobs:
         sudo apt-get -y install octave liboctave-dev
 
     - name: Clone bids-matlab
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: true
-        fetch-depth: 2
+        fetch-depth: 1
 
     - name: Install JSONio
       run: |

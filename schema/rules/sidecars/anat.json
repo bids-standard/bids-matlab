@@ -5,9 +5,9 @@
       "datatype == \"anat\""
     ],
     "fields": {
-      "ContrastBolusIngredient": "OPTIONAL",
-      "RepetitionTimeExcitation": "OPTIONAL",
-      "RepetitionTimePreparation": "OPTIONAL"
+      "ContrastBolusIngredient": "optional",
+      "RepetitionTimeExcitation": "optional",
+      "RepetitionTimePreparation": "optional"
     }
   },
   "PhaseEntityUnits": {
@@ -17,7 +17,7 @@
       "entities.part == \"phase\""
     ],
     "fields": {
-      "Unit": "REQUIRED"
+      "Units": "required"
     }
   },
   "PhaseSuffixUnits": {
@@ -27,7 +27,7 @@
       "suffix == \"phase\""
     ],
     "fields": {
-      "Unit": "REQUIRED"
+      "Units": "required"
     }
   }
 }

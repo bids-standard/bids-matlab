@@ -21,7 +21,7 @@
       "notch": "optional",
       "software_filters": "optional",
       "status": "optional",
-      "status_descriptions": "optional"
+      "status_description": "optional"
     },
     "additional_columns": "allowed_if_defined"
   }

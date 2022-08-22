@@ -385,6 +385,11 @@
     "display_name": "Defacing Mask",
     "description": "A binary mask that was used to remove facial features from an anatomical MRI\nimage.\n"
   },
+  "dseg": {
+    "value": "dseg",
+    "display_name": "Discrete Segmentation",
+    "description": "A discrete segmentation.\n\nThis suffix may only be used in derivative datasets.\n"
+  },
   "dwi": {
     "value": "dwi",
     "display_name": "Diffusion-weighted image",
@@ -462,6 +467,11 @@
     "display_name": "MEG Sensor Coil Positions",
     "description": "Another manufacturer-specific detail pertains to the KIT/Yokogawa/Ricoh\nsystem, which saves the MEG sensor coil positions in a separate file with two\npossible filename extensions  (`.sqd`, `.mrk`).\nFor these files, the `markers` suffix MUST be used.\nFor example: `sub-01_task-nback_markers.sqd`\n"
   },
+  "mask": {
+    "value": "mask",
+    "display_name": "Binary Mask",
+    "description": "A binary mask that functions as a discrete \"label\" for a single structure.\n\nThis suffix may only be used in derivative datasets.\n"
+  },
   "meg": {
     "value": "meg",
     "display_name": "Magnetoencephalography",
@@ -509,6 +519,11 @@
     "value": "physio",
     "display_name": "Physiological recording",
     "description": "Physiological recordings such as cardiac and respiratory signals.\n"
+  },
+  "probseg": {
+    "value": "probseg",
+    "display_name": "Probabilistic Segmentation",
+    "description": "A probabilistic segmentation.\n\nThis suffix may only be used in derivative datasets.\n"
   },
   "sbref": {
     "value": "sbref",

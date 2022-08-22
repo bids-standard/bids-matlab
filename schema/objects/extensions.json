@@ -39,6 +39,11 @@
     "display_name": "CTF MEG Dataset Folder",
     "description": "A folder for MEG data, typically containing a `.meg4` file for the data and a `.res4` file for the resources.\n"
   },
+  "dlabelnii": {
+    "value": ".dlabel.nii",
+    "display_name": "CIFTI-2 Dense Label File",
+    "description": "A CIFTI-2 dense label file.\n\nThis extension may only be used in derivative datasets.\n"
+  },
   "edf": {
     "value": ".edf",
     "display_name": "European Data Format",
@@ -73,6 +78,11 @@
     "value": ".kdf",
     "display_name": "KRISS KDF",
     "description": "A KRISS (file with extension `.kdf`) file.\n\nEach experimental run on the KRISS system produces a file with extension `.kdf`.\nAdditional files that may be available in the same folder include\nthe digitized positions of the head points (`\\_digitizer.txt`),\nthe position of the center of the MEG coils (`.chn`),\nand the event markers (`.trg`).\n"
+  },
+  "labelgii": {
+    "value": ".label.gii",
+    "display_name": "GIFTI label/annotation file",
+    "description": "A GIFTI label/annotation file.\n\nThis extension may only be used in derivative datasets.\n"
   },
   "md": {
     "value": ".md",

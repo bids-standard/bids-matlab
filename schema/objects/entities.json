@@ -196,7 +196,7 @@
   "task": {
     "name": "task",
     "display_name": "Task",
-    "description": "Each task has a unique label that MUST only consist of letters and/or\nnumbers (other characters, including spaces and underscores, are not\nallowed).\nThose labels MUST be consistent across subjects and sessions.\n",
+    "description": "A set of structured activities performed by the participant.\nTasks are usually accompanied by stimuli and responses, and can greatly vary in complexity.\nFor the purpose of this specification we consider the so-called \"resting state\" a task,\nalthough events files are not expected for resting state data.\nAdditionally, a common convention in the specification is to include the word \"rest\" in\nthe `task` label for resting state files (for example, `task-rest`).\n\nIn the context of brain scanning, a task is always tied to one data acquisition.\nTherefore, even if during one acquisition the subject performed multiple conceptually different behaviors\n(with different sets of instructions) they will be considered one (combined) task.\nThe `task-<label>` MUST be consistent across subjects and sessions.\n\nFiles with the `task-<label>` entity SHOULD have an associated\n[events file](SPEC_ROOT/04-modality-specific-files/05-task-events.md#task-events),\nas well as certain metadata fields in the associated JSON file.\n",
     "type": "string",
     "format": "label"
   },
