@@ -40,90 +40,61 @@ classdef Schema
 
     function obj = load(obj, use_schema)
       %
-      % Loads a json schema by recursively looking through a folder structure.
-      %
-      % The nesting of the output structure reflects a combination of the folder structure and
-      % any eventual nesting within each json.
+      % Loads schema
       %
       % USAGE::
       %
-      %   schema = bids.Schema
-      %   schema = schema.load
+      %   schema = bids.Schema()
+      %   schema = schema.load()
       %
 
       if nargin < 2
         use_schema = true();
       end
 
+      schema_file = fullfile(bids.internal.root_dir(), 'schema.json');
+      if ~exist(schema_file, 'file')
+        msg = sprintf('The schema.json file %s does not exist.', schema_dir);
+        bids.internal.error_handling(mfilename(), 'missingSchema', msg, false, true);
+      end
+
+      obj.content = bids.util.jsondecode(schema_file);
       if ~use_schema
         obj.content = struct([]);
         return
       end
 
-      if ischar(use_schema)
-        schema_dir = use_schema;
-        obj.is_bids_schema = false;
-      else
-        schema_dir = fullfile(bids.internal.root_dir(), 'schema');
-        obj.is_bids_schema = true;
-      end
-
-      if ~exist(schema_dir, 'dir')
-        msg = sprintf('The schema directory %s does not exist.', schema_dir);
-        bids.internal.error_handling(mfilename(), 'missingDirectory', msg, false, true);
-      end
-
-      [json_file_list, dirs] = bids.internal.file_utils('FPList', schema_dir, '^.*.json$');
-
-      obj.content = obj.append_json_to_schema(obj.content, json_file_list);
-
-      obj.content = obj.inspect_subdir(obj, obj.content, dirs);
-
       % add extra field listing all required entities
-      if obj.is_bids_schema
+      mod_grps = obj.return_modality_groups();
 
-        mod_grps = obj.return_modality_groups();
+      datatypes = obj.get_datatypes();
 
-        datatypes = obj.get_datatypes();
+      for i = 1:numel(mod_grps)
 
-        for i = 1:numel(mod_grps)
+        mods = obj.return_modalities([], mod_grps{i});
 
-          mods = obj.return_modalities([], mod_grps{i});
+        for j = 1:numel(mods)
 
-          for j = 1:numel(mods)
+          suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
 
-            suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
-            % need to use a tmp variable to avoid some errors with octave
-            % in continuous integration
-            updated_suffix_grps = struct('suffixes', [], ...
-                                         'extensions', [], ...
-                                         'entities', [], ...
-                                         'required_entities', []);
-
-            for k = 1:numel(suffix_groups)
-              this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
-              required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
-              %               this_suffix_group.required_entities = required_entities;
-              % updated_suffix_grps(k, 1) = this_suffix_group;
-              datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
-            end
-
-            %             datatypes.(mods{j}).(suffix_grps{k}) = updated_suffix_grps;
-
+          for k = 1:numel(suffix_groups)
+            this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
+            required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
+            datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
           end
+
         end
-
-        obj = obj.set_datatypes(datatypes);
-
       end
+
+      obj = obj.set_datatypes(datatypes);
 
     end
 
     function modalities = return_modalities(obj, subject, modality_group)
-      % if we go schema-less or use another schema than the "official" one
+      % if we go schema-less
       % we list directories in the subject/session folder
       % as proxy of the modalities that we have to parse
-      if ~obj.is_bids_schema || isempty(obj.content)
+      if isempty(obj.content)
         modalities = cellstr(bids.internal.file_utils('List', ...
                                                       subject.path, ...
                                                       'dir', ...
@@ -395,72 +366,6 @@ classdef Schema
   % ----------------------------------------------------------------------- %
   %% STATIC
   methods (Static)
-
-    %% Methods related to schema loading
-    function structure = append_json_to_schema(structure, json_file_list)
-      %
-      % Reads a json file and appends its content to the bids schema
-      %
-      % USAGE::
-      %
-      %   structure = append_json_to_schema(structure, json_file_list)
-      %
-
-      for iFile = 1:size(json_file_list, 1)
-        file = deblank(json_file_list(iFile, :));
-
-        % use dynamic field name and converts to a valid matlab fieldname
-        field_name = bids.internal.file_utils(file, 'basename');
-        field_name = strrep(field_name, '.', '_');
-        if strcmp(field_name(1), '_')
-          field_name(1) = [];
-        end
-
-        structure.(field_name) = bids.util.jsondecode(file);
-      end
-
-    end
-
-    function structure = inspect_subdir(obj, structure, subdir_list)
-      %
-      % Recursively inspects subdirectory for json files and reflects folder
-      % hierarchy in the output structure.
-      %
-      % USAGE::
-      %
-      %   structure = schema.inspect_subdir(structure, subdir_list)
-      %
-
-      for iDir = 1:size(subdir_list, 1)
-
-        directory = deblank(subdir_list(iDir, :));
-
-        % skip loading json files about metadata unless asked for it
-        if obj.load_schema_metadata || ...
-                ~strcmp(bids.internal.file_utils(directory, 'basename'), 'metadata')
-
-          dirs = bids.internal.file_utils('FPList', directory, 'dir', '.*');
-
-          field_name = bids.internal.file_utils(directory, 'basename');
-          structure.(field_name) = struct();
-
-          json_file_list = bids.internal.file_utils('FPList', directory, '^.*.json$');
-          if ~isempty(json_file_list)
-            structure.(field_name) = obj.append_json_to_schema(structure.(field_name), ...
-                                                               json_file_list);
-          end
-
-          structure.(field_name) = obj.inspect_subdir(obj, structure.(field_name), dirs);
-
-          % clean up empty fields
-          if isempty(fieldnames(structure.(field_name)))
-            structure = rmfield(structure, field_name);
-          end
-
-        end
-
-      end
-    end
 
     %% Other
     function variable_to_check = ci_check(variable_to_check)

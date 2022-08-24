@@ -31,7 +31,7 @@ on:
 
 jobs:
   schema:
-  
+
     # only trigger schema update on upstream repo
     if: github.repository_owner == 'bids-standard'
 
@@ -39,17 +39,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-
-    - name: Install dependencies
-      run: python -m pip install -r requirements.txt
-
-    - name: Convert BIDS schema
+    - name: Get BIDS schema
       run: make update_schema
 
     - name: Create Pull Request
@@ -57,10 +47,10 @@ jobs:
       with:
         commit-message: BIDS schema update
         id: cpr
-        assignees: Remi-Gau, gllmflndn
+        assignees: Remi-Gau
         base: master
         delete-branch: true
-        title: '[BOT] update  schema'
+        title: '[BOT] update schema'
         body: 'done via this [GitHub Action](https://github.com/bids-standard/bids-matlab/blob/master/.github/workflows/update_schema.yml)'
 
     - name: Check outputs
