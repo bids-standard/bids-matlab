@@ -6,11 +6,11 @@ on:
       - master
       - dev
     paths:
-      - '**.m'      
+      - '**.m'
   pull_request:
     branches: ['*']
     paths:
-      - '**.m'    
+      - '**.m'
 
 jobs:
   test:
@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         submodules: true
-        fetch-depth: 2
+        fetch-depth: 1
 
     - name: Install JSONio
       run: |
