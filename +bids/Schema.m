@@ -28,7 +28,11 @@ classdef Schema
 
     function obj = Schema(use_schema)
       %
-      % Constructor
+      % USAGE::
+      %
+      %   schema = bids.Schema(use_schema)
+      %
+      % use_schema: boolean
       %
 
       obj.content = [];
@@ -91,9 +95,23 @@ classdef Schema
     end
 
     function modalities = return_modalities(obj, subject, modality_group)
-      % if we go schema-less
-      % we list directories in the subject/session folder
-      % as proxy of the modalities that we have to parse
+      %
+      % Return the datatypes for a given for a given modality group for a given subject.
+      % For example, "mri" will give: "func", "anat", "dwi", "fmap"...
+      %
+      % USAGE::
+      %
+      %   modalities = schema.return_modalities(subject, modality_group)
+      %
+      % :param subject:  Subject information: ``subject.path``, ...
+      %                  See ``parse_subject`` subfunction for layout.m for details.
+      % :type  subject:  struct
+      %
+      % :param modality_group:  Any of the BIDS modality
+      % :type  modality_group:  char
+      %
+      % If we go schema-less, we list directories in the subject/session folder
+      % as proxy of the datatypes that we have to parse.
       if isempty(obj.content)
         modalities = cellstr(bids.internal.file_utils('List', ...
                                                       subject.path, ...
@@ -111,12 +129,18 @@ classdef Schema
       datatypes = obj.content.rules.datatypes;
     end
 
-    function obj = set_datatypes(obj, datatypes)
-      obj.content.rules.datatypes = datatypes;
-    end
-
     %% ENTITIES
     function order = entity_order(obj, entity_list)
+      %
+      % Returns the order of the entities in the list according to the BIDS official order.
+      %
+      % USAGE::
+      %
+      %   order = schema.entity_order(entity_list)
+      %
+      % :param entity_list:  List of entities
+      % :type  entity_list:  char or cellstr
+      %
 
       if ischar(entity_list)
         entity_list = cellstr(entity_list);
@@ -132,6 +156,11 @@ classdef Schema
 
     %% MODALITIES
     function groups = return_modality_groups(obj)
+      %
+      % USAGE::
+      %
+      %   groups = schema.return_modality_groups()
+      %
       %
       % Returns a dummy variable if we go schema less
       %
@@ -149,6 +178,13 @@ classdef Schema
       %
       % USAGE::
       %
+      %  suffix_groups = schema.return_suffix_groups_for_datatype(datatype)
+      %
+      % :param datatype:
+      % :type  datatype:  char
+      %
+      % EXAMPLE::
+      %
       %  suffix_groups = schema.return_suffix_groups_for_datatype('func')
       %
 
@@ -157,6 +193,20 @@ classdef Schema
     end
 
     function entities = return_entities_for_suffix_group(obj, suffix_group)
+      %
+      % USAGE::
+      %
+      %  entities = schema.return_entities_for_suffix_group(suffix_group)
+      %
+      % :param suffix_group:
+      % :type  suffix_group:  struct
+      %
+      % EXAMPLE::
+      %
+      %  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      %  entities = schema.return_entities_for_suffix_group(suffix_groups(1))
+      %
+
       suffix_group = obj.ci_check(suffix_group);
 
       entity_names = fieldnames(suffix_group.entities);
@@ -171,6 +221,9 @@ classdef Schema
       %
       %  Returns a logical vector to track which entities of a suffix group
       %  are required in the bids schema
+      %
+      % :param this_suffix_group:
+      % :type  this_suffix_group:  struct
       %
       % USAGE::
       %
@@ -205,6 +258,12 @@ classdef Schema
       %
       % For a given sufffix and modality, this returns the "suffix group" this
       % suffix belongs to
+      %
+      % :param modality:
+      % :type  modality:  char
+      %
+      % :param suffix:
+      % :type  suffix:  char
       %
       % USAGE::
       %
@@ -256,6 +315,9 @@ classdef Schema
       %
       % For a given suffix, returns all the possible datatypes that have this suffix.
       %
+      % :param suffix:
+      % :type  suffix:  char
+      %
       % EXAMPLE::
       %
       %       schema = bids.Schema();
@@ -302,6 +364,12 @@ classdef Schema
       %
       % returns the list of entities for a given suffix of a given modality
       %
+      % :param modality:
+      % :type  modality:  char
+      %
+      % :param suffix:
+      % :type  suffix:  char
+      %
       % USAGE::
       %
       %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
@@ -327,6 +395,9 @@ classdef Schema
       %
       % creates a regular expression of suffixes for a given imaging modality
       %
+      % :param modality:
+      % :type  modality:  char
+      %
       % USAGE::
       %
       %   reg_ex = schema.return_modality_suffixes_regex(modality)
@@ -339,6 +410,9 @@ classdef Schema
       %
       % creates a regular expression of extensions for a given imaging modality
       %
+      % :param modality:
+      % :type  modality:  char
+      %
       % USAGE::
       %
       %   reg_ex = schema.return_modality_extensions_regex(modality)
@@ -350,6 +424,9 @@ classdef Schema
     function reg_ex = return_modality_regex(obj, modality)
       %
       % creates a regular expression of suffixes and extension for a given imaging modality
+      %
+      % :param modality:
+      % :type  modality:  char
       %
       % USAGE::
       %
@@ -367,7 +444,6 @@ classdef Schema
   %% STATIC
   methods (Static)
 
-    %% Other
     function variable_to_check = ci_check(variable_to_check)
       % Mostly to avoid some crash in continuous integration
       if iscell(variable_to_check)
