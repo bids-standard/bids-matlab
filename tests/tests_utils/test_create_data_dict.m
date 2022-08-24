@@ -19,6 +19,7 @@ function test_create_data_dict_basic()
   % no file written
   bids.util.create_data_dict(tsv_files{1}, 'output', [], 'schema', true);
   assertEqual(exist('tmp.json', 'file'), 0);
+  teardown();
 
   % file written
   data_dict = bids.util.create_data_dict(tsv_files{1}, 'output', 'tmp.json', 'schema', true);
@@ -29,6 +30,7 @@ function test_create_data_dict_basic()
   % do not use schema
   data_dict = bids.util.create_data_dict(tsv_files{1}, 'output', [], 'schema', false);
   assertEqual(data_dict.onset.Units, 'TODO');
+  teardown();
 
   % overwrite
   bids.util.create_data_dict(tsv_files{1}, 'output', 'tmp.json', 'schema', true);
@@ -38,6 +40,7 @@ function test_create_data_dict_basic()
                              'force', true);
   data_dict = bids.util.jsondecode('tmp.json');
   assertEqual(data_dict.onset.Units, 'TODO');
+  teardown();
 
 end
 
@@ -55,7 +58,6 @@ function test_create_data_dict_schema()
   schema = schema.load();
 
   data_dict = bids.util.create_data_dict(tsv_files{1}, 'output', 'tmp.json', 'schema', schema);
-
   teardown();
 
 end
@@ -167,17 +169,24 @@ function test_create_data_dict_several_tsv()
                                              'schema', schema, ...
                                              'level_limit', 50, ...
                                              'verbose', false);
+      teardown([dataset '_' tasks{i_task} '.json']);
 
     end
-
-    teardown();
 
   end
 
 end
 
-function teardown()
-  delete('*.json');
+function teardown(files)
+  if nargin < 1
+    files = [];
+  end
+  if exist('tmp.json', 'file')
+    delete('tmp.json');
+  end
+  if ~isempty(files) && exist(files, 'file')
+    delete(files);
+  end
   if exist('modified_levels.tsv', 'file') == 2
     delete('modified_levels.tsv');
   end
