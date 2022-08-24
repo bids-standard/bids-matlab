@@ -78,34 +78,6 @@ function test_return_required_entities
 
 end
 
-function test_load()
-
-  use_schema = fullfile(fileparts(mfilename('fullpath')), 'schema');
-
-  schema = bids.Schema(use_schema);
-
-  assert(isfield(schema.content, 'base'));
-  assert(isfield(schema.content, 'subfolder_1'));
-  assert(isfield(schema.content.subfolder_1, 'sub'));
-  assert(~isfield(schema.content, 'subfolder_4'));
-  assert(isfield(schema.content.subfolder_2, 'subfolder_3'));
-  assert(isfield(schema.content.subfolder_2.subfolder_3, 'sub'));
-
-end
-
-function test_metadata_loading()
-
-  schema = bids.Schema();
-  assert(~isfield(schema.content, 'metadata'));
-
-  schema = bids.Schema();
-  schema.load_schema_metadata = true;
-  schema = schema.load();
-  assert(isfield(schema.content.objects, 'metadata'));
-  assert(isstruct(schema.content.objects.metadata));
-
-end
-
 function test_schemaless()
 
   use_schema = false();

@@ -29,9 +29,12 @@ on:
   schedule:
     - cron: "0 0 * * 1" # every monday
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
 jobs:
   schema:
-  
+
     # only trigger schema update on upstream repo
     if: github.repository_owner == 'bids-standard'
 
@@ -39,31 +42,18 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
+    - name: Clone bids-matlab
+      uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-
-    - name: Install dependencies
-      run: python -m pip install -r requirements.txt
-
-    - name: Convert BIDS schema
+    - name: Get BIDS schema
       run: make update_schema
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:
         commit-message: BIDS schema update
-        id: cpr
-        assignees: Remi-Gau, gllmflndn
+        assignees: Remi-Gau
         base: master
         delete-branch: true
-        title: '[BOT] update  schema'
+        title: '[BOT] update schema'
         body: 'done via this [GitHub Action](https://github.com/bids-standard/bids-matlab/blob/master/.github/workflows/update_schema.yml)'
-
-    - name: Check outputs
-      run: |
-        echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-        echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"

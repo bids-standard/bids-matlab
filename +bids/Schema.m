@@ -28,7 +28,11 @@ classdef Schema
 
     function obj = Schema(use_schema)
       %
-      % Constructor
+      % USAGE::
+      %
+      %   schema = bids.Schema(use_schema)
+      %
+      % use_schema: boolean
       %
 
       obj.content = [];
@@ -40,90 +44,75 @@ classdef Schema
 
     function obj = load(obj, use_schema)
       %
-      % Loads a json schema by recursively looking through a folder structure.
-      %
-      % The nesting of the output structure reflects a combination of the folder structure and
-      % any eventual nesting within each json.
+      % Loads schema
       %
       % USAGE::
       %
-      %   schema = bids.Schema
-      %   schema = schema.load
+      %   schema = bids.Schema()
+      %   schema = schema.load()
       %
 
       if nargin < 2
         use_schema = true();
       end
 
+      schema_file = fullfile(bids.internal.root_dir(), 'schema.json');
+      if ~exist(schema_file, 'file')
+        msg = sprintf('The schema.json file %s does not exist.', schema_dir);
+        bids.internal.error_handling(mfilename(), 'missingSchema', msg, false, true);
+      end
+
+      obj.content = bids.util.jsondecode(schema_file);
       if ~use_schema
         obj.content = struct([]);
         return
       end
 
-      if ischar(use_schema)
-        schema_dir = use_schema;
-        obj.is_bids_schema = false;
-      else
-        schema_dir = fullfile(bids.internal.root_dir(), 'schema');
-        obj.is_bids_schema = true;
-      end
-
-      if ~exist(schema_dir, 'dir')
-        msg = sprintf('The schema directory %s does not exist.', schema_dir);
-        bids.internal.error_handling(mfilename(), 'missingDirectory', msg, false, true);
-      end
-
-      [json_file_list, dirs] = bids.internal.file_utils('FPList', schema_dir, '^.*.json$');
-
-      obj.content = obj.append_json_to_schema(obj.content, json_file_list);
-
-      obj.content = obj.inspect_subdir(obj, obj.content, dirs);
-
       % add extra field listing all required entities
-      if obj.is_bids_schema
+      mod_grps = obj.return_modality_groups();
 
-        mod_grps = obj.return_modality_groups();
+      datatypes = obj.get_datatypes();
 
-        datatypes = obj.get_datatypes();
+      for i = 1:numel(mod_grps)
 
-        for i = 1:numel(mod_grps)
+        mods = obj.return_modalities([], mod_grps{i});
 
-          mods = obj.return_modalities([], mod_grps{i});
+        for j = 1:numel(mods)
 
-          for j = 1:numel(mods)
+          suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
 
-            suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
-            % need to use a tmp variable to avoid some errors with octave
-            % in continuous integration
-            updated_suffix_grps = struct('suffixes', [], ...
-                                         'extensions', [], ...
-                                         'entities', [], ...
-                                         'required_entities', []);
-
-            for k = 1:numel(suffix_groups)
-              this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
-              required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
-              %               this_suffix_group.required_entities = required_entities;
-              % updated_suffix_grps(k, 1) = this_suffix_group;
-              datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
-            end
-
-            %             datatypes.(mods{j}).(suffix_grps{k}) = updated_suffix_grps;
-
+          for k = 1:numel(suffix_groups)
+            this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
+            required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
+            datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
           end
+
         end
-
-        obj = obj.set_datatypes(datatypes);
-
       end
+
+      obj = obj.set_datatypes(datatypes);
 
     end
 
     function modalities = return_modalities(obj, subject, modality_group)
-      % if we go schema-less or use another schema than the "official" one
-      % we list directories in the subject/session folder
-      % as proxy of the modalities that we have to parse
-      if ~obj.is_bids_schema || isempty(obj.content)
+      %
+      % Return the datatypes for a given for a given modality group for a given subject.
+      % For example, "mri" will give: "func", "anat", "dwi", "fmap"...
+      %
+      % USAGE::
+      %
+      %   modalities = schema.return_modalities(subject, modality_group)
+      %
+      % :param subject:  Subject information: ``subject.path``, ...
+      %                  See ``parse_subject`` subfunction for layout.m for details.
+      % :type  subject:  struct
+      %
+      % :param modality_group:  Any of the BIDS modality
+      % :type  modality_group:  char
+      %
+      % If we go schema-less, we list directories in the subject/session folder
+      % as proxy of the datatypes that we have to parse.
+      if isempty(obj.content)
         modalities = cellstr(bids.internal.file_utils('List', ...
                                                       subject.path, ...
                                                       'dir', ...
@@ -146,6 +135,16 @@ classdef Schema
 
     %% ENTITIES
     function order = entity_order(obj, entity_list)
+      %
+      % Returns the order of the entities in the list according to the BIDS official order.
+      %
+      % USAGE::
+      %
+      %   order = schema.entity_order(entity_list)
+      %
+      % :param entity_list:  List of entities
+      % :type  entity_list:  char or cellstr
+      %
 
       if ischar(entity_list)
         entity_list = cellstr(entity_list);
@@ -161,6 +160,11 @@ classdef Schema
 
     %% MODALITIES
     function groups = return_modality_groups(obj)
+      %
+      % USAGE::
+      %
+      %   groups = schema.return_modality_groups()
+      %
       %
       % Returns a dummy variable if we go schema less
       %
@@ -178,6 +182,13 @@ classdef Schema
       %
       % USAGE::
       %
+      %  suffix_groups = schema.return_suffix_groups_for_datatype(datatype)
+      %
+      % :param datatype:
+      % :type  datatype:  char
+      %
+      % EXAMPLE::
+      %
       %  suffix_groups = schema.return_suffix_groups_for_datatype('func')
       %
 
@@ -186,6 +197,20 @@ classdef Schema
     end
 
     function entities = return_entities_for_suffix_group(obj, suffix_group)
+      %
+      % USAGE::
+      %
+      %  entities = schema.return_entities_for_suffix_group(suffix_group)
+      %
+      % :param suffix_group:
+      % :type  suffix_group:  struct
+      %
+      % EXAMPLE::
+      %
+      %  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      %  entities = schema.return_entities_for_suffix_group(suffix_groups(1))
+      %
+
       suffix_group = obj.ci_check(suffix_group);
 
       entity_names = fieldnames(suffix_group.entities);
@@ -200,6 +225,9 @@ classdef Schema
       %
       %  Returns a logical vector to track which entities of a suffix group
       %  are required in the bids schema
+      %
+      % :param this_suffix_group:
+      % :type  this_suffix_group:  struct
       %
       % USAGE::
       %
@@ -234,6 +262,12 @@ classdef Schema
       %
       % For a given sufffix and modality, this returns the "suffix group" this
       % suffix belongs to
+      %
+      % :param modality:
+      % :type  modality:  char
+      %
+      % :param suffix:
+      % :type  suffix:  char
       %
       % USAGE::
       %
@@ -285,6 +319,9 @@ classdef Schema
       %
       % For a given suffix, returns all the possible datatypes that have this suffix.
       %
+      % :param suffix:
+      % :type  suffix:  char
+      %
       % EXAMPLE::
       %
       %       schema = bids.Schema();
@@ -331,6 +368,12 @@ classdef Schema
       %
       % returns the list of entities for a given suffix of a given modality
       %
+      % :param modality:
+      % :type  modality:  char
+      %
+      % :param suffix:
+      % :type  suffix:  char
+      %
       % USAGE::
       %
       %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
@@ -356,6 +399,9 @@ classdef Schema
       %
       % creates a regular expression of suffixes for a given imaging modality
       %
+      % :param modality:
+      % :type  modality:  char
+      %
       % USAGE::
       %
       %   reg_ex = schema.return_modality_suffixes_regex(modality)
@@ -368,6 +414,9 @@ classdef Schema
       %
       % creates a regular expression of extensions for a given imaging modality
       %
+      % :param modality:
+      % :type  modality:  char
+      %
       % USAGE::
       %
       %   reg_ex = schema.return_modality_extensions_regex(modality)
@@ -379,6 +428,9 @@ classdef Schema
     function reg_ex = return_modality_regex(obj, modality)
       %
       % creates a regular expression of suffixes and extension for a given imaging modality
+      %
+      % :param modality:
+      % :type  modality:  char
       %
       % USAGE::
       %
@@ -396,73 +448,6 @@ classdef Schema
   %% STATIC
   methods (Static)
 
-    %% Methods related to schema loading
-    function structure = append_json_to_schema(structure, json_file_list)
-      %
-      % Reads a json file and appends its content to the bids schema
-      %
-      % USAGE::
-      %
-      %   structure = append_json_to_schema(structure, json_file_list)
-      %
-
-      for iFile = 1:size(json_file_list, 1)
-        file = deblank(json_file_list(iFile, :));
-
-        % use dynamic field name and converts to a valid matlab fieldname
-        field_name = bids.internal.file_utils(file, 'basename');
-        field_name = strrep(field_name, '.', '_');
-        if strcmp(field_name(1), '_')
-          field_name(1) = [];
-        end
-
-        structure.(field_name) = bids.util.jsondecode(file);
-      end
-
-    end
-
-    function structure = inspect_subdir(obj, structure, subdir_list)
-      %
-      % Recursively inspects subdirectory for json files and reflects folder
-      % hierarchy in the output structure.
-      %
-      % USAGE::
-      %
-      %   structure = schema.inspect_subdir(structure, subdir_list)
-      %
-
-      for iDir = 1:size(subdir_list, 1)
-
-        directory = deblank(subdir_list(iDir, :));
-
-        % skip loading json files about metadata unless asked for it
-        if obj.load_schema_metadata || ...
-                ~strcmp(bids.internal.file_utils(directory, 'basename'), 'metadata')
-
-          dirs = bids.internal.file_utils('FPList', directory, 'dir', '.*');
-
-          field_name = bids.internal.file_utils(directory, 'basename');
-          structure.(field_name) = struct();
-
-          json_file_list = bids.internal.file_utils('FPList', directory, '^.*.json$');
-          if ~isempty(json_file_list)
-            structure.(field_name) = obj.append_json_to_schema(structure.(field_name), ...
-                                                               json_file_list);
-          end
-
-          structure.(field_name) = obj.inspect_subdir(obj, structure.(field_name), dirs);
-
-          % clean up empty fields
-          if isempty(fieldnames(structure.(field_name)))
-            structure = rmfield(structure, field_name);
-          end
-
-        end
-
-      end
-    end
-
-    %% Other
     function variable_to_check = ci_check(variable_to_check)
       % Mostly to avoid some crash in continuous integration
       if iscell(variable_to_check)
