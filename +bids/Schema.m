@@ -129,6 +129,10 @@ classdef Schema
       datatypes = obj.content.rules.datatypes;
     end
 
+    function obj = set_datatypes(obj, datatypes)
+      obj.content.rules.datatypes = datatypes;
+    end
+
     %% ENTITIES
     function order = entity_order(obj, entity_list)
       %
