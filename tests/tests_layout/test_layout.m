@@ -17,8 +17,8 @@ function test_layout_smoke_test()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'genetics_ukbb'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'genetics_ukbb'), 'verbose', true);
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds210'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds210'), 'verbose', true);
 
 end

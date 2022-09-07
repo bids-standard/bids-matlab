@@ -84,6 +84,10 @@ function BIDS = layout(varargin)
 
   end
 
+  if verbose
+    fprintf(1, '\n\nIndexing dataset:\n\t%s\n', root);
+  end
+
   %% BIDS structure
   % ==========================================================================
   % BIDS.dir          -- BIDS directory
@@ -93,8 +97,7 @@ function BIDS = layout(varargin)
   % BIDS.subjects     -- structure array of subjects
   % BIDS.root         -- tsv and json files in the root folder
 
-  BIDS = struct( ...
-                'pth', root, ...
+  BIDS = struct('pth', root, ...
                 'description', struct([]), ...
                 'sessions', {{}}, ...
                 'participants', struct([]), ...
@@ -129,6 +132,11 @@ function BIDS = layout(varargin)
   schema.verbose = verbose;
 
   for iSub = 1:numel(subjects)
+
+    if verbose
+      fprintf(1, ' Indexing subject: %s [', subjects{iSub});
+    end
+
     sessions = cellstr(bids.internal.file_utils('List', ...
                                                 fullfile(BIDS.pth, subjects{iSub}), ...
                                                 'dir', ...
@@ -149,6 +157,10 @@ function BIDS = layout(varargin)
 
       end
 
+    end
+
+    if verbose
+      fprintf(1, ']\n');
     end
 
   end
@@ -200,8 +212,7 @@ function BIDS = index_derivatives_dir(BIDS, idx_deriv, verbose)
                                                    '.*'));
 
     for iDir = 1:numel(der_folders)
-      BIDS.derivatives.(der_folders{iDir}) = bids.layout( ...
-                                                         fullfile(BIDS.pth, ...
+      BIDS.derivatives.(der_folders{iDir}) = bids.layout(fullfile(BIDS.pth, ...
                                                                   'derivatives', ...
                                                                   der_folders{iDir}), ...
                                                          'use_schema', false, ...
@@ -248,6 +259,11 @@ function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbo
     % if we go schema-less, we pass an empty schema.content to all the parsing functions
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
+
+      if verbose
+        fprintf(1, '.');
+      end
+
       switch modalities{iModality}
 
         case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf', 'micr'}
