@@ -8,7 +8,7 @@ end
 
 function test_layout_empty_subject_folder_allowed_when_schemaless()
 
-  verbose = true;
+  verbose = false;
 
   mkdir tmp;
   mkdir tmp/sub-01;
@@ -18,7 +18,7 @@ end
 
 function test_layout_smoke_test()
 
-  verbose = true;
+  verbose = false;
 
   pth_bids_example = get_test_data_dir();
 
