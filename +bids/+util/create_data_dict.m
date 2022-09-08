@@ -286,7 +286,7 @@ function dict = set_dict(header, schema)
     elseif isfield(def, 'anyOf')
       if iscell(def.anyOf)
         number_allowed = cellfun(@(x) strcmp(x.type, 'number'), def.anyOf);
-        if any(number_allowed)
+        if any(number_allowed) && isfield(def.anyOf, 'unit')
           dict.Units = def.anyOf{number_allowed}.unit;
         end
       end
