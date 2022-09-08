@@ -260,10 +260,6 @@ function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbo
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
 
-      if verbose
-        fprintf(1, '.');
-      end
-
       switch modalities{iModality}
 
         case {'anat', 'func', 'beh', 'meg', 'eeg', 'ieeg', 'pet', 'fmap', 'dwi', 'perf', 'micr'}
@@ -302,6 +298,10 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
   pth = fullfile(subject.path, modality);
 
   if exist(pth, 'dir')
+
+    if verbose
+      fprintf(1, '.');
+    end
 
     subject = bids.internal.add_missing_field(subject, modality);
 
