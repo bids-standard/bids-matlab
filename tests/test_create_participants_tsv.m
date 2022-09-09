@@ -12,8 +12,10 @@ function test_create_participants_tsv_basic()
 
   output_filename = bids.util.create_participants_tsv(bids_path);
 
-  assertWarning(@()bids.util.create_participants_tsv(bids_path), ...
-                'create_participants_tsv:participantFileExist');
+  if ~bids.internal.is_octave()
+    assertWarning(@()bids.util.create_participants_tsv(bids_path), ...
+                  'create_participants_tsv:participantFileExist');
+  end
 
   delete(output_filename);
 
