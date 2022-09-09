@@ -20,10 +20,8 @@ function test_layout_smoke_test()
 
   verbose = false;
 
-  pth_bids_example = get_test_data_dir();
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'genetics_ukbb'), 'verbose', verbose);
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'genetics_ukbb'), 'verbose', verbose);
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds210'), 'verbose', verbose);
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds210'), 'verbose', verbose);
 
 end
