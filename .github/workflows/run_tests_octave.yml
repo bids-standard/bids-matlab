@@ -8,9 +8,14 @@ on:
     paths:
       - '**.m'
   pull_request:
-    branches: ['*']
+    branches: ["*"]
     paths:
       - '**.m'
+      - .github/workflows/*.yml
+      - schema.json
+
+env:
+  OCTFLAGS: --no-gui --no-window-system --silent
 
 jobs:
   test:

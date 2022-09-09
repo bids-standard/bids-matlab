@@ -8,11 +8,13 @@ on:
     paths:
       - '**.m'
       - .github/workflows/*.yml
+      - schema.json
   pull_request:
     branches: ["*"]
     paths:
       - '**.m'
       - .github/workflows/*.yml
+      - schema.json
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
