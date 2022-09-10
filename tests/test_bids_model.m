@@ -8,6 +8,25 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_model_node_not_in_edges()
+
+  if bids.internal.is_octave()
+    % TODO fix Octave error in CI
+    % failure: warning 'Octave:mixed-string-concat' was raised,
+    % expected 'Model:missingField'. Stack trace:
+    return
+  end
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  bm.Nodes{end + 1} = bm.Nodes{end};
+  bm.Nodes{end}.Name = 'Foo';
+
+  bm.verbose = true;
+  assertWarning(@()bm.validate_edges(), 'Model:nodeMissingFromEdges');
+
+end
+
 function test_model_load_edges()
 
   bm = bids.Model('file', model_file('narps'), 'verbose', false);

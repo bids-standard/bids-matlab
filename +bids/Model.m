@@ -562,9 +562,14 @@ classdef Model
 
       if ~isempty(edges)
 
+        all_nodes = {};
+
         for i = 1:(numel(edges))
 
           this_edge = edges{i, 1};
+
+          all_nodes{end + 1} = this_edge.Source;
+          all_nodes{end + 1} = this_edge.Destination;
 
           if ~isstruct(this_edge)
             obj.model_validation_error('Edges', REQUIRED_EDGES_FIELDS);
@@ -590,6 +595,19 @@ classdef Model
 
           end
 
+        end
+
+        all_nodes = unique(all_nodes);
+        node_names = obj.node_names();
+        missing_nodes = ~ismember(obj.node_names(), all_nodes);
+        if any(missing_nodes)
+          bids.internal.error_handling(mfilename(), ...
+                                       'nodeMissingFromEdges', ...
+                                       sprintf(['\nNodes named "%s" missing from "Edges":', ...
+                                                'they will not be run.'], ...
+                                               strjoin(node_names(missing_nodes), ', ')), ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
         end
 
       end
