@@ -429,7 +429,7 @@ function result = update_result(varargin)
             try
               result{end} = subsref(result{end}, target);
             catch
-              warning('Non-existent field "%s" for metadata.', target);
+              warning('Non-existent field for metadata.');
               result{end} = [];
             end
           end
