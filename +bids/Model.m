@@ -392,7 +392,7 @@ classdef Model
       %
       % field can be any of {'Source', 'Destination'}
       %
-      % (C) Copyright 2022 CPP_SPM developers
+
 
       edge = {};
 
