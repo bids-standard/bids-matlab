@@ -56,7 +56,7 @@ function test_return_datatypes_for_suffix
   assertEqual(datatypes, {'func'});
 
   datatypes = schema.return_datatypes_for_suffix('events');
-  expected_output = {'beh', 'eeg', 'func', 'ieeg', 'meg', 'pet'};
+  expected_output = {'beh', 'eeg', 'func', 'ieeg', 'meg', 'nirs', 'pet'};
   assertEqual(datatypes, expected_output);
 
   datatypes = schema.return_datatypes_for_suffix('m0scan');
