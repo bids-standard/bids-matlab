@@ -393,7 +393,6 @@ classdef Model
       % field can be any of {'Source', 'Destination'}
       %
 
-
       edge = {};
 
       if ~ismember(field, {'Source', 'Destination'})
