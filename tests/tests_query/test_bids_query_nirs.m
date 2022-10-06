@@ -15,10 +15,20 @@ function test_bids_query_nirs_basic()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'fnirs_tapping'));
 
-  %% dependencies
   optodes_files = bids.query(BIDS, 'data', ...
                              'suffix', 'optodes');
+  assertEqual(numel(optodes_files), 5);
 
-  assertEqual(numel(optodes_files), 0);
+  nirs_files = bids.query(BIDS, 'data', ...
+                          'suffix', 'nirs');
+  assertEqual(numel(nirs_files), 5);
+
+  metadata = bids.query(BIDS, 'metadata', ...
+                        'suffix', 'nirs');
+  assertEqual(numel(nirs_files), 5);
+
+  % TODO: cannot query coordsystem file
+  coordsystem_files = bids.query(BIDS, 'metadata', ...
+                                 'suffix', 'coordsystem');
 
 end
