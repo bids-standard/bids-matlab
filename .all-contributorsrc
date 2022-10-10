@@ -191,6 +191,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "rotemb9",
+      "name": "Rotem Botvinik-Nezer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18393230?v=4",
+      "profile": "https://github.com/rotemb9",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -198,5 +207,6 @@
   "projectOwner": "bids-standard",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }
