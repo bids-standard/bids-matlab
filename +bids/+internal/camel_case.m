@@ -15,6 +15,7 @@ function str = camel_case(str)
   %                  for all words but the first one (``camelCase``) and
   %                  removes invalid characters (like spaces).
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   % camel case: upper case for first letter for all words but the first one

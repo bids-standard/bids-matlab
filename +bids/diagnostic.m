@@ -38,6 +38,7 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   %   diagnostic_table = bids.diagnostic(BIDS, 'split_by', {'task'}, 'output_path', pwd);
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   default_BIDS = pwd;

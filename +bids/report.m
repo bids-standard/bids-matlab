@@ -30,6 +30,7 @@ function filename = report(varargin)
   % :type  verbose:  boolean
   %
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   % TODO

@@ -4,6 +4,7 @@ function structure = add_missing_field(structure, field)
   %
   %   structure = add_missing_field(structure, field)
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   if ~isfield(structure, field)

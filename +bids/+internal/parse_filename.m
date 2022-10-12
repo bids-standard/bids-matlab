@@ -50,8 +50,10 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   %                     'prefix', '');
   %
   %
+
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   if nargin < 2 || isempty(fields)

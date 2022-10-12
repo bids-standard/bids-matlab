@@ -39,6 +39,7 @@ function varargout = jsonwrite(varargin)
   %  - `JSON Standard <https://www.json.org/>`_
   %  - `jsonencode <https://www.mathworks.com/help/matlab/ref/jsonencode.html>`_
   %
+
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
   % $Id: spm_jsonwrite.m 8031 2020-12-10 13:37:00Z guillaume $

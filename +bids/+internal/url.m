@@ -6,6 +6,7 @@ function value = url(section)
   %
   %   value = url(section)
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   supported_sections = {'base', 'agnostic-files', 'participants', 'samples', 'description'};

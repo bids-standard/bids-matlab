@@ -18,6 +18,7 @@ function rows = identify_rows(data, left, query_type, right)
   %
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   if iscellstr(data.(left))

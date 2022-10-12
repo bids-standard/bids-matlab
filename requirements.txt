@@ -1,4 +1,4 @@
-miss_hit==0.9.34
+miss_hit==0.9.35
 pre-commit
 ruamel.yaml
 jupyterlab

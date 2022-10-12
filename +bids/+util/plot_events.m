@@ -26,6 +26,7 @@ function plot_events(varargin)
   %   bids.util.plot_events(events_files, 'filter', filter);
   %
   %
+
   % (C) Copyright 2020 Remi Gau
 
   % TODO add reponse_time column

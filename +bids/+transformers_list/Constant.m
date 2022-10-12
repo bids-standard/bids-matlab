@@ -36,6 +36,7 @@ function data = Constant(transformer, data)
   %   ans =
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   output = bids.transformers_list.get_output(transformer, data);

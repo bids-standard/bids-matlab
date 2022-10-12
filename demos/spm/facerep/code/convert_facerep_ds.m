@@ -7,6 +7,7 @@ function output_dir = convert_facerep_ds(input_dir, output_dir)
   % Adapted from its counterpart for MoAE
   % <https://www.fil.ion.ucl.ac.uk/spm/download/data/MoAEpilot/MoAE_convert2bids.m>
   %
+
   % (C) Copyright 2021 Remi Gau
 
   % TODO

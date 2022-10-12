@@ -16,6 +16,7 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
   % :type  schema: strcture
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   pth = [subject.path, filesep, modality];

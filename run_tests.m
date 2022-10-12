@@ -1,5 +1,6 @@
 function success = run_tests(with_coverage)
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   fprintf('\nRunning tests\n');

@@ -23,6 +23,7 @@ function error_handling(varargin)
   %
   %   bids.internal.error_handling(mfilename(), 'thisError', 'this is an error', tolerant, verbose)
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   default_function_name = 'bidsMatlab';

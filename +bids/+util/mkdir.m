@@ -22,8 +22,10 @@ function sts = mkdir(varargin)
   % Based on spm_mkdir from SPM12
   %
   %
+
   % (C) Copyright 2017-2021 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   sts = true;

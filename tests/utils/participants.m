@@ -1,5 +1,6 @@
 function value = participants()
   %
+
   % (C) Copyright 2022 Remi Gau
 
   value.sex_m = [true; true; false; false; false];

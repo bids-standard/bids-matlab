@@ -34,6 +34,7 @@ function [new_content, json] = transformers(varargin)
   % See also: bids.Model
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   SUPPORTED_TRANSFORMERS = lower(cat(1, basic_transfomers, ...

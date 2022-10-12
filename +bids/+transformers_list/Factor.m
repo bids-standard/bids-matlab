@@ -49,6 +49,7 @@ function data = Factor(transformer, data)
   %
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   input = bids.transformers_list.get_input(transformer, data);

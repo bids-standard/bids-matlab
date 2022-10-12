@@ -23,8 +23,10 @@ function file_content = tsvread(filename, field_to_return, hdr)
   % Based on spm_load.m from SPM12.
   %
   %
+
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   % -Check input arguments

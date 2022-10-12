@@ -12,6 +12,7 @@ function json = derivatives_json(varargin)
   %  when the filename contains no BIDS derivatives entity.
   % :type force: boolean
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %

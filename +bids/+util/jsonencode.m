@@ -31,8 +31,8 @@ function varargout = jsonencode(varargin)
   %   - ``ConvertInfAndNaN``: encode ``NaN``, ``Inf`` and ``-Inf`` as ``"null"``;
   %                       [Default: ``true``]
   %
+
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   if ~nargin

@@ -69,6 +69,7 @@ function data = Threshold(transformer, data)
   %   ans =
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   input = bids.transformers_list.get_input(transformer, data);

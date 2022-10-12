@@ -21,8 +21,10 @@ function [sts, msg] = validate(root)
   %
   %
   %
+
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   [sts, ~] = system('bids-validator --version');

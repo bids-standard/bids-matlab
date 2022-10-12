@@ -65,6 +65,7 @@ classdef File
   %
   %   file = bids.File(name_spec, 'use_schema', true);
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   properties

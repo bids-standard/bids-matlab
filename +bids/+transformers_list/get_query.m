@@ -1,6 +1,7 @@
 function [left, query_type, right] = get_query(transformer)
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   supported_types = {'>=', '<=', '==', '~=', '>', '<'};

@@ -16,8 +16,10 @@ function meta = get_metadata(metafile)
   %    add explanation on how the inheritance principle is implemented.
   %
   %
+
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   meta = struct();

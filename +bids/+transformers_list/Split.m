@@ -50,6 +50,7 @@ function data = Split(transformer, data)
   %   ans =
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   % treat By as a stack
