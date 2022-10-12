@@ -52,6 +52,7 @@ function copy_to_derivative(varargin)
   % In practice this "unravels" the inheritance principle.
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   default_pipeline_name = '';

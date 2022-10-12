@@ -45,6 +45,7 @@ function data = Std(transformer, data)
   %   ans =
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   overwrite = false;

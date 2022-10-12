@@ -38,8 +38,10 @@ function BIDS = layout(varargin)
   % :type  verbose: boolean
   %
   %
+
   % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %% Validate input arguments

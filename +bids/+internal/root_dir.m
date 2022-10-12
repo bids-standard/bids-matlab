@@ -1,5 +1,6 @@
 function pth = root_dir()
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   pth = fullfile(fileparts(mfilename('fullpath')), '..', '..');

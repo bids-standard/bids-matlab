@@ -1,5 +1,6 @@
 function boilerplate_text = replace_placeholders(boilerplate_text, metadata)
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   placeholders = return_list_placeholders(boilerplate_text);

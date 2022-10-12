@@ -15,6 +15,7 @@ classdef Description
   % :type  BIDS: structure or char
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   % TODO transfer validate function of layout in here

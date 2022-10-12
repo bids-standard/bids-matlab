@@ -62,6 +62,7 @@ function data = Logical(transformer, data)
   %        0
   %        1
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   % TODO

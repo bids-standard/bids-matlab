@@ -8,6 +8,7 @@ function status = is_octave()
   %
   % :returns: :status: (boolean)
   %
+
   % (C) Copyright 2020 Agah Karakuzu
 
   persistent cacheval   % speeds up repeated calls

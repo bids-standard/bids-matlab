@@ -14,6 +14,7 @@ function pth = format_path(pth)
   %
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   if isunix()

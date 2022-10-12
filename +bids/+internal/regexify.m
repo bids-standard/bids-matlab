@@ -13,6 +13,7 @@ function string = regexify(string)
   %   string = bids.internal.regexify(string)
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   if isempty(string)

@@ -15,8 +15,10 @@ function tsvwrite(filename, var)
   % Based on spm_save.m from SPM12.
   %
   %
+
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   delim = sprintf('\t');

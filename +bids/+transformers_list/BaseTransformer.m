@@ -2,6 +2,7 @@ classdef BaseTransformer
   %
   % WIP in case we need to object oriented
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   properties

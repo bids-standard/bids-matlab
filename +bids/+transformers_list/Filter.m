@@ -60,6 +60,7 @@ function data = Filter(transformer, data)
   %         'M'
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   % TODO

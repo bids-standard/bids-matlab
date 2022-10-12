@@ -12,6 +12,7 @@ function output_filename = create_participants_tsv(layout_or_path)
   % :type  layout_or_path:  path or structure
   %
   %
+
   % (C) Copyright 2022 Remi Gau
 
   layout = bids.layout(layout_or_path);

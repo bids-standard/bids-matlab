@@ -1,5 +1,6 @@
 function value = vis_motion_events()
   %
+
   % (C) Copyright 2022 Remi Gau
 
   value.onset = [2; 4];

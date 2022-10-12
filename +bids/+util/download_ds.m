@@ -46,6 +46,7 @@ function out_path = download_ds(varargin)
   %     ftp://neuroimage.usc.edu/pub/tutorials/sample_omega.zip
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   % TODO

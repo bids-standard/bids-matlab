@@ -25,6 +25,7 @@ function init(varargin)
   % :type  is_derivative: boolean
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   default.pth = pwd;

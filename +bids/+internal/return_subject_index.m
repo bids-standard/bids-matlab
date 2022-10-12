@@ -8,6 +8,7 @@ function sub_idx = return_subject_index(BIDS, filename)
   %   sub_idx = return_subject_index(BIDS, filename)
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   parsed_file = bids.internal.parse_filename(filename);

@@ -103,6 +103,7 @@ function data = Assign(transformer, data)
   %
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   % TODO check if attr are cells

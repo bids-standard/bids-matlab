@@ -9,6 +9,7 @@ classdef Schema
   % use_schema: boolean
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   % TODO use schema to access regular expressions

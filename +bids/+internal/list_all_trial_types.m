@@ -8,6 +8,7 @@ function trial_type_list = list_all_trial_types(BIDS, task)
   %   trial_type_list = list_all_trial_types(BIDS, task)
   %
   %
+
   % (C) Copyright 2022 Remi Gau
 
   event_files = bids.query(BIDS, 'data', ...

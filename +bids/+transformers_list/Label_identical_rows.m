@@ -47,6 +47,7 @@ function data = Label_identical_rows(transformer, data)
   %
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   % TODO: label only if cell content matches some condition

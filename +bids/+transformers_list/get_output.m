@@ -1,6 +1,7 @@
 function output = get_output(transformer, data, overwrite)
   %
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   if nargin < 3

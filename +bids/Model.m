@@ -43,6 +43,7 @@ classdef Model
   %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
   %
   %
+
   % (C) Copyright 2022 Remi Gau
 
   properties

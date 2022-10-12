@@ -36,8 +36,10 @@ function varargout = file_utils(str, varargin)
   %
   % Based on spm_file.m and spm_select.m from SPM12.
   %
+
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %#ok<*AGROW>

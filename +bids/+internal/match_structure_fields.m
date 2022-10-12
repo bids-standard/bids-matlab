@@ -7,6 +7,7 @@ function [struct_one, struct_two] = match_structure_fields(struct_one, struct_tw
   %   [struct_one, struct_two] = match_structure_fields(struct_one, struct_two)
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   missing_fields = setxor(fieldnames(struct_one), fieldnames(struct_two));
