@@ -68,6 +68,8 @@ classdef Schema
         return
       end
 
+      % after loading a new field content.rules.datatypes is created
+      % it contains all the suffix groups for each datetype
       mod_grps = obj.return_modality_groups();
 
       for i = 1:numel(mod_grps)
@@ -76,7 +78,7 @@ classdef Schema
 
         for j = 1:numel(mods)
 
-          suffix_groups = bids.Schema.init_datatype(obj.content, mods{j}, 'raw');
+          suffix_groups = obj.list_suffix_groups(mods{j}, 'raw');
 
           obj.content.rules.datatypes.(mods{j}) = suffix_groups;
 
@@ -171,7 +173,40 @@ classdef Schema
     % ----------------------------------------------------------------------- %
     %% SUFFIX GROUP
 
+    function suffix_groups = list_suffix_groups(obj, datatype, scope)
+      % creates a structure of all the suffix group of a datatype
+      %
+      % USAGE::
+      %
+      %   suffix_groups = schema.list_suffix_groups(datatype, scope)
+      %
+      % :param datatype: for example ``'func'``
+      % :type  datatype:  char
+      % :param scope: ``'raw'`` or ``'derivatives'`` or ``'all'``
+      % :type  scope:  char
+      %
+
+      if nargin < 3
+        scope = 'raw';
+      end
+
+      raw = obj.content.rules.files.raw;
+      suffix_groups = raw.(datatype);
+
+      extra_datatypes = {'channels', 'photo', 'task'};
+      for i = 1:numel(extra_datatypes)
+        groups = fieldnames(raw.(extra_datatypes{i}));
+        for j = 1:numel(groups)
+          if ismember(datatype, raw.(extra_datatypes{i}).(groups{j}).datatypes)
+            suffix_groups.(groups{j}) = raw.(extra_datatypes{i}).(groups{j});
+          end
+        end
+      end
+
+    end
+
     function  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      % returns a structure of all the suffix group of a datatype
       %
       % USAGE::
       %
@@ -442,30 +477,6 @@ classdef Schema
   % ----------------------------------------------------------------------- %
   %% STATIC
   methods (Static)
-
-    function suffix_groups = init_datatype(content, datatype, scope)
-      % returns a structure of all the suffix group of a datatype
-      %
-      % content = schema content
-      % dataype = for example 'func'
-      % scope = 'raw' or 'derivatives' or 'all'
-
-      if nargin < 3
-        scope = 'raw';
-      end
-      suffix_groups = content.rules.files.(scope).(datatype);
-
-      extra_datatypes = {'channels', 'photo', 'task'};
-      for i = 1:numel(extra_datatypes)
-        groups = fieldnames(content.rules.files.raw.(extra_datatypes{i}));
-        for j = 1:numel(groups)
-          if ismember(datatype, content.rules.files.raw.(extra_datatypes{i}).(groups{j}).datatypes)
-            suffix_groups.(groups{j}) = content.rules.files.raw.(extra_datatypes{i}).(groups{j});
-          end
-        end
-      end
-
-    end
 
     function variable_to_check = ci_check(variable_to_check)
       % Mostly to avoid some crash in continuous integration

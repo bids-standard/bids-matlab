@@ -6,12 +6,6 @@ function test_suite = test_bids_schema %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_init_datatype()
-  schema_file = fullfile(bids.internal.root_dir(), 'schema.json');
-  content = bids.util.jsondecode(schema_file);
-  suffix_groups = bids.Schema.init_datatype(content, 'func');
-end
-
 function test_get_datatypes()
 
   schema = bids.Schema();
