@@ -68,10 +68,7 @@ classdef Schema
         return
       end
 
-      % add extra field listing all required entities
       mod_grps = obj.return_modality_groups();
-
-      datatypes = obj.get_datatypes();
 
       for i = 1:numel(mod_grps)
 
@@ -79,18 +76,12 @@ classdef Schema
 
         for j = 1:numel(mods)
 
-          suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
+          suffix_groups = bids.Schema.init_datatype(obj.content, mods{j}, 'raw');
 
-          for k = 1:numel(suffix_groups)
-            this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
-            required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
-            datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
-          end
+          obj.content.rules.datatypes.(mods{j}) = suffix_groups;
 
         end
       end
-
-      obj = obj.set_datatypes(datatypes);
 
     end
 
@@ -126,11 +117,13 @@ classdef Schema
     % ----------------------------------------------------------------------- %
     %% DATATYPES
     function datatypes = get_datatypes(obj)
-      datatypes = obj.content.rules.datatypes;
-    end
 
-    function obj = set_datatypes(obj, datatypes)
-      obj.content.rules.datatypes = datatypes;
+      datatypes = fieldnames(obj.content.objects.datatypes);
+
+      if isfield(obj.content.rules, 'datatypes')
+        datatypes = obj.content.rules.datatypes;
+      end
+
     end
 
     %% ENTITIES
@@ -193,7 +186,9 @@ classdef Schema
       %
 
       all_datatypes = obj.get_datatypes();
+
       suffix_groups = fieldnames(all_datatypes.(datatype));
+
     end
 
     function entities = return_entities_for_suffix_group(obj, suffix_group)
@@ -447,6 +442,30 @@ classdef Schema
   % ----------------------------------------------------------------------- %
   %% STATIC
   methods (Static)
+
+    function suffix_groups = init_datatype(content, datatype, scope)
+      % returns a structure of all the suffix group of a datatype
+      %
+      % content = schema content
+      % dataype = for example 'func'
+      % scope = 'raw' or 'derivatives' or 'all'
+
+      if nargin < 3
+        scope = 'raw';
+      end
+      suffix_groups = content.rules.files.(scope).(datatype);
+
+      extra_datatypes = {'channels', 'photo', 'task'};
+      for i = 1:numel(extra_datatypes)
+        groups = fieldnames(content.rules.files.raw.(extra_datatypes{i}));
+        for j = 1:numel(groups)
+          if ismember(datatype, content.rules.files.raw.(extra_datatypes{i}).(groups{j}).datatypes)
+            suffix_groups.(groups{j}) = content.rules.files.raw.(extra_datatypes{i}).(groups{j});
+          end
+        end
+      end
+
+    end
 
     function variable_to_check = ci_check(variable_to_check)
       % Mostly to avoid some crash in continuous integration
