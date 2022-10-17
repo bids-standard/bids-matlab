@@ -69,28 +69,21 @@ classdef Schema
         return
       end
 
-      % add extra field listing all required entities
+      % after loading a new field content.rules.datatypes is created
+      % it contains all the suffix groups for each datetype
       mod_grps = obj.return_modality_groups();
-
-      datatypes = obj.get_datatypes();
 
       for i = 1:numel(mod_grps)
 
         mods = obj.return_modalities([], mod_grps{i});
         for j = 1:numel(mods)
 
-          suffix_groups = obj.return_suffix_groups_for_datatype(mods{j});
+          suffix_groups = obj.list_suffix_groups(mods{j}, 'raw');
 
-          for k = 1:numel(suffix_groups)
-            this_suffix_group = obj.ci_check(datatypes.(mods{j}).(suffix_groups{k}));
-            required_entities = obj.required_entities_for_suffix_group(this_suffix_group);
-            datatypes.(mods{j}).(suffix_groups{k}).required_entities = required_entities;
-          end
+          obj.content.rules.datatypes.(mods{j}) = suffix_groups;
 
         end
       end
-
-      obj = obj.set_datatypes(datatypes);
 
     end
 
@@ -130,11 +123,13 @@ classdef Schema
     % ----------------------------------------------------------------------- %
     %% DATATYPES
     function datatypes = get_datatypes(obj)
-      datatypes = obj.content.rules.datatypes;
-    end
 
-    function obj = set_datatypes(obj, datatypes)
-      obj.content.rules.datatypes = datatypes;
+      datatypes = fieldnames(obj.content.objects.datatypes);
+
+      if isfield(obj.content.rules, 'datatypes')
+        datatypes = obj.content.rules.datatypes;
+      end
+
     end
 
     %% ENTITIES
@@ -248,7 +243,40 @@ classdef Schema
     % ----------------------------------------------------------------------- %
     %% SUFFIX GROUP
 
+    function suffix_groups = list_suffix_groups(obj, datatype, scope)
+      % creates a structure of all the suffix group of a datatype
+      %
+      % USAGE::
+      %
+      %   suffix_groups = schema.list_suffix_groups(datatype, scope)
+      %
+      % :param datatype: for example ``'func'``
+      % :type  datatype:  char
+      % :param scope: ``'raw'`` or ``'derivatives'`` or ``'all'``
+      % :type  scope:  char
+      %
+
+      if nargin < 3
+        scope = 'raw';
+      end
+
+      raw = obj.content.rules.files.raw;
+      suffix_groups = raw.(datatype);
+
+      extra_datatypes = {'channels', 'photo', 'task'};
+      for i = 1:numel(extra_datatypes)
+        groups = fieldnames(raw.(extra_datatypes{i}));
+        for j = 1:numel(groups)
+          if ismember(datatype, raw.(extra_datatypes{i}).(groups{j}).datatypes)
+            suffix_groups.(groups{j}) = raw.(extra_datatypes{i}).(groups{j});
+          end
+        end
+      end
+
+    end
+
     function  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      % returns a structure of all the suffix group of a datatype
       %
       % USAGE::
       %
@@ -263,7 +291,9 @@ classdef Schema
       %
 
       all_datatypes = obj.get_datatypes();
+
       suffix_groups = fieldnames(all_datatypes.(datatype));
+
     end
 
     function entities = return_entities_for_suffix_group(obj, suffix_group)

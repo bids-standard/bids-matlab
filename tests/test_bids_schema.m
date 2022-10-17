@@ -6,6 +6,31 @@ function test_suite = test_bids_schema %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_get_datatypes()
+
+  schema = bids.Schema();
+  datatypes = schema.get_datatypes();
+
+  assertEqual(sort(fieldnames(datatypes)), sort({'anat', ...
+                                                 'beh', ...
+                                                 'dwi', ...
+                                                 'eeg', ...
+                                                 'fmap', ...
+                                                 'func', ...
+                                                 'ieeg', ...
+                                                 'meg', ...
+                                                 'micr', ...
+                                                 'nirs', ...
+                                                 'perf', ...
+                                                 'pet'})');
+
+  assertEqual(fieldnames(datatypes.func), {    'func'
+                                           'phase'
+                                           'events__mri'
+                                           'timeseries__func'});
+
+end
+
 function test_return_entity_key()
 
   schema = bids.Schema();
@@ -72,7 +97,10 @@ function test_return_suffix_groups_for_datatype()
   schema = bids.Schema();
 
   suffix_groups = schema.return_suffix_groups_for_datatype('func');
-  assertEqual(suffix_groups, {'func'; 'phase'; 'events'; 'timeseries'});
+  assertEqual(suffix_groups, {    'func'
+                              'phase'
+                              'events__mri'
+                              'timeseries__func'});
 
 end
 
@@ -85,7 +113,7 @@ function test_return_datatypes_for_suffix
 
   datatypes = schema.return_datatypes_for_suffix('events');
   expected_output = {'beh', 'eeg', 'func', 'ieeg', 'meg', 'nirs', 'pet'};
-  assertEqual(datatypes, expected_output);
+  assertEqual(sort(datatypes), sort(expected_output));
 
   datatypes = schema.return_datatypes_for_suffix('m0scan');
   expected_output = {'fmap', 'perf'};
