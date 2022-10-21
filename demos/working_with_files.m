@@ -10,7 +10,8 @@
 % - edit those filenames
 % - rename files
 % - access that file metadata
-%
+
+addpath(fullfile(pwd, '..'));
 
 %% Parsing filenames
 bf = bids.File('sub-01_ses-02_task-face_run-01_bold.nii.gz');
@@ -137,7 +138,7 @@ delete('*.nii.gz');
 
 % creating dummy data
 system('touch sub-01_ses-02_task-face_run-01_bold.nii.gz');
-% creating dummy metada
+% creating dummy metadata
 bids.util.jsonencode('sub-01_ses-02_task-face_run-01_bold.json', ...
                      struct('TaskName', 'face', ...
                             'RepetitionTime', 1.5));
