@@ -301,8 +301,6 @@ This section outlines how to comment on a pull request.
 The list of pull requests can be found by clicking on the "Pull requests" tab in
 the [BIDS-MATLAB repository](https://github.com/bids-standard/BIDS-MATLAB).
 
-![BIDS-mainpage](images/BIDS_GitHub_mainpage.png "BIDS_GitHub_mainpage")
-
 ### Pull request description
 
 Upon opening the pull request we see a detailed description of what this pull
