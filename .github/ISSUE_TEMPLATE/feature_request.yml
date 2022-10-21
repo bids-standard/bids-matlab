@@ -1,0 +1,44 @@
+name: Feature request
+
+# See the json schema to help you create / update this form
+# https://json.schemastore.org/github-issue-forms.json
+
+description: Suggest an idea for this project
+
+title: "[ENH]: "
+
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description:
+        Please search to see if an issue already exists for the feature you
+        want.
+      options:
+        - label: I have searched the existing issues
+          required: true
+
+  - type: textarea
+    attributes:
+      label: New feature
+      description: You think / need this code to do...
+      render: Markdown
+      placeholder: Insert here your cool idea.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Unclear documentation
+      description: |
+        Something is missing / unclear about **X**.
+
+        You are confused about how to do **Y**.
+
+        It is not clear how / why the code does **Z**.
+
+        That means that we can improve the code or the documentation.
+      render: Markdown
+      placeholder: Tell us more.
+    validations:
+      required: false
