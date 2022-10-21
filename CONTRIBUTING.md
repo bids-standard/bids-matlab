@@ -23,7 +23,11 @@ the following sections:
     - [Matlab code style guide and quality](#matlab-code-style-guide-and-quality)
       - [pre-commit hook: reformating your code when committing](#pre-commit-hook-reformating-your-code-when-committing)
     - [Running tests on the code](#running-tests-on-the-code)
-  - [Making a change with a pull request](#making-a-change-with-a-pull-request) - [1. Comment on an existing issue or open a new issue referencing your addition](#1-comment-on-an-existing-issue-or-open-a-new-issue-referencing-your-addition) - [2. Fork [this repository](https://github.com/bids-standard/BIDS-MATLAB) to your profile](#2-fork-this-repository-to-your-profile) - [3. Make the changes you've discussed](#3-make-the-changes-youve-discussed) - [4. Submit a pull request](#4-submit-a-pull-request)
+  - [Making a change with a pull request](#making-a-change-with-a-pull-request)
+      - [1. Comment on an existing issue or open a new issue referencing your addition](#1-comment-on-an-existing-issue-or-open-a-new-issue-referencing-your-addition)
+      - [2. Fork [this repository](https://github.com/bids-standard/BIDS-MATLAB) to your profile](#2-fork-this-repository-to-your-profile)
+      - [3. Make the changes you've discussed](#3-make-the-changes-youve-discussed)
+      - [4. Submit a pull request](#4-submit-a-pull-request)
   - [Example pull request](#example-pull-request)
   - [Commenting on a pull request](#commenting-on-a-pull-request)
     - [Navigating to open pull requests](#navigating-to-open-pull-requests)
@@ -35,7 +39,6 @@ the following sections:
   - [How the decision to merge a pull request is made?](#how-the-decision-to-merge-a-pull-request-is-made)
   - [Recognizing contributions](#recognizing-contributions)
   - [Updating the bids-schema](#updating-the-bids-schema)
-  - [Thank you!](#thank-you)
 
 <!--
 TODO: sections to add
@@ -243,8 +246,6 @@ It is important that your pull-request should target the development branch
 stable version of the toolbox in the `main` branch and the latest version in the
 `dev` branch.
 
-<!-- It will appear in the [changelog](src/CHANGES.md). -->
-
 Use one of the following prefixes in the title of your pull request:
 
 - `[ENH]` - enhancement of the software that adds a new feature or support for
@@ -301,13 +302,6 @@ The list of pull requests can be found by clicking on the "Pull requests" tab in
 the [BIDS-MATLAB repository](https://github.com/bids-standard/BIDS-MATLAB).
 
 ![BIDS-mainpage](images/BIDS_GitHub_mainpage.png "BIDS_GitHub_mainpage")
-
-<!-- ### Selecting an open pull request
-
-In this example we will be navigating to our
-[BIDS common derivatives pull request](https://github.com/bids-standard/bids-specification/pull/265).
-
-![BIDS-pr-list](images/BIDS_pr_list.png "BIDS_pr_list") -->
 
 ### Pull request description
 
@@ -416,36 +410,14 @@ as a contributor (or ask to be added if we forgot).
 The schema of the BIDS specification is available as a
 [set of yaml files in the bids-standards repository](https://github.com/bids-standard/bids-specification/blob/master/CONTRIBUTING.md#updating-the-schema).
 
-For our needs we are using a JSON conversion of that schema: this conversion is
-done by the Python script `convert_schema.py`.
+A JSON version is also available here: https://bids-specification.readthedocs.io/en/latest/schema.json
 
-This conversion should happen automatically via continuous integration (see the
-[github action](.github/workflows/update_schema.yml)) when pushing to the repo
-or opening a pull-request. But if you need to trigger it manually, here is how
-to do it.
-
-To install the required packages to run it, you can set up a virtual environment
-as follow.
+The latest version can be obtained by running the following command:
 
 ```bash
-virtualenv -p python3 convert_schema
-source  convert_schema/bin/activate
-pip install -r requirements.txt
+make update_schema
 ```
 
-You then need to update in the script the path to the yml schema in the bids
-specification on your computer.
-
-```python
-input_dir = "/home/remi/github/BIDS-specification/src/schema"
-```
-
-You can then convert the schema:
-
-```
-python convert_schema.py
-```
-
-## Thank you!
-
-You're awesome.
+A new version of the schema is fetched automatically regularly via continuous integration
+(see the [github action](.github/workflows/update_schema.yml)) when pushing to the repo
+or opening a pull-request.
