@@ -21,6 +21,7 @@ authors:
   - family-names: Gau
     given-names: Rémi
     orcid: https://orcid.org/0000-0002-1535-9767
+    affiliation: Université catholique de Louvain
 
   - family-names: Flandin
     given-names: Guillaume
@@ -29,8 +30,9 @@ authors:
   - family-names: Janke
     given-names: Andrew
 
-  - alias: tanguyduval
-    given-names: tanguyduval
+  - family-names: Duval
+    alias: tanguyduval
+    given-names: Tanguy
     orcid: https://orcid.org/0000-0002-1228-5192
 
   - family-names: Oostenveld
@@ -68,7 +70,35 @@ authors:
     given-names: Phillips
     orcid: https://orcid.org/0000-0002-4990-425X 
 
+  - family-names: "Barilari"
+    given-names: "Marco"
+    orcid: "https://orcid.org/0000-0002-3313-3120"
+    affiliation: "Université catholique de Louvain"
+
+  - family-names: "Battal"
+    given-names: "Ceren"
+    orcid: "https://orcid.org/0000-0002-9844-7630"
+    affiliation: "Université catholique de Louvain"
+
+  - family-names: "MacLean"
+    given-names: "Michèle"
+    orcid: "https://orcid.org/0000-0002-0174-9326"
+    affiliation: "Université de Montréal"
+
+  - family-names: "Caron-Guyon"
+    given-names: "Jeanne"
+    orcid: "https://orcid.org/0000-0001-8681-5267"
+    affiliation: "Université catholique de Louvain"
+
 keywords:
+  - MATLAB
+  - Octave
   - brain imaging data structure
+  - MRI
+  - MEG
+  - EEG
+  - iEEG
+  - PET
+  - microscopy
 
 type: software

@@ -127,15 +127,3 @@ Eventually though this technical debt must be paid back before a new release and
 Conditions:
 - All unit and integration tests must pass.
 - All checks for code style and quality must pass.
-
-## Comments
-
-1. Researchers preparing academic manuscripts describing work that has been
-   merged into this repository are strongly encouraged to invite all Maintainers
-   as co-authors as a form of appreciation for their work.
-
-<!-- 1. PRs MUST be merged using the "Create a merge commit" option in GitHub (by using
-   the "merge pull request" option). This is necessary for our automatic
-   changelog generator to do its work reliably. See the [GitHub help page](https://help.github.com/en/articles/about-merge-methods-on-github)
-   for information on merge methods. See the changelog generator implementation
-   in our [circleci configuration file](./.circleci/config.yml). -->
