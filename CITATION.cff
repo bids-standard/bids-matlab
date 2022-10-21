@@ -70,6 +70,14 @@ authors:
     given-names: Phillips
     orcid: https://orcid.org/0000-0002-4990-425X
 
+  - family-names: "Shahzad"
+    given-names: "Iqra"
+    orcid: "https://orcid.org/0000-0002-8724-7668"
+    affiliation: "Université catholique de Louvain"
+
+  - family-names: " Botvinik-Nezer"
+    given-names: "Rotem"
+
   - family-names: "Barilari"
     given-names: "Marco"
     orcid: "https://orcid.org/0000-0002-3313-3120"
