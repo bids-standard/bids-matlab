@@ -1,6 +1,8 @@
-function test_notebooks()
+function status = test_notebooks()
   % run all the scripts in this directory
   % (C) Copyright 2021 BIDS-MATLAB developers
+
+  status = true;
 
   notebooks = dir(pwd);
 
@@ -14,7 +16,7 @@ function test_notebooks()
       try
         run(notebooks(nb).name);
       catch
-        status = 0;
+        status = false;
         failed(end + 1) = nb;
       end
     end
