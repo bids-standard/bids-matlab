@@ -4,6 +4,8 @@
 are available as a Jupyter Notebook to be run with Octave and that can be run interactively via
 [Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb).
 
+There is also `.m` script equivalent for each tutorial that can be run with MATLAB.
+
 ## SPM
 
 This shows how to use BIDS-MATLAB with SPM12 by running some of the tutorials

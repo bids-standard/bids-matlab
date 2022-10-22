@@ -21,13 +21,14 @@ BIDS = bids.layout(fullfile(pwd, 'bids-examples', 'ds000001-fmriprep'), ...
 
 %%
 
-bids.query(BIDS, 'modalities');
+modalities = bids.query(BIDS, 'modalities');
+disp(modalities);
 
 % The dataset description `DatasetType` confirms we are working with a derivative dataset.
 
 %%
 
-BIDS.description;
+disp(BIDS.description);
 
 % We can access any preprocessed data by querying
 % for data described (`desc` entitiy) as preprocessed (`preproc`)
@@ -35,29 +36,34 @@ BIDS.description;
 
 %%
 
-bids.query(BIDS, 'data', 'modality', 'anat',  'desc', 'preproc', 'space', 'MNI152NLin2009cAsym');
+data = bids.query(BIDS, 'data', 'modality', 'anat',  'desc', 'preproc', 'space', 'MNI152NLin2009cAsym');
+disp(data);
 
 %
 % But we can also get the surface data from Freesurfer.
 
 %%
 
-bids.query(BIDS, 'data', 'sub', '10', 'modality', 'func', 'space', 'fsaverage5');
+data = bids.query(BIDS, 'data', 'sub', '10', 'modality', 'func', 'space', 'fsaverage5');
+disp(data);
 
 %%
 
-bids.query(BIDS, 'data', 'sub', '10', 'desc', 'confounds');
+data = bids.query(BIDS, 'data', 'sub', '10', 'desc', 'confounds');
+disp(data);
 
 % We can also directly look up json files when we don't use the BIDS schema.
 
 %%
 
-bids.query(BIDS, 'extensions');
+extensions = bids.query(BIDS, 'extensions');
+disp(extensions);
 
 %%
 
 filter.sub = '10';
-bids.query(BIDS, 'data', filter);
+data = bids.query(BIDS, 'data', filter);
+disp(data);
 
 %%
 
@@ -68,10 +74,6 @@ json_file = bids.query(BIDS, 'data', filter);
 bids.util.jsondecode(json_file{1});
 
 % ## Indexing nested derivatives
-
-%%
-
-warning('OFF');
 
 %%
 

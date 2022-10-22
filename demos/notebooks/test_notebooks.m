@@ -1,4 +1,5 @@
 function test_notebooks()
+  % run all the scripts in this directory
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   notebooks = dir(pwd);
