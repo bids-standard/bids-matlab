@@ -43,4 +43,4 @@ jobs:
       - name: Run commands
         uses: matlab-actions/run-command@v1.1.0
         with:
-          command: cd demo/notebooks; success = run_tests(); assert(success);
+          command: pwd; ls; cd('demo/notebooks'); success = run_tests(); assert(success);

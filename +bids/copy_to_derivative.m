@@ -1,7 +1,6 @@
 function copy_to_derivative(varargin)
   %
-  % Copy selected data from BIDS layout to given derivatives folder,
-  % returning layout of new derivatives folder
+  % Copy selected data from BIDS layout to given derivatives folder.
   %
   % USAGE::
   %
