@@ -31,11 +31,11 @@ function data = Basic(transformer, data)
   % :param Value: **mandatory**.  The value to perform operation with (i.e. operand).
   % :type  Value: float
   %
-  % :param Query: optional. Boolean expression used to select on which rows to
+  % :param Query: Optional. logical expression used to select on which rows to
   %               act.
   % :type  Query: string
   %
-  % :param Output: optional. List of column names to write out to.
+  % :param Output: Optional. List of column names to write out to.
   % :type  Output: string or array
   %
   % By default, computation is done in-place on the input

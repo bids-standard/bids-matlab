@@ -1,4 +1,5 @@
 function [sts, msg] = validate(root)
+  %
   % BIDS Validator
   %
   % USAGE::

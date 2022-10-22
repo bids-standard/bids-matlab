@@ -27,21 +27,21 @@ function data = Scale(transformer, data)
   % :param Input: **mandatory**.  Names of columns to standardize.
   % :type  Input: string or array
   %
-  % :param Demean: optional. If ``true``, subtracts the mean from each input column
+  % :param Demean: Optional. If ``true``, subtracts the mean from each input column
   %                          (i.e., applies mean-centering).
-  % :type  Demean: boolean
+  % :type  Demean: logical
   %
-  % :param Rescale: optional. If ``true``, divides each column by its standard deviation.
-  % :type  Rescale: boolean
+  % :param Rescale: Optional. If ``true``, divides each column by its standard deviation.
+  % :type  Rescale: logical
   %
-  % :param ReplaceNa: optional. Whether/when to replace missing values with 0.
+  % :param ReplaceNa: Optional. Whether/when to replace missing values with 0.
   %                             If ``"off"``, no replacement is performed.
   %                             If ``"before"``, missing values are replaced with 0 before scaling.
   %                             If ``"after"``, missing values are replaced with 0 after scaling.
   %                             Defaults to ``"off"``
-  % :type  ReplaceNa: boolean
+  % :type  ReplaceNa: logical
   %
-  % :param Output: optional. Optional names of columns to output.
+  % :param Output: Optional. Optional names of columns to output.
   %                          Must match length of input column if provided,
   %                          and columns will be mapped 1-to-1 in order.
   %                          If no output values are provided,
@@ -58,13 +58,13 @@ function data = Scale(transformer, data)
   %                        'ReplaceNa', true,
   %                        'Output', 'scaled_reaction_time');
   %
-  %   data.reaction_time =
+  %   data.reaction_time = TODO
   %
   %   data = bids.transformers(transformer, data);
   %
-  %   data.scaled_reaction_time =
+  %   data.scaled_reaction_time = TODO
   %
-  %   ans =
+  %   ans = TODO
   %
   %
 

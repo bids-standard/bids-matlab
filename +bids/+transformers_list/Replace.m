@@ -31,7 +31,7 @@ function data = Replace(transformer, data)
   %                                ``key`` can be a regular expression.
   % :type  Replace: array of objects
   %
-  % :param Attribute: optional. The column attribute to apply the replace to.
+  % :param Attribute: Optional. The column attribute to apply the replace to.
   % :type  Attribute: array
   %
   % Valid values include:
@@ -51,7 +51,7 @@ function data = Replace(transformer, data)
   %
   %     All replacemenets are done in sequentially.
   %
-  % :param Output: optional. Optional names of columns to output.
+  % :param Output: Optional. Optional names of columns to output.
   %                          Must match length of input column(s) if provided,
   %                          and columns will be mapped 1-to-1 in order.
   %                          If no output values are provided,

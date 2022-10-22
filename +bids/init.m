@@ -19,10 +19,10 @@ function init(varargin)
   % :type  folders: structure
   %
   % :param is_derivative:
-  % :type  is_derivative: boolean
+  % :type  is_derivative: logical
   %
   % :param is_datalad_ds:
-  % :type  is_derivative: boolean
+  % :type  is_derivative: logical
   %
   %
 

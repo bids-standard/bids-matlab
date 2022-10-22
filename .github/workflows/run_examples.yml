@@ -1,0 +1,46 @@
+name: tests_examples
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+    paths:
+      - "**.m"
+      - .github/workflows/*.yml
+      - schema.json
+  pull_request:
+    branches: ["*"]
+    paths:
+      - "**.m"
+      - .github/workflows/*.yml
+      - schema.json
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Install MATLAB
+        uses: matlab-actions/setup-matlab@v1.2.1
+        with:
+          release: R2020a
+
+      - name: Clone bids-matlab
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: Install bids example
+        run: |
+          cd demos/notebooks
+          make install
+
+      - name: Run commands
+        uses: matlab-actions/run-command@v1.1.0
+        with:
+          command: cd('demos/notebooks'); success = test_notebooks(); assert(success);

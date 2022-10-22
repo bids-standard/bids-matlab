@@ -14,7 +14,7 @@ function file_content = tsvread(filename, field_to_return, hdr)
   % :type field_to_return:
   %
   % :param hdr: detect the presence of a header row for csv/tsv [default: ``true``]
-  % :type hdr: boolean
+  % :type hdr: logical
   %
   %
   % :returns: - :file_content: corresponding data array or structure

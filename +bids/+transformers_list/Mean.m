@@ -20,11 +20,11 @@ function data = Mean(transformer, data)
   % :param Input: **mandatory**. The name of the variable to operate on.
   % :type  Input: string or array
   %
-  % :param OmitNan: optional. If ``false`` any column with nan values will return a nan value.
+  % :param OmitNan: Optional. If ``false`` any column with nan values will return a nan value.
   %                           If ``true`` nan values are skipped. Defaults to ``false``.
-  % :type  OmitNan: boolean
+  % :type  OmitNan: logical
   %
-  % :param Output: optional. The optional column names to write out to.
+  % :param Output: Optional. The optional column names to write out to.
   %                    By default, computation is done in-place (i.e., input columnise overwritten).
   % :type  Output: string or array
   %
@@ -36,13 +36,13 @@ function data = Mean(transformer, data)
   %                         'OmitNan', false, ...
   %                         'Ouput', 'mean_RT');
   %
-  %   data.reaction_time =
+  %   data.reaction_time = TODO
   %
   %   data = bids.transformers(transformer, data);
   %
-  %   data.mean_RT =
+  %   data.mean_RT = TODO
   %
-  %   ans =
+  %   ans = TODO
   %
   %
 

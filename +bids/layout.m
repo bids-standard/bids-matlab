@@ -21,21 +21,21 @@ function BIDS = layout(varargin)
   %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
   %                    If a folder path is provided, then the schema contained
   %                    in that folder will be used for parsing.
-  % :type  use_schema: boolean
+  % :type  use_schema: logical
   %
   % :param index_derivatives: if ``true`` this will index the content of the
   %                           any ``derivatives`` folder in the BIDS dataset.
-  % :type  index_derivatives: boolean
+  % :type  index_derivatives: logical
   %
   % :param index_dependencies: if ``true`` this will index the dependencies (json files,
   %                           assiciated TSV files for each file...)
-  % :type  index_dependencies: boolean
+  % :type  index_dependencies: logical
   %
   % :param tolerant: Set to ``true`` to turn validation errors into warnings
-  % :type  tolerant: boolean
+  % :type  tolerant: logical
   %
   % :param verbose: Set to ``true`` to get more feedback
-  % :type  verbose: boolean
+  % :type  verbose: logical
   %
   %
 

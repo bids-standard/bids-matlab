@@ -1,5 +1,16 @@
 # README
 
+To run some of the scripts or notebooks, you need to install the bids examples repository
+in this directory
+
+Run the following command in the terminal:
+
+```bash
+git clone https://github.com/bids-standard/bids-examples.git --depth 1
+```
+
+# Running the notebooks with Octave
+
 1.  Make sure that you have Octave installed.
 
 1.  If you have Conda/Jupyter/pip installed, go to step 4. Check if Conda is

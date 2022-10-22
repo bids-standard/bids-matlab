@@ -21,30 +21,30 @@ function data = Threshold(transformer, data)
   % :param Input: **mandatory**.  The name(s)of the column(s) to threshold/binarize.
   % :type  Input: string or array
   %
-  % :param Threshold: optional. The cut-off to use for thresholding. Defaults to ``0``.
+  % :param Threshold: Optional. The cut-off to use for thresholding. Defaults to ``0``.
   % :type  Threshold: float
   %
-  % :param Binarize: optional. If ``true``, thresholded values will be binarized
+  % :param Binarize: Optional. If ``true``, thresholded values will be binarized
   %                            (i.e., all non-zero values will be set to 1).
   %                            Defaults to ``false``.
-  % :type Binarize: boolean
+  % :type Binarize: logical
   %
-  % :param Above: optional. Specifies which values to retain with respect to the cut-off.
+  % :param Above: Optional. Specifies which values to retain with respect to the cut-off.
   %                         If ``true``, all value above the threshold will be kept;
   %                         if ``false``, all values below the threshold will be kept.
   %                         Defaults to ``true``.
-  % :type  Above: boolean
+  % :type  Above: logical
   %
-  % :param Signed: optional. Specifies whether to treat the threshold
+  % :param Signed: Optional. Specifies whether to treat the threshold
   %                          as signed (default) or unsigned.
-  % :type  Signed: boolean
+  % :type  Signed: logical
   %
   % For example, when passing above=true and threshold=3,
   % if signed=true, all and only values above +3 would be retained.
   % If signed=false, all absolute values > 3 would be retained
   % (i.e.,values in  the range -3 < X < 3 would be set to 0).
   %
-  % :param Output: optional. Optional names of columns to output.
+  % :param Output: Optional. Optional names of columns to output.
   %                          Must match length of input column if provided,
   %                          and columns will be mapped 1-to-1 in order.
   %                          If no output values are provided,
@@ -60,13 +60,13 @@ function data = Threshold(transformer, data)
   %                         'Value', 3, ...
   %                         'Ouput', 'onset_minus_3');
   %
-  %   data.onset =
+  %   data.onset = TODO
   %
   %   data = bids.transformers(transformer, data);
   %
-  %   data.onset_minus_3 =
+  %   data.onset_minus_3 = TODO
   %
-  %   ans =
+  %   ans = TODO
   %
   %
 

@@ -10,8 +10,8 @@ classdef BaseTransformer
     input % cell
     output % cell
     data % structure
-    verbose = false % boolean
-    overwrite = true % boolean
+    verbose = false % logical
+    overwrite = true % logical
 
   end
 

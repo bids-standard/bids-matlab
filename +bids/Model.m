@@ -14,16 +14,16 @@ classdef Model
   %                    'verbose', false);
   %
   % :param init: if ``true`` this will initialize an empty model. Defauts to ``false``.
-  % :type init: boolean
+  % :type init: logical
   %
   % :param file: fullpath the JSON file containing the BIDS stats model
   % :type file: path
   %
   % :param tolerant: turns errors into warning
-  % :type tolerant: boolean
+  % :type tolerant: logical
   %
   % :param verbose: silences warnings
-  % :type verbose: boolean
+  % :type verbose: logical
   %
   % EXAMPLE::
   %

@@ -6,7 +6,7 @@ classdef Schema
   %
   %   schema = bids.Schema(use_schema)
   %
-  % use_schema: boolean
+  % use_schema: logical
   %
   %
 
@@ -33,7 +33,7 @@ classdef Schema
       %
       %   schema = bids.Schema(use_schema)
       %
-      % use_schema: boolean
+      % use_schema: logical
       %
 
       obj.content = [];

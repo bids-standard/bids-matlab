@@ -6,7 +6,7 @@ function status = is_octave()
   %
   %   status = isOctave()
   %
-  % :returns: :status: (boolean)
+  % :returns: :status: (logical)
   %
 
   % (C) Copyright 2020 Agah Karakuzu

@@ -25,7 +25,7 @@ function data = Rename(transformer, data)
   % :param Input: **mandatory**. The name(s) of the variable(s) to rename.
   % :type  Input: string or array
   %
-  % :param Output: optional. New column names to output.
+  % :param Output: Optional. New column names to output.
   %                          Must match length of input column(s),
   %                          and columns will be mapped 1-to-1 in order.
   % :type  Output: string or array
@@ -41,9 +41,9 @@ function data = Rename(transformer, data)
   %
   %   data = bids.transformers(transformer, data);
   %
-  %   data.
+  %   data. TODO
   %
-  %   ans =
+  %   ans = TODO
   %
   %
   %

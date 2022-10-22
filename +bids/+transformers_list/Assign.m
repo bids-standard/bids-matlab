@@ -37,7 +37,7 @@ function data = Assign(transformer, data)
   %   If no output argument is specified, the columns named in target are modified in-place.
   %
   %
-  % :param Output: optional. Names of the columns to output the result of the assignment to.
+  % :param Output: Optional. Names of the columns to output the result of the assignment to.
   %                          Must exactly match the length of the input and target arguments.
   % :type Output: string or array
   %
@@ -49,13 +49,13 @@ function data = Assign(transformer, data)
   %  - then the reassignment from the input to the target is applied;
   %  - finally, the new (cloned and modified) column is written out to the column named in output.
   %
-  % :param InputAttr: optional. Specifies which attribute of the input column to assign.
+  % :param InputAttr: Optional. Specifies which attribute of the input column to assign.
   %                             Defaults to ``value``.
   %                             If a array is passed, its length must exactly match
   %                             that of the input and target arrays.
   % :type  InputAttr: string or array
   %
-  % :param TargetAttr: optional. Specifies which attribute of the output column to assign to.
+  % :param TargetAttr: Optional. Specifies which attribute of the output column to assign to.
   %                              Defaults to ``value``.
   %                              If a array is passed, its length must exactly match
   %                              that of the input and target arrays.

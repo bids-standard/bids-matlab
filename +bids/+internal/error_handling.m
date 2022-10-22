@@ -14,10 +14,10 @@ function error_handling(varargin)
   % :type msg: string
   %
   % :param tolerant:
-  % :type tolerant: boolean
+  % :type tolerant: logical
   %
   % :param verbose:
-  % :type verbose:  boolean
+  % :type verbose:  logical
   %
   % EXAMPLE::
   %
@@ -45,7 +45,7 @@ function error_handling(varargin)
   function_name = bids.internal.file_utils(args.Results.function_name, 'basename');
 
   id = [function_name, ':' args.Results.id];
-  msg = ['\n' args.Results.msg '\n'];
+  msg = sprintf(['\n' args.Results.msg '\n']);
 
   if ~args.Results.tolerant
     errorStruct.identifier = id;

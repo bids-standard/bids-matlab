@@ -32,7 +32,8 @@ coverage.xml
 # styling
 .prettierrc
 
-
+# doc
+build
 
 # jupyter notebooks
 .ipynb_checkpoints
