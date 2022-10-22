@@ -1,40 +1,19 @@
-% +BIDS - The bids-matlab library
+% +BIDS
 %
-% Contents
-%   layout              - Parse a directory structure formated according to the BIDS standard
-%   query               - Queries a directory structure formatted according to the BIDS standard
-%   validate            - BIDS Validator
-%   report              - Create a short summary of the acquisition parameters of a BIDS dataset
-%   copy_to_derivative  - Copy selected data from BIDS layout to given derivatives folder,
-%   File                - Class to handle BIDS filenames.
-%   Description         - Class to deal with dataset_description files.
-%   init                - Initialize dataset with README, description, folder structure...
+% Files
+%   bids_matlab_version - Return bids matlab version.
+%   copy_to_derivative  - Copy selected data from BIDS layout to given derivatives folder.
 %   derivatives_json    - Creates dummy content for a given BIDS derivative file.
+%   Description         - Class to deal with dataset_description files.
+%   diagnostic          - Create figure listing the number of files for each subject
+%   File                - Class to deal with BIDS files and to help to create BIDS valid names
+%   init                - Initialize dataset with README, description, folder structure...
+%   layout              - Parse a directory structure formated according to the BIDS standard
+%   Model               - Class to deal with BIDS stats models
+%   query               - Queries a directory structure formatted according to the BIDS standard
+%   report              - Create a short summary of the acquisition parameters of a BIDS dataset.
 %   Schema              - Class to interact with the BIDS schema
-%
-%   util.jsondecode - Decode JSON-formatted file
-%   util.jsonencode - Encode data to JSON-formatted file
-%   util.mkdir      - Make new directory trees
-%   util.tsvread    - Load text and numeric data from tab-separated-value or other file
-%   util.tsvwrite   - Save text and numeric data to .tsv file
-%
-%
-% __________________________________________________________________________
-%
-% BIDS-MATLAB is a library that aims at centralising MATLAB/Octave tools
-% for interacting with datasets conforming to the BIDS format.
-% See https://github.com/bids-standard/bids-matlab for more details.
-%
-% __________________________________________________________________________
-%
-% BIDS (Brain Imaging Data Structure): https://bids.neuroimaging.io/
-%
-% The brain imaging data structure, a format for organizing and
-% describing outputs of neuroimaging experiments.
-% K. J. Gorgolewski et al, Scientific Data, 2016.
-% __________________________________________________________________________
-%
-%
-% (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-%
-% (C) Copyright 2018 BIDS-MATLAB developers
+%   transformers        - Apply transformers to a structure
+%   validate            - BIDS Validator
+
+% (C) Copyright 2022 BIDS-MATLAB developers
