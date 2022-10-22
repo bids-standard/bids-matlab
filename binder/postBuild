@@ -10,6 +10,6 @@ cd ..
 
 octave --no-gui --no-window-system --silent --eval "addpath (fullfile (getenv (\"HOME\"), \"JSONio\")); savepath ();"
 
-cd "${HOME}/examples"
+cd "${HOME}/demos/notebooks"
 
 make install

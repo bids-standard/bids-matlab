@@ -10,8 +10,7 @@
 % - edit those filenames
 % - rename files
 % - access that file metadata
-
-addpath(fullfile(pwd, '..'));
+%
 
 %% Parsing filenames
 bf = bids.File('sub-01_ses-02_task-face_run-01_bold.nii.gz');
@@ -76,6 +75,20 @@ disp(bf.filename);
 bf = bids.File(spec, 'use_schema', true);
 disp(bf.filename);
 
+%% Checking for valid BIDS filename
+
+% if we forget the required entity "task" for this eeg file
+spec = struct('ext', '.eeg', ...
+              'suffix', 'eeg', ...
+              'entities', struct('run', '02', ...
+                                 'sub', '01'));
+
+% using the verbose flag will throw a warning
+bids.File(spec, 'use_schema', true, 'verbose', true);
+
+% using the tolerant flag will throw an error
+bids.File(spec, 'use_schema', true, 'tolerant', false);
+
 %% Renaming existing files
 
 % let's create a dummy file to work with
@@ -138,7 +151,7 @@ delete('*.nii.gz');
 
 % creating dummy data
 system('touch sub-01_ses-02_task-face_run-01_bold.nii.gz');
-% creating dummy metadata
+% creating dummy metada
 bids.util.jsonencode('sub-01_ses-02_task-face_run-01_bold.json', ...
                      struct('TaskName', 'face', ...
                             'RepetitionTime', 1.5));
