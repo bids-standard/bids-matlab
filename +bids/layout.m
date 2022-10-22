@@ -54,7 +54,7 @@ function BIDS = layout(varargin)
   default_use_schema = true;
   default_verbose = false;
 
-  is_dir_or_struct = @(x) (isstruct(x) || isfolder(x));
+  is_dir_or_struct = @(x) (isstruct(x) || isdir(x));
 
   args = inputParser();
 
