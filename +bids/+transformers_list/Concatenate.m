@@ -22,7 +22,7 @@ function data = Concatenate(transformer, data)
   % :param Input: **mandatory**. Column(s) to concatenate. Must all be of the same length.
   % :type  Input: array
   %
-  % :param Output: optional. Name of the output column.
+  % :param Output: Optional. Name of the output column.
   % :type  Output: string
   %
   % **CODE EXAMPLE**::

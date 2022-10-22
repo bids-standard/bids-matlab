@@ -24,7 +24,7 @@ function data = Split(transformer, data)
   % :param Input: **mandatory**. The name of the variable(s) to operate on.
   % :type  Input: array
   %
-  % :param By: optional. Name(s) for variable(s) to split on.
+  % :param By: Optional. Name(s) for variable(s) to split on.
   % :type  By: array
   %
   % For example, for given a variable Condition
@@ -39,15 +39,15 @@ function data = Split(transformer, data)
   %                         'Input', 'sex', ...
   %                         'By', {{'sex_m', 'age_gt_twenty'}});
   %
-  %   data.sex = ;
-  %   data.sex_m = ;
-  %   data.age_gt_twenty = ;
+  %   data.sex = TODO;
+  %   data.sex_m = TODO;
+  %   data.age_gt_twenty = TODO
   %
   %   data = bids.transformers_list.split(transformer, data);
   %
   %   data.sex_BY % TODO
   %
-  %   ans =
+  %   ans = TODO
   %
   %
 

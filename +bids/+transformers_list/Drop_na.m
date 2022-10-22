@@ -23,7 +23,7 @@ function data = Drop_na(transformer, data)
   % :param Input: **mandatory**.  The name of the variable to operate on.
   % :type  Input: string or array
   %
-  % :param Output: optional. The column names to write out to.
+  % :param Output: Optional. The column names to write out to.
   %                          By default, computation is done in-place
   %                          meaning that input columnise overwritten).
   % :type  Output: string or array
@@ -35,13 +35,13 @@ function data = Drop_na(transformer, data)
   %                         'Input', 'age_gt_twenty', ...
   %                         'Ouput', 'age_gt_twenty_clean');
   %
-  %   data.age_gt_twenty = ;
+  %   data.age_gt_twenty = TODO;
   %
   %   data = bids.transformers(transformer, data);
   %
   %   data.
   %
-  %   ans =
+  %   ans = TODO
   %
   %
   %

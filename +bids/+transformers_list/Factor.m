@@ -38,14 +38,14 @@ function data = Factor(transformer, data)
   %   transformer = struct('Name', 'Factor', ...
   %                        'Input', {{'gender', 'age'}});
   %
-  %   data.gender = ;
-  %   data.age = ;
+  %   data.gender = TODO;
+  %   data.age = TODO;
   %
   %   data = bids.transformers(transformer, data);
   %
   %   data.gender_F_age_20
   %
-  %   ans =
+  %   ans = TODO
   %
   %
   %

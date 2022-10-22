@@ -33,14 +33,14 @@ function data = Delete(transformer, data)
   %   transformer = struct('Name', 'Delete', ...
   %                         'Input', {{'sex_m', age_gt_twenty}});
   %
-  %   data.sex_m = ;
-  %   data.age_gt_twenty = ;
+  %   data.sex_m = TODO;
+  %   data.age_gt_twenty = TODO;
   %
   %   data = bids.transformers(transformer, data);
   %
   %   data.
   %
-  %   ans =
+  %   ans = TODO
   %
   %
   %

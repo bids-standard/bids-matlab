@@ -13,8 +13,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   % :param BIDS:       BIDS directory name or BIDS structure (from ``bids.layout``)
   % :type  BIDS:       structure or string
   %
-  % :param split_by:       splits results by a given BIDS entity (now only ``task`` is supported)
-  % :type  split_by:       cell
+  % :param split_by:   splits results by a given BIDS entity (now only ``task`` is supported)
+  % :type  split_by:   cell
   %
   % :param use_schema: If set to ``true``, the parsing of the dataset
   %                    will follow the bids-schema provided with bids-matlab.
@@ -22,7 +22,7 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
   %                    If a folder path is provided, then the schema contained
   %                    in that folder will be used for parsing.
-  % :type  use_schema: boolean
+  % :type  use_schema: logical
   %
   % :param out_path:   path to directory containing the derivatives
   % :type  out_path:   string

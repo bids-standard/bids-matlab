@@ -22,7 +22,7 @@ function data = Logical(transformer, data)
   %       "Output": "men_older_twenty"
   %     }
   %
-  % If non-boolean input are passed, it is expected that:
+  % If non-logical input are passed, it is expected that:
   %
   % - all zero or nan (for numeric data types),
   % - "NaN" or empty (for strings) values
@@ -38,7 +38,7 @@ function data = Logical(transformer, data)
   % :param Input: **mandatory**.  An array of columns to perform operation on. Only 1 for ``Not``
   % :type  Input: array
   %
-  % :param Output: optional. The name of the output column.
+  % :param Output: Optional. The name of the output column.
   % :type  Output: string or array
   %
   %

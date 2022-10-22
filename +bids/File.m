@@ -1,6 +1,7 @@
 classdef File
   %
-  % Class to deal with BIDS files and to help to create BIDS valid names
+  % Class to deal with BIDS filenames
+  %
   %
   % USAGE::
   %
@@ -9,17 +10,17 @@ classdef File
   %                    'tolerant', true,
   %                    'verbose', false);
   %
-  % :param input:
-  % :type input: filename or structure
+  % :param input:      path to the file or a structure with the file information
+  % :type  input:      filename or structure
   %
-  % :param use_schema:
-  % :type use_schema: boolean
+  % :param use_schema: will apply the BIDS schema when parsing or creating filenames
+  % :type  use_schema: logical
   %
-  % :param tolerant: turns errors into warning
-  % :type tolerant: boolean
+  % :param tolerant:   turns errors into warning when set to ``true``
+  % :type  tolerant:   logical
   %
-  % :param verbose: silences warnings
-  % :type verbose: boolean
+  % :param verbose:    silences warnings
+  % :type  verbose:    logical
   %
   %
   % **Initiliaze with a filename**
@@ -345,7 +346,10 @@ classdef File
       %
       % USAGE::
       %
-      %   file = file.reorder_entities([entity_order]);
+      %   file = file.reorder_entities(entity_order);
+      %
+      % :param entity_order: Optional. The order of the entities.
+      % :type entity_order:  cell of char
       %
       % If the no entity order is provided, it will try to rely on the schema to
       % find an appropriate order
@@ -420,19 +424,18 @@ classdef File
       %
       %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', [], 'force', false);
       %
-      % :param spec: struture specifying what entities, suffix, extension, prefix to apply
-      %              renaming
+      % :param spec: struture specifying what entities, suffix, extension... to apply
       % :type spec: structure
       %
-      % :param dry_run: If ``true`` no file is actually renamed. ``false`` is the default to avoid
-      %                 renaming files by mistake.
-      % :type dry_run: boolean
+      % :param dry_run: If ``true`` no file is actually renamed.
+      %                 ``true`` is the default to avoid renaming files by mistake.
+      % :type dry_run: logical
       %
-      % :param verbose: displays input --> output
-      % :type verbose: boolean
+      % :param verbose: displays ``input --> output``
+      % :type verbose: logical
       %
-      % :param force: overwrites existing file. Default: ``false``
-      % :type force: boolean
+      % :param force: Overwrites existing file.
+      % :type force: logical
       %
       % EXAMPLE:
       %

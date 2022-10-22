@@ -23,9 +23,9 @@ function data = Product(transformer, data)
   % :param Output: **mandatory**. Name of the newly generated column.
   % :type  Output: string or array
   %
-  % :param OmitNan: optional. If ``false`` any column with nan values will return a nan value.
+  % :param OmitNan: Optional. If ``false`` any column with nan values will return a nan value.
   %                           If ``true`` nan values are skipped. Defaults to ``false``.
-  % :type  OmitNan: boolean
+  % :type  OmitNan: logical
   %
   %
   % **CODE EXAMPLE**::
@@ -39,7 +39,7 @@ function data = Product(transformer, data)
   %   data = bids.transformers(transformer, data);
   %
   %
-  %   ans =
+  %   ans = TODO
   %
   %
 

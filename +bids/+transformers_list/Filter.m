@@ -1,6 +1,6 @@
 function data = Filter(transformer, data)
   %
-  % Subsets rows using a boolean expression.
+  % Subsets rows using a logical expression.
   %
   %
   % **JSON EXAMPLE**:
@@ -19,7 +19,7 @@ function data = Filter(transformer, data)
   % :param Input: **mandatory**. The name(s) of the variable(s) to operate on.
   % :type  Input: string or array
   %
-  % :param Query: **mandatory**. Boolean expression used to filter
+  % :param Query: **mandatory**. logical expression used to filter
   % :type  Query: string
   %
   % Supports:
@@ -29,7 +29,7 @@ function data = Filter(transformer, data)
   %   - ``==``, ``~=`` for string operation (case sensitive).
   %     Regular expressions are supported
   %
-  % :param Output: optional. The optional column names to write out to.
+  % :param Output: Optional. The optional column names to write out to.
   % :type  Output: string or array
   %
   % By default, computation is done in-place (i.e., input columnise overwritten).

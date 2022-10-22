@@ -14,10 +14,10 @@ function error_handling(varargin)
   % :type msg: string
   %
   % :param tolerant:
-  % :type tolerant: boolean
+  % :type tolerant: logical
   %
   % :param verbose:
-  % :type verbose:  boolean
+  % :type verbose:  logical
   %
   % EXAMPLE::
   %

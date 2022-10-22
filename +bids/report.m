@@ -24,10 +24,10 @@ function filename = report(varargin)
   % :param read_nifti:  If set to ``true`` (default) the function will try to read the
   %                     NIfTI file to get more information. This relies on the
   %                     ``spm_vol.m`` function from SPM.
-  % :type  read_nifti:  boolean
+  % :type  read_nifti:  logical
   % :param verbose:  If set to ``false`` (default) the function does not
   %                     output anything to the prompt.
-  % :type  verbose:  boolean
+  % :type  verbose:  logical
   %
   %
 

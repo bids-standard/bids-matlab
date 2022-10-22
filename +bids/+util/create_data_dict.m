@@ -26,11 +26,11 @@ function data_dict = create_data_dict(varargin)
   %
   % :param force:           If set to ``false`` it will not overwrite any file already
   %                         present in the destination.
-  % :type  force:           boolean
+  % :type  force:           logical
   %
   % :param schema:          If set to ``true`` it will use the schema to try to
   %                         find definitions for the column headers
-  % :type  schema:          boolean or a schema object
+  % :type  schema:          logical or a schema object
   %
   % :param level_limit:     Maximum number of levels to list. Defauts to 10;
   % :type  level_limit:

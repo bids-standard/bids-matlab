@@ -29,22 +29,22 @@ function copy_to_derivative(varargin)
   %
   % :param unzip:           If ``true`` then all ``.gz`` files will be unzipped
   %                         after being copied.
-  % :type  unzip:           boolean
+  % :type  unzip:           logical
   %
   % :param force:           If set to ``false`` it will not overwrite any file already
   %                         present in the destination.
-  % :type  force:           boolean
+  % :type  force:           logical
   %
   % :param skip_dep:        If set to ``false`` it will copy all the
   %                         dependencies of each file.
-  % :type  skip_dep:        boolean
+  % :type  skip_dep:        logical
   %
   % :param use_schema:      If set to ``true`` it will only copy files
   %                         that are BIDS valid.
-  % :type  use_schema:      boolean
+  % :type  use_schema:      logical
   %
-  % :param  verbose:
-  % :type  verbose:         boolean
+  % :param verbose:
+  % :type  verbose:         logical
   %
   % All the metadata of each file is read through the whole hierarchy
   % and dumped into one side-car json file for each file copied.

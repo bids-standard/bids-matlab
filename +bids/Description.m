@@ -24,7 +24,7 @@ classdef Description
 
     content % dataset description content
 
-    is_derivative = false % boolean
+    is_derivative = false % logical
 
     pipeline = '' % name of the pipeline used to generate this derivative dataset
 

@@ -25,7 +25,7 @@ function data = Label_identical_rows(transformer, data)
   % :param Cumulative: **optional**. Defaults to ``False``.
   %                    If ``True``, the labels are not reset to 0
   %                    when encoutering new row content.
-  % :type  Cumulative: boolean
+  % :type  Cumulative: logical
   %
   % .. note::
   %

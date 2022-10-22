@@ -1,5 +1,7 @@
 % (C) Copyright 2021 Remi Gau
 
+% TODO turn into a notebook
+
 % demos to show how to use bids-matlab
 % to create and edit file BIDS filenames
 %
