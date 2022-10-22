@@ -6,13 +6,13 @@ on:
       - master
       - dev
     paths:
-      - '**.m'
+      - "**.m"
       - .github/workflows/*.yml
       - schema.json
   pull_request:
     branches: ["*"]
     paths:
-      - '**.m'
+      - "**.m"
       - .github/workflows/*.yml
       - schema.json
 
@@ -43,4 +43,4 @@ jobs:
       - name: Run commands
         uses: matlab-actions/run-command@v1.1.0
         with:
-          command: pwd; ls; cd('demo/notebooks'); success = run_tests(); assert(success);
+          command: cd('demos/notebooks'); success = test_notebooks(); assert(success);
