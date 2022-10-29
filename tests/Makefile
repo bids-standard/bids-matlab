@@ -5,6 +5,6 @@ clean:
 	touch bids-examples/.gitkeep
 
 .PHONY: data
-data:
+data: clean
 	sh create_dummy_data_set.sh
 	git clone https://github.com/bids-standard/bids-examples.git --depth 1
