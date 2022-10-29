@@ -2,6 +2,7 @@
 clean:
 	rm -rf data/dummy
 	rm -rf bids-examples
+	touch bids-examples/.gitkeep
 
 .PHONY: data
 data:
