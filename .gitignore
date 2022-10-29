@@ -30,3 +30,7 @@ coverage_html
 .vscode/*
 
 MoAEpilot.zip
+
+# javascript
+node_modules/*
+yarn.lock
