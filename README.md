@@ -1,17 +1,21 @@
+<<<<<<< HEAD
 <!-- markdown-link-check-disable -->
 
 <!-- .. only:: html -->
 
-[![miss_hit](https://github.com/bids-standard/bids-matlab/actions/workflows/miss_hit.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/miss_hit.yml)
 [![tests_matlab](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml)
 [![tests_octave](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/dev?urlpath=demos)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/bids-standard/bids-matlab/dev.svg)](https://results.pre-commit.ci/latest/github/bids-standard/bids-matlab/dev)
+[![miss hit](https://img.shields.io/badge/code%20style-miss_hit-000000.svg)](https://misshit.org/)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb)
 [![View bids-matlab on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5910584.svg)](https://doi.org/10.5281/zenodo.5910584)
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
 
 <!-- markdown-link-check-enable -->
 
+- [![Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/dev?urlpath=demos)](#)
 - [BIDS for MATLAB / Octave](#bids-for-matlab--octave)
   - [Installation](#installation)
     - [Get the latest features](#get-the-latest-features)
