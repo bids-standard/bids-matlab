@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Install MATLAB
-        uses: matlab-actions/setup-matlab@v1.2.1
+        uses: matlab-actions/setup-matlab@v1.2.2
         with:
           # MATLAB release to set up R2020a
           release: R2020a
