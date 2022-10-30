@@ -2,9 +2,10 @@
 clean:
 	rm -rf data/dummy
 	rm -rf bids-examples
-	touch bids-examples/.gitkeep
+	mkdir -p bids-examples/
 
 .PHONY: data
 data: clean
 	sh create_dummy_data_set.sh
 	git clone https://github.com/bids-standard/bids-examples.git --depth 1
+	touch bids-examples/.gitkeep

@@ -3,14 +3,8 @@ name: validate CITATION.cff
 on:
   push:
     branches: ['*']
-    paths:
-      - 'CITATION.cff'
-      - '.github/workflows/validate_cff.yml'
   pull_request:
     branches: ['*']
-    paths:
-      - 'CITATION.cff'
-      - '.github/workflows/validate_cff.yml'
 
 jobs:
 

@@ -1,0 +1,10 @@
+{
+    "ignorePatterns": [
+        {
+            "pattern": "^https://www.fil.ion.ucl.ac.uk/spm"
+        },
+        {
+            "pattern": "^https://.*github.com/.*"
+        }
+    ]
+}
