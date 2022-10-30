@@ -15,7 +15,7 @@ function output_filename = create_participants_tsv(layout_or_path)
 
   % (C) Copyright 2022 Remi Gau
 
-  layout = bids.layout(layout_or_path);
+  layout = bids.layout(layout_or_path, 'use_schema', false);
 
   if ~isempty(layout.participants)
     msg = sprintf(['"participant.tsv" already exist for the following dataset.', ...
