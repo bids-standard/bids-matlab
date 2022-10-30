@@ -175,8 +175,7 @@ configuration file, type:
 mh_metric . --ci
 ```
 
-The code style and quality is also checked during the
-[continuous integration](.github/workflows/miss_hit.yml).
+The code style and quality is also checked during the continuous integration.
 
 For more information about MISS_HIT see its
 [documentation](https://florianschanda.github.io/miss_hit/).

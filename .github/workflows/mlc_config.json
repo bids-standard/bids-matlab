@@ -2,6 +2,15 @@
     "ignorePatterns": [
         {
             "pattern": "^https://www.fil.ion.ucl.ac.uk/spm"
+        },
+        {
+            "pattern": "^https://docs.github.com/.*"
+        },
+        {
+            "pattern": "^https://guides.github.com/.*"
+        },
+        {
+            "pattern": "^https://github.com/.*"
         }
     ]
 }
