@@ -73,3 +73,7 @@ codegen/
 
 # Octave session info
 octave-workspace
+
+# javascript
+node_modules/*
+yarn.lock
