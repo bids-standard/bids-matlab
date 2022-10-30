@@ -108,7 +108,7 @@ Version bumps and new releases are triggered:
 
 A diagram version of the decision-making flow we are aiming for is shown below. ([source](https://blog.axosoft.com/gitflow/))
 
-![git_flow](images/gitflow_diagram.png "gitflow_diagram")
+![git_flow](./docs/commenting_images/gitflow_diagram.png)
 
 #### Conditions for merge into `dev`
 
