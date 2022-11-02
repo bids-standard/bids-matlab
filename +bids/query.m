@@ -12,7 +12,7 @@ function result = query(BIDS, query, varargin)
   % :param query: type of query (see list below)
   % :type  query: string
   %
-  % Type of query allowed.
+  % Type of queries allowed.
   %
   % Any of the following:
   %
@@ -61,7 +61,7 @@ function result = query(BIDS, query, varargin)
   %   Note that all the query types are plurals.
   %
   % :param filter: filter for the query
-  % :type  filter: structure, nX2 cell, series of key-value parameters
+  % :type  filter: structure or nX2 cell or series of key-value parameters
   %
   % The choice of available keys to filter with includes:
   %
@@ -86,6 +86,9 @@ function result = query(BIDS, query, varargin)
   %     - ``'echo'``
   %     - ``'chunk'``
   %
+  % If you want to exclude an entity, use ``''`` or ``[]``.
+  %
+  %
   % It is also possible to use regular expressions in the value.
   %
   % Regex example::
@@ -100,7 +103,10 @@ function result = query(BIDS, query, varargin)
   %
   % ---
   %
-  % Example 1::
+  % Example 1:
+  % Querying for 'BOLD' files for subject '01', for run 1 to 5
+  % of the 'stopsignalwithpseudowordnaming' task
+  % with gunzipped nifti files::
   %
   %    data = bids.query(BIDS, 'data', ...
   %                            'sub', '01', ...
@@ -109,8 +115,8 @@ function result = query(BIDS, query, varargin)
   %                            'extension', '.nii.gz', ...
   %                            'suffix', 'bold');
   %
-  %
-  % Example 2::
+  % Example 2:
+  % Same as above but using a filter structure::
   %
   %     filters = struct('sub', '01', ...
   %                      'task', 'stopsignalwithpseudowordnaming', ...
@@ -121,7 +127,9 @@ function result = query(BIDS, query, varargin)
   %     data = bids.query(BIDS, 'data', filters);
   %
   %
-  % Example 3::
+  % Example 3:
+  % Same as above but using regular expression
+  % to query for subjects 1 to 5::
   %
   %     filters = {'sub', '0[1-5]'; ...
   %                'task', 'stopsignal.*'; ...
@@ -130,6 +138,13 @@ function result = query(BIDS, query, varargin)
   %                'suffix', 'bold'};
   %
   %     data = bids.query(BIDS, 'data', filters);
+  %
+  %
+  % Example 4:
+  % The following query would return all files that do not contain the
+  % task entity::
+  %
+  %     data = bids.query(BIDS, 'data', 'task', '')
   %
   %
   % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
@@ -169,6 +184,13 @@ function result = query(BIDS, query, varargin)
   % otherwise we pass all of them
 
   [subjects, options] = get_subjects(BIDS, options);
+  if isempty(subjects) || any(cellfun('isempty', subjects))
+    result = {};
+    msg = sprintf(['Queries with "sub, ''''" or "sub, []" will return empty, ', ...
+                   '\nas they exclude all subjects from the query.']);
+    bids.internal.error_handling(mfilename(), 'emptySubjectFilter', msg, true, true);
+    return
+  end
 
   [modalities, options] = get_modalities(BIDS, options);
 
