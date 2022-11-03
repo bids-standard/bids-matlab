@@ -146,10 +146,8 @@ function result = query(BIDS, query, varargin)
   %
   %     data = bids.query(BIDS, 'data', 'task', '')
   %
-  %
-  % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  %
 
+  % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %#ok<*AGROW>
