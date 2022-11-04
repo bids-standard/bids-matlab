@@ -33,10 +33,10 @@ with serial number {{DeviceSerialNumber}}. The software version was {{SoftwareVe
 For the Auditory task, 1 run(s) of bold {{PulseSequenceType}} {{ScanningSequence}}
 {{SequenceVariant}} fMRI data were collected. The acquisition parameters were:
 64 slices acquired in a {{so_str}} fashion; repetition time, TR= 7 s; echo time,
-TE= {{echo_time}} ms; flip angle, FA= {{FlipAngle}} deg; field of view, FOV= 192.00
-X 192.00 mm; matrix size= 64 X 64; voxel size= 3.00 X 3.00 X 3.00 mm; multiband
-factor= {{mb_str}}; in-plane acceleration factor= {pr_str}}. Each run was
-9.8 minutes in length, during which 84 functional volumes were acquired.
+TE= {{echo_time}} s; flip angle, FA= {{FlipAngle}} deg; field of view, FOV= 192
+X 192 mm; matrix size= 64 X 64; voxel size= 3.00 X 3.00 X 3.00 mm; multiband
+factor= {{mb_str}}; in-plane acceleration factor= {pr_str}}. Each run was 9.8 minutes
+in length, during which 84 functional volumes were acquired.
 
 {{TaskDescription}} Participants were specifically instructed to: {{Instructions}}
 
