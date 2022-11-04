@@ -23,7 +23,7 @@ classdef File
   % :type  verbose:    logical
   %
   %
-  % **Initiliaze with a filename**
+  % **Initialize with a filename**
   %
   % EXAMPLE::
   %
@@ -285,7 +285,7 @@ classdef File
     %% other methods
     function obj = update(obj)
       %
-      % excuted automatically before getting a value
+      % executed automatically before getting a value
       %
 
       fname = '';
@@ -424,7 +424,7 @@ classdef File
       %
       %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', [], 'force', false);
       %
-      % :param spec: struture specifying what entities, suffix, extension... to apply
+      % :param spec: structure specifying what entities, suffix, extension... to apply
       % :type spec: structure
       %
       % :param dry_run: If ``true`` no file is actually renamed.

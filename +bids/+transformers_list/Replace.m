@@ -46,7 +46,7 @@ function data = Replace(transformer, data)
   %
   % .. note:
   %
-  %     The rows of the ``attributes`` colums matching the ``key`` from the
+  %     The rows of the ``attributes`` columns matching the ``key`` from the
   %     ``input`` will be replaced by ``value``.
   %
   %     All replacemenets are done in sequentially.

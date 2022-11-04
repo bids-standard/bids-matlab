@@ -1,6 +1,6 @@
 function data_dict = create_data_dict(varargin)
   %
-  % Create a JSON data dictionnary for a TSV file.
+  % Create a JSON data dictionary for a TSV file.
   %
   % Levels in columns that may lead to invalid matlab structure fieldnames are
   % renamed. Hence the output may need manual cleaning.
@@ -32,7 +32,7 @@ function data_dict = create_data_dict(varargin)
   %                         find definitions for the column headers
   % :type  schema:          logical or a schema object
   %
-  % :param level_limit:     Maximum number of levels to list. Defauts to 10;
+  % :param level_limit:     Maximum number of levels to list. Defaults to 10;
   % :type  level_limit:
   %
   %
@@ -130,7 +130,7 @@ function content = get_content_from_tsv_files(tsv_file)
 
   % if there is more than one TSV file,
   % the content of all files is concatenated together
-  % to create a single data dictionnary across TSVfiles.
+  % to create a single data dictionary across TSVfiles.
   if numel(tsv_file) > 1
 
     for f = 2:numel(tsv_file)

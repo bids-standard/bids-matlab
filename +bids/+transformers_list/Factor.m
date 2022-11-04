@@ -24,7 +24,7 @@ function data = Factor(transformer, data)
   % (e.g., if a condition has levels 'dog', 'apple', and 'helsinki',
   % the default reference level will be 'apple').
   %
-  % The name of the ouput colums for 2 input columns ``gender`` and ``age``
+  % The name of the output columns for 2 input columns ``gender`` and ``age``
   % with 2 levels (``M``, ``F``) and (``20``, ``30``) respectivaly
   % will of the shape:
   %
