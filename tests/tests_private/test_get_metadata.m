@@ -10,7 +10,7 @@ function test_get_metadata_basic()
 
   % Small test to ensure that metadata are reported correctly
   % also tests inheritance principle: metadata are passed on to lower levels
-  % unless they are overriden by metadate already present at lower levels
+  % unless they are overridden by metadate already present at lower levels
 
   pth = fullfile(fileparts(mfilename('fullpath')), '..', 'data', 'synthetic');
 

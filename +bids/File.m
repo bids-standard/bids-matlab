@@ -23,7 +23,7 @@ classdef File
   % :type  verbose:    logical
   %
   %
-  % **Initiliaze with a filename**
+  % **Initialize with a filename**
   %
   % EXAMPLE::
   %
@@ -285,7 +285,7 @@ classdef File
     %% other methods
     function obj = update(obj)
       %
-      % excuted automatically before getting a value
+      % executed automatically before getting a value
       %
 
       fname = '';

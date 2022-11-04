@@ -6,7 +6,7 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   %
   %   p = bids.internal.parse_filename(filename, fields, tolerant, verbose)
   %
-  % :param filename: fielname to parse that follows the pattern
+  % :param filename: filename to parse that follows the pattern
   %                  ``sub-label[_entity-label]*_suffix.extension``
   % :type  filename: string
   % :param fields:   cell of strings of the entities to use for parsing
@@ -89,7 +89,7 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   end
   basename = filename(pos:end);
 
-  % Identify extention
+  % Identify extension
   [basename, p.ext] = strtok(basename, '.');
 
   p = parse_entity_label_pairs(p, basename, tolerant, verbose);

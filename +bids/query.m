@@ -7,7 +7,7 @@ function result = query(BIDS, query, varargin)
   %   result = bids.query(BIDS, query, filter)
   %
   % :param BIDS: BIDS directory name or BIDS structure (from bids.layout)
-  % :type  BIDS: strcuture or string
+  % :type  BIDS: structure or string
   %
   % :param query: type of query (see list below)
   % :type  query: string
@@ -557,7 +557,7 @@ function result = update_if_entity(query, result, dk)
 
 end
 
-% TODO  performace issue ???
+% TODO  performance issue ???
 % the options could be converted to regex only once
 % and not for every call to keep_file
 
