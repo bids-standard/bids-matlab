@@ -1,7 +1,7 @@
 function check_field(field_list, data, field_type, tolerant)
   %
-  % check that each fied in field_list is present
-  % in the data strucuture
+  % check that each field in field_list is present
+  % in the data structure
   %
   %
 

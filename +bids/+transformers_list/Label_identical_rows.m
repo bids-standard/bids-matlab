@@ -78,7 +78,7 @@ function data = Label_identical_rows(transformer, data)
       this_input = {this_input};
     end
 
-    % Use a cell to keep track of the occurences of each value of this_input
+    % Use a cell to keep track of the occurrences of each value of this_input
     label_counter = init_label_counter(this_input, cumulative);
 
     previous_value = [];

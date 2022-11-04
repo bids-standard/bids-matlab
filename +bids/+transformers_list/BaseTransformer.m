@@ -133,8 +133,8 @@ classdef BaseTransformer
     %%
     function check_field(obj, field_list, data, field_type)
       %
-      % check that each fied in field_list is present
-      % in the data strucuture
+      % check that each field in field_list is present
+      % in the data structure
       %
 
       available_variables = fieldnames(data);

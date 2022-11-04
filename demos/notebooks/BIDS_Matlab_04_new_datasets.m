@@ -6,7 +6,7 @@
 
 add_bids_matlab_to_path();
 
-% ## Intialising a new BIDS dataset
+% ## Initialising a new BIDS dataset
 
 % This can be useful when you are going to output your analysis or your data acquisition into a new dataset.
 

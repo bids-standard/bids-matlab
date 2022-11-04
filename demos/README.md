@@ -11,7 +11,7 @@ There is also `.m` script equivalent for each tutorial that can be run with MATL
 This shows how to use BIDS-MATLAB with SPM12 by running some of the tutorials
 from the SPM website by relying on BIDS-MATLAB for file querying.
 
-There is also an exmaple of how to extract confound information from fmriprep datasets
+There is also an example of how to extract confound information from fmriprep datasets
 to make it easier to analyse them with SPM.
 
 The output should have a BIDS like structure like this:

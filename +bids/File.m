@@ -424,7 +424,7 @@ classdef File
       %
       %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', [], 'force', false);
       %
-      % :param spec: struture specifying what entities, suffix, extension... to apply
+      % :param spec: structure specifying what entities, suffix, extension... to apply
       % :type spec: structure
       %
       % :param dry_run: If ``true`` no file is actually renamed.

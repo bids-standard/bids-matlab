@@ -28,7 +28,7 @@ function BIDS = layout(varargin)
   % :type  index_derivatives: logical
   %
   % :param index_dependencies: if ``true`` this will index the dependencies (json files,
-  %                           assiciated TSV files for each file...)
+  %                           associated TSV files for each file...)
   % :type  index_dependencies: logical
   %
   % :param tolerant: Set to ``true`` to turn validation errors into warnings

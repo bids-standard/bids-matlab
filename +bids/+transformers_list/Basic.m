@@ -1,6 +1,6 @@
 function data = Basic(transformer, data)
   %
-  % Perfoms a basic operation with a ``Value`` on the ``Input``
+  % Performs a basic operation with a ``Value`` on the ``Input``
   %
   %
   % **JSON EXAMPLE**:
@@ -89,7 +89,7 @@ function data = Basic(transformer, data)
     if ischar(value)
       value = str2double(value);
       if isnan(value)
-        msg = sprintf('basic transformers require values convertable to numeric. Got: %s', ...
+        msg = sprintf('basic transformers require values convertible to numeric. Got: %s', ...
                       transformer.Value);
         bids.internal.error_handling(mfilename(), ...
                                      'numericOrCoercableToNumericRequired', ...
