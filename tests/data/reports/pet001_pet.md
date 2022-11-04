@@ -7,7 +7,7 @@ Brain PET scans were acquired using a High-Resolution Research Tomograph (HRRT,
 CTI/Siemens) system from Siemens, with serial number {{DeviceSerialNumber}}. The
 software version was {{SoftwareVersions}}.
 
-The imaging was done using C11 labelled CIMBI-36 admnistered by bolus. The acquisiton
+The imaging was done using C11 labelled CIMBI-36 admnistered by bolus. The acquisition
 parameters were: field of view, FOV= {{fov}} mm; matrix size= {{mat_size}};
 voxel size= {{vox_size}} mm.
 
