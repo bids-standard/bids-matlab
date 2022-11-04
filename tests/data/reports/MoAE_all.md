@@ -22,7 +22,7 @@ MRI scans were acquired at 2 Tesla using a MAGNETOM Vision system from Siemens,
 with serial number {{DeviceSerialNumber}}. The software version was {{SoftwareVersions}}.
 
 For the Auditory task, 1 run(s) of bold {{PulseSequenceType}} {{ScanningSequence}}
-{{SequenceVariant}} fMRI data were collected. The acquisiton parameters were:
+{{SequenceVariant}} fMRI data were collected. The acquisition parameters were:
 64 slices acquired in a {{so_str}} fashion; repetition time, TR= 7 s; echo time,
 TE= {{echo_time}} ms; flip angle, FA= {{FlipAngle}} deg; field of view, FOV= 192.00
 X 192.00 mm; matrix size= 64 X 64; voxel size= 3.00 X 3.00 X 3.00 mm; multiband

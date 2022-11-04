@@ -21,7 +21,7 @@ the following sections:
   - [Style guide](#style-guide)
     - [Writing in markdown](#writing-in-markdown)
     - [Matlab code style guide and quality](#matlab-code-style-guide-and-quality)
-      - [pre-commit hook: reformating your code when committing](#pre-commit-hook-reformating-your-code-when-committing)
+      - [pre-commit hook: reformatting your code when committing](#pre-commit-hook-reformatting-your-code-when-committing)
     - [Running tests on the code](#running-tests-on-the-code)
   - [Making a change with a pull request](#making-a-change-with-a-pull-request)
       - [1. Comment on an existing issue or open a new issue referencing your addition](#1-comment-on-an-existing-issue-or-open-a-new-issue-referencing-your-addition)
@@ -180,7 +180,7 @@ The code style and quality is also checked during the continuous integration.
 For more information about MISS_HIT see its
 [documentation](https://florianschanda.github.io/miss_hit/).
 
-#### pre-commit hook: reformating your code when committing
+#### pre-commit hook: reformatting your code when committing
 
 There is a [pre-commit hook](https://pre-commit.com/) that you can use to
 reformat files as you commit them.

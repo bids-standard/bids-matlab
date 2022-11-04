@@ -1,6 +1,6 @@
 function BIDS = layout(varargin)
   %
-  % Parse a directory structure formated according to the BIDS standard
+  % Parse a directory structure formatted according to the BIDS standard
   %
   % USAGE::
   %
@@ -10,7 +10,7 @@ function BIDS = layout(varargin)
   %                      'tolerant', true, ...
   %                      'verbose', false)
   %
-  % :param root:       directory of the dataset formated according to BIDS
+  % :param root:       directory of the dataset formatted according to BIDS
   %                    [default: ``pwd``]
   % :type  root:       string
   %
@@ -98,7 +98,7 @@ function BIDS = layout(varargin)
   % ==========================================================================
   % [code/] - ignore
   % [derivatives/]
-  % [stimuli/] - ingore
+  % [stimuli/] - ignore
   % [sourcedata/] - ignore
   % [phenotype/]
 
@@ -393,12 +393,12 @@ function file_list = return_file_list(modality, subject, schema)
 
   % We list files followiung those rules:
   %  - anything but json files
-  %  - requesting strart with sub-<subId>_ses-<sesId>_
+  %  - requesting start with sub-<subId>_ses-<sesId>_
   %  - requesting a set of entities of form <key>-<value>_
   %  - requestin exactly one suffix
   %
   %  When not using the schema, listed files
-  %  - can inlude a prefix
+  %  - can include a prefix
   %  - can be json
 
   % TODO

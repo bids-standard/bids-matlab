@@ -1,7 +1,7 @@
 % +BIDS - The bids-matlab library
 %
 % Contents
-%   layout              - Parse a directory structure formated according to the BIDS standard
+%   layout              - Parse a directory structure formatted according to the BIDS standard
 %   query               - Queries a directory structure formatted according to the BIDS standard
 %   validate            - BIDS Validator
 %   report              - Create a short summary of the acquisition parameters of a BIDS dataset

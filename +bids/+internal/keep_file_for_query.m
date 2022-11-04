@@ -123,7 +123,7 @@ function values = convert_to_num(values)
 
 end
 
-% TODO  performace issue ???
+% TODO  performance issue ???
 % the options could be converted to regex only once
 % and not for every call to keep_file
 

@@ -107,7 +107,7 @@ function copy_to_derivative(varargin)
 
   ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
 
-  % Incase we are copying again to the output folder, we append that info to the
+  % In case we are copying again to the output folder, we append that info to the
   % description otherwise we create a bran new dataset description for
   % derivatives
   descr_file = fullfile(derivatives_folder, 'dataset_description.json');
@@ -185,7 +185,7 @@ end
 
 function copy_session_scan_tsv(BIDS, derivatives_folder, p)
   %
-  % Very "brutal" approach wehere we copy the whole file
+  % Very "brutal" approach where we copy the whole file
   %
   % TODO:
   %   -  only copy the entries of the sessions / files that are copied
