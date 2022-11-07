@@ -64,6 +64,11 @@ function init(varargin)
     bids.util.mkdir(args.Results.pth);
   end
 
+  if exist('subjects', 'var') && ~isempty(subjects{1})
+    bids.util.create_participants_tsv(args.Results.pth);
+    bids.util.create_sessions_tsv(args.Results.pth);
+  end
+
   %% README
   pth_to_readmes = fullfile(fileparts(mfilename('fullpath')), '..', 'templates');
   src = fullfile(pth_to_readmes, 'README');
