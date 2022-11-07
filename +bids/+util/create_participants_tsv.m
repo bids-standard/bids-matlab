@@ -5,12 +5,23 @@ function output_filename = create_participants_tsv(varargin)
   %
   % USAGE::
   %
-  %   output_filename = bids.util.create_participants_tsv(layout_or_path);
+  %   output_filename = bids.util.create_participants_tsv(layout_or_path, ...
+  %                                                       'use_schema', true, ...
+  %                                                       'tolerant', true, ...
+  %                                                       'verbose', false)
   %
   %
   % :param layout_or_path:
   % :type  layout_or_path:  path or structure
   %
+  % :param use_schema:
+  % :type  use_schema: logical
+  %
+  % :param tolerant: Set to ``true`` to turn validation errors into warnings
+  % :type  tolerant: logical
+  %
+  % :param verbose: Set to ``true`` to get more feedback
+  % :type  verbose: logical
   %
 
   % (C) Copyright 2022 Remi Gau

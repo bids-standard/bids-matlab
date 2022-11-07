@@ -5,12 +5,19 @@ function create_readme(varargin)
   %
   % USAGE::
   %
-  %   bids.util.create_readme(layout_or_path, is_datalad_ds);
+  %   bids.util.create_readme(layout_or_path, is_datalad_ds, ...
+  %                           'tolerant', true, ...
+  %                           'verbose', false)
   %
   %
   % :param layout_or_path:
   % :type  layout_or_path:  path or structure
   %
+  % :param tolerant: Set to ``true`` to turn validation errors into warnings
+  % :type  tolerant: logical
+  %
+  % :param verbose: Set to ``true`` to get more feedback
+  % :type  verbose: logical
   %
 
   % (C) Copyright 2022 Remi Gau
