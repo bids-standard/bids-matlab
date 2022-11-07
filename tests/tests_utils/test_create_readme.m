@@ -26,6 +26,10 @@ end
 
 function test_create_readme_warning_already_present()
 
+  if bids.internal.is_octave
+    return
+  end
+
   bids_path = fullfile(get_test_data_dir(), 'ds116');
 
   assertWarning(@()bids.util.create_readme(bids_path, false, ...
