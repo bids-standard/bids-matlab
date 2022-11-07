@@ -324,6 +324,10 @@ function [subjects, options] = get_subjects(BIDS, options)
     subjects = options{ismember(options(:, 1), 'sub'), 2};
     options(ismember(options(:, 1), 'sub'), :) = [];
   else
+    if ~isfield(BIDS, 'subjects')
+      msg = 'No subject field present. Did you run bids.layout firs?';
+      bids.internal.error_handling(mfilename(), 'noSubjectField', msg, false);
+    end
     subjects = unique({BIDS.subjects.name});
     subjects = regexprep(subjects, '^[a-zA-Z0-9]+-', '');
   end

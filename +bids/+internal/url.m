@@ -28,6 +28,9 @@ function value = url(section)
     case 'sessions'
       value = [bids.internal.url('agnostic-files'), '#sessions-file'];
 
+    case 'scans'
+      value = [bids.internal.url('agnostic-files'), '#scans-file'];
+
     case 'description'
       value = [bids.internal.url('agnostic-files'), '#dataset_descriptionjson'];
 

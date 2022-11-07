@@ -53,48 +53,58 @@ function output_filenames = create_scans_tsv(varargin)
 
   layout = bids.layout(layout_or_path, 'use_schema', use_schema);
 
-  sessions_list = bids.query(layout, 'sessions');
-  if isempty(sessions_list)
-    msg = sprintf(['There are no session in this dataset:\n', ...
-                   '\t%s'], layout.pth);
-    bids.internal.error_handling(mfilename(), 'noSessionInDataset', msg, tolerant, verbose);
-    return
-  end
-
   subjects_list = bids.query(layout, 'subjects');
 
   for i_sub = 1:numel(subjects_list)
 
-    sessions_file = fullfile(layout.pth, ...
-                             ['sub-' subjects_list{i_sub}], ...
-                             ['sub-' subjects_list{i_sub} '_sessions.tsv']);
-
-    if exist(sessions_file, 'file')
-      msg = sprintf(['"sessions.tsv" %s already exist for the following dataset.', ...
-                     'Will not overwrite.\n', ...
-                     '\t%s'], sessions_file, layout.pth);
-      bids.internal.error_handling(mfilename(), 'participantFileExist', msg, true, verbose);
-      continue
+    sessions_list = bids.query(layout, 'sessions', 'sub', subjects_list{i_sub});
+    if isempty(sessions_list)
+      sessions_list = {''};
     end
 
-    sessions_list = bids.query(layout, 'sessions', 'sub', subjects_list{i_sub});
-    sessions_list = [repmat('ses-', numel(sessions_list), 1), char(sessions_list')];
-    content = struct('session_id', {sessions_list}, ...
-                     'acq_time', {cell(size(sessions_list, 1), 1)}, ...
-                     'comments', {cell(size(sessions_list, 1), 1)});
+    for i_ses = 1:numel(sessions_list)
 
-    output_filenames{end + 1} = sessions_file; %#ok<AGROW>
+      scans_file = fullfile(layout.pth, ...
+                            ['sub-' subjects_list{i_sub}], ...
+                            ['sub-' subjects_list{i_sub} '_scans.tsv']);
+      if ~isempty(sessions_list{i_ses})
+        scans_file = fullfile(layout.pth, ...
+                              ['sub-' subjects_list{i_sub}], ...
+                              ['ses-' sessions_list{i_ses}], ...
+                              ['sub-' subjects_list{i_sub}, ...
+                               '_ses-' sessions_list{i_ses}, ...
+                               '_scans.tsv']);
+      end
 
-    bids.util.tsvwrite(sessions_file, content);
+      if exist(scans_file, 'file')
+        msg = sprintf(['"scans.tsv" %s already exist for the following dataset.', ...
+                       'Will not overwrite.\n', ...
+                       '\t%s'], scans_file, layout.pth);
+        bids.internal.error_handling(mfilename(), 'scansFileExist', msg, true, verbose);
+        continue
+      end
+
+      data = bids.query(layout, 'data', 'sub', subjects_list{i_sub}, ...
+                        'ses', sessions_list{i_ses});
+
+      content = struct('filename', {data}, ...
+                       'acq_time', {cell(numel(data), 1)}, ...
+                       'comments', {cell(numel(data), 1)});
+
+      output_filenames{end + 1} = scans_file; %#ok<AGROW>
+
+      bids.util.tsvwrite(scans_file, content);
+
+    end
   end
 
   if verbose
-    fprintf(1, ['\nCreated "sessions.tsv" in the dataset.', ...
+    fprintf(1, ['\nCreated "scans.tsv" in the dataset.', ...
                 '\n\t%s\n', ...
                 'Please add any necessary information manually...\n', ...
                 'See this section of the BIDS specification:\n\t%s\n'], ...
             bids.internal.create_unordered_list(sessions_file), ...
-            bids.internal.url('sessions'));
+            bids.internal.url('scans'));
   end
 
 end

@@ -73,7 +73,7 @@ function output_filenames = create_sessions_tsv(varargin)
       msg = sprintf(['"sessions.tsv" %s already exist for the following dataset.', ...
                      'Will not overwrite.\n', ...
                      '\t%s'], sessions_file, layout.pth);
-      bids.internal.error_handling(mfilename(), 'participantFileExist', msg, true, verbose);
+      bids.internal.error_handling(mfilename(), 'sessionsFileExist', msg, true, verbose);
       continue
     end
 

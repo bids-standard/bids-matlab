@@ -6,13 +6,28 @@ function test_suite = test_create_scans_tsv %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_create_scans_tsv_basic()
+function test_create_scans_tsv_basic_no_session()
 
-  bids_path = fullfile(get_test_data_dir(), 'ieeg_epilepsy');
+  bids_path = fullfile(get_test_data_dir(), 'asl001');
 
   output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', false);
 
   assertEqual(numel(output_filenames), 1);
+  assertEqual(exist(output_filenames{1}, 'file'), 2);
+  content = bids.util.tsvread(output_filenames{1});
+  assertEqual(fieldnames(content), {'filename'; 'acq_time'; 'comments'});
+
+  teardown(output_filenames);
+
+end
+
+function test_create_scans_tsv_basic()
+
+  bids_path = fullfile(get_test_data_dir(), 'ds000117');
+
+  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', false);
+
+  assertEqual(numel(output_filenames), 16);
   assertEqual(exist(output_filenames{1}, 'file'), 2);
   content = bids.util.tsvread(output_filenames{1});
   assertEqual(fieldnames(content), {'filename'; 'acq_time'; 'comments'});
