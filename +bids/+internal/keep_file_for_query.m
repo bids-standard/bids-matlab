@@ -144,6 +144,9 @@ function option = prepare_regex(option)
     return
   end
   if ~strcmp(option(1), '^')
+    if isnumeric(option)
+      option = char(option);
+    end
     option = ['^' option];
   end
   if ~strcmp(option(end), '$')
