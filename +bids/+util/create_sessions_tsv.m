@@ -52,14 +52,18 @@ function output_filenames = create_sessions_tsv(varargin)
   subjects_list = bids.query(layout, 'subjects');
 
   for i_sub = 1:numel(subjects_list)
+
     sessions_list = bids.query(layout, 'sessions', 'sub', subjects_list{i_sub});
+    sessions_list = [repmat('ses-', numel(sessions_list), 1), char(sessions_list')];
+    sessions_list = struct('session_id', {sessions_list});
 
     sessions_file = fullfile(layout.pth, ...
                              ['sub-' subjects_list{i_sub}], ...
                              'sessions.tsv');
+
     output_filenames{end + 1} = sessions_file; %#ok<AGROW>
-    sessions = struct('session_id', {sessions_list});
-    bids.util.tsvwrite(sessions_file, sessions);
+
+    bids.util.tsvwrite(sessions_file, sessions_list);
   end
 
   fprintf(1, ['\nCreated "sesssions.tsv" in the dataset.', ...

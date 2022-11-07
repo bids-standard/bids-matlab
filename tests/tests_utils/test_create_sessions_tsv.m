@@ -24,7 +24,12 @@ function test_create_sessions_tsv_basic()
 
   bids_path = fullfile(get_test_data_dir(), 'ieeg_epilepsy');
 
-  output_filenames = bids.util.create_sessions_tsv(bids_path, 'verbose', true);
+  output_filenames = bids.util.create_sessions_tsv(bids_path, 'verbose', false);
+
+  assertEqual(numel(output_filenames), 1);
+  assertEqual(exist(output_filenames{1}, 'file'), 2);
+  content = bids.util.tsvread(output_filenames{1});
+  assertEqual(content, struct('session_id', {{'ses-postimp'; 'ses-preimp'}}));
 
   teardown(output_filenames);
 
