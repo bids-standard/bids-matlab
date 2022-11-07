@@ -21,13 +21,14 @@ function output_filename = create_participants_tsv(varargin)
   default_verbose = false;
 
   is_dir_or_struct = @(x) (isstruct(x) || isdir(x));
+  is_logical = @(x) islogical(x);
 
   args = inputParser();
 
   addOptional(args, 'layout_or_path', default_layout, is_dir_or_struct);
-  addParameter(args, 'tolerant', default_tolerant);
-  addParameter(args, 'use_schema', default_use_schema);
-  addParameter(args, 'verbose', default_verbose);
+  addParameter(args, 'tolerant', default_tolerant, is_logical);
+  addParameter(args, 'use_schema', default_use_schema, is_logical);
+  addParameter(args, 'verbose', default_verbose, is_logical);
 
   parse(args, varargin{:});
 
