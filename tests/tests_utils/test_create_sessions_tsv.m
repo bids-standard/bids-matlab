@@ -29,7 +29,8 @@ function test_create_sessions_tsv_basic()
   assertEqual(numel(output_filenames), 1);
   assertEqual(exist(output_filenames{1}, 'file'), 2);
   content = bids.util.tsvread(output_filenames{1});
-  assertEqual(content, struct('session_id', {{'ses-postimp'; 'ses-preimp'}}));
+  assertEqual(fieldnames(content), {'session_id'; 'acq_time'; 'comments'});
+  assertEqual(content.session_id, {'ses-postimp'; 'ses-preimp'});
 
   teardown(output_filenames);
 
