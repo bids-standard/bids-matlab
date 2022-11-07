@@ -13,7 +13,7 @@ function test_create_scans_tsv_basic_no_session()
   [sts, msg] = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders'); %#ok<*ASGLU>
   assertEqual(sts, 0);
 
-  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', true);
+  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', false);
 
   assertEqual(numel(output_filenames), 1);
   assertEqual(exist(fullfile(bids_path, output_filenames{1}), 'file'), 2);
@@ -34,14 +34,14 @@ function test_create_scans_tsv_basic()
   [sts, msg] = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders');
   assertEqual(sts, 0);
 
-  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', true);
+  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', false);
 
   assertEqual(numel(output_filenames), 16);
-  assertEqual(exist(output_filenames{1}, 'file'), 2);
-  content = bids.util.tsvread(output_filenames{1});
+  assertEqual(exist(fullfile(bids_path, output_filenames{1}), 'file'), 2);
+  content = bids.util.tsvread(fullfile(bids_path, output_filenames{1}));
   assertEqual(fieldnames(content), {'filename'; 'acq_time'; 'comments'});
 
-  sts = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders');
+  [sts, msg] = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders');
   assertEqual(sts, 0);
 
   teardown(bids_path, output_filenames);

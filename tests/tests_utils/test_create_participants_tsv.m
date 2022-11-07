@@ -10,12 +10,12 @@ function test_create_participants_tsv_basic()
 
   bids_path = fullfile(get_test_data_dir(), 'asl001');
 
-  sts = bids.validate(bids_path,  '--ignoreNiftiHeaders');
+  [sts, msg] = bids.validate(bids_path,  '--ignoreNiftiHeaders');
   assertEqual(sts, 0);
 
   output_filename = bids.util.create_participants_tsv(bids_path, 'verbose', false);
 
-  sts = bids.validate(bids_path,  '--ignoreNiftiHeaders');
+  [sts, msg] = bids.validate(bids_path,  '--ignoreNiftiHeaders');
   assertEqual(sts, 0);
 
   delete(output_filename);
@@ -28,7 +28,7 @@ function test_create_participants_tsv_already_exist()
 
   output_filename = bids.util.create_participants_tsv(bids_path);
 
-  sts = bids.validate(bids_path,  '--ignoreNiftiHeaders');
+  [sts, msg] = bids.validate(bids_path,  '--ignoreNiftiHeaders');
   assertEqual(sts, 0);
 
   assertWarning(@()bids.util.create_participants_tsv(bids_path, 'verbose', true), ...
