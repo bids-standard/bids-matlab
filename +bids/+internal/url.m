@@ -25,6 +25,9 @@ function value = url(section)
     case 'samples'
       value = [bids.internal.url('agnostic-files'), '#samples-file'];
 
+    case 'sessions'
+      value = [bids.internal.url('agnostic-files'), '#sessions-file'];
+
     case 'description'
       value = [bids.internal.url('agnostic-files'), '#dataset_descriptionjson'];
 
