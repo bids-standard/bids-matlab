@@ -36,12 +36,6 @@ function create_readme(varargin)
   tolerant = args.Results.tolerant;
   verbose = args.Results.verbose;
 
-  pth_to_readmes = fullfile(bids.internal.root_dir(), 'templates');
-  src = fullfile(pth_to_readmes, 'README');
-  if is_datalad_ds
-    src = fullfile(pth_to_readmes, 'README_datalad');
-  end
-
   pth = layout_or_path;
   if isstruct(layout_or_path)
     if isfield(layout_or_path, 'dir')
@@ -55,5 +49,23 @@ function create_readme(varargin)
     end
   end
 
-  copyfile(src, fullfile(pth, 'README'));
+  readme_present = bids.internal.file_utils('List', pth, 'README.*|readme.*');
+  if ~isempty(readme_present)
+    msg = sprintf('Dataset %s already contains a layout:\n\t%s\nWill not overwrite.\n', ...
+                  pth);
+    bids.internal.error_handling(mfilename(), 'readmeAlreadyPresent', ...
+                                 msg, ...
+                                 tolerant, ...
+                                 verbose);
+    return
+  end
+
+  %%
+  pth_to_readmes = fullfile(bids.internal.root_dir(), 'templates');
+  src = fullfile(pth_to_readmes, 'README.template');
+  if is_datalad_ds
+    src = fullfile(pth_to_readmes, 'README_datalad.template');
+  end
+
+  copyfile(src, fullfile(pth, 'README.md'));
 end

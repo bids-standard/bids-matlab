@@ -6,15 +6,38 @@ function test_suite = test_create_readme %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_create_readme_warning()
+function test_create_readme_basic()
+
+  bids_path = fullfile(get_test_data_dir(), 'ds210');
+
+  bids.util.create_readme(bids_path, false, ...
+                          'tolerant', true, ...
+                          'verbose', false);
+
+  assertEqual(exist(fullfile(bids_path, 'README.md'), 'file'), 2);
+
+  delete(fullfile(bids_path, 'README.md'));
+
+end
+
+function test_create_readme_warning_already_present()
+
+  bids_path = fullfile(get_test_data_dir(), 'ds116');
+
+  assertWarning(@()bids.util.create_readme(bids_path, false, ...
+                                           'tolerant', true, ...
+                                           'verbose', true), ...
+                'create_readme:readmeAlreadyPresent');
+
+end
+
+function test_create_readme_warning_layout()
 
   foo = struct('spam', 'egg');
 
-  if ~bids.internal.is_octave()
-    assertWarning(@()bids.util.create_readme(foo, false, ...
-                                             'tolerant', true, ...
-                                             'verbose', true), ...
-                  'create_readme:notBidsDatasetLayout');
-  end
+  assertWarning(@()bids.util.create_readme(foo, false, ...
+                                           'tolerant', true, ...
+                                           'verbose', true), ...
+                'create_readme:notBidsDatasetLayout');
 
 end
