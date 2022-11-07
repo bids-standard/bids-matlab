@@ -10,16 +10,14 @@ function test_create_sessions_tsv_no_session()
 
   bids_path = fullfile(get_test_data_dir(), 'ds210');
 
-  [sts, msg] = bids.validate(bids_path,  '--ignoreNiftiHeaders');
-  assertEqual(sts, 0);
+  validate_dataset(bids_path);
 
   output_filenames = bids.util.create_sessions_tsv(bids_path, 'verbose', false);
 
   assert(isempty(output_filenames));
   assertEqual(exist(output_filenames, 'file'), 0);
 
-  [sts, msg] = bids.validate(bids_path,  '--ignoreNiftiHeaders');
-  assertEqual(sts, 0);
+  validate_dataset(bids_path);
 
   assertWarning(@() bids.util.create_sessions_tsv(bids_path, 'verbose', true), ...
                 'create_sessions_tsv:noSessionInDataset');
@@ -30,8 +28,7 @@ function test_create_sessions_tsv_basic()
 
   bids_path = fullfile(get_test_data_dir(), 'ieeg_epilepsy');
 
-  [sts, msg] = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders');
-  assertEqual(sts, 0);
+  validate_dataset(bids_path);
 
   output_filenames = bids.util.create_sessions_tsv(bids_path, 'verbose', false);
 
@@ -41,8 +38,7 @@ function test_create_sessions_tsv_basic()
   assertEqual(fieldnames(content), {'session_id'; 'acq_time'; 'comments'});
   assertEqual(content.session_id, {'ses-postimp'; 'ses-preimp'});
 
-  [sts, msg] = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders');
-  assertEqual(sts, 0);
+  validate_dataset(bids_path);
 
   teardown(bids_path, output_filenames);
 

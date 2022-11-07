@@ -10,8 +10,7 @@ function test_create_readme_basic()
 
   bids_path = fullfile(get_test_data_dir(), 'ds210');
 
-  [sts, msg] = bids.validate(bids_path,  '--ignoreNiftiHeaders');
-  assertEqual(sts, 0);
+  validate_dataset(bids_path);
 
   bids.util.create_readme(bids_path, false, ...
                           'tolerant', true, ...
@@ -19,8 +18,7 @@ function test_create_readme_basic()
 
   assertEqual(exist(fullfile(bids_path, 'README.md'), 'file'), 2);
 
-  [sts, msg] = bids.validate(bids_path,  '--ignoreNiftiHeaders');
-  assertEqual(sts, 0);
+  validate_dataset(bids_path);
 
   delete(fullfile(bids_path, 'README.md'));
 
