@@ -16,6 +16,14 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install bids validator
+        run: npm install -g bids-validator
+
       - name: Install MATLAB
         uses: matlab-actions/setup-matlab@v1.2.3
         with:

@@ -45,8 +45,8 @@ function create_readme(varargin)
 
   pth = layout_or_path;
   if isstruct(layout_or_path)
-    if isfield(layout_or_path, 'dir')
-      pth = layout_or_path.dir;
+    if isfield(layout_or_path, 'pth')
+      pth = layout_or_path.pth;
     else
       msg = 'Input structure is not a bids layout. Run bids.layout first.';
       bids.internal.error_handling(mfilename(), 'notBidsDatasetLayout', ...

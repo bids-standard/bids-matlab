@@ -10,14 +10,14 @@ function test_create_scans_tsv_basic_no_session()
 
   bids_path = fullfile(get_test_data_dir(), 'asl001');
 
-  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', false);
+  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', true);
 
   assertEqual(numel(output_filenames), 1);
-  assertEqual(exist(output_filenames{1}, 'file'), 2);
-  content = bids.util.tsvread(output_filenames{1});
+  assertEqual(exist(fullfile(bids_path, output_filenames{1}), 'file'), 2);
+  content = bids.util.tsvread(fullfile(bids_path, output_filenames{1}));
   assertEqual(fieldnames(content), {'filename'; 'acq_time'; 'comments'});
 
-  teardown(output_filenames);
+  teardown(bids_path, output_filenames);
 
 end
 
@@ -25,19 +25,19 @@ function test_create_scans_tsv_basic()
 
   bids_path = fullfile(get_test_data_dir(), 'ds000117');
 
-  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', false);
+  output_filenames = bids.util.create_scans_tsv(bids_path, 'verbose', true);
 
   assertEqual(numel(output_filenames), 16);
   assertEqual(exist(output_filenames{1}, 'file'), 2);
   content = bids.util.tsvread(output_filenames{1});
   assertEqual(fieldnames(content), {'filename'; 'acq_time'; 'comments'});
 
-  teardown(output_filenames);
+  teardown(bids_path, output_filenames);
 
 end
 
-function teardown(filelist)
+function teardown(pth, filelist)
   for i = 1:numel(filelist)
-    delete(filelist{i});
+    delete(fullfile(pth, filelist{i}));
   end
 end

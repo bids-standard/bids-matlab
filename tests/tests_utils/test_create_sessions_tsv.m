@@ -10,10 +10,16 @@ function test_create_sessions_tsv_no_session()
 
   bids_path = fullfile(get_test_data_dir(), 'ds210');
 
+  sts = bids.validate(bids_path,  '--ignoreNiftiHeaders');
+  assertEqual(sts, 0);
+
   output_filenames = bids.util.create_sessions_tsv(bids_path, 'verbose', false);
 
   assert(isempty(output_filenames));
   assertEqual(exist(output_filenames, 'file'), 0);
+
+  sts = bids.validate(bids_path,  '--ignoreNiftiHeaders');
+  assertEqual(sts, 0);
 
   assertWarning(@() bids.util.create_sessions_tsv(bids_path, 'verbose', true), ...
                 'create_sessions_tsv:noSessionInDataset');
@@ -24,20 +30,26 @@ function test_create_sessions_tsv_basic()
 
   bids_path = fullfile(get_test_data_dir(), 'ieeg_epilepsy');
 
+  sts = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders');
+  assertEqual(sts, 0);
+
   output_filenames = bids.util.create_sessions_tsv(bids_path, 'verbose', false);
 
   assertEqual(numel(output_filenames), 1);
-  assertEqual(exist(output_filenames{1}, 'file'), 2);
-  content = bids.util.tsvread(output_filenames{1});
+  assertEqual(exist(fullfile(bids_path, output_filenames{1}), 'file'), 2);
+  content = bids.util.tsvread(fullfile(bids_path, output_filenames{1}));
   assertEqual(fieldnames(content), {'session_id'; 'acq_time'; 'comments'});
   assertEqual(content.session_id, {'ses-postimp'; 'ses-preimp'});
 
-  teardown(output_filenames);
+  sts = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders');
+  assertEqual(sts, 0);
+
+  teardown(bids_path, output_filenames);
 
 end
 
-function teardown(filelist)
+function teardown(pth, filelist)
   for i = 1:numel(filelist)
-    delete(filelist{i});
+    delete(fullfile(pth, filelist{i}));
   end
 end

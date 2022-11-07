@@ -29,6 +29,9 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install octave liboctave-dev
 
+    - name: Install bids validator
+      run: npm install -g bids-validator
+
     - name: Clone bids-matlab
       uses: actions/checkout@v3
       with:
