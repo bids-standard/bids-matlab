@@ -15,7 +15,7 @@ function output_filenames = create_sessions_tsv(varargin)
 
   % (C) Copyright 2022 Remi Gau
 
-  default_root = pwd;
+  default_layout = pwd;
   default_tolerant = true;
   default_use_schema = true;
   default_verbose = false;
@@ -24,7 +24,7 @@ function output_filenames = create_sessions_tsv(varargin)
 
   args = inputParser();
 
-  addOptional(args, 'layout_or_path', default_root, is_dir_or_struct);
+  addOptional(args, 'layout_or_path', default_layout, is_dir_or_struct);
   addParameter(args, 'tolerant', default_tolerant);
   addParameter(args, 'use_schema', default_use_schema);
   addParameter(args, 'verbose', default_verbose);
@@ -66,11 +66,13 @@ function output_filenames = create_sessions_tsv(varargin)
     bids.util.tsvwrite(sessions_file, sessions_list);
   end
 
-  fprintf(1, ['\nCreated "sesssions.tsv" in the dataset.', ...
-              '\n\t%s\n', ...
-              'Please add any necessary information manually...\n', ...
-              'See this section of the BIDS specification:\n\t%s\n'], ...
-          bids.internal.create_unordered_list(sessions_file), ...
-          bids.internal.url('sessions'));
+  if verbose
+    fprintf(1, ['\nCreated "sesssions.tsv" in the dataset.', ...
+                '\n\t%s\n', ...
+                'Please add any necessary information manually...\n', ...
+                'See this section of the BIDS specification:\n\t%s\n'], ...
+            bids.internal.create_unordered_list(sessions_file), ...
+            bids.internal.url('sessions'));
+  end
 
 end
