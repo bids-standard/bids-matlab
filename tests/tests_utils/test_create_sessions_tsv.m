@@ -15,7 +15,6 @@ function test_create_sessions_tsv_no_session()
   output_filenames = bids.util.create_sessions_tsv(bids_path, 'verbose', false);
 
   assert(isempty(output_filenames));
-  assertEqual(exist(output_filenames, 'file'), 0);
 
   validate_dataset(bids_path);
 
