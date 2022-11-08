@@ -22,6 +22,10 @@ end
 
 function test_create_participants_tsv_already_exist()
 
+  if bids.internal.is_octave()
+    return
+  end
+
   bids_path = fullfile(get_test_data_dir(), 'ds210');
 
   output_filename = bids.util.create_participants_tsv(bids_path);
