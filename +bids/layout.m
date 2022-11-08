@@ -387,7 +387,7 @@ function BIDS = validate_description(BIDS, tolerant, verbose)
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.pth, 'dataset_description.json'));
   catch err
     msg = sprintf('BIDS dataset description could not be read:\n %s', ...
-        bids.internal.format_path(err.message));
+                  bids.internal.format_path(err.message));
     bids.internal.error_handling(mfilename, 'cannotReadDescripton', msg, tolerant, verbose);
   end
 

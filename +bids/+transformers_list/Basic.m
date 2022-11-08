@@ -99,10 +99,10 @@ function data = Basic(transformer, data)
     end
 
     assert(isnumeric(value));
-    
+
     tmp = data.(input{i});
     if iscellstr(tmp) %#ok<ISCLSTR>
-        tmp = str2num(char(tmp)); %#ok<ST2NM>
+      tmp = str2num(char(tmp)); %#ok<ST2NM>
     end
 
     switch lower(transformer.Name)
@@ -120,7 +120,7 @@ function data = Basic(transformer, data)
         tmp = tmp / value;
 
       case 'power'
-        tmp = tmp .^ value;
+        tmp = tmp.^value;
 
     end
 
