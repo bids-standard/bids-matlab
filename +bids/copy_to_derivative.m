@@ -90,6 +90,7 @@ function copy_to_derivative(varargin)
   subjects_list = bids.query(BIDS, 'subjects', args.Results.filter);
 
   if isempty(data_list)
+    disp(args.Results.filter);
     msg = sprintf('No data found for this query in dataset:\n\t%s', ...
                   BIDS.pth);
     bids.internal.error_handling(mfilename, 'noData', msg, ...
