@@ -1,6 +1,8 @@
 function validate_dataset(bids_path)
 
-  if bids.internal.is_octave && bids.internal.is_github_ci
+  % testing in CI with octave happens through Moxunit action
+  % which does not support the bids validator
+  if bids.internal.is_octave
     return
   end
 
