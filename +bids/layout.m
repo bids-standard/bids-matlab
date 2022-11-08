@@ -377,8 +377,8 @@ function BIDS = validate_description(BIDS, tolerant, verbose)
   if ~exist(fullfile(BIDS.pth, 'dataset_description.json'), 'file')
 
     msg = sprintf(['BIDS directory not valid: missing dataset_description.json: ''%s''', ...
-                   'See this section of the BIDS specification:\n\t%s\n'], ...
-                  BIDS.pth, ...
+                   '\nSee this section of the BIDS specification:\n\t%s\n'], ...
+                  bids.internal.format_path(BIDS.pth), ...
                   bids.internal.url('description'));
     bids.internal.error_handling(mfilename, 'missingDescripton', msg, tolerant, verbose);
 
@@ -386,7 +386,8 @@ function BIDS = validate_description(BIDS, tolerant, verbose)
   try
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.pth, 'dataset_description.json'));
   catch err
-    msg = sprintf('BIDS dataset description could not be read: %s', err.message);
+    msg = sprintf('BIDS dataset description could not be read:\n %s', ...
+                  bids.internal.format_path(err.message));
     bids.internal.error_handling(mfilename, 'cannotReadDescripton', msg, tolerant, verbose);
   end
 

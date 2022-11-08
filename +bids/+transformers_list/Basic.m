@@ -100,22 +100,27 @@ function data = Basic(transformer, data)
 
     assert(isnumeric(value));
 
+    tmp = data.(input{i});
+    if iscellstr(tmp) %#ok<ISCLSTR>
+      tmp = str2num(char(tmp)); %#ok<ST2NM>
+    end
+
     switch lower(transformer.Name)
 
       case 'add'
-        tmp = data.(input{i}) + value;
+        tmp = tmp + value;
 
       case 'subtract'
-        tmp = data.(input{i}) - value;
+        tmp = tmp - value;
 
       case 'multiply'
-        tmp = data.(input{i}) * value;
+        tmp = tmp * value;
 
       case 'divide'
-        tmp = data.(input{i}) / value;
+        tmp = tmp / value;
 
       case 'power'
-        tmp = data.(input{i}).^value;
+        tmp = tmp.^value;
 
     end
 
