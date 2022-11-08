@@ -29,7 +29,7 @@ function output_dir = convert_facerep_ds(input_dir, output_dir)
 
   opt.indent = '  ';
 
-  %% Create ouput folder structure
+  %% Create output folder structure
   spm_mkdir(output_dir, subject, {'anat', 'func'});
 
   %% Structural MRI
@@ -294,7 +294,7 @@ function create_readme(output_dir)
          'Each EPI acquisition consisted of 24 descending slices:'
          '- matrix size: 64x64'
          '- voxel size: 3mm x 3mm x 3mm with 1.5mm gap'
-         '- repatition time: 2s'
+         '- repetition time: 2s'
          '- echo time: 40ms'
          ''
          'Experimental design:'

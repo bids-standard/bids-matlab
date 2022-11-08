@@ -66,7 +66,7 @@ function data = Logical(transformer, data)
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   % TODO
-  % for Add Or, if not ouput just merge the name of the input variables
+  % for Add Or, if not output just merge the name of the input variables
   % TODO "not" can only have one input
 
   input = bids.transformers_list.get_input(transformer, data);

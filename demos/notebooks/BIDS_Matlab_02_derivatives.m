@@ -31,7 +31,7 @@ disp(modalities);
 disp(BIDS.description);
 
 % We can access any preprocessed data by querying
-% for data described (`desc` entitiy) as preprocessed (`preproc`)
+% for data described (`desc` entity) as preprocessed (`preproc`)
 % and maybe also in which `space` we want to work in.
 
 %%

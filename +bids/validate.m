@@ -7,7 +7,7 @@ function [sts, msg] = validate(root)
   %         [sts, msg] = bids.validate(root)
   %
   % :param root: directory formatted according to BIDS [Default: pwd]
-  % :type strig:
+  % :type string:
   %
   % :returns:
   %

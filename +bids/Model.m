@@ -13,7 +13,7 @@ classdef Model
   %                    'tolerant', true,
   %                    'verbose', false);
   %
-  % :param init: if ``true`` this will initialize an empty model. Defauts to ``false``.
+  % :param init: if ``true`` this will initialize an empty model. Defaults to ``false``.
   % :type init: logical
   %
   % :param file: fullpath the JSON file containing the BIDS stats model

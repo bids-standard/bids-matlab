@@ -70,16 +70,16 @@ end
 function [str, options] = get_item(str, options)
 
   for n = 1:numel(str)
-    [pth, nam, ext] = fileparts(deblank(str{n}));
+    [pth, name, ext] = fileparts(deblank(str{n}));
     switch lower(options{1})
       case 'path'
         str{n} = pth;
       case 'basename'
-        str{n} = nam;
+        str{n} = name;
       case 'ext'
         str{n} = ext(2:end);
       case 'filename'
-        str{n} = [nam ext];
+        str{n} = [name ext];
       case 'cpath'
         str(n) = canonicalise_path(str(n));
       case 'fpath'
@@ -97,28 +97,28 @@ function str = set_item(str, options)
   while ~isempty(options)
 
     for n = 1:numel(str)
-      [pth, nam, ext] = fileparts(deblank(str{n}));
+      [pth, name, ext] = fileparts(deblank(str{n}));
       switch lower(options{1})
         case 'path'
           pth = char(options{2});
         case 'basename'
-          nam = char(options{2});
+          name = char(options{2});
         case 'ext'
           ext = char(options{2});
           if ~isempty(ext) && ext(1) ~= '.'
             ext = ['.' ext];
           end
         case 'filename'
-          nam = char(options{2});
+          name = char(options{2});
           ext = '';
         case 'prefix'
-          nam = [char(options{2}) nam];
+          name = [char(options{2}) name];
         case 'suffix'
-          nam = [nam char(options{2})];
+          name = [name char(options{2})];
         otherwise
           warning('Unknown item ''%s'': ignored.', lower(options{1}));
       end
-      str{n} = fullfile(pth, [nam ext]);
+      str{n} = fullfile(pth, [name ext]);
     end
     options([1 2]) = [];
 
