@@ -18,6 +18,10 @@ function test_create_sessions_tsv_no_session()
 
   validate_dataset(bids_path);
 
+  if bids.internal.is_octave
+    return
+  end
+
   assertWarning(@() bids.util.create_sessions_tsv(bids_path, 'verbose', true), ...
                 'create_sessions_tsv:noSessionInDataset');
 
