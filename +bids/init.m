@@ -7,7 +7,9 @@ function init(varargin)
   %   bids.init(pth, ...
   %             'folders', folders, ,...
   %             'is_derivative', false,...
-  %             'is_datalad_ds', false)
+  %             'is_datalad_ds', false, ...
+  %             'tolerant', true, ...
+  %             'verbose', false)
   %
   % :param pth: directory where to create the dataset
   % :type  pth: string
@@ -33,9 +35,12 @@ function init(varargin)
   default.folders.subjects = '';
   default.folders.sessions = '';
   default.folders.modalities = '';
-
+  default_tolerant = true;
+  default_verbose = false;
   default.is_derivative = false;
   default.is_datalad_ds = false;
+
+  is_logical = @(x) islogical(x);
 
   args = inputParser;
 
@@ -43,8 +48,14 @@ function init(varargin)
   addParameter(args, 'folders', default.folders, @isstruct);
   addParameter(args, 'is_derivative', default.is_derivative);
   addParameter(args, 'is_datalad_ds', default.is_datalad_ds);
+  addParameter(args, 'tolerant', default_tolerant, is_logical);
+  addParameter(args, 'verbose', default_verbose, is_logical);
 
   parse(args, varargin{:});
+
+  is_datalad_ds = args.Results.is_datalad_ds;
+  tolerant = args.Results.tolerant;
+  verbose = args.Results.verbose;
 
   %% Folder structure
   if ~isempty(fieldnames(args.Results.folders))
@@ -64,13 +75,14 @@ function init(varargin)
     bids.util.mkdir(args.Results.pth);
   end
 
-  %% README
-  pth_to_readmes = fullfile(fileparts(mfilename('fullpath')), '..', 'templates');
-  src = fullfile(pth_to_readmes, 'README');
-  if args.Results.is_datalad_ds
-    src = fullfile(pth_to_readmes, 'README_datalad');
+  if exist('subjects', 'var') && ~isempty(subjects{1})
+    bids.util.create_participants_tsv(args.Results.pth);
+    bids.util.create_sessions_tsv(args.Results.pth);
   end
-  copyfile(src, fullfile(args.Results.pth, 'README'));
+
+  bids.util.create_readme(args.Results.pth, is_datalad_ds, ...
+                          'verbose', verbose, ...
+                          'tolerant', tolerant);
 
   %% dataset_description
   ds_desc = bids.Description();

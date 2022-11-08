@@ -151,7 +151,8 @@ Some examples:
 Any additional information or pointers to information that
 might be helpful to users of the dataset. Include qualitative information
 related to how the data acquisition went.
-________________________________________________________________________________
+
+---
 
 [![made-with-datalad](https://www.datalad.org/badges/made_with.svg)](https://datalad.org)
 
@@ -177,7 +178,7 @@ datalad clone <url>
 
 Once a dataset is cloned, it is a light-weight directory on your local machine.
 At this point, it contains only small metadata and information on the
-identity of the files in the dataset, but not actual *content* of the
+identity of the files in the dataset, but not actual _content_ of the
 (sometimes large) data files.
 
 ### Retrieve dataset content
@@ -191,7 +192,7 @@ datalad get <path/to/directory/or/file>`
 This command will trigger a download of the files, directories, or
 subdatasets you have specified.
 
-DataLad datasets can contain other datasets, so called *subdatasets*.
+DataLad datasets can contain other datasets, so called _subdatasets_.
 If you clone the top-level dataset, subdatasets do not yet contain
 metadata and information on the identity of files, but appear to be
 empty directories. In order to retrieve file availability metadata in
@@ -209,19 +210,19 @@ subdataset will be downloaded at once.
 ### Stay up-to-date
 
 DataLad datasets can be updated. The command `datalad update` will
-*fetch* updates and store them on a different branch (by default
+_fetch_ updates and store them on a different branch (by default
 `remotes/origin/master`). Running
 
 ```
 datalad update --merge
 ```
 
-will *pull* available updates and integrate them in one go.
+will _pull_ available updates and integrate them in one go.
 
 ### Find out what has been done
 
-DataLad datasets contain their history in the ``git log``.
-By running ``git log`` (or a tool that displays Git history) in the dataset or on
+DataLad datasets contain their history in the `git log`.
+By running `git log` (or a tool that displays Git history) in the dataset or on
 specific files, you can find out what has been done to the dataset or to individual files
 by whom, and when.
 
