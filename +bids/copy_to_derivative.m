@@ -40,6 +40,9 @@ function copy_to_derivative(varargin)
   %                         dependencies of each file.
   % :type  skip_dep:        boolean
   %
+  % :param tolerant:        Defaults to ``false``. Set to ``true`` to turn errors into warnings.
+  % :type  tolerant:        boolean
+  %
   % :param use_schema:      If set to ``true`` it will only copy files
   %                         that are BIDS valid.
   % :type  use_schema:      boolean
@@ -61,6 +64,7 @@ function copy_to_derivative(varargin)
   default_force = false;
   default_skip_dep = false;
   default_schema = true;
+  default_tolerant = false;
   default_verbose = false;
 
   args = inputParser;
@@ -72,19 +76,26 @@ function copy_to_derivative(varargin)
   addParameter(args, 'unzip', default_unzip);
   addParameter(args, 'force', default_force);
   addParameter(args, 'skip_dep', default_skip_dep);
+  addParameter(args, 'tolerant', default_tolerant);
   addParameter(args, 'use_schema', default_schema);
   addParameter(args, 'verbose', default_verbose);
 
   parse(args, varargin{:});
 
-  BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema);
+  BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema, ...
+                     'verbose', args.Results.verbose);
 
   % Check that we actually have to copy something
   data_list = bids.query(BIDS, 'data', args.Results.filter);
   subjects_list = bids.query(BIDS, 'subjects', args.Results.filter);
 
   if isempty(data_list)
-    warning('No data found for this query');
+    disp(args.Results.filter);
+    msg = sprintf('No data found for this query in dataset:\n\t%s', ...
+                  BIDS.pth);
+    bids.internal.error_handling(mfilename, 'noData', msg, ...
+                                 args.Results.tolerant, ...
+                                 args.Results.verbose);
     return
   else
     if args.Results.verbose
