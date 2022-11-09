@@ -598,7 +598,7 @@ function BIDS = manage_dependencies(BIDS, verbose)
       if isempty(info_dest.file_idx)
         msg = ['IntendedFor file ' dest ' from ' file.filename ' not indexed'];
         bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
-        continue;
+        continue
       end
       BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx) ...
           .dependencies.explicit{end + 1, 1} = file_list{iFile};
