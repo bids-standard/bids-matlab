@@ -589,11 +589,6 @@ function BIDS = manage_dependencies(BIDS, verbose)
     for iIntended = 1:numel(intended)
       dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
-      if ~exist(dest, 'file')
-        msg = ['IntendedFor file ' dest ' from ' file.filename ' not found'];
-        bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
-        continue
-      end
       info_dest = bids.internal.return_file_info(BIDS, dest);
       if isempty(info_dest.file_idx)
         msg = ['IntendedFor file ' dest ' from ' file.filename ' not indexed'];
