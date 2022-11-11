@@ -292,7 +292,15 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
                       'data', struct('index', 0, 'base', '', 'len', 1), ...
                       'allowed_ext', []);
 
+    % need to ignore certain files on Mac that start with
+    IGNORE_LIST = {'.DS_Store', '._'};
     for iFile = 1:size(file_list, 1)
+
+      ignore = cellfun(@(x) regexp(file_list{iFile}, x, 'start'), IGNORE_LIST, ...
+                       'uniformoutput', false);
+      if any(~cellfun('isempty', ignore))
+        continue
+      end
 
       [subject, status, previous] = bids.internal.append_to_layout(file_list{iFile}, ...
                                                                    subject, ...
