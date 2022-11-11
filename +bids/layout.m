@@ -595,13 +595,13 @@ function BIDS = manage_dependencies(BIDS, verbose)
         continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);
-      try
-        BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx) ...
-            .dependencies.explicit{end + 1, 1} = file_list{iFile};
-      catch ME
-        warning('This may fail if your dataset is not valid.');
-        rethrow(ME);
+      if isempty(info_dest.file_idx)
+        msg = ['IntendedFor file ' dest ' from ' file.filename ' not indexed'];
+        bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
+        continue
       end
+      BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx) ...
+          .dependencies.explicit{end + 1, 1} = file_list{iFile};
     end
 
   end
