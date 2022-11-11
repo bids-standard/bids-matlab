@@ -209,6 +209,15 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "DanielaMariaPinzon",
+      "name": "DanielaMariaPinzon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/83370287?v=4",
+      "profile": "https://github.com/DanielaMariaPinzon",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
