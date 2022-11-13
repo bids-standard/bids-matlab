@@ -220,6 +220,7 @@ Thanks goes to these wonderful people
       <td align="center"><a href="https://github.com/rotemb9"><img src="https://avatars.githubusercontent.com/u/18393230?v=4?s=100" width="100px;" alt="Rotem Botvinik-Nezer"/><br /><sub><b>Rotem Botvinik-Nezer</b></sub></a><br /><a href="#ideas-rotemb9" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center"><a href="https://github.com/iqrashahzad14"><img src="https://avatars.githubusercontent.com/u/75671348?v=4?s=100" width="100px;" alt="Iqra Shahzad"/><br /><sub><b>Iqra Shahzad</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/pulls?q=is%3Apr+reviewed-by%3Aiqrashahzad14" title="Reviewed Pull Requests">👀</a></td>
       <td align="center"><a href="https://github.com/DanielaMariaPinzon"><img src="https://avatars.githubusercontent.com/u/83370287?v=4?s=100" width="100px;" alt="DanielaMariaPinzon"/><br /><sub><b>DanielaMariaPinzon</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/issues?q=author%3ADanielaMariaPinzon" title="Bug reports">🐛</a></td>
+      <td align="center"><a href="https://github.com/JeanLucAnton"><img src="https://avatars.githubusercontent.com/u/78919321?v=4?s=100" width="100px;" alt="JeanLucAnton"/><br /><sub><b>JeanLucAnton</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/issues?q=author%3AJeanLucAnton" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
