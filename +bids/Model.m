@@ -711,26 +711,49 @@ classdef Model
       %
       % USAGE::
       %
-      %   bm = bm.default(BIDS)
+      %   bm = bm.default(BIDS, tasks)
       %
       % :param BIDS: fullpath to a BIDS dataset or output structure from ``bids.layout``
-      % :type file: path or structure
+      % :type  BIDS: path or structure
+      %
+      % :param tasks: tasks to include in the model
+      % :type  tasks: char or cellstr
       %
       % EXAMPLE::
       %
       %   pth_bids_example = get_test_data_dir();
       %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
       %   bm = bids.Model();
-      %   bm = bm.default(BIDS);
+      %   bm = bm.default(BIDS, 'rhymejudgement');
       %   filename = fullfile(pwd, 'model-rhymejudgement_smdl.json');
       %   bm.write(filename);
       %
 
+      is_dir_or_struct = @(x) isstruct(x) || isdir(x);  %#ok<*ISDIR>
+      is_char_or_cellstr = @(x) ischar(x) || iscellstr(x); %#ok<*ISCLSTR>
+
       args = inputParser;
-      args.addRequired('layout');
+      args.addRequired('layout', is_dir_or_struct);
+      args.addOptional('tasks', '', is_char_or_cellstr);
+
       args.parse(varargin{:});
 
-      tasks = bids.query(args.Results.layout, 'tasks');
+      tasks = args.Results.tasks;
+      if ischar(tasks)
+        tasks =  cellstr(tasks);
+      end
+      if strcmp(tasks{1}, '')
+        tasks = bids.query(args.Results.layout, 'tasks');
+      end
+      if isempty(tasks)
+        msg = sprintf('No task found in dataset %s', ...
+                      args.Results.layout.pth);
+        bids.internal.error_handling(mfilename(), ...
+                                     'noTaskDetected', ...
+                                     msg, ...
+                                     obj.tolerant, ...
+                                     obj.verbose);
+      end
       sessions = bids.query(args.Results.layout, 'sessions');
 
       GroupBy_level_1 = {'run', 'subject'};
@@ -743,7 +766,9 @@ classdef Model
       obj.Description = sprintf('default BIDS stats model for %s task', strjoin(tasks, '/'));
 
       % Define design matrix by including all trial_types and a constant
-      trial_type_list = bids.internal.list_all_trial_types(args.Results.layout, tasks);
+      trial_type_list = bids.internal.list_all_trial_types(args.Results.layout, tasks, ...
+                                                           'verbose', obj.verbose, ...
+                                                           'tolerant', obj.tolerant);
       trial_type_list = cellfun(@(x) strjoin({'trial_type.', x}, ''), ...
                                 trial_type_list, ...
                                 'UniformOutput', false);
