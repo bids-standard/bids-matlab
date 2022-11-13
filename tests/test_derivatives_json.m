@@ -24,6 +24,10 @@ end
 
 function test_derivatives_json_entity_as_number()
 
+  if bids.internal.is_octave
+    return
+  end
+
   filename = 'sub-01_ses-test_task-faceRecognition_run-02_res-2_bold.nii';
 
   assertWarning(@() bids.derivatives_json(filename), ...
