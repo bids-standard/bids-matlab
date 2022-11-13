@@ -32,6 +32,9 @@ function test_list_all_trial_types_warning()
   trial_type_list = bids.internal.list_all_trial_types(BIDS, {'not', 'a', 'task'}, ...
                                                        'verbose', false);
   assertEqual(trial_type_list, {});
+  if bids.internal.is_octave
+    return
+  end
   assertWarning(@() bids.internal.list_all_trial_types(BIDS, {'not', 'a', 'task'}, ...
                                                        'verbose', true), ...
                 'list_all_trial_types:noEventsFile');
