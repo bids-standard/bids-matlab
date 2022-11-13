@@ -218,6 +218,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "JeanLucAnton",
+      "name": "JeanLucAnton",
+      "avatar_url": "https://avatars.githubusercontent.com/u/78919321?v=4",
+      "profile": "https://github.com/JeanLucAnton",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
