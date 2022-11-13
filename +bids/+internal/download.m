@@ -25,10 +25,14 @@ function filename = download(URL, output_dir, verbose)
   if strcmp(protocol, 'http:')
 
     if isunix()
-      if verbose
-        system(sprintf('wget %s', URL));
-      else
-        system(sprintf('wget -q %s', URL));
+      try
+        if verbose
+          system(sprintf('wget %s', URL));
+        else
+          system(sprintf('wget -q %s', URL));
+        end
+      catch
+        urlwrite(URL, filename); %#ok<*URLWR>
       end
     else
       urlwrite(URL, filename);
