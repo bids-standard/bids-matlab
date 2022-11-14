@@ -324,8 +324,10 @@ function [subjects, options] = get_subjects(BIDS, options)
     subjects = options{ismember(options(:, 1), 'sub'), 2};
     options(ismember(options(:, 1), 'sub'), :) = [];
   else
-    if ~isfield(BIDS, 'subjects')
-      msg = 'No subject field present. Did you run bids.layout firs?';
+    if ~isfield(BIDS, 'subjects') || ~isfield(BIDS.subjects, 'name')
+      msg = sprintf(['No subject present in dataset:\n\t%s.', ...
+                     '\nDid you run bids.layout first?'], ...
+                    bids.internal.format_path(BIDS.pth));
       bids.internal.error_handling(mfilename(), 'noSubjectField', msg, false);
     end
     subjects = unique({BIDS.subjects.name});
