@@ -157,7 +157,7 @@ end
 
 function [msg, msg_id] = error_message(msg_id, file, extra)
 
-  msg = sprintf('Skipping file: %s.\n', file);
+  msg = sprintf('Skipping file: %s.\n', bids.internal.format_path(file));
 
   switch msg_id
 
