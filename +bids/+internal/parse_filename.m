@@ -103,7 +103,7 @@ function p = parse_filename(filename, fields, tolerant, verbose)
       p = orderfields(p, fields_order);
       p.entities = orderfields(p.entities, fields);
     catch
-      msg = sprintf('Ignoring file %s not matching template.', filename);
+      msg = sprintf('Ignoring file %s not matching template.', bids.internal.format_path(filename));
       bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, verbose);
       p = struct([]);
     end
@@ -170,7 +170,7 @@ function p = parse_entity_label_pairs(p, basename, tolerant, verbose)
     catch ME
 
       msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s.', ...
-                    parts{i}, p.filename, ME.message);
+                    parts{i}, bids.internal.format_path(p.filename), ME.message);
       if tolerant
         msg = sprintf('%s\n\tThis file will be ignored.', msg);
       end

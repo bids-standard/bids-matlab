@@ -87,7 +87,7 @@ function BIDS = layout(varargin)
   end
 
   if verbose
-    fprintf(1, '\n\nIndexing dataset:\n\t%s\n', root);
+    fprintf(1, '\n\nIndexing dataset:\n\t%s\n', bids.internal.format_path(root));
   end
 
   %% BIDS structure
@@ -693,7 +693,7 @@ function perf = manage_M0(perf, pth, verbose)
 
   if ~isfield(perf.meta, 'M0Type')
 
-    msg = sprintf('M0Type field missing for %s', perf.filename);
+    msg = sprintf('M0Type field missing for %s', bids.internal.format_path(perf.filename));
     bids.internal.error_handling(mfilename, 'm0typeMissing', msg, tolerant, verbose);
 
   else
