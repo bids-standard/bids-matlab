@@ -53,7 +53,7 @@ function output_filename = create_participants_tsv(varargin)
   layout = bids.layout(layout_or_path, 'use_schema', use_schema);
 
   if ~isempty(layout.participants)
-    msg = sprintf(['"participant.tsv" already exist for the following dataset.', ...
+    msg = sprintf(['"participant.tsv" already exist for the following dataset. ', ...
                    'Will not overwrite.\n', ...
                    '\t%s'], layout.pth);
     bids.internal.error_handling(mfilename(), 'participantFileExist', msg, tolerant, verbose);
@@ -61,6 +61,10 @@ function output_filename = create_participants_tsv(varargin)
   end
 
   subjects_list = bids.query(layout, 'subjects');
+  % in case the query returns empty in case no file was indexed
+  if isempty(subjects_list) && ~use_schema
+    subjects_list = cellstr(bids.internal.file_utils('List', layout.pth, 'dir', '^sub-.*$'));
+  end
 
   subjects_list = [repmat('sub-', numel(subjects_list), 1), char(subjects_list')];
 

@@ -54,7 +54,7 @@ function output_filenames = create_sessions_tsv(varargin)
   layout = bids.layout(layout_or_path, 'use_schema', use_schema);
 
   sessions_list = bids.query(layout, 'sessions');
-  if isempty(sessions_list)
+  if isempty(sessions_list) && use_schema
     msg = sprintf(['There are no session in this dataset:\n', ...
                    '\t%s'], layout.pth);
     bids.internal.error_handling(mfilename(), 'noSessionInDataset', msg, tolerant, verbose);
@@ -62,6 +62,11 @@ function output_filenames = create_sessions_tsv(varargin)
   end
 
   subjects_list = bids.query(layout, 'subjects');
+  % in case the query returns empty in case no file was indexed
+  if isempty(subjects_list) && ~use_schema
+    subjects_list = cellstr(bids.internal.file_utils('List', layout.pth, 'dir', '^sub-.*$'));
+    subjects_list = regexprep(subjects_list, 'sub-', '');
+  end
 
   for i_sub = 1:numel(subjects_list)
 
@@ -77,10 +82,24 @@ function output_filenames = create_sessions_tsv(varargin)
     end
 
     sessions_list = bids.query(layout, 'sessions', 'sub', subjects_list{i_sub});
+    % in case the query returns empty in case no file was indexed
+    if isempty(sessions_list) && ~use_schema
+      sessions_list = cellstr(bids.internal.file_utils('List', ...
+                                                       fullfile(layout.pth, ...
+                                                                ['sub-' subjects_list{i_sub}]), ...
+                                                       'dir', ...
+                                                       '^sub-.*$'));
+      sessions_list = regexprep(sessions_list, 'ses-', '');
+    end
+
+    if isempty(sessions_list)
+      continue
+    end
+
     sessions_list = [repmat('ses-', numel(sessions_list), 1), char(sessions_list')];
     content = struct('session_id', {sessions_list}, ...
-                     'acq_time', {cell(size(sessions_list, 1), 1)}, ...
-                     'comments', {cell(size(sessions_list, 1), 1)});
+                     'acq_time', nan(size(sessions_list, 1), 1), ...
+                     'comments', nan(size(sessions_list, 1), 1));
 
     output_filenames{end + 1} = sessions_file; %#ok<AGROW>
 
