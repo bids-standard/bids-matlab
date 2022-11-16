@@ -82,7 +82,7 @@ function write_to_file(filename, var, delim)
   fid = fopen(filename, 'Wt');
 
   if fid == -1
-    error('Unble to write file %s.', filename);
+    error('Unable to write file %s.', filename);
   end
 
   for i = 1:size(var, 1)
