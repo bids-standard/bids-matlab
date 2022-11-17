@@ -82,7 +82,9 @@ function write_to_file(filename, var, delim)
   fid = fopen(filename, 'Wt');
 
   if fid == -1
-    error('Unble to write file %s.', filename);
+    error(['Unable to open file "%s" for writing.', ...
+           '\nIf you are using a datalad dataset, make sure the file is unlocked.'], ...
+          bids.internal.file_utils(filename, 'cpath'));
   end
 
   for i = 1:size(var, 1)
