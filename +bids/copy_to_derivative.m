@@ -92,7 +92,7 @@ function copy_to_derivative(varargin)
   if isempty(data_list)
     disp(args.Results.filter);
     msg = sprintf('No data found for this query in dataset:\n\t%s', ...
-                  BIDS.pth);
+                  bids.internal.format_path(BIDS.pth));
     bids.internal.error_handling(mfilename, 'noData', msg, ...
                                  args.Results.tolerant, ...
                                  args.Results.verbose);
@@ -258,7 +258,7 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip
   % avoid circular references
   if ~force && exist(fullfile(out_dir, file.filename), 'file')
     if verbose
-      fprintf(1, '\n skipping: %s', file.filename);
+      fprintf(1, '\n skipping: %s', bids.internal.format_path(file.filename));
     end
     return
   else

@@ -112,6 +112,22 @@ function test_model_default_model()
 
 end
 
+function test_model_default_no_events()
+
+  if bids.internal.is_octave()
+    % TODO fix for octave in CI
+    return
+  end
+
+  pth_bids_example = get_test_data_dir();
+  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001'));
+
+  bm = bids.Model('verbose', false);
+  bm = bm.default(BIDS);
+  assertEqual(bm.Nodes{1}.Model.X, {'1'});
+
+end
+
 function test_model_validate()
 
   if bids.internal.is_octave()
@@ -170,6 +186,11 @@ function test_model_get_nodes()
   assertEqual(numel(bm.get_nodes('Level', 'Run')), 1);
   assertEqual(numel(bm.get_nodes('Level', 'Dataset')), 3);
   assertEqual(numel(bm.get_nodes('Name', 'negative-loss')), 1);
+
+  if bids.internal.is_octave()
+    % TODO fix for octave in CI
+    return
+  end
 
   bm.verbose = true;
   assertWarning(@()bm.get_nodes('Name', 'foo'), 'Model:missingNode');

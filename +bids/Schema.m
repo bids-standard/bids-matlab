@@ -59,7 +59,8 @@ classdef Schema
 
       schema_file = fullfile(bids.internal.root_dir(), 'schema.json');
       if ~exist(schema_file, 'file')
-        msg = sprintf('The schema.json file %s does not exist.', schema_file);
+        msg = sprintf('The schema.json file %s does not exist.', ...
+                      bids.internal.format_path(schema_file));
         bids.internal.error_handling(mfilename(), 'missingSchema', msg, false, true);
       end
 

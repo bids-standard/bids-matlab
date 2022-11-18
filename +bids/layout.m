@@ -87,7 +87,7 @@ function BIDS = layout(varargin)
   end
 
   if verbose
-    fprintf(1, '\n\nIndexing dataset:\n\t%s\n', root);
+    fprintf(1, '\n\nIndexing dataset:\n\t%s\n', bids.internal.format_path(root));
   end
 
   %% BIDS structure
@@ -183,7 +183,10 @@ function BIDS = index_root_directory(BIDS)
   files_to_exclude = {'participants', ... already done
                       'dataset_description', ...
                       'genetic_info', ... % because it messes the parse_filename
-                      '(.bids-validator-config)' ...
+                      '(.bids-validator-config)', ...
+                      '.git', ...
+                      '.datalad', ...
+                      '.bidsignore' ...
                      };
 
   pattern = ['^(?!', strjoin(files_to_exclude, '|'), ').*.(tsv)$'];
@@ -326,7 +329,15 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
                       'data', struct('index', 0, 'base', '', 'len', 1), ...
                       'allowed_ext', []);
 
+    % need to ignore certain files on Mac that start with
+    IGNORE_LIST = {'\.DS_Store', '\._'};
     for iFile = 1:size(file_list, 1)
+
+      ignore = cellfun(@(x) regexp(file_list{iFile}, x, 'start'), IGNORE_LIST, ...
+                       'uniformoutput', false);
+      if any(~cellfun('isempty', ignore))
+        continue
+      end
 
       [subject, status, previous] = bids.internal.append_to_layout(file_list{iFile}, ...
                                                                    subject, ...
@@ -661,13 +672,13 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
         continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);
-      try
-        BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx) ...
-            .dependencies.explicit{end + 1, 1} = file_list{iFile};
-      catch ME
-        warning('This may fail if your dataset is not valid.');
-        rethrow(ME);
+      if isempty(info_dest.file_idx)
+        msg = ['IntendedFor file ' dest ' from ' file.filename ' not indexed'];
+        bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
+        continue
       end
+      BIDS.subjects(info_dest.sub_idx).(info_dest.modality)(info_dest.file_idx) ...
+          .dependencies.explicit{end + 1, 1} = file_list{iFile};
     end
 
   end
@@ -682,7 +693,7 @@ function perf = manage_M0(perf, pth, verbose)
 
   if ~isfield(perf.meta, 'M0Type')
 
-    msg = sprintf('M0Type field missing for %s', perf.filename);
+    msg = sprintf('M0Type field missing for %s', bids.internal.format_path(perf.filename));
     bids.internal.error_handling(mfilename, 'm0typeMissing', msg, tolerant, verbose);
 
   else

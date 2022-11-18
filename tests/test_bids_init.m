@@ -44,6 +44,7 @@ function test_folders()
 
   bids.init('dummy_ds', 'folders', folders);
   assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'ses-retest', 'func'), 'dir'), 7);
+  assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'sub-02_sessions.tsv'), 'file'), 2);
 
   clean_up();
 

@@ -410,7 +410,7 @@ function [file_id, filename] = open_output_file(BIDS, output_path, verbose)
 
     else
 
-      text = sprintf('Dataset description saved in:  %s\n\n', filename);
+      text = sprintf('Dataset description saved in:  %s\n\n', bids.internal.format_path(filename));
       print_to_output(text, 1, verbose);
 
     end
@@ -535,7 +535,8 @@ function acq_param = read_nifti(read_gz, filename, acq_param, verbose)
 
     catch
 
-      msg = sprintf('Could not read the header from file %s.\n', filename);
+      msg = sprintf('Could not read the header from file %s.\n', ...
+                    bids.internal.format_path(filename));
       bids.internal.error_handling(mfilename, 'cannotReadHeader', msg, true, verbose);
 
     end
