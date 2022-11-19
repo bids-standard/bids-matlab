@@ -100,7 +100,9 @@ function varargout = jsonwrite(varargin)
   else
     fid = fopen(filename, 'wt');
     if fid == -1
-      error('Unable to open file "%s" for writing.', filename);
+      error(['Unable to open file "%s" for writing.', ...
+             '\nIf you are using a datalad dataset, make sure the file is unlocked.'], ...
+            bids.internal.file_utils(filename, 'cpath'));
     end
     fprintf(fid, '%s', S);
     fclose(fid);
