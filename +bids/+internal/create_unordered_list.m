@@ -14,6 +14,10 @@ function list = create_unordered_list(list)
 
   % (C) Copyright 2022 Remi Gau
 
+  if bids.internal.is_octave
+    warning('off', 'Octave:mixed-string-concat');
+  end
+
   prefix = '\n\t- ';
 
   if ischar(list)
