@@ -56,6 +56,10 @@ function data = Factor(transformer, data)
 
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     this_input = data.(input{i});
 
     % coerce to cellstr

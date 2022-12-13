@@ -97,6 +97,10 @@ function new_data = Merge_identical_rows(transformer, data)
 
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     % start with values from the first row and start loop at row 2
     previous_value = data.(input{i})(1);
     if iscell(previous_value)

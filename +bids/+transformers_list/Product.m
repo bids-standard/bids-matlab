@@ -46,6 +46,10 @@ function data = Product(transformer, data)
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   input = bids.transformers_list.get_input(transformer, data);
+  if any(~ismember(input, fieldnames(data)))
+    return
+  end
+
   output = bids.transformers_list.get_output(transformer, data);
 
   assert(numel(output) == 1);

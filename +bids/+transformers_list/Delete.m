@@ -51,6 +51,11 @@ function data = Delete(transformer, data)
   input = bids.transformers_list.get_input(transformer, data);
 
   for i = 1:numel(input)
+
+    if ~isfield(data, input{i})
+      continue
+    end
+
     data = rmfield(data, input{i});
   end
 

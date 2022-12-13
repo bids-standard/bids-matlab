@@ -54,6 +54,10 @@ function data = Drop_na(transformer, data)
 
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     this_input = data.(input{i});
 
     if isnumeric(this_input)

@@ -53,11 +53,19 @@ function data = Concatenate(transformer, data)
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   input = bids.transformers_list.get_input(transformer, data);
+  if any(~ismember(input, fieldnames(data)))
+    return
+  end
   output = bids.transformers_list.get_output(transformer, data, false);
 
-  % TODO: remove assumption that this is an event.tsv file
-  % and that we can rely on a onset column being present
-  for row = 1:numel(data.onset)
+  nb_rows = [];
+  for i = 1:numel(input)
+    nb_rows(i) = size(data.(input{i}), 1); %#ok<AGROW>
+  end
+  nb_rows = unique(nb_rows);
+  assert(length(nb_rows) == 1);
+
+  for row = 1:nb_rows
 
     tmp1 = {};
 

@@ -57,6 +57,11 @@ function data = Copy(transformer, data)
   assert(numel(input) == numel(output));
 
   for i = 1:numel(input)
+
+    if ~isfield(data, input{i})
+      continue
+    end
+
     data.(output{i}) = data.(input{i});
   end
 
