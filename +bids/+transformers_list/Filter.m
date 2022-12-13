@@ -77,6 +77,10 @@ function data = Filter(transformer, data)
   % filter rows of all inputs
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     clear tmp;
 
     tmp(rows, 1) = data.(input{i})(rows);

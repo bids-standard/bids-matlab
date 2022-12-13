@@ -48,9 +48,12 @@ function data = Constant(transformer, data)
     value = transformer.Value;
   end
 
+  a = structfun(@(x) size(x, 1), data, 'UniformOutput', false);
+  nb_rows = max(cell2mat(struct2cell(a)));
   if isnumeric(value)
-    data.(output{1}) = ones(size(data.onset)) * value;
+    data.(output{1}) = ones(nb_rows, 1) * value;
   elseif ischar(value)
-    data.(output{1}) = cellstr(repmat(value, size(data.onset)));
+    data.(output{1}) = cellstr(repmat(value, nb_rows, 1));
   end
+
 end

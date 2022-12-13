@@ -7,15 +7,27 @@ function input = get_input(transformer, data)
   assert(isstruct(transformer));
   assert(numel(transformer) == 1);
 
+  verbose = true;
+  if isfield(transformer, 'verbose')
+    verbose = transformer.verbose;
+  end
+
+  tolerant = true;
+  if isfield(transformer, 'tolerant')
+    tolerant = transformer.tolerant;
+  end
+
   if isfield(transformer, 'Input')
 
     input = transformer.Input;
 
     if isempty(input)
       input = {};
-      if isfield(transformer, 'verbose')
-        warning('empty "Input" field');
-      end
+      bids.internal.error_handling(mfilename(), ...
+                                   'emptyInputField', ...
+                                   'empty "Input" field', ...
+                                   tolerant, ...
+                                   verbose);
       return
     end
 
@@ -29,6 +41,6 @@ function input = get_input(transformer, data)
     input = {input};
   end
 
-  bids.transformers_list.check_field(input, data, 'Input');
+  bids.transformers_list.check_field(input, data, 'Input', tolerant);
 
 end

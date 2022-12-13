@@ -60,6 +60,11 @@ function data = Select(transformer, data)
   input = bids.transformers_list.get_input(transformer, data);
 
   for i = 1:numel(input)
+
+    if ~isfield(data, input{i})
+      continue
+    end
+
     tmp.(input{i}) = data.(input{i});
   end
 

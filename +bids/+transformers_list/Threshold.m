@@ -98,6 +98,10 @@ function data = Threshold(transformer, data)
 
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     valuesToThreshold = data.(input{i});
 
     if ~signed

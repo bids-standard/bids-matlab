@@ -199,12 +199,16 @@ end
 
 function data = replace_for_attributes(data, attributes, output, this_input, idx, value)
 
-  % in case we got "all" we must loop over value, onset, duration
+  % loop over value, onset, duration
   for i = 1:numel(attributes)
 
     [this_output, output] = get_this_output(data, attributes{i}, output, this_input);
 
     if isnumeric(this_output)
+      if ischar(value)
+        value = {value};
+        this_output = num2cell(this_output);
+      end
       this_output(idx) = repmat(value, sum(idx), 1);
 
     elseif iscellstr(this_output)

@@ -84,6 +84,10 @@ function data = Basic(transformer, data)
 
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     value = transformer.Value;
 
     if ischar(value)

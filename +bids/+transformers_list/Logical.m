@@ -77,6 +77,10 @@ function data = Logical(transformer, data)
   % try coerce all input to logical
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     if iscell(data.(input{i}))
       tmp1 = ~cellfun('isempty', data.(input{i}));
       tmp2 = ~cellfun(@(x) all(isnan(x)), data.(input{i}));

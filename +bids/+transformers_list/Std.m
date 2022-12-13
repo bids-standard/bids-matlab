@@ -65,6 +65,10 @@ function data = Std(transformer, data)
 
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     output_column = [input{i} '_std'];
     if ~isempty(output)
       output_column = output{i};

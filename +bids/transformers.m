@@ -91,6 +91,9 @@ function output = apply_transformer(trans, data)
 
   transformerName = lower(trans.Name);
 
+  if ~isfield(trans, 'verbose')
+  end
+
   switch transformerName
 
     case lower(basic_transfomers)

@@ -62,6 +62,10 @@ function data = Label_identical_rows(transformer, data)
 
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     if strcmp(output{i}, input{i})
       output{i} = [output{i} '_label'];
     end
@@ -139,6 +143,10 @@ function label_counter = init_label_counter(this_input, cumulative)
 
     label_counter = cat(1, label_counter_char, label_counter_num);
 
+  end
+
+  if isempty(label_counter)
+    label_counter = {'', 0};
   end
 
   label_counter = reset_label_counter(label_counter, cumulative);

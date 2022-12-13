@@ -118,6 +118,10 @@ function data = Assign(transformer, data)
 
   for i = 1:numel(input)
 
+    if ~isfield(data, input{i})
+      continue
+    end
+
     if ~isempty(output)
       assign_to = output{i};
     else

@@ -41,7 +41,7 @@ function test_get_input()
   assertEqual(inputs, {'onset'});
 
   %% GIVEN
-  transformers = struct('Input', {{'onset', 'foo', 'bar'}});
+  transformers = struct('Input', {{'onset', 'foo', 'bar'}}, 'tolerant', false);
   data = vis_motion_to_threshold_events();
 
   % WHEN
