@@ -42,6 +42,16 @@ function test_model_load_edges()
 
 end
 
+function test_model_get_root_node()
+
+  bm = bids.Model('file', model_file('narps'), 'verbose', false);
+
+  [root_node, root_node_name] = bm.get_root_node();
+
+  assertEqual(root_node_name, 'run');
+
+end
+
 function test_model_get_source_nodes()
 
   bm = bids.Model('file', model_file('narps'), 'verbose', false);

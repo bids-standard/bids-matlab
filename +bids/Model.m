@@ -236,6 +236,10 @@ classdef Model
       value = obj.Nodes;
     end
 
+    function value = get.Edges(obj)
+      value = obj.Edges;
+    end
+
     function [value, idx] = get_nodes(obj, varargin)
       %
       % Get a specific node from the model given its Level and / or Name
@@ -389,8 +393,32 @@ classdef Model
 
     end
 
-    function value = get.Edges(obj)
-      value = obj.Edges;
+    function [root_node, root_node_name] = get_root_node(obj)
+
+      edges = obj.Edges;
+
+      if isempty(edges)
+        root_node = obj.Nodes(1);
+
+      elseif iscell(edges)
+        root_node_name = edges{1}.Source;
+        root_node = obj.get_nodes('Name', root_node_name);
+
+      elseif isstruct(edges(1))
+        root_node_name = edges(1).Source;
+        root_node = obj.get_nodes('Name', root_node_name);
+
+      else
+        root_node = obj.Nodes(1);
+
+      end
+
+      if iscell(root_node)
+        root_node = root_node{1};
+      end
+
+      root_node_name = root_node.Name;
+
     end
 
     function edge = get_edge(obj, field, value)
