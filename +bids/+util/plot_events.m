@@ -12,7 +12,7 @@ function plot_events(varargin)
   % :param include: Optional. Restrict conditions to plot.
   % :type  include: char or cellstr
   %
-  % :param trial_type_col:  Optional. Defines the colum where trial types are
+  % :param trial_type_col:  Optional. Defines the column where trial types are
   %                        listed. Defaults to 'trial_type'
   % :type  trial_type_col: char or cellstr
   %
@@ -302,8 +302,8 @@ function plot_histogram(values, this_color)
 
   hist(values, 20, 1);
   h = findobj(gca, 'Type', 'patch');
-  h.FaceColor = this_color;
-  h.EdgeColor = 'w';
+  set(h, 'FaceColor', this_color);
+  set(h, 'EdgeColor', 'w');
 
   ax = axis;
   plot([0 0], [ax(3) ax(4)], 'k');
