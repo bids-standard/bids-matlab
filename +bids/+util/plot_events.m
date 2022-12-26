@@ -2,13 +2,13 @@ function plot_events(varargin)
   %
   % USAGE::
   %
-  %   plot_events(events_files, 'filter', filter)
+  %   plot_events(events_files, 'include', include)
   %
   % :param events_files: BIDS events TSV files.
   % :type events_files: path or cellstr of paths
   %
-  % :param filter: Restrict conditions to plot.
-  % :type filter: string or cellstr
+  % :param include: Restrict conditions to plot.
+  % :type  include: string or cellstr
   %
   % EXAMPLE::
   %
@@ -22,8 +22,8 @@ function plot_events(varargin)
   %                             'run', '01', ...
   %                             'suffix', 'events');
   %
-  %   filter = {'Reapp_Neg_Cue', 'Look_Neg_Cue', 'Look_Neutral_Cue'};
-  %   bids.util.plot_events(events_files, 'filter', filter);
+  %   include = {'Reapp_Neg_Cue', 'Look_Neg_Cue', 'Look_Neutral_Cue'};
+  %   bids.util.plot_events(events_files, 'include', include);
   %
   %
 
@@ -37,15 +37,15 @@ function plot_events(varargin)
   char_or_cellstring = @(x) (ischar(x) || iscellstr(x));
 
   addRequired(args, 'events_files', file_or_cellstring);
-  addParameter(args, 'filter', {}, char_or_cellstring);
+  addParameter(args, 'include', {}, char_or_cellstring);
 
   parse(args, varargin{:});
 
   events_files = args.Results.events_files;
-  filter = args.Results.filter;
+  include = args.Results.include;
 
-  if ischar(filter)
-    filter = {filter};
+  if ischar(include)
+    include = {include};
   end
 
   if ischar(events_files)
@@ -53,12 +53,27 @@ function plot_events(varargin)
   end
 
   for i = 1:numel(events_files)
-    plot_this_file(events_files{i}, filter);
+    plot_this_file(events_files{i}, include);
   end
 
 end
 
 function plot_this_file(this_file, filter)
+
+  % From colorbrewer
+  % http://colorbrewer2.org/
+  COLORS = [166, 206, 227
+            31, 120, 180
+            178, 223, 138
+            51, 160, 44
+            251, 154, 153
+            227, 26, 28
+            253, 191, 111
+            255, 127, 0
+            202, 178, 214
+            106, 61, 154
+            255, 255, 153
+            177, 89, 40];
 
   bids_file = bids.File(this_file);
 
@@ -78,30 +93,38 @@ function plot_this_file(this_file, filter)
   xMax = ceil(max(data.onset + data.duration));
 
   yMin = 0;
-  yMax = 1;
-
-  nb_col = 8;
-  nb_rows = numel(trial_type_list);
+  yMax = 1.1;
 
   figure('name', fig_name, ...
          'position', [50 50 2000 1000]);
 
-  subplot_col_1 = 1:(nb_col - 1);
-  subplot_col_2 = nb_col;
+  nb_rows = numel(trial_type_list);
 
-  for iCdt = 1:numel(trial_type_list)
+  nb_col = 8;
+  col_first_subplot = 1:(nb_col - 1);
+  subplot_col_2 = nb_col;
+  subplot_col_3 = nan;
+
+  if isfield(data, 'response_time')
+    nb_col = 9;
+    col_first_subplot = 1:(nb_col - 2);
+    subplot_col_2 = nb_col - 1;
+    subplot_col_3 = nb_col;
+  end
+  subplot_col_1 = col_first_subplot;
+
+  % ensure we have enough colors for all conditions
+  COLORS = repmat(COLORS, ceil(nb_rows / size(COLORS, 1)), 1);
+
+  for iCdt = 1:nb_rows
+
+    this_color = COLORS(iCdt, :) / 255;
 
     idx = strcmp(trial_type, trial_type_list{iCdt});
 
     onsets = data.onset(idx);
 
     durations = data.duration(idx);
-
-    if isfield(data, 'response_time')
-      response_times = data.response_time(idx);
-    else
-      response_times = nan(size(onsets));
-    end
 
     %% Time course
     subplot(nb_rows, nb_col, subplot_col_1);
@@ -110,7 +133,7 @@ function plot_this_file(this_file, filter)
 
     if all(durations == 0)
 
-      stem(onsets, ones(1, numel(onsets)), 'r');
+      stem(onsets, ones(1, numel(onsets)), 'linecolor', this_color);
 
     else
 
@@ -120,41 +143,42 @@ function plot_this_file(this_file, filter)
         xMax = max([xMax; offsets]);
 
         rectangle('position', [onsets(iStim) 0 durations(iStim) 1], ...
-                  'FaceColor', 'r');
+                  'FaceColor', this_color, ...
+                  'EdgeColor', this_color);
       end
 
     end
 
-    % add response time
-    response_times = onsets + response_times;
-    has_response = ~isnan(response_times);
-    if any(has_response)
-      stem(response_times(has_response), 0.5 * ones(1, sum(has_response)), 'k');
+    response_times = nan(size(onsets));
+    if isfield(data, 'response_time')
+      response_times = data.response_time(idx);
+      plot_response_time(response_times, onsets);
     end
 
     ylabel(sprintf(strrep(trial_type_list{iCdt}, '_', '\n')));
 
     %% Duration distribution
     subplot(nb_rows, nb_col, subplot_col_2);
+    plot_histogram(diff(onsets), this_color);
 
-    hold on;
-
-    hist(diff(onsets));
-
-    ax = axis;
-    plot([0 0], [ax(3) ax(4)], 'k');
-    plot([ax(1) ax(2)], [0 0], 'k');
+    %% Response time distribution
+    has_response = ~isnan(response_times);
+    if any(has_response)
+      subplot(nb_rows, nb_col, subplot_col_3);
+      plot_histogram(response_times(has_response), this_color);
+    end
 
     %% Increment
     subplot_col_1 = subplot_col_1 + nb_col;
     subplot_col_2 = subplot_col_2 + nb_col;
+    subplot_col_3 = subplot_col_3 + nb_col;
 
   end
 
   %% Update axis
   xMax = xMax + 5;
 
-  subplot_col_1 = 1:(nb_col - 1);
+  subplot_col_1 = col_first_subplot;
   for iCdt = 1:numel(trial_type_list)
 
     subplot(nb_rows, nb_col, subplot_col_1);
@@ -171,10 +195,10 @@ function plot_this_file(this_file, filter)
 
   end
 
-  subplot(nb_rows, nb_col, 1:(nb_col - 1));
+  subplot(nb_rows, nb_col, col_first_subplot);
   title(fig_name);
 
-  subplot(nb_rows, nb_col, [1:(nb_col - 1)] + (nb_col * (nb_rows - 1))); %#ok<NBRAK>
+  subplot(nb_rows, nb_col, col_first_subplot + (nb_col * (nb_rows - 1)));
   set(gca, ...
       'xTick', 0:60:xMax, ...
       'xTickLabel', 0:60:xMax, ...
@@ -187,4 +211,36 @@ function plot_this_file(this_file, filter)
   subplot(nb_rows, nb_col, nb_rows * nb_col);
   xlabel('seconds');
 
+  if isfield(data, 'response_time')
+
+    subplot(nb_rows, nb_col, nb_col - 1);
+    title('ISI distribution');
+    subplot(nb_rows, nb_col, nb_rows * nb_col - 1);
+    xlabel('seconds');
+
+    subplot(nb_rows, nb_col, nb_col);
+    title('response time distribution');
+  end
+
+end
+
+function plot_response_time(response_times, onsets)
+  response_times = onsets + response_times;
+  has_response = ~isnan(response_times);
+  if any(has_response)
+    stem(response_times(has_response), 0.5 * ones(1, sum(has_response)), 'k');
+  end
+end
+
+function plot_histogram(values, this_color)
+  hold on;
+
+  hist(values, 20, 1);
+  h = findobj(gca, 'Type', 'patch');
+  h.FaceColor = this_color;
+  h.EdgeColor = 'w';
+
+  ax = axis;
+  plot([0 0], [ax(3) ax(4)], 'k');
+  plot([ax(1) ax(2)], [0 0], 'k');
 end

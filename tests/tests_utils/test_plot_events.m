@@ -36,10 +36,10 @@ function test_plot_events_ds108()
                             'run', '01', ...
                             'suffix', 'events');
 
-  filter = 'Reapp_Neg_Cue';
-  bids.util.plot_events(events_files, 'filter', filter);
+  include = 'Reapp_Neg_Cue';
+  bids.util.plot_events(events_files, 'include', include);
 
-  filter = {'Reapp_Neg_Cue', 'Look_Neg_Cue', 'Look_Neutral_Cue'};
-  bids.util.plot_events(events_files, 'filter', filter);
+  include = {'Reapp_Neg_Cue', 'Look_Neg_Cue', 'Look_Neutral_Cue'};
+  bids.util.plot_events(events_files, 'include', include);
 
 end
