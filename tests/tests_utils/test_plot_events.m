@@ -26,8 +26,6 @@ end
 
 function test_plot_events_ds101_with_model()
 
-  close all;
-
   data_dir = fullfile(get_test_data_dir(), 'ds001');
 
   mode_file = fullfile(get_test_data_dir(), '..', ...

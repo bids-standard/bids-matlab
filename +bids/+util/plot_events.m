@@ -243,31 +243,46 @@ end
 
 function data = get_events_data(data, trial_type_col, include, matrix)
 
+  % TODO deal with events.tsv with only onset and duration
   trial_type = data.(trial_type_col);
-  if ~isempty(include)
-    trial_type_list = include;
-  else
-    trial_type_list = unique(trial_type);
-  end
+  trial_type_list = unique(trial_type);
 
-  if ~isempty(matrix)
+  if isempty(matrix)
+    for iCdt = 1:numel(trial_type_list)
+      matrix{iCdt} = [trial_type_col '.' trial_type_list{iCdt}];
+    end
   end
 
   tmp = struct('name', '', 'onset', [], 'duration', [], 'response_time', []);
 
-  for iCdt = 1:numel(trial_type_list)
-    idx = strcmp(trial_type, trial_type_list{iCdt});
+  counter = 1;
 
-    tmp(iCdt).name = trial_type_list{iCdt};
+  for i = 1:numel(matrix)
 
-    tmp(iCdt).onset = data.onset(idx);
-
-    tmp(iCdt).duration = data.duration(idx);
-
-    tmp(iCdt).response_time = nan(size(tmp(iCdt).onset));
-    if isfield(data, 'response_time')
-      tmp(iCdt).response_time = data.response_time(idx);
+    if ~ischar(matrix{i})
+      continue
     end
+
+    tokens = strsplit(matrix{i}, '.');
+    if numel(tokens) ~= 2
+      continue
+    end
+
+    if ~isempty(include) && ~ismember(tokens{2}, include)
+      continue
+    end
+
+    idx = strcmp(data.(tokens{1}), tokens{2});
+
+    tmp(counter).name = tokens{2};
+    tmp(counter).onset = data.onset(idx);
+    tmp(counter).duration = data.duration(idx);
+    tmp(counter).response_time = nan(size(tmp(counter).onset));
+    if isfield(data, 'response_time')
+      tmp(counter).response_time = data.response_time(idx);
+    end
+
+    counter = counter + 1;
   end
 
   data = tmp;

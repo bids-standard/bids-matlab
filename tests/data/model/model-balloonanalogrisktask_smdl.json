@@ -23,6 +23,9 @@
                   "Input": [
                      "trial_type"
                   ],
+                  "Output": [
+                     "renamed"
+                  ],
                   "Replace": [
                      {
                         "key": "pumps_demean",
@@ -40,8 +43,8 @@
          "Model": {
             "Type": "glm",
             "X": [
-               "pumps",
-               "control_pumps",
+               "renamed.pumps",
+               "renamed.control_pumps",
                1
             ],
             "HRF": {
