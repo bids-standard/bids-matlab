@@ -2,13 +2,23 @@ function plot_events(varargin)
   %
   % USAGE::
   %
-  %   plot_events(events_files, 'include', include)
+  %   plot_events(events_files, 'include', include, ...
+  %                             'trial_type_col', 'trial_type', ...
+  %                             'model_file', path_to_model)
   %
   % :param events_files: BIDS events TSV files.
   % :type events_files: path or cellstr of paths
   %
-  % :param include: Restrict conditions to plot.
-  % :type  include: string or cellstr
+  % :param include: Optional. Restrict conditions to plot.
+  % :type  include: char or cellstr
+  %
+  % :param trial_type_col:  Optional. Defines the colum where trial types are
+  %                        listed. Defaults to 'trial_type'
+  % :type  trial_type_col: char or cellstr
+  %
+  % :param model_file:  Optional. Bids stats model file to apply to events.tsv
+  %                     before plotting
+  % :type  model_file: fullpath
   %
   % EXAMPLE::
   %
@@ -34,15 +44,20 @@ function plot_events(varargin)
   args = inputParser();
 
   file_or_cellstring = @(x) (iscellstr(x) || exist(x, 'file'));
+  empty_or_file = @(x) (isempty(x) || exist(x, 'file'));
   char_or_cellstring = @(x) (ischar(x) || iscellstr(x));
 
   addRequired(args, 'events_files', file_or_cellstring);
   addParameter(args, 'include', {}, char_or_cellstring);
+  addParameter(args, 'trial_type_col', 'trial_type', @ischar);
+  addParameter(args, 'model_file', '', empty_or_file);
 
   parse(args, varargin{:});
 
   events_files = args.Results.events_files;
   include = args.Results.include;
+  trial_type_col = args.Results.trial_type_col;
+  model_file = args.Results.model_file;
 
   if ischar(include)
     include = {include};
@@ -52,13 +67,18 @@ function plot_events(varargin)
     events_files = {events_files};
   end
 
+  bm = '';
+  if ~isempty(model_file)
+    bm = bids.Model('file', model_file, 'verbose', true);
+  end
+
   for i = 1:numel(events_files)
-    plot_this_file(events_files{i}, include);
+    plot_this_file(events_files{i}, include, trial_type_col, bm);
   end
 
 end
 
-function plot_this_file(this_file, filter)
+function plot_this_file(this_file, include, trial_type_col, bm)
 
   % From colorbrewer
   % http://colorbrewer2.org/
@@ -75,113 +95,88 @@ function plot_this_file(this_file, filter)
             255, 255, 153
             177, 89, 40];
 
+  tsv_content = bids.util.tsvread(this_file);
+
+  matrix = {};
+  data = tsv_content;
+  if ~isempty(bm)
+    [~, root_node_name] = bm.get_root_node();
+    transformers = bm.get_transformations('Name', root_node_name);
+    matrix = bm.get_design_matrix('Name', root_node_name);
+    data = bids.transformers(transformers.Instructions, tsv_content);
+  end
+
   bids_file = bids.File(this_file);
 
-  fig_name = strrep(bids_file.filename, '_', ' ');
-  fig_name = strrep(fig_name, 'events.tsv', ' ');
+  data = get_events_data(data, trial_type_col, include, matrix);
 
-  data = bids.util.tsvread(this_file);
-
-  trial_type = data.trial_type;
-  if ~isempty(filter)
-    trial_type_list = filter;
-  else
-    trial_type_list = unique(trial_type);
-  end
-
-  xMin = floor(min(data.onset)) - 1;
-  xMax = ceil(max(data.onset + data.duration));
-
-  yMin = 0;
-  yMax = 1.1;
-
-  figure('name', fig_name, ...
-         'position', [50 50 2000 1000]);
-
-  nb_rows = numel(trial_type_list);
-
-  nb_col = 8;
-  col_first_subplot = 1:(nb_col - 1);
-  subplot_col_2 = nb_col;
-  subplot_col_3 = nan;
-
-  if isfield(data, 'response_time')
-    nb_col = 9;
-    col_first_subplot = 1:(nb_col - 2);
-    subplot_col_2 = nb_col - 1;
-    subplot_col_3 = nb_col;
-  end
-  subplot_col_1 = col_first_subplot;
+  [nb_col, nb_rows, subplot_grid] = return_figure_spec(tsv_content, data);
 
   % ensure we have enough colors for all conditions
   COLORS = repmat(COLORS, ceil(nb_rows / size(COLORS, 1)), 1);
+
+  fig_name = strrep(bids_file.filename, '_', ' ');
+  fig_name = strrep(fig_name, 'events.tsv', ' ');
+  figure('name', fig_name, ...
+         'position', [50 50 2000 1000]);
 
   for iCdt = 1:nb_rows
 
     this_color = COLORS(iCdt, :) / 255;
 
-    idx = strcmp(trial_type, trial_type_list{iCdt});
+    onset = data(iCdt).onset;
 
-    onsets = data.onset(idx);
-
-    durations = data.duration(idx);
+    duration =  data(iCdt).duration;
 
     %% Time course
-    subplot(nb_rows, nb_col, subplot_col_1);
+    subplot(nb_rows, nb_col, subplot_grid{iCdt, 1});
 
     hold on;
 
-    if all(durations == 0)
+    if all(duration == 0)
 
-      stem(onsets, ones(1, numel(onsets)), 'linecolor', this_color);
+      stem(onset, ones(1, numel(onset)), 'linecolor', this_color);
 
     else
 
-      for iStim = 1:numel(onsets)
+      for iStim = 1:numel(onset)
 
-        offsets = onsets(iStim) + durations(iStim);
-        xMax = max([xMax; offsets]);
-
-        rectangle('position', [onsets(iStim) 0 durations(iStim) 1], ...
+        rectangle('position', [onset(iStim) 0 duration(iStim) 1], ...
                   'FaceColor', this_color, ...
                   'EdgeColor', this_color);
       end
 
     end
 
-    response_times = nan(size(onsets));
-    if isfield(data, 'response_time')
-      response_times = data.response_time(idx);
-      plot_response_time(response_times, onsets);
-    end
+    response_time = data(iCdt).response_time;
+    plot_response_time(response_time, onset);
 
-    ylabel(sprintf(strrep(trial_type_list{iCdt}, '_', '\n')));
+    ylabel(sprintf(strrep(data(iCdt).name, '_', '\n')));
 
     %% Duration distribution
-    subplot(nb_rows, nb_col, subplot_col_2);
-    plot_histogram(diff(onsets), this_color);
+    subplot(nb_rows, nb_col, subplot_grid{iCdt, 2});
+    plot_histogram(diff(onset), this_color);
 
     %% Response time distribution
-    has_response = ~isnan(response_times);
+    has_response = ~isnan(response_time);
     if any(has_response)
-      subplot(nb_rows, nb_col, subplot_col_3);
-      plot_histogram(response_times(has_response), this_color);
+      subplot(nb_rows, nb_col, subplot_grid{iCdt, 3});
+      plot_histogram(response_time(has_response), this_color);
     end
-
-    %% Increment
-    subplot_col_1 = subplot_col_1 + nb_col;
-    subplot_col_2 = subplot_col_2 + nb_col;
-    subplot_col_3 = subplot_col_3 + nb_col;
 
   end
 
   %% Update axis
+  xMin = floor(min(cat(1, data.onset))) - 1;
+  xMax = ceil(max(cat(1, data.onset) + cat(1, data.duration)));
   xMax = xMax + 5;
 
-  subplot_col_1 = col_first_subplot;
-  for iCdt = 1:numel(trial_type_list)
+  yMin = 0;
+  yMax = 1.1;
 
-    subplot(nb_rows, nb_col, subplot_col_1);
+  for iCdt = 1:nb_rows
+
+    subplot(nb_rows, nb_col, subplot_grid{iCdt, 1});
 
     axis([xMin xMax yMin yMax]);
 
@@ -190,45 +185,100 @@ function plot_this_file(this_file, filter)
         'xTick', 0:60:xMax, ...
         'xTickLabel', '', ...
         'TickDir', 'out');
-
-    subplot_col_1 = subplot_col_1 + nb_col;
-
   end
 
-  subplot(nb_rows, nb_col, col_first_subplot);
+  subplot(nb_rows, nb_col, subplot_grid{1, 1});
   title(fig_name);
 
-  subplot(nb_rows, nb_col, col_first_subplot + (nb_col * (nb_rows - 1)));
+  subplot(nb_rows, nb_col, subplot_grid{end, 1});
   set(gca, ...
       'xTick', 0:60:xMax, ...
       'xTickLabel', 0:60:xMax, ...
       'TickDir', 'out');
   xlabel('seconds');
 
-  subplot(nb_rows, nb_col, nb_col);
+  subplot(nb_rows, nb_col, subplot_grid{1, 2});
   title('ISI distribution');
 
-  subplot(nb_rows, nb_col, nb_rows * nb_col);
+  subplot(nb_rows, nb_col, subplot_grid{end, 2});
   xlabel('seconds');
 
-  if isfield(data, 'response_time')
+  if isfield(tsv_content, 'response_time')
 
-    subplot(nb_rows, nb_col, nb_col - 1);
-    title('ISI distribution');
-    subplot(nb_rows, nb_col, nb_rows * nb_col - 1);
+    subplot(nb_rows, nb_col, subplot_grid{end, 3});
     xlabel('seconds');
 
-    subplot(nb_rows, nb_col, nb_col);
+    subplot(nb_rows, nb_col, subplot_grid{1, 3});
     title('response time distribution');
+
   end
 
 end
 
-function plot_response_time(response_times, onsets)
-  response_times = onsets + response_times;
-  has_response = ~isnan(response_times);
+function [nb_col, nb_rows, subplot_grid] = return_figure_spec(tsv_content, data)
+
+  nb_rows = numel(data);
+
+  nb_col = 8;
+  subplot_col_1 = 1:(nb_col - 1);
+  subplot_col_2 = nb_col;
+  subplot_col_3 = nan;
+
+  if isfield(tsv_content, 'response_time')
+    nb_col = 9;
+    subplot_col_1 = 1:(nb_col - 2);
+    subplot_col_2 = nb_col - 1;
+    subplot_col_3 = nb_col;
+  end
+
+  subplot_grid = {subplot_col_1, subplot_col_2, subplot_col_3};
+
+  for iCdt = 2:nb_rows
+    subplot_grid{iCdt, 1} = subplot_grid{iCdt - 1, 1} + +nb_col;
+    subplot_grid{iCdt, 2} = subplot_grid{iCdt - 1, 2} + +nb_col;
+    subplot_grid{iCdt, 3} = subplot_grid{iCdt - 1, 3} + +nb_col;
+  end
+
+end
+
+function data = get_events_data(data, trial_type_col, include, matrix)
+
+  trial_type = data.(trial_type_col);
+  if ~isempty(include)
+    trial_type_list = include;
+  else
+    trial_type_list = unique(trial_type);
+  end
+
+  if ~isempty(matrix)
+  end
+
+  tmp = struct('name', '', 'onset', [], 'duration', [], 'response_time', []);
+
+  for iCdt = 1:numel(trial_type_list)
+    idx = strcmp(trial_type, trial_type_list{iCdt});
+
+    tmp(iCdt).name = trial_type_list{iCdt};
+
+    tmp(iCdt).onset = data.onset(idx);
+
+    tmp(iCdt).duration = data.duration(idx);
+
+    tmp(iCdt).response_time = nan(size(tmp(iCdt).onset));
+    if isfield(data, 'response_time')
+      tmp(iCdt).response_time = data.response_time(idx);
+    end
+  end
+
+  data = tmp;
+
+end
+
+function plot_response_time(response_time, onset)
+  response_time = onset + response_time;
+  has_response = ~isnan(response_time);
   if any(has_response)
-    stem(response_times(has_response), 0.5 * ones(1, sum(has_response)), 'k');
+    stem(response_time(has_response), 0.5 * ones(1, sum(has_response)), 'k');
   end
 end
 

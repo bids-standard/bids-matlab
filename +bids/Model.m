@@ -40,7 +40,7 @@ classdef Model
   %                         'data', ...
   %                         'model', ['model-narps_smdl.json']);
   %
-  %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
+  %   bm = bids.Model('file', model_file, 'verbose', false);
   %
   %
 

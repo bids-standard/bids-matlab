@@ -24,6 +24,29 @@ function test_plot_events_ds101()
 
 end
 
+function test_plot_events_ds101_with_model()
+
+  close all;
+
+  data_dir = fullfile(get_test_data_dir(), 'ds001');
+
+  mode_file = fullfile(get_test_data_dir(), '..', ...
+                       'data', ...
+                       'model', ...
+                       'model-balloonanalogrisktask_smdl.json');
+
+  BIDS = bids.layout(data_dir);
+
+  events_files = bids.query(BIDS, ...
+                            'data', ...
+                            'sub', '01', ...
+                            'task', 'balloonanalogrisktask', ...
+                            'suffix', 'events');
+
+  bids.util.plot_events(events_files, 'model_file', mode_file);
+
+end
+
 function test_plot_events_ds108()
 
   data_dir = fullfile(get_test_data_dir(), 'ds108');
