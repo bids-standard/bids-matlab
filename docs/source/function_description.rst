@@ -22,10 +22,10 @@ Function description
 .. figure::  images/MultisubjectMultimodalFaceProcessing.png
    :align:   center
 
-   output of ``diagsnotic``
+   output of ``diagnostic``
 
 .. _fig_diagsnotic_task:
 .. figure::  images/MultisubjectMultimodalFaceProcessing_splitby-task.png
    :align:   center
 
-   output of ``diagsnotic`` split by task
+   output of ``diagnostic`` split by task

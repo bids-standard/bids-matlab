@@ -3,12 +3,22 @@ Utility functions
 
 .. automodule:: +bids.+util
 
-.. autofunction:: jsondecode
-.. autofunction:: jsonwrite
+.. autofunction:: create_data_dict.m
+.. autofunction:: create_participants_tsv.m
+.. autofunction:: create_readme.m
+.. autofunction:: create_scans_tsv.m
+.. autofunction:: create_sessions_tsv.m
+.. autofunction:: download_ds.m
+.. autofunction:: jsondecode.m
+.. autofunction:: jsonencode.m
+.. autofunction:: mkdir.m
+.. autofunction:: plot_events.m
 
-.. autofunction:: tsvread
-.. autofunction:: tsvwrite
+.. _fig_diagsnotic:
+.. figure::  images/plot_events_ds001.png
+   :align:   center
 
-.. autofunction:: create_data_dict
+   output of ``plot_events``
 
-.. autofunction:: mkdir
+.. autofunction:: tsvread.m
+.. autofunction:: tsvwrite.m
