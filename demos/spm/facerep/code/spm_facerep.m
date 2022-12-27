@@ -28,20 +28,15 @@ pth = bids.util.download_ds('source', 'spm', ...
                             'demo', 'facerep', ...
                             'force', true, ...
                             'verbose', verbose, ...
-                            'out_path', fullfile(pwd, '..'));
+                            'out_path', fullfile(pwd, '..', 'sourcedata'));
 
 %% Move file into source folder
 source_path = fullfile(pwd, '..', 'sourcedata');
-bids.util.mkdir(source_path);
-
-movefile(fullfile(pwd, '..', 'face_rep', '*'), source_path);
-rmdir(fullfile(pwd, '..', 'face_rep'));
-
+raw_path = fullfile(pwd, '..', 'raw');
 derivatives_pth = fullfile(pth, 'derivatives');
 
 %% CONVERT TO BIDS
-
-pth = convert_facerep_ds();
+pth = convert_facerep_ds(source_path, raw_path);
 
 %% COPY TO DERIVATIVES
 BIDS = bids.layout(pth, ...

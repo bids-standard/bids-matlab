@@ -39,12 +39,56 @@ function test_folders()
   set_test_cfg();
 
   folders.subjects = {'01', '02'};
-  folders.sessions = {'test', 'retest'};
-  folders.modalities = {'anat', 'func'};
+  folders.sessions = {'test', 'retest', ''};
+  folders.modalities = {'anat', 'func', 'fizz', ''};
 
   bids.init('dummy_ds', 'folders', folders);
   assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'ses-retest', 'func'), 'dir'), 7);
   assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'sub-02_sessions.tsv'), 'file'), 2);
+
+  clean_up();
+
+end
+
+function test_folders_no_session()
+
+  set_test_cfg();
+
+  folders.subjects = {'01', '02'};
+  folders.modalities = {'anat', 'func'};
+
+  bids.init('dummy_ds', 'folders', folders);
+  assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'func'), 'dir'), 7);
+  assertEqual(exist(fullfile(pwd, 'dummy_ds', 'sub-02', 'sub-02_sessions.tsv'), 'file'), 0);
+
+  clean_up();
+
+end
+
+function test_validate()
+
+  set_test_cfg();
+
+  folders.subjects = {'01-bla', '02_foo'};
+  folders.sessions = {'te-st', 'ret$est'};
+  folders.modalities = {'a#nat', 'fu*nc', '45^['};
+
+  assertExceptionThrown(@() bids.init('dummy_ds', 'folders', folders), ...
+                        'init:nonAlphaNumFodler');
+
+  folders.subjects = {'01', '02'};
+  folders.sessions = {'te-st', 'ret$est'};
+  folders.modalities = {'a#nat', 'fu*nc', '45^['};
+
+  assertExceptionThrown(@() bids.init('dummy_ds', 'folders', folders), ...
+                        'init:nonAlphaNumFodler');
+
+  folders.subjects = {'01', '02'};
+  folders.sessions = {'test', 'retest'};
+  folders.modalities = {'a#nat', 'fu*nc', '45^['};
+
+  assertExceptionThrown(@() bids.init('dummy_ds', 'folders', folders), ...
+                        'init:nonAlphaNumFodler');
 
   clean_up();
 
@@ -80,6 +124,8 @@ function clean_up()
 
   pause(0.5);
 
-  rmdir(fullfile(pwd, 'dummy_ds'), 's');
+  if isdir(fullfile(pwd, 'dummy_ds'))
+    rmdir(fullfile(pwd, 'dummy_ds'), 's');
+  end
 
 end
