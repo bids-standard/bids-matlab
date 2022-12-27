@@ -67,21 +67,25 @@ function init(varargin)
       sessions = '';
     end
 
+    modalities = validate_folder_list(args, 'modalities');
+
     bids.util.mkdir(args.Results.pth, ...
                     subjects, ...
                     sessions, ...
-                    args.Results.folders.modalities);
+                    modalities);
   else
     bids.util.mkdir(args.Results.pth);
   end
 
-  if exist('subjects', 'var') && ~isempty(subjects{1})
+  if exist('subjects', 'var') && ~isempty(subjects) && ~isempty(subjects{1})
     bids.util.create_participants_tsv(args.Results.pth, 'use_schema', false, ...
                                       'verbose', verbose, ...
                                       'tolerant', tolerant);
-    bids.util.create_sessions_tsv(args.Results.pth, 'use_schema', false, ...
-                                  'verbose', verbose, ...
-                                  'tolerant', tolerant);
+    if ~strcmp(sessions, '')
+      bids.util.create_sessions_tsv(args.Results.pth, 'use_schema', false, ...
+                                    'verbose', verbose, ...
+                                    'tolerant', tolerant);
+    end
   end
 
   bids.util.create_readme(args.Results.pth, is_datalad_ds, ...
@@ -102,12 +106,28 @@ function init(varargin)
 
 end
 
-function folder_list = create_folder_names(args, folder_level)
+function folder_list = validate_folder_list(args, folder_level)
 
   folder_list =  args.Results.folders.(folder_level);
   if ~iscell(folder_list)
     folder_list = {folder_list};
   end
+  folder_list(cellfun('isempty', folder_list)) = [];
+
+  only_alphanum = regexp(folder_list, '^[0-9a-zA-Z]+$');
+  if any(cellfun('isempty', only_alphanum))
+    msg = sprintf('BIDS labels must be alphanumeric only. Got:\n\t%s', ...
+                  bids.internal.create_unordered_list(folder_list));
+    bids.internal.error_handling(mfilename(), ...
+                                 'nonAlphaNumFodler', ...
+                                 msg, ...
+                                 false);
+  end
+end
+
+function folder_list = create_folder_names(args, folder_level)
+
+  folder_list = validate_folder_list(args, folder_level);
 
   switch folder_level
     case 'subjects'
@@ -116,9 +136,10 @@ function folder_list = create_folder_names(args, folder_level)
       prefix = 'ses-';
   end
 
-  if ~isempty(args.Results.folders.(folder_level))
+  if ~isempty(folder_list)
+
     folder_list = cellfun(@(x) [prefix x], ...
-                          args.Results.folders.(folder_level), ...
+                          folder_list, ...
                           'UniformOutput', false);
   end
 
