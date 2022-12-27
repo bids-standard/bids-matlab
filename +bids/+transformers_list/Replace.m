@@ -121,9 +121,12 @@ function data = Replace(transformer, data)
 
     for ii = 1:numel(replace)
 
-      this_replace = replace(ii);
-
       this_input = data.(input{i});
+
+      this_replace = replace(ii);
+      if iscell(this_replace)
+        this_replace = this_replace{1};
+      end
 
       key = this_replace.key;
 
@@ -146,7 +149,6 @@ function data = Replace(transformer, data)
       end
 
       value = this_replace.value;
-
       data = replace_for_attributes(data, attributes, output{i}, this_input, idx, value);
 
     end
