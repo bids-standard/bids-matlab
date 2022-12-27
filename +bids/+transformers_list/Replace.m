@@ -123,7 +123,12 @@ function data = Replace(transformer, data)
 
       this_input = data.(input{i});
 
-      key = replace(ii).key;
+      this_replace = replace(ii);
+      if iscell(this_replace)
+        this_replace = this_replace{1};
+      end
+
+      key = this_replace.key;
 
       if ischar(key) && iscellstr(this_input)
         key = bids.internal.regexify(key);
@@ -143,8 +148,7 @@ function data = Replace(transformer, data)
 
       end
 
-      value = replace(ii).value;
-
+      value = this_replace.value;
       data = replace_for_attributes(data, attributes, output{i}, this_input, idx, value);
 
     end

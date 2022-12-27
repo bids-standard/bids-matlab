@@ -24,7 +24,7 @@ function [new_content, json] = transformers(varargin)
   %     transformers = bm.get_transformations('Level', 'Run');
   %
   %     % apply transformers
-  %     new_content = bids.transformers(data, transformers);
+  %     new_content = bids.transformers(transformers.Instructions, data);
   %
   %     % if all fields in the structure have the same number of rows one
   %     % create a new tsv file
