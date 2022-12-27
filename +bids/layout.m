@@ -92,12 +92,13 @@ function BIDS = layout(varargin)
 
   %% BIDS structure
   % ==========================================================================
-  % BIDS.dir          -- BIDS directory
-  % BIDS.description  -- content of dataset_description.json
-  % BIDS.sessions     -- cellstr of sessions
-  % BIDS.participants -- for participants.tsv
-  % BIDS.subjects     -- structure array of subjects
-  % BIDS.root         -- tsv and json files in the root folder
+  % BIDS.dir           -- BIDS directory
+  % BIDS.is_datalad_ds -- BIDS directory
+  % BIDS.description   -- content of dataset_description.json
+  % BIDS.sessions      -- cellstr of sessions
+  % BIDS.participants  -- for participants.tsv
+  % BIDS.subjects      -- structure array of subjects
+  % BIDS.root          -- tsv and json files in the root folder
 
   BIDS = struct('pth', root, ...
                 'description', struct([]), ...
@@ -128,6 +129,11 @@ function BIDS = layout(varargin)
                   bids.internal.format_path(BIDS.pth));
     bids.internal.error_handling(mfilename, 'noSubject', msg, tolerant, verbose);
     return
+  end
+
+  BIDS.is_datalad_ds = false;
+  if isdir(fullfile(BIDS.pth, '.datalad')) && isdir(fullfile(BIDS.pth, '.git'))
+    BIDS.is_datalad_ds = true;
   end
 
   schema = bids.Schema(use_schema);
@@ -666,9 +672,13 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
     for iIntended = 1:numel(intended)
       dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
+      % only throw warning for non-datalad dataset
+      % to avoid excessive warning as sym link are not files
       if ~exist(dest, 'file')
-        msg = ['IntendedFor file ' dest ' from ' file.filename ' not found'];
-        bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
+        if ~BIDS.is_datalad_ds
+          msg = ['IntendedFor file ' dest ' from ' file.filename ' not found'];
+          bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
+        end
         continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);
