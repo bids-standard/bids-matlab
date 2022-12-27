@@ -39,8 +39,6 @@ function plot_events(varargin)
 
   % (C) Copyright 2020 Remi Gau
 
-  % TODO add reponse_time column
-
   args = inputParser();
 
   file_or_cellstring = @(x) (iscellstr(x) || exist(x, 'file'));
