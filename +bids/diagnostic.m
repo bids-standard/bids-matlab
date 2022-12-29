@@ -61,6 +61,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   %%
   BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema);
 
+  output_path = args.Results.output_path;
+
   filter = args.Results.filter;
 
   subjects = bids.query(BIDS, 'subjects', filter);
@@ -122,24 +124,57 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   end
 
   %%
-  fig_name = BIDS.description.Name;
-  if isempty(fig_name) || strcmp(fig_name, ' ')
-    fig_name = 'this_dataset';
-  end
+  fig_name = base_fig_name(BIDS);
   if ~cellfun('isempty', args.Results.split_by)
-    fig_name = [fig_name ' - split_by ' strjoin(args.Results.split_by, '-')];
+    fig_name = [base_fig_name(BIDS) ' - split_by ' strjoin(args.Results.split_by, '-')];
   end
 
   bids.internal.plot_diagnostic_table(diagnostic_table, headers, sub_ses, ...
                                       strrep(fig_name, '_', ' '));
 
-  if ~isempty(args.Results.output_path)
-    if exist(args.Results.output_path, 'dir')
-      bids.util.mkdir(args.Results.output_path);
-      print(fullfile(args.Results.output_path, fig_name), '-dpng');
+  print_figure(output_path, fig_name);
+
+  %% events
+  modalities = bids.query(BIDS, 'modalities', filter);
+  tasks = bids.query(BIDS, 'tasks', filter);
+
+  for i_modality = 1:numel(modalities)
+
+    for i_task = 1:numel(tasks)
+
+      [data, headers, y_labels] = bids.internal.list_events(BIDS, ...
+                                                            modalities{i_modality}, ...
+                                                            tasks{i_task}, ...
+                                                            'filter', filter);
+
+      fig_name = [base_fig_name(BIDS), ' - ', modalities{i_modality}, ' - ', tasks{i_task}];
+      fig_name = strrep(fig_name, '_', ' ');
+
+      bids.internal.plot_diagnostic_table(data, ...
+                                          headers, ...
+                                          y_labels, ...
+                                          fig_name);
+
     end
+
   end
 
+end
+
+function fig_name = base_fig_name(BIDS)
+  fig_name = BIDS.description.Name;
+  if isempty(fig_name) || strcmp(fig_name, ' ')
+    fig_name = 'this_dataset';
+  end
+end
+
+function print_figure(output_path, fig_name)
+  if ~isempty(output_path)
+    if exist(output_path, 'dir')
+      bids.util.mkdir(output_path);
+      print(fullfile(output_path, fig_name), '-dpng');
+    end
+  end
 end
 
 function headers = get_headers(BIDS, filter, split_by)
@@ -173,7 +208,7 @@ function headers = get_headers(BIDS, filter, split_by)
         if ismember('task', split_by)
           headers = add_task_based_headers(BIDS, headers, this_filter, this_header, split_by);
         else
-          headers{end + 1} = this_header;
+          headers{end + 1} = this_header; %#ok<*AGROW>
         end
 
       end

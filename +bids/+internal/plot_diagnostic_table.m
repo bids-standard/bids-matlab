@@ -4,6 +4,10 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
 
   % (C) Copyright 2022 BIDS-MATLAB developers
 
+  if isempty(diagnostic_table)
+    return
+  end
+
   if ~all(size(diagnostic_table) == [numel(yticklabel), numel(headers)])
 
     bids.internal.error_handling(mfilename(), ...
