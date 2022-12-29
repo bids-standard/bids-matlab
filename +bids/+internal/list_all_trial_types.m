@@ -1,11 +1,31 @@
 function trial_type_list = list_all_trial_types(varargin)
   %
-  % list all the *events.tsv files for that task
-  % and make a list of all the trial_type
+  % List all the trial_types in all the events.tsv files for a task.
   %
   % USAGE::
   %
-  %   trial_type_list = bids.internal.list_all_trial_types(BIDS, task)
+  %   trial_type_list = bids.internal.list_all_trial_types(BIDS, , ...
+  %                                                        task, ...
+  %                                                        'trial_type_col', 'trial_type', ...
+  %                                                        'tolerant', true, ...
+  %                                                        'verbose', false)
+  %
+  %
+  % :param BIDS:              BIDS directory name or BIDS structure (from ``bids.layout``)
+  % :type  BIDS:              structure or string
+  %
+  % :param task:              name of the task
+  % :type  task:              char
+  %
+  % :param trial_type_col:    Optional. Name of the column containing the trial type.
+  %                           Defaults to ``'trial_type'``.
+  % :type  trial_type_col:    char
+  %
+  % :param tolerant:          Optional. Default to ``true``.
+  % :type  tolerant:          logical
+  %
+  % :param verbose:          Optional. Default to ``false``.
+  % :type  verbose:          logical
   %
   %
 
@@ -19,6 +39,8 @@ function trial_type_list = list_all_trial_types(varargin)
   args = inputParser();
   addRequired(args, 'BIDS', is_dir_or_struct);
   addRequired(args, 'task');
+  addParameter(args, 'modality', '.*', @ischar);
+  addParameter(args, 'trial_type_col', 'trial_type', @ischar);
   addParameter(args, 'tolerant', default_tolerant);
   addParameter(args, 'verbose', default_verbose);
 
@@ -26,6 +48,8 @@ function trial_type_list = list_all_trial_types(varargin)
 
   BIDS = args.Results.BIDS;
   task = args.Results.task;
+  modality = args.Results.modality;
+  trial_type_col = args.Results.trial_type_col;
   tolerant = args.Results.tolerant;
   verbose = args.Results.verbose;
 
@@ -49,8 +73,8 @@ function trial_type_list = list_all_trial_types(varargin)
   no_trial_type_column = true;
   for i = 1:size(event_files, 1)
     content = bids.util.tsvread(event_files{i, 1});
-    if isfield(content, 'trial_type')
-      trial_type = content.trial_type;
+    if isfield(content, trial_type_col)
+      trial_type = content.(trial_type_col);
       no_trial_type_column = false;
       if ~iscell(trial_type) && all(isnumeric(trial_type))
         trial_type = cellstr(num2str(trial_type));
@@ -61,7 +85,8 @@ function trial_type_list = list_all_trial_types(varargin)
   end
 
   if no_trial_type_column
-    msg = sprintf('No trial_type column found in files:%s', ...
+    msg = sprintf('No "%s" column found in files:%s', ...
+                  trial_type_col, ...
                   bids.internal.create_unordered_list(bids.internal.format_path(event_files)));
     bids.internal.error_handling(mfilename(), 'noTrialTypeColumn', ...
                                  msg, ...
@@ -71,7 +96,7 @@ function trial_type_list = list_all_trial_types(varargin)
   end
 
   trial_type_list = unique(trial_type_list);
-  idx = ismember(trial_type_list, 'trial_type');
+  idx = ismember(trial_type_list, trial_type_col);
   if any(idx)
     trial_type_list{idx} = [];
   end

@@ -1,6 +1,11 @@
 function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   %
-  % Create figure listing the number of files for each subject
+  % Create a diagnostic figure for a dataset.
+  %
+  % - list the number of files for each subject split by:
+  %   - modality
+  %   - task (optional)
+  % - list the number of trials for each event type
   %
   % USAGE::
   %
@@ -30,6 +35,10 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   % :param filter:     list of filters to choose what files to copy (see bids.query)
   % :type  filter:     structure or cell
   %
+  % :param trial_type_col:    Optional. Name of the column containing the trial type.
+  %                           Defaults to ``'trial_type'``.
+  % :type  trial_type_col:    char
+  %
   % Examples::
   %
   %   BIDS = bids.layout(path_to_dataset);
@@ -55,11 +64,14 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   addParameter(args, 'output_path', default_output_path, @ischar);
   addParameter(args, 'filter', default_filter, @isstruct);
   addParameter(args, 'split_by', default_split, @iscell);
+  addParameter(args, 'trial_type_col', 'trial_type', @ischar);
 
   parse(args, varargin{:});
 
   %%
   BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema);
+
+  output_path = args.Results.output_path;
 
   filter = args.Results.filter;
 
@@ -68,7 +80,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   headers = get_headers(BIDS, filter, args.Results.split_by);
 
   diagnostic_table = nan(numel(subjects), numel(headers));
-  % events_table = nan(numel(subjects), numel(tasks));
+
+  trial_type_col = args.Results.trial_type_col;
 
   row = 1;
 
@@ -122,24 +135,72 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   end
 
   %%
-  fig_name = BIDS.description.Name;
-  if isempty(fig_name) || strcmp(fig_name, ' ')
-    fig_name = 'this_dataset';
-  end
+  fig_name = base_fig_name(BIDS);
   if ~cellfun('isempty', args.Results.split_by)
-    fig_name = [fig_name ' - split_by ' strjoin(args.Results.split_by, '-')];
+    fig_name = [base_fig_name(BIDS) ' - split_by ' strjoin(args.Results.split_by, '-')];
   end
 
   bids.internal.plot_diagnostic_table(diagnostic_table, headers, sub_ses, ...
                                       strrep(fig_name, '_', ' '));
 
-  if ~isempty(args.Results.output_path)
-    if exist(args.Results.output_path, 'dir')
-      bids.util.mkdir(args.Results.output_path);
-      print(fullfile(args.Results.output_path, fig_name), '-dpng');
+  print_figure(output_path, fig_name);
+
+  close(gcf);
+
+  %% events
+  modalities = bids.query(BIDS, 'modalities', filter);
+  tasks = bids.query(BIDS, 'tasks', filter);
+
+  for i_modality = 1:numel(modalities)
+
+    for i_task = 1:numel(tasks)
+
+      [data, headers, y_labels] = bids.internal.list_events(BIDS, ...
+                                                            modalities{i_modality}, ...
+                                                            tasks{i_task}, ...
+                                                            'filter', filter, ...
+                                                            'trial_type_col', trial_type_col);
+      if isempty(data)
+        continue
+      end
+
+      fig_name = [base_fig_name(BIDS), ' - ', modalities{i_modality}, ' - ', tasks{i_task}];
+      fig_name = strrep(fig_name, '_', ' ');
+
+      bids.internal.plot_diagnostic_table(data, ...
+                                          headers, ...
+                                          y_labels, ...
+                                          fig_name);
+
+      print_figure(output_path, fig_name);
+
     end
+
   end
 
+end
+
+function fig_name = base_fig_name(BIDS)
+  fig_name = BIDS.description.Name;
+  if isempty(fig_name) || strcmp(fig_name, ' ')
+    fig_name = 'this_dataset';
+  end
+end
+
+function print_figure(output_path, fig_name)
+  if ~isempty(output_path)
+
+    bids.util.mkdir(output_path);
+
+    filename = regexprep([fig_name, '.png'], ' - ', '_');
+    filename = regexprep(filename, ' ', '-');
+    filename = regexprep(filename, '[\(\)]', '');
+    filename = fullfile(output_path, filename);
+
+    print(filename, '-dpng');
+    fprintf('Figure saved:\n\t%s\n', filename);
+
+  end
 end
 
 function headers = get_headers(BIDS, filter, split_by)
@@ -173,7 +234,7 @@ function headers = get_headers(BIDS, filter, split_by)
         if ismember('task', split_by)
           headers = add_task_based_headers(BIDS, headers, this_filter, this_header, split_by);
         else
-          headers{end + 1} = this_header;
+          headers{end + 1} = this_header; %#ok<*AGROW>
         end
 
       end

@@ -1,8 +1,30 @@
 function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
   %
+  % Plot a diagnostic table to see the number of files per subject or of trials per run.
+  %
+  % USAGE::
+  %
+  %   plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
+  %
+  % :param diagnostic_table:   table to plot
+  % :type  diagnostic_table:   n X m array of integers
+  %
+  % :param headers:     Used to created the column names
+  % :type  headers:     n X 1 cell of struct
+  %
+  % :param yticklabel:
+  % :type  yticklabel:  m X 1 cellstr
+  %
+  % :param fig_name:
+  % :type  fig_name:  str
+  %
   %
 
   % (C) Copyright 2022 BIDS-MATLAB developers
+
+  if isempty(diagnostic_table)
+    return
+  end
 
   if ~all(size(diagnostic_table) == [numel(yticklabel), numel(headers)])
 
