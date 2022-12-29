@@ -17,14 +17,19 @@ Function description
 
 .. autofunction:: diagnostic
 
-
-.. _fig_diagsnotic:
+.. _fig_diagnostic:
 .. figure::  images/MultisubjectMultimodalFaceProcessing.png
    :align:   center
 
    output of ``diagnostic``
 
-.. _fig_diagsnotic_task:
+.. _fig_diagnostic_events:
+.. figure::  images/Simon-task_func_Simontask.png
+   :align:   center
+
+   output of ``diagnostic`` for events
+
+.. _fig_diagnostic_task:
 .. figure::  images/MultisubjectMultimodalFaceProcessing_splitby-task.png
    :align:   center
 

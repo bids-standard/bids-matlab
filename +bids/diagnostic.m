@@ -134,6 +134,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
 
   print_figure(output_path, fig_name);
 
+  close(gcf);
+
   %% events
   modalities = bids.query(BIDS, 'modalities', filter);
   tasks = bids.query(BIDS, 'tasks', filter);
@@ -146,6 +148,9 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
                                                             modalities{i_modality}, ...
                                                             tasks{i_task}, ...
                                                             'filter', filter);
+      if isempty(data)
+        continue
+      end
 
       fig_name = [base_fig_name(BIDS), ' - ', modalities{i_modality}, ' - ', tasks{i_task}];
       fig_name = strrep(fig_name, '_', ' ');
@@ -154,6 +159,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
                                           headers, ...
                                           y_labels, ...
                                           fig_name);
+
+      print_figure(output_path, fig_name);
 
     end
 
@@ -170,10 +177,17 @@ end
 
 function print_figure(output_path, fig_name)
   if ~isempty(output_path)
-    if exist(output_path, 'dir')
-      bids.util.mkdir(output_path);
-      print(fullfile(output_path, fig_name), '-dpng');
-    end
+
+    bids.util.mkdir(output_path);
+
+    filename = regexprep([fig_name, '.png'], ' - ', '_');
+    filename = regexprep(filename, ' ', '-');
+    filename = regexprep(filename, '[\(\)]', '');
+    filename = fullfile(output_path, filename);
+
+    print(filename, '-dpng');
+    fprintf('Figure saved:\n\t%s\n', filename);
+
   end
 end
 
