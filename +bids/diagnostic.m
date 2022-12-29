@@ -1,6 +1,11 @@
 function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   %
-  % Create figure listing the number of files for each subject
+  % Create a diagnostic figure for a dataset.
+  %
+  % - list the number of files for each subject split by:
+  %   - modality
+  %   - task (optional)
+  % - list the number of trials for each event type
   %
   % USAGE::
   %
@@ -30,6 +35,10 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   % :param filter:     list of filters to choose what files to copy (see bids.query)
   % :type  filter:     structure or cell
   %
+  % :param trial_type_col:    Optional. Name of the column containing the trial type.
+  %                           Defaults to ``'trial_type'``.
+  % :type  trial_type_col:    char
+  %
   % Examples::
   %
   %   BIDS = bids.layout(path_to_dataset);
@@ -55,6 +64,7 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   addParameter(args, 'output_path', default_output_path, @ischar);
   addParameter(args, 'filter', default_filter, @isstruct);
   addParameter(args, 'split_by', default_split, @iscell);
+  addParameter(args, 'trial_type_col', 'trial_type', @ischar);
 
   parse(args, varargin{:});
 
@@ -70,7 +80,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   headers = get_headers(BIDS, filter, args.Results.split_by);
 
   diagnostic_table = nan(numel(subjects), numel(headers));
-  % events_table = nan(numel(subjects), numel(tasks));
+
+  trial_type_col = args.Results.trial_type_col;
 
   row = 1;
 
@@ -147,7 +158,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
       [data, headers, y_labels] = bids.internal.list_events(BIDS, ...
                                                             modalities{i_modality}, ...
                                                             tasks{i_task}, ...
-                                                            'filter', filter);
+                                                            'filter', filter, ...
+                                                            'trial_type_col', trial_type_col);
       if isempty(data)
         continue
       end

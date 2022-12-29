@@ -242,12 +242,11 @@ classdef Model
 
     function [value, idx] = get_nodes(obj, varargin)
       %
-      % Get a specific node from the model given its Level and / or Name
+      % Get a specific node from the model given its Level and / or Name.
       %
       % USAGE::
       %
-      %   [value, idx] = bm.get_nodes('Level', '', ...
-      %                               'Name', '')
+      %   [value, idx] = bm.get_nodes('Level', '', 'Name', '')
       %
       %
       % :param Level: Must be one of ``Run``, ``Session``, ``Subject``, ``Dataset``.
@@ -258,8 +257,7 @@ classdef Model
       % :type file: path
       %
       %
-      % Returns: value - Node(s) as struct if there is only one or a cell if
-      %                  more
+      % Returns: value - Node(s) as struct if there is only one or a cell if more
       %          idx   - Node index
       %
       %
@@ -275,6 +273,7 @@ classdef Model
       %
       %   % Get the "Negative" node
       %   bm.get_nodes('Name', 'negative')
+      %
       %
       if isempty(varargin)
         value = obj.Nodes;

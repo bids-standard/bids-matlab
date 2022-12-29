@@ -1,6 +1,6 @@
 function [data, headers, y_labels] = list_events(varargin)
   %
-  % returns summary of all events for a given task
+  % Returns summary of all events for a given task.
   %
   % USAGE::
   %
@@ -10,6 +10,25 @@ function [data, headers, y_labels] = list_events(varargin)
   %                                                         'filter', struct(), ...
   %                                                         'trial_type_col', 'trial_type')
   %
+  %
+  % :param BIDS:       BIDS directory name or BIDS structure (from ``bids.layout``)
+  % :type  BIDS:       structure or string
+  %
+  % :param modality:   name of the modality
+  % :type  modality:   char
+  %
+  % :param task:       name of the task
+  % :type  task:       char
+  %
+  % :param filter:     Optional. List of filters to choose what files to copy
+  %                    (see bids.query). Default to ``struct()``.
+  % :type  filter:     structure or cell
+  %
+  % :param trial_type_col:    Optional. Name of the column containing the trial type.
+  %                           Defaults to ``'trial_type'``.
+  % :type  trial_type_col:    char
+  %
+  % See also: bids.diagnostic, bids.internal.plot_diagnostic_table
   %
 
   % (C) Copyright 2022 Remi Gau

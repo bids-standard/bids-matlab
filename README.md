@@ -107,8 +107,9 @@ git checkout upstream/dev
   anatomical MRI, functional MRI, diffusion weighted imaging, field map data
   (see `bids.report`)
 
-- create summary figures listing the number of files for each subject / session and
-  and imaging modality (see `bids.diagnostic`)
+- `bids.diagnostic` creates summary figures listing:
+  - the number of files for each subject / session and imaging modality
+  - the number of trials for each trial type in each events.tsv file for a given task
 
 - read and write JSON files (see `bids.util.jsondecode` and
   `bids.util.jsonwrite`) provided that the right

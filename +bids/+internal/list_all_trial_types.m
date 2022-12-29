@@ -1,11 +1,31 @@
 function trial_type_list = list_all_trial_types(varargin)
   %
-  % list all the *events.tsv files for that task
-  % and make a list of all the trial_type
+  % List all the trial_types in all the events.tsv files for a task.
   %
   % USAGE::
   %
-  %   trial_type_list = bids.internal.list_all_trial_types(BIDS, task)
+  %   trial_type_list = bids.internal.list_all_trial_types(BIDS, , ...
+  %                                                        task, ...
+  %                                                        'trial_type_col', 'trial_type', ...
+  %                                                        'tolerant', true, ...
+  %                                                        'verbose', false)
+  %
+  %
+  % :param BIDS:              BIDS directory name or BIDS structure (from ``bids.layout``)
+  % :type  BIDS:              structure or string
+  %
+  % :param task:              name of the task
+  % :type  task:              char
+  %
+  % :param trial_type_col:    Optional. Name of the column containing the trial type.
+  %                           Defaults to ``'trial_type'``.
+  % :type  trial_type_col:    char
+  %
+  % :param tolerant:          Optional. Default to ``true``.
+  % :type  tolerant:          logical
+  %
+  % :param verbose:          Optional. Default to ``false``.
+  % :type  verbose:          logical
   %
   %
 
