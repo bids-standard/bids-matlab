@@ -16,7 +16,7 @@ end
 
 %% multi step
 
-function test_add_subtract_with_output
+function test_multi_add_subtract_with_output
 
   % GIVEN
   transformers(1).Name = 'Subtract';
@@ -41,7 +41,7 @@ end
 
 %% single step
 
-function test_basic_to_specific_rows
+function test_Add_to_specific_rows
   %% GIVEN
   transformers(1).Name = 'Add';
   transformers(1).Input = 'onset';
@@ -53,6 +53,10 @@ function test_basic_to_specific_rows
 
   % THEN
   assertEqual(new_content.onset, [5; 4; 8; 8]);
+
+end
+
+function test_Subtract_to_specific_rows
 
   %% GIVEN
   transformers(1).Name = 'Subtract';
@@ -68,7 +72,7 @@ function test_basic_to_specific_rows
 
 end
 
-function test_add_coerce_value
+function test_Add_coerce_value
 
   %% GIVEN
   transformers(1).Name = 'Add';
@@ -95,7 +99,7 @@ function test_add_coerce_value
 
 end
 
-function test_constant()
+function test_Constant_basic()
 
   %% GIVEN
   transformers = struct('Name', 'Constant', ...
@@ -105,6 +109,10 @@ function test_constant()
   new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
 
   assertEqual(new_content.cst, ones(4, 1));
+
+end
+
+function test_Constant_with_value()
 
   %% GIVEN
   transformers = struct('Name', 'Constant', ...
@@ -118,7 +126,7 @@ function test_constant()
 
 end
 
-function test_divide_several_inputs
+function test_Divide_several_inputs
 
   % GIVEN
   transformers(1).Name = 'Divide';
@@ -134,7 +142,7 @@ function test_divide_several_inputs
 
 end
 
-function test_mean()
+function test_Mean()
 
   % GIVEN
   transformers = struct('Name', 'Mean', ...
@@ -146,7 +154,10 @@ function test_mean()
   % THEN
   assertEqual(new_content.age_mean, nan);
 
-  % omit nan not implemented in octave
+end
+
+function test_Mean_with_output()
+
   if bids.internal.is_octave
     return
   end
@@ -165,7 +176,7 @@ function test_mean()
 
 end
 
-function test_product()
+function test_Product()
 
   % GIVEN
   transformers = struct('Name', 'Product', ...
@@ -180,7 +191,7 @@ function test_product()
 
 end
 
-function test_std()
+function test_StdDev()
 
   % GIVEN
   transformers = struct('Name', 'StdDev', ...
@@ -192,7 +203,10 @@ function test_std()
   % THEN
   assertEqual(new_content.age_std, nan);
 
-  % omit nan not implemented in octave
+end
+
+function test_StdDev_omitnan()
+
   if bids.internal.is_octave
     return
   end
@@ -211,7 +225,7 @@ function test_std()
 
 end
 
-function test_sum()
+function test_Sum()
 
   % GIVEN
   transformers = struct('Name', 'Sum', ...
@@ -223,6 +237,10 @@ function test_sum()
 
   % THEN
   assertEqual(new_content.onset_plus_duration, [4; 6; 8; 10]);
+
+end
+
+function test_Sum_with_weights()
 
   % GIVEN
   transformers = struct('Name', 'Sum', ...
@@ -238,7 +256,7 @@ function test_sum()
 
 end
 
-function test_power
+function test_Power
 
   %% GIVEN
   transformers.Name = 'Power';
@@ -250,6 +268,9 @@ function test_power
 
   % THEN
   assertEqual(new_content.intensity, [4; 16]);
+end
+
+function test_Power_with_output
 
   %% GIVEN
   transformers.Name = 'Power';
@@ -265,7 +286,7 @@ function test_power
 
 end
 
-function test_scale()
+function test_Scale()
 
   % omit nan not implemented in octave
   if bids.internal.is_octave
@@ -284,6 +305,15 @@ function test_scale()
                             [-0.1769; -0.3699; 1.4315; -0.8846; nan], ...
                             'absolute', 1e-3);
 
+end
+
+function test_Scale_all_options()
+
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
+
   %% GIVEN
   transformers = struct('Name', 'Scale', ...
                         'Input', {{'age'}}, ...
@@ -301,7 +331,7 @@ function test_scale()
                             'absolute', 1e-3);
 end
 
-function test_scale_nan_after()
+function test_multi_Scale_nan_after()
 
   % omit nan not implemented in octave
   if bids.internal.is_octave
@@ -345,7 +375,7 @@ function test_scale_nan_after()
                             'absolute', 1e-3);
 end
 
-function test_scale_nan_before()
+function test_multi_scale_nan_before()
 
   % omit nan not implemented in octave
   if bids.internal.is_octave
@@ -383,7 +413,7 @@ function test_scale_nan_before()
                             'absolute', 1e-3);
 end
 
-function test_subtract
+function test_Subtract
 
   % GIVEN
   transformers(1).Name = 'Subtract';
@@ -398,7 +428,7 @@ function test_subtract
 
 end
 
-function test_threshold_output()
+function test_Threshold_with_output()
 
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
@@ -410,7 +440,7 @@ function test_threshold_output()
 
 end
 
-function test_threshold()
+function test_Threshold()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
@@ -420,6 +450,10 @@ function test_threshold()
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 2; 0; 0]);
+
+end
+
+function test_Threshold_with_threshold_specified()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
@@ -431,6 +465,10 @@ function test_threshold()
   % THEN
   assertEqual(new_content.to_threshold, [0; 2; 0; 0]);
 
+end
+
+function test_Threshold_binarize()
+
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
@@ -440,6 +478,10 @@ function test_threshold()
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 1; 0; 0]);
+
+end
+
+function test_Threshold_binarize_above()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
@@ -451,6 +493,10 @@ function test_threshold()
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 0; 1; 1]);
+
+end
+
+function test_Threshold_binarize_above_singed()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...

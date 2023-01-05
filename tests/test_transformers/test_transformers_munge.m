@@ -71,7 +71,7 @@ end
 
 %% LOGICAL
 
-function test_and()
+function test_And()
 
   % GIVEN
   transformers = struct('Name', 'And', ...
@@ -86,7 +86,7 @@ function test_and()
 
 end
 
-function test_and_nan()
+function test_And_nan()
 
   % GIVEN
   transformers = struct('Name', 'And', ...
@@ -101,7 +101,7 @@ function test_and_nan()
 
 end
 
-function test_or()
+function test_Or()
 
   % GIVEN
   transformers = struct('Name', 'Or', ...
@@ -116,7 +116,7 @@ function test_or()
 
 end
 
-function test_not()
+function test_Not()
 
   % GIVEN
   transformers = struct('Name', 'Not', ...
@@ -135,7 +135,7 @@ end
 
 %% multi step
 
-function test_touch()
+function test_multi_touch()
 
   % GIVEN
   tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-TouchBefore_events.tsv');
@@ -165,7 +165,7 @@ function test_touch()
 
 end
 
-function test_combine_columns()
+function test_multi_combine_columns()
 
   % GIVEN
   tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
@@ -200,7 +200,7 @@ function test_combine_columns()
 
 end
 
-function test_complex_filter_with_and()
+function test_multi_complex_filter_with_and()
 
   %% GIVEN
   tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
@@ -242,7 +242,7 @@ end
 
 % ordered alphabetically
 
-function test_assign_with_target_attribute()
+function test_Assign_with_target_attribute()
 
   transformers = struct('Name', 'Assign', ...
                         'Input', 'response_time', ...
@@ -272,7 +272,7 @@ function test_assign_with_target_attribute()
 
 end
 
-function test_assign()
+function test_Assign()
 
   transformers = struct('Name', 'Assign', ...
                         'Input', 'response_time', ...
@@ -287,7 +287,7 @@ function test_assign()
 
 end
 
-function test_assign_with_output()
+function test_Assign_with_output()
 
   transformers = struct('Name', 'Assign', ...
                         'Input', 'response_time', ...
@@ -303,7 +303,7 @@ function test_assign_with_output()
 
 end
 
-function test_assign_with_output_and_input_attribute()
+function test_Assign_with_output_and_input_attribute()
 
   transformers = struct('Name', 'Assign', ...
                         'Input', 'response_time', ...
@@ -320,7 +320,7 @@ function test_assign_with_output_and_input_attribute()
 
 end
 
-function test_assign_missing_target()
+function test_Assign_missing_target()
 
   transformers = struct('Name', 'Assign', ...
                         'Input', 'response_time', ...
@@ -331,7 +331,7 @@ function test_assign_missing_target()
 
 end
 
-function test_concatenate()
+function test_Concatenate()
 
   % GIVEN
   tsvFile = fullfile(dummy_data_dir(), ...
@@ -350,7 +350,7 @@ function test_concatenate()
 
 end
 
-function test_concatenate_strings()
+function test_Concatenate_strings()
 
   % GIVEN
   transformers = struct('Name', 'Concatenate', ...
@@ -366,7 +366,7 @@ function test_concatenate_strings()
 
 end
 
-function test_concatenate_numbers()
+function test_Concatenate_numbers()
 
   % GIVEN
   transformers = struct('Name', 'Concatenate', ...
@@ -384,7 +384,7 @@ function test_concatenate_numbers()
 
 end
 
-function test_copy()
+function test_Copy()
 
   % GIVEN
   tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
@@ -401,7 +401,7 @@ function test_copy()
 
 end
 
-function test_delete_select()
+function test_Delete()
 
   % GIVEN
   tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
@@ -414,19 +414,9 @@ function test_delete_select()
 
   assert(~(ismember({'face_type'}, fieldnames(new_content))));
 
-  % GIVEN
-  transformers = struct('Name', 'Select', ...
-                        'Input', 'face_type');
-
-  new_content = bids.transformers(transformers, tsv_content);
-
-  assertEqual(fieldnames(new_content), {    'face_type'
-                                        'onset'
-                                        'duration'});
-
 end
 
-function test_drop_na()
+function test_DropNA()
 
   % GIVEN
   transformers = struct('Name', 'DropNA', ...
@@ -441,7 +431,7 @@ function test_drop_na()
 
 end
 
-function test_factor()
+function test_Factor()
 
   % GIVEN
   transformers = struct('Name', 'Factor', ...
@@ -458,7 +448,7 @@ function test_factor()
 
 end
 
-function test_factor_numeric()
+function test_Factor_numeric()
 
   % GIVEN
   transformers = struct('Name', 'Factor', ...
@@ -475,7 +465,7 @@ function test_factor_numeric()
 
 end
 
-function test_filter_numeric()
+function test_Filter_numeric()
 
   types = {'>=', '<=', '==', '>', '<', '~='};
   expected = [nan 2   1.56 2.1
@@ -484,6 +474,8 @@ function test_filter_numeric()
               nan 2   nan  2.1
               1.5 nan nan  nan
               1.5 2   nan  2.1];
+
+  error('need to take care of parametrization');
 
   for i = 1:numel(types)
 
@@ -502,7 +494,7 @@ function test_filter_numeric()
 
 end
 
-function test_filter_string()
+function test_Filter_string()
 
   % GIVEN
   transformers = struct('Name', 'Filter', ...
@@ -517,7 +509,7 @@ function test_filter_string()
 
 end
 
-function test_filter_string_unequal()
+function test_Filter_string_unequal()
 
   % GIVEN
   transformers = struct('Name', 'Filter', ...
@@ -532,7 +524,7 @@ function test_filter_string_unequal()
 
 end
 
-function test_filter_string_output()
+function test_Filter_string_output()
 
   % GIVEN
   transformers = struct('Name', 'Filter', ...
@@ -552,7 +544,7 @@ function test_filter_string_output()
 
 end
 
-function test_filter_string_output_across_columns()
+function test_Filter_string_output_across_columns()
 
   % GIVEN
   transformers = struct('Name', 'Filter', ...
@@ -568,7 +560,7 @@ function test_filter_string_output_across_columns()
 
 end
 
-function test_filter_across_columns()
+function test_Filter_across_columns()
 
   transformers = struct('Name', 'Filter', ...
                         'Input', 'familiarity', ...
@@ -584,7 +576,7 @@ function test_filter_across_columns()
 
 end
 
-function test_filter_several_inputs()
+function test_Filter_several_inputs()
 
   transformers = struct('Name', 'Filter', ...
                         'Input', {{'repetition', 'response_time'}}, ...
@@ -599,7 +591,7 @@ function test_filter_several_inputs()
 
 end
 
-function test_label_identical_rows
+function test_LabelIdenticalRows_rows
 
   transformers(1).Name = 'LabelIdenticalRows';
   transformers(1).Input = {'trial_type', 'stim_type', 'other_type'};
@@ -616,7 +608,7 @@ function test_label_identical_rows
 
 end
 
-function test_label_identical_rows_cumulative
+function test_LabelIdenticalRows_rows_cumulative
 
   transformers(1).Name = 'LabelIdenticalRows';
   transformers(1).Input = {'trial_type'};
@@ -630,7 +622,7 @@ function test_label_identical_rows_cumulative
 
 end
 
-function test_merge_identical_rows_cellstr
+function test_MergeIdenticalRows_rows_cellstr
 
   transformers(1).Name = 'MergeIdenticalRows';
   transformers(1).Input = {'trial_type'};
@@ -649,7 +641,7 @@ function test_merge_identical_rows_cellstr
 
 end
 
-function test_merge_identical_rows_numeric
+function test_MergeIdenticalRows_rows_numeric
 
   transformers(1).Name = 'MergeIdenticalRows';
   transformers(1).Input = {'trial_type'};
@@ -668,7 +660,7 @@ function test_merge_identical_rows_numeric
 
 end
 
-function test_replace()
+function test_Replace()
 
   %% GIVEN
   transformers(1).Name = 'Replace';
@@ -684,7 +676,7 @@ function test_replace()
 
 end
 
-function test_replace_regexp()
+function test_Replace_regexp()
 
   %% GIVEN
   transformers(1).Name = 'Replace';
@@ -699,7 +691,7 @@ function test_replace_regexp()
 
 end
 
-function test_replace_string_by_numeric()
+function test_Replace_string_by_numeric()
 
   %% GIVEN
   transformers(1).Name = 'Replace';
@@ -716,7 +708,7 @@ function test_replace_string_by_numeric()
 
 end
 
-function test_replace_with_output()
+function test_Replace_with_output()
 
   %% GIVEN
   transformers(1).Name = 'Replace';
@@ -736,7 +728,7 @@ function test_replace_with_output()
 
 end
 
-function test_replace_string_in_numeric_output()
+function test_Replace_string_in_numeric_output()
 
   %% GIVEN
   data.fruits = {'apple'; 'banana'; 'elusive'};
@@ -762,7 +754,7 @@ function test_replace_string_in_numeric_output()
 
 end
 
-function test_rename()
+function test_Rename()
 
   % GIVEN
   tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
@@ -780,7 +772,7 @@ function test_rename()
 
 end
 
-function test_select()
+function test_Select()
 
   % GIVEN
   transformers = struct('Name', 'Select', ...
@@ -794,7 +786,25 @@ function test_select()
 
 end
 
-function test_select_event()
+function test_Select_events_file()
+
+  % GIVEN
+  tsvFile = fullfile(dummy_data_dir(), 'sub-01_task-FaceRepetitionBefore_events.tsv');
+  tsv_content = bids.util.tsvread(tsvFile);
+
+  % GIVEN
+  transformers = struct('Name', 'Select', ...
+                        'Input', 'face_type');
+
+  new_content = bids.transformers(transformers, tsv_content);
+
+  assertEqual(fieldnames(new_content), {'face_type'
+                                        'onset'
+                                        'duration'});
+
+end
+
+function test_Select_events_file_2()
 
   % GIVEN
   transformers = struct('Name', 'Select', ...
@@ -808,7 +818,7 @@ function test_select_event()
 
 end
 
-function test_split_empty_by()
+function test_Split_empty_by()
 
   % GIVEN
   transformers = struct('Name', 'Split', ...
@@ -823,7 +833,7 @@ function test_split_empty_by()
 
 end
 
-function test_split_simple()
+function test_Split_simple()
 
   % GIVEN
   transformers = struct('Name', 'Split', ...
@@ -839,7 +849,7 @@ function test_split_simple()
 
 end
 
-function test_split_simple_string()
+function test_Split_simple_string()
 
   % GIVEN
   transformers = struct('Name', 'Split', ...
@@ -855,7 +865,7 @@ function test_split_simple_string()
 
 end
 
-function test_split_nested()
+function test_Split_nested()
 
   % GIVEN
   transformers = struct('Name', 'Split', ...
