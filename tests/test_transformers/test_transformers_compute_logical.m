@@ -18,7 +18,7 @@ function write_definition(input, output, trans, stack, suffix)
   if nargin == 5
     test_name = [test_name '_' suffix];
   end
-  %   write_test_definition_to_file(input, output, trans, test_name, 'compute');
+  %     write_test_definition_to_file(input, output, trans, test_name, 'compute');
 
 end
 

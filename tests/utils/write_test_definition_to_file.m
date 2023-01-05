@@ -17,7 +17,7 @@ function write_test_definition_to_file(input, output, trans, test_name, test_typ
 
   trans_file = fullfile(output_dir, 'transformation.json');
   content = struct('Description', strrep(test_name, '_', ' '), ...
-                   'Instruction', trans);
+                   'Instruction', {{trans}});
   bids.util.jsonencode(trans_file, content);
 
 end
