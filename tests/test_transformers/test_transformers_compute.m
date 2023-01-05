@@ -16,7 +16,7 @@ end
 
 function write_definition(input, output, trans, stack)
   test_name = stack.name;
-  write_test_definition_to_file(input, output, trans, test_name, 'compute');
+  %   write_test_definition_to_file(input, output, trans, test_name, 'compute');
 end
 
 %% multi step
