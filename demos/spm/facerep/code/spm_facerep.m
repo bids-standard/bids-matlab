@@ -7,6 +7,7 @@
 
 clear;
 
+download = true;
 force = true;
 verbose =  true;
 use_schema =  true;
@@ -24,12 +25,15 @@ if isdir(fullfile(pwd, '..', 'face_rep'))
   rmdir(fullfile(pwd, '..', 'face_rep'), 's');
 end
 
-pth = bids.util.download_ds('source', 'spm', ...
-                            'demo', 'facerep', ...
-                            'force', true, ...
-                            'verbose', verbose, ...
-                            'out_path', fullfile(pwd, '..', 'sourcedata'));
-
+if download
+  pth = bids.util.download_ds('source', 'spm', ...
+                              'demo', 'facerep', ...
+                              'force', false, ...
+                              'verbose', verbose, ...
+                              'out_path', fullfile(pwd, '..', 'sourcedata'));
+else
+  pth = fullfile(pwd, '..', 'raw');
+end
 %% Move file into source folder
 source_path = fullfile(pwd, '..', 'sourcedata');
 raw_path = fullfile(pwd, '..', 'raw');
@@ -56,7 +60,7 @@ bids.copy_to_derivative(BIDS, ...
 % prepare folder for stats
 stats_pth = fullfile(derivatives_pth, stats_pipeline_name);
 folders = struct('subjects',  {{subject_label}}, ...
-                 'modalities', {{'stats-categorical'}});
+                 'modalities', {{'statsCategorical'}});
 is_derivative = true;
 bids.init(stats_pth, 'folders', folders, 'is_derivative', is_derivative);
 
@@ -191,7 +195,7 @@ events = bids.query(BIDS, 'data', ...
 events = bids.util.tsvread(events{1});
 
 data_path = fullfile(stats_pth, ['sub-' subject_label]);
-subj_stats_pth = fullfile(data_path, 'stats-categorical');
+subj_stats_pth = fullfile(data_path, 'statsCategorical');
 SPM_mat = fullfile(subj_stats_pth, 'SPM.mat');
 
 clear matlabbatch;
