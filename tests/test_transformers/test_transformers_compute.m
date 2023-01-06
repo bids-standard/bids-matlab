@@ -14,9 +14,14 @@ end
 
 %% COMPUTE
 
+function write_definition(input, output, trans, stack)
+  test_name = stack.name;
+  %     write_test_definition_to_file(input, output, trans, test_name, 'compute');
+end
+
 %% multi step
 
-function test_add_subtract_with_output
+function test_multi_add_subtract_with_output
 
   % GIVEN
   transformers(1).Name = 'Subtract';
@@ -30,7 +35,10 @@ function test_add_subtract_with_output
   transformers(2).Output  = 'onset_plus_1';
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_events());
+  data = vis_motion_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assert(all(ismember({'onset_plus_1'; 'onset_minus_3'}, fieldnames(new_content))));
@@ -41,7 +49,7 @@ end
 
 %% single step
 
-function test_basic_to_specific_rows
+function test_Add_to_specific_rows
   %% GIVEN
   transformers(1).Name = 'Add';
   transformers(1).Input = 'onset';
@@ -49,10 +57,17 @@ function test_basic_to_specific_rows
   transformers(1).Value = 3;
 
   % WHEN
-  new_content = bids.transformers(transformers, face_rep_events());
+  data = face_rep_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.onset, [5; 4; 8; 8]);
+
+end
+
+function test_Subtract_to_specific_rows
 
   %% GIVEN
   transformers(1).Name = 'Subtract';
@@ -61,14 +76,17 @@ function test_basic_to_specific_rows
   transformers(1).Value = 1;
 
   % WHEN
-  new_content = bids.transformers(transformers, face_rep_events());
+  data = face_rep_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.onset, [1; 4; 4; 8]);
 
 end
 
-function test_add_coerce_value
+function test_Add_coerce_value
 
   %% GIVEN
   transformers(1).Name = 'Add';
@@ -76,7 +94,10 @@ function test_add_coerce_value
   transformers(1).Value = '3';
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_events());
+  data = vis_motion_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.onset, [5; 7]);
@@ -95,16 +116,23 @@ function test_add_coerce_value
 
 end
 
-function test_constant()
+function test_Constant_basic()
 
   %% GIVEN
   transformers = struct('Name', 'Constant', ...
                         'Output', 'cst');
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   assertEqual(new_content.cst, ones(4, 1));
+
+end
+
+function test_Constant_with_value()
 
   %% GIVEN
   transformers = struct('Name', 'Constant', ...
@@ -112,13 +140,16 @@ function test_constant()
                         'Output', 'cst');
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   assertEqual(new_content.cst, ones(4, 1) * 2);
 
 end
 
-function test_divide_several_inputs
+function test_Divide_several_inputs
 
   % GIVEN
   transformers(1).Name = 'Divide';
@@ -126,7 +157,10 @@ function test_divide_several_inputs
   transformers(1).Value = 2;
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_events());
+  data = vis_motion_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.onset, [1; 2]);
@@ -134,19 +168,25 @@ function test_divide_several_inputs
 
 end
 
-function test_mean()
+function test_Mean()
 
   % GIVEN
   transformers = struct('Name', 'Mean', ...
                         'Input', {{'age'}});
 
   % WHEN
-  new_content = bids.transformers(transformers, participants());
+  data = participants();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.age_mean, nan);
 
-  % omit nan not implemented in octave
+end
+
+function test_Mean_with_output()
+
   if bids.internal.is_octave
     return
   end
@@ -158,14 +198,17 @@ function test_mean()
                         'OmitNan', true);
 
   % WHEN
-  new_content = bids.transformers(transformers, participants());
+  data = participants();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.age_mean_omitnan, 23.75);
 
 end
 
-function test_product()
+function test_Product()
 
   % GIVEN
   transformers = struct('Name', 'Product', ...
@@ -173,26 +216,35 @@ function test_product()
                         'Output', 'onset_times_duration');
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.onset_times_duration, [4; 8; 12; 16]);
 
 end
 
-function test_std()
+function test_StdDev()
 
   % GIVEN
   transformers = struct('Name', 'StdDev', ...
                         'Input', {{'age'}});
 
   % WHEN
-  new_content = bids.transformers(transformers, participants());
+  data = participants();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.age_std, nan);
 
-  % omit nan not implemented in octave
+end
+
+function test_StdDev_omitnan()
+
   if bids.internal.is_octave
     return
   end
@@ -204,14 +256,17 @@ function test_std()
                         'OmitNan', true);
 
   % WHEN
-  new_content = bids.transformers(transformers, participants());
+  data = participants();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertElementsAlmostEqual(new_content.age_std_omitnan, 15.543, 'absolute', 1e-3);
 
 end
 
-function test_sum()
+function test_Sum()
 
   % GIVEN
   transformers = struct('Name', 'Sum', ...
@@ -219,10 +274,17 @@ function test_sum()
                         'Output', 'onset_plus_duration');
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.onset_plus_duration, [4; 6; 8; 10]);
+
+end
+
+function test_Sum_with_weights()
 
   % GIVEN
   transformers = struct('Name', 'Sum', ...
@@ -231,14 +293,17 @@ function test_sum()
                         'Output', 'onset_plus_duration_with_weight');
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.onset_plus_duration_with_weight, [6; 10; 14; 18]);
 
 end
 
-function test_power
+function test_Power
 
   %% GIVEN
   transformers.Name = 'Power';
@@ -246,10 +311,16 @@ function test_power
   transformers.Value = 2;
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_events());
+  data = vis_motion_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.intensity, [4; 16]);
+end
+
+function test_Power_with_output
 
   %% GIVEN
   transformers.Name = 'Power';
@@ -258,14 +329,17 @@ function test_power
   transformers.Output = 'intensity_cubed';
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_events());
+  data = vis_motion_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.intensity_cubed, [8; -64]);
 
 end
 
-function test_scale()
+function test_Scale()
 
   % omit nan not implemented in octave
   if bids.internal.is_octave
@@ -277,12 +351,24 @@ function test_scale()
                         'Input', {{'age'}});
 
   % WHEN
-  new_content = bids.transformers(transformers, participants());
+  data = participants();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertElementsAlmostEqual(new_content.age, ...
                             [-0.1769; -0.3699; 1.4315; -0.8846; nan], ...
                             'absolute', 1e-3);
+
+end
+
+function test_Scale_all_options()
+
+  % omit nan not implemented in octave
+  if bids.internal.is_octave
+    return
+  end
 
   %% GIVEN
   transformers = struct('Name', 'Scale', ...
@@ -293,7 +379,10 @@ function test_scale()
                         'Output', {{'age_demeaned_centered'}});
 
   % WHEN
-  new_content = bids.transformers(transformers, participants());
+  data = participants();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertElementsAlmostEqual(new_content.age_demeaned_centered, ...
@@ -301,7 +390,7 @@ function test_scale()
                             'absolute', 1e-3);
 end
 
-function test_scale_nan_after()
+function test_multi_Scale_nan_after()
 
   % omit nan not implemented in octave
   if bids.internal.is_octave
@@ -328,7 +417,10 @@ function test_scale_nan_after()
                            'Demean', false, ...
                            'Output', {{'age_not_demeaned_after'}});
   % WHEN
-  new_content = bids.transformers(transformers, participants());
+  data = participants();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertElementsAlmostEqual(new_content.age_not_rescaled, ...
@@ -345,7 +437,7 @@ function test_scale_nan_after()
                             'absolute', 1e-3);
 end
 
-function test_scale_nan_before()
+function test_multi_scale_nan_before()
 
   % omit nan not implemented in octave
   if bids.internal.is_octave
@@ -369,7 +461,10 @@ function test_scale_nan_before()
                            'Output', {{'age_not_demeaned_before'}});
 
   % WHEN
-  new_content = bids.transformers(transformers, participants());
+  data = participants();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertElementsAlmostEqual(new_content.age_before, ...
@@ -383,7 +478,7 @@ function test_scale_nan_before()
                             'absolute', 1e-3);
 end
 
-function test_subtract
+function test_Subtract
 
   % GIVEN
   transformers(1).Name = 'Subtract';
@@ -391,55 +486,82 @@ function test_subtract
   transformers(1).Value = 3;
 
   % WHEN
-  new_content = bids.transformers(transformers, vis_motion_events());
+  data = vis_motion_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.onset, [-1; 1]);
 
 end
 
-function test_threshold_output()
+function test_Threshold_with_output()
 
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Output', 'tmp');
 
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   assertEqual(new_content.tmp, [1; 2; 0; 0]);
 
 end
 
-function test_threshold()
+function test_Threshold()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold');
 
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 2; 0; 0]);
+
+end
+
+function test_Threshold_with_threshold_specified()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Threshold', 1);
 
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 2; 0; 0]);
+
+end
+
+function test_Threshold_binarize()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
                         'Input', 'to_threshold', ...
                         'Binarize', true);
 
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.to_threshold, [1; 1; 0; 0]);
+
+end
+
+function test_Threshold_binarize_above()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
@@ -447,10 +569,17 @@ function test_threshold()
                         'Binarize', true, ...
                         'Above', false);
 
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 0; 1; 1]);
+
+end
+
+function test_Threshold_binarize_above_singed()
 
   %% WHEN
   transformers = struct('Name', 'Threshold', ...
@@ -460,7 +589,10 @@ function test_threshold()
                         'Above', true, ...
                         'Signed', false);
 
-  new_content = bids.transformers(transformers, vis_motion_to_threshold_events());
+  data = vis_motion_to_threshold_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
 
   % THEN
   assertEqual(new_content.to_threshold, [0; 1; 0; 1]);
