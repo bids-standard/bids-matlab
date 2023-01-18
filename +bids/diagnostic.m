@@ -89,6 +89,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
 
   trial_type_col = args.Results.trial_type_col;
 
+  verbose = args.Results.verbose;
+
   visible = 'on';
   if ~verbose
     visible = 'off';
@@ -157,8 +159,9 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
 
   print_figure(output_path, fig_name);
 
-  close(gcf);
-
+  if verbose
+    close(gcf);
+  end
   %% events
   modalities = bids.query(BIDS, 'modalities', filter);
   tasks = bids.query(BIDS, 'tasks', filter);
@@ -182,7 +185,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
       bids.internal.plot_diagnostic_table(data, ...
                                           headers, ...
                                           y_labels, ...
-                                          fig_name);
+                                          fig_name, ...
+                                          visible);
 
       print_figure(output_path, fig_name);
 
