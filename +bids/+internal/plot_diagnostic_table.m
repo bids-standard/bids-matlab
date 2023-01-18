@@ -1,4 +1,4 @@
-function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
+function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name, visible)
   %
   % Plot a diagnostic table to see the number of files per subject or of trials per run.
   %
@@ -22,6 +22,10 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
 
   % (C) Copyright 2022 BIDS-MATLAB developers
 
+  if nargin < 5
+    visible = 'on';
+  end
+
   if isempty(diagnostic_table)
     return
   end
@@ -43,7 +47,9 @@ function plot_diagnostic_table(diagnostic_table, headers, yticklabel, fig_name)
   nb_rows = size(diagnostic_table, 1);
   nb_cols = size(diagnostic_table, 2);
 
-  figure('name', 'diagnostic_table', 'position', [1000 1000 50 + 350 * nb_cols 50 + 100 * nb_rows]);
+  figure('name', 'diagnostic_table', ...
+         'position', [1000 1000 50 + 350 * nb_cols 50 + 100 * nb_rows], ...
+         'visible', visible);
 
   hold on;
 
