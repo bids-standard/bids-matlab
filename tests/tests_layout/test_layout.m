@@ -6,12 +6,32 @@ function test_suite = test_layout %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_filter()
+
+  verbose = true;
+
+  BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
+                     'verbose', verbose, ...
+                     'filter', struct('sub', {{'01', '02'}}, ...
+                                      'modality', {{'anat', 'func'}}, ...
+                                      'ses', {{'1'}}));
+
+  subjects = bids.query(BIDS, 'subjects');
+  assertEqual(subjects, {'01', '02'});
+
+  subjects = bids.query(BIDS, 'modalities');
+  assertEqual(subjects, {'anat', 'func'});
+
+  subjects = bids.query(BIDS, 'sessions');
+  assertEqual(subjects, {'1'});
+
+end
+
 function test_layout_empty_subject_folder_allowed_when_schemaless()
 
   verbose = false;
 
-  mkdir tmp;
-  mkdir tmp/sub-01;
+  bids.util.mkdir(fullfile(pwd, 'tmp/sub-01'));
   bids.layout(fullfile(pwd, 'tmp'), 'use_schema', false, 'verbose', verbose);
   rmdir(fullfile(pwd, 'tmp'), 's');
 end
