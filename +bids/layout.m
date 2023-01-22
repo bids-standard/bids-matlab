@@ -690,12 +690,16 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
     end
 
     for iIntended = 1:numel(intended)
+
+      dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, ...
+                      intended{iIntended});
       % TODO: need to better take care of URI
       if strfind(intended{iIntended}, ':')
         tmp =  strsplit(intended{iIntended}, '/');
         this_intended =  strjoin(tmp(2:end), '/');
+        dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, this_intended);
       end
-      dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, this_intended);
+
       % only throw warning for non-datalad dataset
       % to avoid excessive warning as sym link are not files
       if ~exist(dest, 'file')
