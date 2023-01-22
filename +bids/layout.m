@@ -32,11 +32,27 @@ function BIDS = layout(varargin)
   %                           associated TSV files for each file...)
   % :type  index_dependencies: logical
   %
+  % :param filter: if ``true`` this will index the dependencies (json files,
+  %                           associated TSV files for each file...)
+  % :type  filter: struct with optional fields ``sub``, ``ses``, ``modality``.
+  %                Regular expression can be used for ``sub`` and ``ses``.
+  %
   % :param tolerant: Set to ``true`` to turn validation errors into warnings
   % :type  tolerant: logical
   %
   % :param verbose: Set to ``true`` to get more feedback
   % :type  verbose: logical
+  %
+  %
+  % Example::
+  %
+  %     BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
+  %                        'use_schema', true, ...
+  %                        'verbose', true, ...
+  %                        'index_derivatives', false, ...
+  %                        'filter', struct('sub', {{'^0[12]'}}, ...
+  %                                         'modality', {{'anat', 'func'}}, ...
+  %                                         'ses', {{'1', '2'}}));
   %
   %
 
@@ -145,8 +161,7 @@ function BIDS = layout(varargin)
 
   for iSub = 1:numel(subjects)
 
-    if isfield(filter, 'sub') && ...
-        cellfun('isempty', regexp(strrep(subjects{iSub}, 'sub-', ''), filter.sub))
+    if exclude_subject(filter, strrep(subjects{iSub}, 'sub-', ''))
       continue
     end
 
@@ -161,8 +176,7 @@ function BIDS = layout(varargin)
 
     for iSess = 1:numel(sessions)
 
-      if isfield(filter, 'ses') && ...
-          cellfun('isempty', regexp(strrep(sessions{iSess}, 'ses-', ''), filter.ses))
+      if exclude_session(filter, strrep(sessions{iSess}, 'ses-', ''))
         continue
       end
 
@@ -197,6 +211,34 @@ function BIDS = layout(varargin)
     BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, 'samples.tsv', verbose);
   end
 
+end
+
+function value = exclude(filter, entity, label)
+  value = false;
+  % skip if not included in filter
+  if ~isfield(filter, entity)
+    return
+  end
+  % use regex when filter is a cell of numel 1
+  if numel(filter.(entity)) == 1
+    if cellfun('isempty', regexp(label, filter.(entity)))
+      value = true;
+    end
+    return
+  end
+  % otherwise we just check all elements
+  if ~ismember(label, filter.(entity))
+    value = true;
+    return
+  end
+end
+
+function value = exclude_subject(filter, sub_label)
+  value = exclude(filter, 'sub', sub_label);
+end
+
+function value = exclude_session(filter, ses_label)
+  value = exclude(filter, 'ses', ses_label);
 end
 
 function BIDS = index_root_directory(BIDS)

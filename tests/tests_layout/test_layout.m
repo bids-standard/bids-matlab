@@ -12,6 +12,27 @@ function test_layout_filter()
 
   BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
                      'verbose', verbose, ...
+                     'filter', struct('sub', {{'01', '02'}}, ...
+                                      'modality', {{'anat', 'func'}}, ...
+                                      'ses', {{'1', '2'}}));
+
+  subjects = bids.query(BIDS, 'subjects');
+  assertEqual(subjects, {'01', '02'});
+
+  subjects = bids.query(BIDS, 'modalities');
+  assertEqual(subjects, {'anat', 'func'});
+
+  subjects = bids.query(BIDS, 'sessions');
+  assertEqual(subjects, {'1', '2'});
+
+end
+
+function test_layout_filter_regex()
+
+  verbose = false;
+
+  BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
+                     'verbose', verbose, ...
                      'filter', struct('sub', {{'^.*0[12]'}}, ...
                                       'modality', {{'anat', 'func'}}, ...
                                       'ses', {{'[1]'}}));
