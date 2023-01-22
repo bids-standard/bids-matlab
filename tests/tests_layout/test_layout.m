@@ -8,7 +8,7 @@ end
 
 function test_layout_filter()
 
-  verbose = true;
+  verbose = false;
 
   BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
                      'verbose', verbose, ...
