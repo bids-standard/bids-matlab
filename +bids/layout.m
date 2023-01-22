@@ -146,7 +146,7 @@ function BIDS = layout(varargin)
   for iSub = 1:numel(subjects)
 
     if isfield(filter, 'sub') && ...
-        ~ismember(strrep(subjects{iSub}, 'sub-', ''), filter.sub)
+        cellfun('isempty', regexp(strrep(subjects{iSub}, 'sub-', ''), filter.sub))
       continue
     end
 
@@ -162,7 +162,7 @@ function BIDS = layout(varargin)
     for iSess = 1:numel(sessions)
 
       if isfield(filter, 'ses') && ...
-          ~ismember(strrep(sessions{iSess}, 'ses-', ''), filter.ses)
+          cellfun('isempty', regexp(strrep(sessions{iSess}, 'ses-', ''), filter.ses))
         continue
       end
 
