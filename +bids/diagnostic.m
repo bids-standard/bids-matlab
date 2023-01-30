@@ -39,6 +39,10 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   %                           Defaults to ``'trial_type'``.
   % :type  trial_type_col:    char
   %
+  % :param verbose:    Optional. Set to false to not show the figure.
+  %                           Defaults to ``true``.
+  % :type  verbose:    logical
+  %
   % Examples::
   %
   %   BIDS = bids.layout(path_to_dataset);
@@ -54,17 +58,19 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   default_filter = struct();
   default_split = {''};
   default_output_path = '';
+  default_verbose = true;
 
   args = inputParser;
 
   charOrStruct = @(x) ischar(x) || isstruct(x);
 
   addOptional(args, 'BIDS', default_BIDS, charOrStruct);
-  addParameter(args, 'use_schema', default_schema);
+  addParameter(args, 'use_schema', default_schema, @islogical);
   addParameter(args, 'output_path', default_output_path, @ischar);
   addParameter(args, 'filter', default_filter, @isstruct);
   addParameter(args, 'split_by', default_split, @iscell);
   addParameter(args, 'trial_type_col', 'trial_type', @ischar);
+  addParameter(args, 'verbose', default_verbose, @islogical);
 
   parse(args, varargin{:});
 
@@ -82,6 +88,13 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   diagnostic_table = nan(numel(subjects), numel(headers));
 
   trial_type_col = args.Results.trial_type_col;
+
+  verbose = args.Results.verbose;
+
+  visible = 'on';
+  if ~verbose
+    visible = 'off';
+  end
 
   row = 1;
 
@@ -141,12 +154,14 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   end
 
   bids.internal.plot_diagnostic_table(diagnostic_table, headers, sub_ses, ...
-                                      strrep(fig_name, '_', ' '));
+                                      strrep(fig_name, '_', ' '), ...
+                                      visible);
 
   print_figure(output_path, fig_name);
 
-  close(gcf);
-
+  if verbose
+    close(gcf);
+  end
   %% events
   modalities = bids.query(BIDS, 'modalities', filter);
   tasks = bids.query(BIDS, 'tasks', filter);
@@ -170,7 +185,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
       bids.internal.plot_diagnostic_table(data, ...
                                           headers, ...
                                           y_labels, ...
-                                          fig_name);
+                                          fig_name, ...
+                                          visible);
 
       print_figure(output_path, fig_name);
 

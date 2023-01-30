@@ -8,6 +8,7 @@ function BIDS = layout(varargin)
   %                      'use_schema', true, ...
   %                      'index_derivatives', false, ...
   %                      'index_dependencies', true, ...
+  %                      'filter', struct([]), ...
   %                      'tolerant', true, ...
   %                      'verbose', false)
   %
@@ -31,11 +32,27 @@ function BIDS = layout(varargin)
   %                           associated TSV files for each file...)
   % :type  index_dependencies: logical
   %
+  % :param filter: if ``true`` this will index the dependencies (json files,
+  %                           associated TSV files for each file...)
+  % :type  filter: struct with optional fields ``sub``, ``ses``, ``modality``.
+  %                Regular expression can be used for ``sub`` and ``ses``.
+  %
   % :param tolerant: Set to ``true`` to turn validation errors into warnings
   % :type  tolerant: logical
   %
   % :param verbose: Set to ``true`` to get more feedback
   % :type  verbose: logical
+  %
+  %
+  % Example::
+  %
+  %     BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
+  %                        'use_schema', true, ...
+  %                        'verbose', true, ...
+  %                        'index_derivatives', false, ...
+  %                        'filter', struct('sub', {{'^0[12]'}}, ...
+  %                                         'modality', {{'anat', 'func'}}, ...
+  %                                         'ses', {{'1', '2'}}));
   %
   %
 
@@ -51,6 +68,7 @@ function BIDS = layout(varargin)
   default_index_derivatives = false;
   default_index_dependencies = true;
   default_tolerant = true;
+  default_filter = struct([]);
   default_use_schema = true;
   default_verbose = false;
 
@@ -61,6 +79,7 @@ function BIDS = layout(varargin)
   addOptional(args, 'root', default_root, is_dir_or_struct);
   addParameter(args, 'index_derivatives', default_index_derivatives);
   addParameter(args, 'index_dependencies', default_index_dependencies);
+  addParameter(args, 'filter', default_filter, @isstruct);
   addParameter(args, 'tolerant', default_tolerant);
   addParameter(args, 'use_schema', default_use_schema);
   addParameter(args, 'verbose', default_verbose);
@@ -70,6 +89,7 @@ function BIDS = layout(varargin)
   root = args.Results.root;
   index_derivatives = args.Results.index_derivatives;
   index_dependencies = args.Results.index_dependencies;
+  filter = args.Results.filter;
   tolerant = args.Results.tolerant;
   use_schema = args.Results.use_schema;
   verbose = args.Results.verbose;
@@ -141,6 +161,10 @@ function BIDS = layout(varargin)
 
   for iSub = 1:numel(subjects)
 
+    if exclude_subject(filter, strrep(subjects{iSub}, 'sub-', ''))
+      continue
+    end
+
     if verbose
       fprintf(1, ' Indexing subject: %s [', subjects{iSub});
     end
@@ -151,13 +175,18 @@ function BIDS = layout(varargin)
                                                 '^ses-.*$'));
 
     for iSess = 1:numel(sessions)
+
+      if exclude_session(filter, strrep(sessions{iSess}, 'ses-', ''))
+        continue
+      end
+
       if isempty(BIDS.subjects)
         BIDS.subjects = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, ...
-                                      schema, tolerant, verbose);
+                                      schema, filter, tolerant, verbose);
 
       else
         new_subject = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, ...
-                                    schema, tolerant, verbose);
+                                    schema, filter, tolerant, verbose);
         [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
                                                                             new_subject);
         % TODO: this can be added to "match_structure_fields"
@@ -182,6 +211,34 @@ function BIDS = layout(varargin)
     BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, 'samples.tsv', verbose);
   end
 
+end
+
+function value = exclude(filter, entity, label)
+  value = false;
+  % skip if not included in filter
+  if ~isfield(filter, entity)
+    return
+  end
+  % use regex when filter is a cell of numel 1
+  if numel(filter.(entity)) == 1
+    if cellfun('isempty', regexp(label, filter.(entity)))
+      value = true;
+    end
+    return
+  end
+  % otherwise we just check all elements
+  if ~ismember(label, filter.(entity))
+    value = true;
+    return
+  end
+end
+
+function value = exclude_subject(filter, sub_label)
+  value = exclude(filter, 'sub', sub_label);
+end
+
+function value = exclude_session(filter, ses_label)
+  value = exclude(filter, 'ses', ses_label);
 end
 
 function BIDS = index_root_directory(BIDS)
@@ -235,7 +292,7 @@ function BIDS = index_derivatives_dir(BIDS, idx_deriv, verbose)
   end
 end
 
-function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbose)
+function subject = parse_subject(pth, subjname, sesname, schema, filter, tolerant, verbose)
   %
   % Parse a subject's directory
   %
@@ -270,6 +327,11 @@ function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbo
     % if we go schema-less, we pass an empty schema.content to all the parsing functions
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
+
+      if isfield(filter, 'modality') && ...
+          ~ismember(modalities{iModality}, filter.modality)
+        continue
+      end
 
       switch modalities{iModality}
 
@@ -670,8 +732,16 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
     end
 
     for iIntended = 1:numel(intended)
+
       dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
+      % TODO: need to better take care of URI
+      if strfind(intended{iIntended}, ':')
+        tmp =  strsplit(intended{iIntended}, '/');
+        this_intended =  strjoin(tmp(2:end), '/');
+        dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, this_intended);
+      end
+
       % only throw warning for non-datalad dataset
       % to avoid excessive warning as sym link are not files
       if ~exist(dest, 'file')

@@ -6,6 +6,7 @@
 */*/derivatives
 
 spm/moae/MoAEpilot
+spm/facerep/raw
 
 *.mat
 *.nii*
