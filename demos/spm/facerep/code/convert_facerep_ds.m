@@ -17,35 +17,32 @@ function output_dir = convert_facerep_ds(input_dir, output_dir)
   if nargin < 1
     input_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'sourcedata');
   end
+  
   if nargin < 2
     output_dir = fullfile(input_dir, '..');
   end
 
-  subject = 'sub-01';
-  task_name = 'face repetition';
-  nb_slices = 24;
+  subject         = 'sub-01';
+  task_name       = 'face repetition';
+  nb_slices       = 24;
   repetition_time = 2;
-  echo_time = 0.04;
-
-  opt.indent = '  ';
+  echo_time       = 0.04;
+  opt.indent      = '  ';
 
   %% Create output folder structure
   spm_mkdir(output_dir, subject, {'anat', 'func'});
 
   %% Structural MRI
-  anat_hdr = spm_vol(fullfile(input_dir, 'Structural', 'sM03953_0007.img'));
-  anat_data  = spm_read_vols(anat_hdr);
+  anat_hdr       = spm_vol(fullfile(input_dir, 'Structural', 'sM03953_0007.img'));
+  anat_data      = spm_read_vols(anat_hdr);
   anat_hdr.fname = fullfile(output_dir, 'sub-01', 'anat', 'sub-01_T1w.nii');
   spm_write_vol(anat_hdr, anat_data);
 
   %% Functional MRI
   func_files = spm_select('FPList', fullfile(input_dir, 'RawEPI'), '^sM.*\.img$');
-  spm_file_merge( ...
-                 func_files, ...
+  spm_file_merge(func_files, ...
                  fullfile(output_dir, 'sub-01', 'func', ...
-                          ['sub-01_task-' strrep(task_name, ' ', '') '_bold.nii']), ...
-                 0, ...
-                 repetition_time);
+                          ['sub-01_task-' strrep(task_name, ' ', '') '_bold.nii']));
   delete(fullfile(output_dir, 'sub-01', 'func', ...
                   ['sub-01_task-' strrep(task_name, ' ', '') '_bold.mat']));
 
@@ -125,7 +122,7 @@ function create_events_tsv_file(input_dir, output_dir, task_name, repetition_tim
                        'duration', duration_column, ...
                        'event_type', {cellstr(event_type_column)}, ....
                        'repetition_type', repetition_type_column, ...
-                       'face_type', {cellstr(face_type_column)}, ...
+                       'trial_type', {cellstr(face_type_column)}, ...
                        'lag', lag_column);
 
   spm_save(fullfile(output_dir, 'sub-01', 'func', ...
