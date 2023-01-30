@@ -17,7 +17,7 @@ function output_dir = convert_facerep_ds(input_dir, output_dir)
   if nargin < 1
     input_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'sourcedata');
   end
-  
+
   if nargin < 2
     output_dir = fullfile(input_dir, '..');
   end
