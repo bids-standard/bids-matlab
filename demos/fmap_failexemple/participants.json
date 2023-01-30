@@ -1,0 +1,26 @@
+{
+   "participant_id": {
+      "Description": "Unique participant label"
+   },
+   "Age": {
+      "Description": "Participant age (at MR baseline scan)",
+      "Units": "years"
+   },
+   "Gender": {
+      "Description": "Participant gender",
+      "Levels": {
+         "M": "male",
+         "F": "female"
+      }
+   },
+   "Drug": {
+      "Description": "Drug intervention",
+      "Levels": {
+         "PSI": "Psilocybin"         
+      }
+   },
+   "DOB": {
+      "Description": "Date of birth",
+      "Units": "datetime"
+   }
+}
