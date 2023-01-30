@@ -16,7 +16,7 @@
    "Drug": {
       "Description": "Drug intervention",
       "Levels": {
-         "PSI": "Psilocybin"         
+         "PSI": "Psilocybin"
       }
    },
    "DOB": {
