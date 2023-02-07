@@ -25,7 +25,7 @@ jobs:
         run: npm install -g bids-validator
 
       - name: Install MATLAB
-        uses: matlab-actions/setup-matlab@v1.2.3
+        uses: matlab-actions/setup-matlab@v1.2.4
         with:
           # MATLAB release to set up R2020a
           release: R2020a
