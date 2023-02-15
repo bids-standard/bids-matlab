@@ -113,11 +113,13 @@ function data = Scale(transformer, data)
     end
 
     if demean
-      this_input = this_input - mean(this_input, 'omitnan');
+      nan_values = isnan(this_input);
+      this_input = this_input - mean(this_input(~nan_values));
     end
 
     if rescale
-      this_input = this_input / std(this_input, 'omitnan');
+      nan_values = isnan(this_input);
+      this_input = this_input / std(this_input(~nan_values));
     end
 
     if strcmp(replace_na, 'after')
