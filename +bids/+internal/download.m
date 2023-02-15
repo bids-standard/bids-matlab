@@ -9,6 +9,7 @@ function filename = download(URL, output_dir, verbose)
   if nargin < 2
     output_dir = pwd;
   end
+  bids.util.mkdir(output_dir);
 
   msg = sprintf('Downloading dataset from:\n %s\n\n', URL);
   print_to_screen(msg, verbose);
@@ -17,25 +18,25 @@ function filename = download(URL, output_dir, verbose)
   protocol = tokens{1};
 
   filename = tokens{end};
+  if strcmp(filename, '?zip=')
+    [~, filename] = fileparts(tempname);
+    filename = [filename '.zip'];
+  end
 
   if exist(filename, 'file')
     delete(filename);
   end
 
-  if strcmp(protocol, 'http:')
+  if ismember(protocol, {'http:', 'https:'})
 
-    if isunix()
-      try
-        if verbose
-          system(sprintf('wget %s', URL));
-        else
-          system(sprintf('wget -q %s', URL));
-        end
-      catch
-        urlwrite(URL, filename); %#ok<*URLWR>
+    try
+      urlwrite(URL, filename); %#ok<*URLWR>
+    catch
+      options = '';
+      if ~verbose
+        options = '-q';
       end
-    else
-      urlwrite(URL, filename);
+      system(sprintf('wget %s %s', options, URL));
     end
 
     % move file in case it was not downloaded in the root dir
