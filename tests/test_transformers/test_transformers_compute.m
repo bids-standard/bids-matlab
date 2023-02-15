@@ -187,10 +187,6 @@ end
 
 function test_Mean_with_output()
 
-  if bids.internal.is_octave
-    return
-  end
-
   % GIVEN
   transformers = struct('Name', 'Mean', ...
                         'Input', {{'age'}}, ...
@@ -244,10 +240,6 @@ function test_StdDev()
 end
 
 function test_StdDev_omitnan()
-
-  if bids.internal.is_octave
-    return
-  end
 
   % GIVEN
   transformers = struct('Name', 'StdDev', ...
@@ -341,11 +333,6 @@ end
 
 function test_Scale()
 
-  % omit nan not implemented in octave
-  if bids.internal.is_octave
-    return
-  end
-
   %% GIVEN
   transformers = struct('Name', 'Scale', ...
                         'Input', {{'age'}});
@@ -364,11 +351,6 @@ function test_Scale()
 end
 
 function test_Scale_all_options()
-
-  % omit nan not implemented in octave
-  if bids.internal.is_octave
-    return
-  end
 
   %% GIVEN
   transformers = struct('Name', 'Scale', ...
@@ -391,11 +373,6 @@ function test_Scale_all_options()
 end
 
 function test_multi_Scale_nan_after()
-
-  % omit nan not implemented in octave
-  if bids.internal.is_octave
-    return
-  end
 
   %% GIVEN
   transformers{1} = struct('Name', 'Scale', ...
@@ -438,11 +415,6 @@ function test_multi_Scale_nan_after()
 end
 
 function test_multi_scale_nan_before()
-
-  % omit nan not implemented in octave
-  if bids.internal.is_octave
-    return
-  end
 
   %% GIVEN
   transformers{1} = struct('Name', 'Scale', ...

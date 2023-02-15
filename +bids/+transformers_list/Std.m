@@ -74,12 +74,10 @@ function data = Std(transformer, data)
       output_column = output{i};
     end
 
+    data.(output_column) = std(data.(input{i}));
     if omit_nan
-      data.(output_column) = std(data.(input{i}), 'omitnan');
-
-    else
-      data.(output_column) = std(data.(input{i}));
-
+      nan_values = isnan(data.(input{i}));
+      data.(output_column) = std(data.(input{i})(~nan_values));
     end
 
   end

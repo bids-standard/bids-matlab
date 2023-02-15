@@ -4,7 +4,7 @@ function status = is_octave()
   %
   % USAGE::
   %
-  %   status = isOctave()
+  %   status = bids.internal.is_octave()
   %
   % :returns: :status: (logical)
   %

@@ -74,12 +74,10 @@ function data = Mean(transformer, data)
       output_column = output{i};
     end
 
+    data.(output_column) = mean(data.(input{i}));
     if omit_nan
-      data.(output_column) = mean(data.(input{i}), 'omitnan');
-
-    else
-      data.(output_column) = mean(data.(input{i}));
-
+      nan_values = isnan(data.(input{i}));
+      data.(output_column) = mean(data.(input{i})(~nan_values));
     end
 
   end
