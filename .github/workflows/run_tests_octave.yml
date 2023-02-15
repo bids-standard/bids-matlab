@@ -22,15 +22,15 @@ jobs:
 
     runs-on: ubuntu-22.04
 
+    strategy:
+      matrix:
+        platform: [matlab, octave]
+      fail-fast: false
+
     steps:
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get -y -qq update
-        sudo apt-get -y install octave liboctave-dev
-
-    - name: Install bids validator
-      run: npm install -g bids-validator
+    - name: ${{ matrix.platform }} - test
+      run: echo ${{ matrix.platform }} test
 
     - name: Clone bids-matlab
       uses: actions/checkout@v3
@@ -38,21 +38,60 @@ jobs:
         submodules: true
         fetch-depth: 1
 
-    - name: Install JSONio
+    - name: Install dependencies
       run: |
-        git clone https://github.com/gllmflndn/JSONio.git --depth 1
-        cd JSONio
-        mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
+        sudo apt-get -y -qq update
+        sudo apt-get -y install unzip wget
+
+    - name: Install bids validator
+      run: npm install -g bids-validator
 
     - name: Install bids-example
       run: |
         cd tests
         make data
 
-    - name: MOxUnit Action
-      uses: joergbrech/moxunit-action@v1.2.0
+    - name: Install Moxunit and MOcov
+      run: |
+        git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
+        git clone https://github.com/MOcov/MOcov.git --depth 1
+
+    - name: Install octave
+      if: matrix.platform == 'octave'
+      run: |
+        sudo apt-get -y -qq update
+        sudo apt-get -y install \
+          octave \
+          liboctave-dev\
+          octave-common \
+          octave-io \
+          octave-image \
+          octave-signal \
+          octave-statistics
+        make -C MOxUnit install
+        make -C MOcov install
+
+    - name: Install JSONio
+      if: matrix.platform == 'octave'
+      run: |
+        git clone https://github.com/gllmflndn/JSONio.git --depth 1
+        cd JSONio
+        mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
+
+    - name: Run unit tests Octave
+      if: matrix.platform == 'octave'
+      run: |
+        success = run_tests();
+        assert(success);
+
+    - name: Install MATLAB
+      if: matrix.platform == 'matlab'
+      uses: matlab-actions/setup-matlab@v1.2.4
       with:
-        tests: tests
-        src: +bids
-        ext: JSONio tests/utils
-        with_coverage: false
+        release: R2020a
+
+    - name: Run MATLAB tests
+      if: matrix.platform == 'matlab'
+      uses: matlab-actions/run-command@v1.1.2
+      with:
+        command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); addpath(getenv('GITHUB_WORKSPACE')); success = run_tests(); assert(success);
