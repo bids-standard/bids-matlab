@@ -131,9 +131,9 @@ content = bids.util.jsondecode('/home/data/some_json_file.json');
 ```
 
 A
-[tutorial](https://github.com/bids-standard/bids-matlab/blob/master/examples/tutorial.ipynb)
-is available as a Jupyter Notebook and can be run interactively via
-[Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb).
+[tutorials](https://github.com/bids-standard/bids-matlab/blob/master/lib/bids-matlab/demos/notebooks)
+are available as a Jupyter Notebooks and scripts and can be run interactively via
+[Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/dev?urlpath=demos).
 
 ## Requirements
 
