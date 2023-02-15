@@ -5,7 +5,7 @@ function list = create_unordered_list(list)
   %
   % USAGE::
   %
-  %  list = create_unordered_list(list)
+  %  list = bids.internal.create_unordered_list(list)
   %
   % :param list: obligatory argument.
   % :type list: cell string or structure

@@ -5,7 +5,7 @@
 [![miss_hit](https://github.com/bids-standard/bids-matlab/actions/workflows/miss_hit.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/miss_hit.yml)
 [![tests_matlab](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml)
 [![tests_octave](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/dev?urlpath=demos)
 [![View bids-matlab on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5910584.svg)](https://doi.org/10.5281/zenodo.5910584)
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
@@ -131,9 +131,9 @@ content = bids.util.jsondecode('/home/data/some_json_file.json');
 ```
 
 A
-[tutorial](https://github.com/bids-standard/bids-matlab/blob/master/examples/tutorial.ipynb)
-is available as a Jupyter Notebook and can be run interactively via
-[Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb).
+[tutorials](https://github.com/bids-standard/bids-matlab/blob/master/lib/bids-matlab/demos/notebooks)
+are available as a Jupyter Notebooks and scripts and can be run interactively via
+[Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/dev?urlpath=demos).
 
 ## Requirements
 
