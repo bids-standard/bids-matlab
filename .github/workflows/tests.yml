@@ -77,8 +77,7 @@ jobs:
     - name: Run unit tests Octave
       if: matrix.platform == 'octave'
       run: |
-        success = run_tests();
-        assert(success);
+        octave $OCTFLAGS --eval "success = run_tests(); assert(success);"
 
     - name: Install MATLAB
       if: matrix.platform == 'matlab'
