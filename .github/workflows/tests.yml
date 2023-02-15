@@ -73,6 +73,7 @@ jobs:
         git clone https://github.com/gllmflndn/JSONio.git --depth 1
         cd JSONio
         mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
+        octave $OCTFLAGS --eval "addpath(JSONio); savepath();"
 
     - name: Run unit tests Octave
       if: matrix.platform == 'octave'
