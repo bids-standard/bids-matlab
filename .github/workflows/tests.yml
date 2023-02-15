@@ -1,4 +1,4 @@
-name: "octave: tests"
+name: "tests"
 
 on:
   push:
@@ -9,10 +9,6 @@ on:
       - '**.m'
   pull_request:
     branches: ["*"]
-    paths:
-      - '**.m'
-      - .github/workflows/*.yml
-      - schema.json
 
 env:
   OCTFLAGS: --no-gui --no-window-system --silent
