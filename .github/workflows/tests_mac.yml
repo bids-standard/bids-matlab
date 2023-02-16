@@ -36,7 +36,6 @@ jobs:
         git clone https://github.com/MOcov/MOcov.git --depth 1
 
     - name: Install octave
-      if: matrix.platform == 'octave'
       run: |
         brew update
         brew upgrade
@@ -45,7 +44,6 @@ jobs:
         make -C MOcov install
 
     - name: Install JSONio
-      if: matrix.platform == 'octave'
       run: |
         git clone https://github.com/gllmflndn/JSONio.git --depth 1
         cd JSONio
@@ -53,6 +51,5 @@ jobs:
         octave $OCTFLAGS --eval "addpath(fullfile(pwd)); savepath();"
 
     - name: Run unit tests Octave
-      if: matrix.platform == 'octave'
       run: |
         octave $OCTFLAGS --eval "success = run_tests(); assert(success);"
