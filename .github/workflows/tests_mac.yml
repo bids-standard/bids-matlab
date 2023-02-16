@@ -40,9 +40,10 @@ jobs:
         brew update
         brew upgrade
         brew install octave
-        brew install gnuplot --with-aquaterm
+        brew install gnuplot
         make -C MOxUnit install
         make -C MOcov install
+# --with-aquaterm
 
     - name: Install JSONio
       run: |
