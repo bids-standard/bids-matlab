@@ -40,6 +40,7 @@ jobs:
         brew update
         brew upgrade
         brew install octave
+        brew install gnuplot --with-aquaterm
         make -C MOxUnit install
         make -C MOcov install
 
