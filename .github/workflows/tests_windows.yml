@@ -10,7 +10,7 @@ env:
   OCTFLAGS: --no-gui --no-window-system --silent
 
 jobs:
-  test_mac:
+  tests_windows:
 
     runs-on: windows-latest
 
@@ -37,8 +37,6 @@ jobs:
 
     - name: Install octave
       run: |
-        choco upgrade chocolatey
-        choco upgrade all
         choco install octave
 # make -C MOxUnit install
 # make -C MOcov install
