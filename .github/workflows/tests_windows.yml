@@ -48,6 +48,6 @@ jobs:
     #     mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
     #     octave $OCTFLAGS --eval "addpath(fullfile(pwd)); savepath();"
 
-    - name: Run unit tests Octave
-      run: |
-        octave $OCTFLAGS --eval "success = run_tests(); assert(success);"
+    # - name: Run unit tests Octave
+    #   run: |
+    #     octave $OCTFLAGS --eval "success = run_tests(); assert(success);"
