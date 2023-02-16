@@ -37,8 +37,6 @@ jobs:
 
     - name: Install octave
       run: |
-        brew update
-        brew upgrade
         brew install octave
         brew install gnuplot
         make -C MOxUnit install

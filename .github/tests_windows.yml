@@ -37,6 +37,8 @@ jobs:
 
     - name: Install octave
       run: |
+        choco upgrade chocolatey
+        choco upgrade all
         choco install octave
 # make -C MOxUnit install
 # make -C MOcov install
