@@ -1,0 +1,55 @@
+name: "tests_windows"
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+env:
+  OCTFLAGS: --no-gui --no-window-system --silent
+
+jobs:
+  test_mac:
+
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Clone bids-matlab
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+        fetch-depth: 1
+
+    - name: Install bids validator
+      run: npm install -g bids-validator
+
+    # - name: Install bids-example
+    #   run: |
+    #     cd tests
+    #     make data
+
+    - name: Install Moxunit and MOcov
+      run: |
+        git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
+        git clone https://github.com/MOcov/MOcov.git --depth 1
+
+    - name: Install octave
+      run: |
+        choco upgrade chocolatey
+        choco upgrade all
+        choco install octave
+# make -C MOxUnit install
+# make -C MOcov install
+
+    # - name: Install JSONio
+    #   run: |
+    #     git clone https://github.com/gllmflndn/JSONio.git --depth 1
+    #     cd JSONio
+    #     mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
+    #     octave $OCTFLAGS --eval "addpath(fullfile(pwd)); savepath();"
+
+    - name: Run unit tests Octave
+      run: |
+        octave $OCTFLAGS --eval "success = run_tests(); assert(success);"
