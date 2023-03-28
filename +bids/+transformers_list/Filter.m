@@ -70,7 +70,12 @@ function data = Filter(transformer, data)
   output = bids.transformers_list.get_output(transformer, data);
 
   [left, query_type, right] = bids.transformers_list.get_query(transformer);
-  bids.transformers_list.check_field(left, data, 'query', false);
+
+  % if the variable to filter on does not exist we return
+  status = bids.transformers_list.check_field(left, data, 'query', true);
+  if ~status
+    return
+  end
 
   rows = bids.transformers_list.identify_rows(data, left, query_type, right);
 
@@ -83,7 +88,7 @@ function data = Filter(transformer, data)
 
     clear tmp;
 
-    tmp(rows, 1) = data.(input{i})(rows);
+    tmp(rows, 1) = data.(input{i})(rows); %#ok<*AGROW>
 
     if iscell(tmp)
       tmp(~rows, 1) = repmat({nan}, sum(~rows), 1);
