@@ -1,4 +1,4 @@
-
+---
 name: update schema
 
 # This action fetches the latest version of the BIDS specification and converts
@@ -24,12 +24,12 @@ name: update schema
 on:
   push:
     branches:
-     - 'master'
+    - master
   pull_request:
     branches:
-    - 'master'
+    - master
   schedule:
-    - cron: "0 0 * * 1" # every monday
+  - cron: 0 0 * * 1     # every monday
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -58,4 +58,4 @@ jobs:
         base: master
         delete-branch: true
         title: '[BOT] update schema'
-        body: 'done via this [GitHub Action](https://github.com/bids-standard/bids-matlab/blob/master/.github/workflows/update_schema.yml)'
+        body: done via this [GitHub Action](https://github.com/bids-standard/bids-matlab/blob/master/.github/workflows/update_schema.yml)
