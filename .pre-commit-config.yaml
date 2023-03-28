@@ -1,37 +1,51 @@
-exclude: 'schema.json'
+---
+exclude: schema.json
 repos:
 
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
-      - id: check-json
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-added-large-files
+  - id: check-json
 
-  - repo: local
+- repo: local
 
-    hooks:
-      - id: mh_style
-        name: mh_style
-        entry: mh_style
-        args: [--process-slx, --fix]
-        files: ^(.*\.(m|slx))$
-        language: python
-        additional_dependencies: [miss_hit_core]
+  hooks:
+  - id: mh_style
+    name: mh_style
+    entry: mh_style
+    args: [--process-slx, --fix]
+    files: ^(.*\.(m|slx))$
+    language: python
+    additional_dependencies: [miss_hit_core]
 
-      - id: mh_metric
-        name: mh_metric
-        entry: mh_metric
-        args: [--ci]
-        files: ^(.*\.(m|slx))$
-        language: python
-        additional_dependencies: [miss_hit_core]
+  - id: mh_metric
+    name: mh_metric
+    entry: mh_metric
+    args: [--ci]
+    files: ^(.*\.(m|slx))$
+    language: python
+    additional_dependencies: [miss_hit_core]
 
-      - id: mh_lint
-        name: mh_lint
-        entry: mh_lint
-        files: ^(.*\.(m|slx))$
-        language: python
-        additional_dependencies: [miss_hit]
+  - id: mh_lint
+    name: mh_lint
+    entry: mh_lint
+    files: ^(.*\.(m|slx))$
+    language: python
+    additional_dependencies: [miss_hit]
+
+
+- repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+  rev: 0.2.2
+  hooks:
+  - id: yamlfmt
+    args: [--mapping, '2', --sequence, '2', --offset, '0']
+
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.2.4
+  hooks:
+  - id: codespell
+    args: [--config=setup.cfg]
