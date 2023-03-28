@@ -309,6 +309,7 @@ function test_reorder_schemaless()
                                   'ses'
                                   'sample'
                                   'task'
+                                  'tracksys'
                                   'acq'
                                   'ce'
                                   'trc'
