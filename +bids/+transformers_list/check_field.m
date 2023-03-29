@@ -1,4 +1,4 @@
-function check_field(field_list, data, field_type, tolerant)
+function status = check_field(field_list, data, field_type, tolerant)
   %
   % check that each field in field_list is present
   % in the data structure
@@ -15,7 +15,12 @@ function check_field(field_list, data, field_type, tolerant)
 
   available_from_fieldlist = ismember(field_list, available_variables);
 
+  status = 1;
+
   if ~all(available_from_fieldlist)
+
+    status = 0;
+
     field_list = cellstr(field_list);
     msg = sprintf('missing variable(s): "%s"', ...
                   strjoin(field_list(~available_from_fieldlist), '", "'));
