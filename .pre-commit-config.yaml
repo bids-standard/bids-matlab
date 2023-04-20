@@ -37,7 +37,6 @@ repos:
     language: python
     additional_dependencies: [miss_hit]
 
-
 - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
   rev: 0.2.2
   hooks:
