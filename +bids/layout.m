@@ -32,8 +32,7 @@ function BIDS = layout(varargin)
   %                           associated TSV files for each file...)
   % :type  index_dependencies: logical
   %
-  % :param filter: if ``true`` this will index the dependencies (json files,
-  %                           associated TSV files for each file...)
+  % :param filter: Can be used to index only a subset of the dataset.
   % :type  filter: struct with optional fields ``sub``, ``ses``, ``modality``.
   %                Regular expression can be used for ``sub`` and ``ses``.
   %
