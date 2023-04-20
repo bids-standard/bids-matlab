@@ -1,3 +1,4 @@
+---
 name: validate
 
 on:
@@ -15,13 +16,13 @@ jobs:
     - name: Check whether the citation metadata from CITATION.cff is valid
       uses: citation-file-format/cffconvert-github-action@2.0.0
       with:
-        args: "--validate"
+        args: --validate
 
   codespell:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: codespell-project/actions-codespell@master
+    - uses: actions/checkout@v3
+    - uses: codespell-project/actions-codespell@master
 
   markdown_link_check:
     runs-on: ubuntu-latest
@@ -29,15 +30,15 @@ jobs:
     - uses: actions/checkout@v3
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
       with:
-        use-quiet-mode: 'yes'
-        use-verbose-mode: 'yes'
-        config-file: '.github/workflows/mlc_config.json'
+        use-quiet-mode: yes
+        use-verbose-mode: yes
+        config-file: .github/workflows/mlc_config.json
 
   miss_hit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        command: ["mh_style", "mh_metric --ci", "mh_lint"]
+        command: [mh_style, mh_metric --ci, mh_lint]
       fail-fast: false
     steps:
     - uses: actions/checkout@v3
