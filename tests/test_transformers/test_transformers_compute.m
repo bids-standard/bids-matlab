@@ -86,6 +86,25 @@ function test_Subtract_to_specific_rows
 
 end
 
+function test_Add_unchanged_data_when_variable_to_query_is_missing
+
+  %% GIVEN
+  transformers(1).Name = 'Subtract';
+  transformers(1).Input = 'onset';
+  transformers(1).Query = 'foo < 2';
+  transformers(1).Value = 1;
+
+  % WHEN
+  data = face_rep_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
+
+  % THEN
+  assertEqual(data, new_content);
+
+end
+
 function test_Add_coerce_value
 
   %% GIVEN

@@ -423,6 +423,22 @@ function test_Filter_several_inputs()
 
 end
 
+function test_Filter_missing_filter_returns_data_unchanged()
+
+  transformers = struct('Name', 'Filter', ...
+                        'Input', 'familiarity', ...
+                        'Query', 'target < 1');
+
+  % WHEN
+  data = face_rep_events();
+  new_content = bids.transformers(transformers, data);
+  st = dbstack;
+  write_definition(data, new_content, transformers, st);
+
+  assertEqual(new_content, data);
+
+end
+
 function test_LabelIdenticalRows_rows
 
   transformers(1).Name = 'LabelIdenticalRows';

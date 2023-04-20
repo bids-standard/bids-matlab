@@ -76,7 +76,11 @@ function data = Basic(transformer, data)
   [left, query_type, right] = bids.transformers_list.get_query(transformer);
   if ~isempty(query_type)
 
-    bids.transformers_list.check_field(left, data, 'query', false);
+    % if the variable to run query on does not exist we return
+    status = bids.transformers_list.check_field(left, data, 'query', true);
+    if ~status
+      return
+    end
 
     rows = bids.transformers_list.identify_rows(data, left, query_type, right);
 
