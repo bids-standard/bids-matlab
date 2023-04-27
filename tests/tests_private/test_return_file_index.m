@@ -29,6 +29,10 @@ end
 
 function test_return_file_index_warning()
 
+  if bids.internal.is_octave
+    return
+  end
+
   pth_bids_example = get_test_data_dir();
 
   bids_dir = fullfile(pth_bids_example, 'qmri_tb1tfl');
@@ -38,5 +42,7 @@ function test_return_file_index_warning()
   bids.util.tsvwrite(unindexable_file, content);
 
   assertWarning(@()bids.layout(bids_dir), 'return_file_index:noFileIndex');
+
+  delete(unindexable_file);
 
 end
