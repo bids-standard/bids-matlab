@@ -276,13 +276,42 @@ function test_query_sessions_tsv()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
 
   assert(~isempty(BIDS.subjects(1).sess));
-  assert(~isempty(BIDS.subjects(1).scans));
 
   sessions_tsv = bids.query(BIDS, 'data', 'suffix', 'sessions');
-  assert(~isempty(sessions_tsv));
+  assertEqual(numel(sessions_tsv), 5);
+
+  sessions_tsv = bids.query(BIDS, 'data', 'suffix', 'sessions', ...
+                            'sub', '01');
+  assertEqual(numel(sessions_tsv), 2);
+
+  sessions_tsv = bids.query(BIDS, 'data', 'suffix', 'sessions', ...
+                            'sub', '01', ...
+                            'ses', 'joy');
+  assertEqual(numel(sessions_tsv), 0);
+
+  sessions_tsv = bids.query(BIDS, 'data', 'suffix', 'sessions', ...
+                            'sub', '0[1-3]');
+  assertEqual(numel(sessions_tsv), 3);
+
+  data = bids.query(BIDS, 'data', 'sub', '01');
+  assertEqual(numel(data), 24);
+  assert(ismember('sub-01_sessions.tsv', ...
+                  bids.internal.file_utils(data, 'filename')));
+
+  data = bids.query(BIDS, 'data', 'sub', '01', ...
+                    'suffix', 'events');
+  assertEqual(numel(data), 1);
+  assert(~ismember('sub-01_sessions.tsv', ...
+                   bids.internal.file_utils(data, 'filename')));
+
+  data = bids.query(BIDS, 'data', 'sub', '01', ...
+                    'task', 'nback');
+  assertEqual(numel(data), 13);
+  assert(~ismember('sub-01_sessions.tsv', ...
+                   bids.internal.file_utils(data, 'filename')));
 
 end
 
@@ -292,15 +321,40 @@ function test_query_scans_tsv()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'motion_spotrotation'));
 
-  assert(~isempty(BIDS.subjects(1).scans));
-
   scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans');
   assertEqual(numel(scans_tsv), 10);
 
-  scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans', 'sub', '01');
+  scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans', ...
+                         'sub', '01');
   assertEqual(numel(scans_tsv), 2);
 
-  scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans', 'sub', '01', 'ses', 'joy');
+  scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans', ...
+                         'sub', '01', ...
+                         'ses', 'joy');
   assertEqual(numel(scans_tsv), 1);
 
+  scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans', ...
+                         'sub', '0[1-3]', ...
+                         'ses', '.*o.*');
+  assertEqual(numel(scans_tsv), 6);
+
+  data = bids.query(BIDS, 'data', 'sub', '01', ...
+                    'ses', 'joy');
+  assertEqual(numel(data), 9);
+  assert(ismember('sub-01_ses-joy_scans.tsv', ...
+                  bids.internal.file_utils(data, 'filename')));
+
+  data = bids.query(BIDS, 'data', 'sub', '01', ...
+                    'ses', 'joy', ...
+                    'suffix', 'events');
+  assertEqual(numel(data), 1);
+  assert(~ismember('sub-01_ses-joy_scans.tsv', ...
+                   bids.internal.file_utils(data, 'filename')));
+
+  data = bids.query(BIDS, 'data', 'sub', '01', ...
+                    'ses', 'joy', ...
+                    'task', 'Rotation');
+  assertEqual(numel(data), 7);
+  assert(~ismember('sub-01_ses-joy_scans.tsv', ...
+                   bids.internal.file_utils(data, 'filename')));
 end

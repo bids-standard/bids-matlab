@@ -397,7 +397,7 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
 
     end
 
-    result = update_result_scans_tsv(query, result, this_subject, options);
+    result = update_result_scans_sessions_tsv(query, result, this_subject, options);
 
   end
 
@@ -487,36 +487,28 @@ function result = update_result(varargin)
   end
 end
 
-function result = update_result_scans_tsv(query, result, this_subject, options)
+function result = update_result_scans_sessions_tsv(query, result, this_subject, options)
   %
-  % add scans.tsv to results list:
+  % add scans.tsv and sessions.tsv to results list:
   % - if user asked for data
-  % - filter by session if necessary
+  % - filter by entities
   %
 
   if ~strcmp(query, 'data')
     return
   end
 
-  session_option_idx = ismember(options(:, 1), 'ses');
-
-  session_filter_requested = any(session_option_idx);
-  if ~session_filter_requested
-    result{end + 1} = this_subject.scans;
-    return
-  end
-
   bf = bids.File(this_subject.scans);
-
-  % filter by session requested but no session entity in name
-  if ~isfield(bf.entities, 'ses')
-    return
+  status = bids.internal.keep_file_for_query(bf, options);
+  if status
+    result{end + 1} = this_subject.scans;
   end
 
-  % perform session based filtering
-  value = options{session_option_idx, 2};
-  if ~check_label_with_regex(bf.entities.ses, value)
-    result{end + 1} = this_subject.scans;
+  bf = bids.File(this_subject.sess);
+  status = bids.internal.keep_file_for_query(bf, options);
+  if status
+    result{end + 1} = this_subject.sess;
+    result = unique(result);
   end
 
 end
