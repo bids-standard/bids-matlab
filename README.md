@@ -14,6 +14,7 @@
 <!-- markdown-link-check-enable -->
 
 - [BIDS for MATLAB / Octave](#bids-for-matlab--octave)
+  - [Requirements](#requirements)
   - [Installation](#installation)
     - [Get the latest features](#get-the-latest-features)
   - [Features](#features)
@@ -22,7 +23,7 @@
     - [What will this toolbox most likely never do](#what-will-this-toolbox-most-likely-never-do)
   - [Usage](#usage)
   - [Demos](#demos)
-  - [Requirements](#requirements)
+  - [Requirements](#requirements-1)
     - [Reading and writing JSON files](#reading-and-writing-json-files)
   - [Implementation](#implementation)
   - [Get in touch](#get-in-touch)
@@ -38,6 +39,11 @@ For more information about BIDS, visit https://bids.neuroimaging.io/.
 
 See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the
 [BIDS Starter Kit](https://github.com/bids-standard/bids-starter-kit).
+
+## Requirements
+
+For MacOS and Unix system, using `bids.copy_to_derivative` requires
+a version of gunzip >= 1.6.
 
 ## Installation
 
