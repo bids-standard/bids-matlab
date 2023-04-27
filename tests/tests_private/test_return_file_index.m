@@ -26,3 +26,23 @@ function test_return_file_index_basic()
   assertEqual(file_idx, 2);
 
 end
+
+function test_return_file_index_warning()
+
+  if bids.internal.is_octave
+    return
+  end
+
+  pth_bids_example = get_test_data_dir();
+
+  bids_dir = fullfile(pth_bids_example, 'qmri_tb1tfl');
+
+  unindexable_file = fullfile(bids_dir, 'sub-01_task-foo_events.tsv');
+  content = struct('onset', 1, 'duration', 1, 'trial_type', 'bar');
+  bids.util.tsvwrite(unindexable_file, content);
+
+  assertWarning(@()bids.layout(bids_dir), 'return_file_index:noFileIndex');
+
+  delete(unindexable_file);
+
+end
