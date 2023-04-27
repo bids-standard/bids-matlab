@@ -281,14 +281,26 @@ function test_query_sessions_tsv()
   assert(~isempty(BIDS.subjects(1).sess));
   assert(~isempty(BIDS.subjects(1).scans));
 
+  sessions_tsv = bids.query(BIDS, 'data', 'suffix', 'sessions');
+  assert(~isempty(sessions_tsv));
+
 end
 
 function test_query_scans_tsv()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds009'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'motion_spotrotation'));
 
   assert(~isempty(BIDS.subjects(1).scans));
+
+  scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans');
+  assertEqual(numel(scans_tsv), 10);
+
+  scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans', 'sub', '01');
+  assertEqual(numel(scans_tsv), 2);
+
+  scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans', 'sub', '01', 'ses', 'joy');
+  assertEqual(numel(scans_tsv), 1);
 
 end

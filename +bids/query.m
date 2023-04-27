@@ -397,6 +397,8 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
 
     end
 
+    result = update_result_scans_tsv(query, result, this_subject, options);
+
   end
 
   result = update_result_with_root_content(query, options, result, BIDS);
@@ -483,6 +485,40 @@ function result = update_result(varargin)
 
     end
   end
+end
+
+function result = update_result_scans_tsv(query, result, this_subject, options)
+  %
+  % add scans.tsv to results list:
+  % - if user asked for data
+  % - filter by session if necessary
+  %
+
+  if ~strcmp(query, 'data')
+    return
+  end
+
+  session_option_idx = ismember(options(:, 1), 'ses');
+
+  session_filter_requested = any(session_option_idx);
+  if ~session_filter_requested
+    result{end + 1} = this_subject.scans;
+    return
+  end
+
+  bf = bids.File(this_subject.scans);
+
+  % filter by session requested but no session entity in name
+  if ~isfield(bf.entities, 'ses')
+    return
+  end
+
+  % perform session based filtering
+  value = options{session_option_idx, 2};
+  if ~check_label_with_regex(bf.entities.ses, value)
+    result{end + 1} = this_subject.scans;
+  end
+
 end
 
 function result = update_result_with_root_content(query, options, result, BIDS)
