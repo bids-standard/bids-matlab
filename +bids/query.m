@@ -494,21 +494,38 @@ function result = update_result_scans_sessions_tsv(query, result, this_subject, 
   % - filter by entities
   %
 
-  if ~strcmp(query, 'data')
-    return
+  if strcmp(query, 'data')
+
+    bf = bids.File(this_subject.scans);
+    status = bids.internal.keep_file_for_query(bf, options);
+    if status
+      result{end + 1} = this_subject.scans;
+    end
+
+    bf = bids.File(this_subject.sess);
+    status = bids.internal.keep_file_for_query(bf, options);
+    if status
+      result{end + 1} = this_subject.sess;
+      result = unique(result);
+    end
+
   end
 
-  bf = bids.File(this_subject.scans);
-  status = bids.internal.keep_file_for_query(bf, options);
-  if status
-    result{end + 1} = this_subject.scans;
-  end
-
-  bf = bids.File(this_subject.sess);
-  status = bids.internal.keep_file_for_query(bf, options);
-  if status
-    result{end + 1} = this_subject.sess;
-    result = unique(result);
+  if strcmp(query, 'suffixes')
+    if ~isempty(this_subject.scans)
+      bf = bids.File(this_subject.scans);
+      status = bids.internal.keep_file_for_query(bf, options);
+      if status
+        result{end + 1} = 'scans';
+      end
+    end
+    if ~isempty(this_subject.sess)
+      bf = bids.File(this_subject.sess);
+      status = bids.internal.keep_file_for_query(bf, options);
+      if status
+        result{end + 1} = 'sessions';
+      end
+    end
   end
 
 end

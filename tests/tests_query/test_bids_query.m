@@ -162,7 +162,8 @@ function test_query_exclude_entity()
   assertEqual(bids.query(BIDS, 'modalities', filter), {'meg'});
 
   filter = struct('sub', '0001', 'acq', '');
-  assertEqual(bids.query(BIDS, 'suffixes', filter), {'T1w', 'channels', 'headshape', 'meg'});
+  assertEqual(bids.query(BIDS, 'suffixes', filter), ...
+              {'T1w', 'channels', 'headshape', 'meg', 'scans'});
 
 end
 
@@ -278,14 +279,15 @@ function test_query_sessions_tsv()
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
 
-  assert(~isempty(BIDS.subjects(1).sess));
+  suffixes = bids.query(BIDS, 'suffixes');
+  assert(ismember('sessions', suffixes));
 
   sessions_tsv = bids.query(BIDS, 'data', 'suffix', 'sessions');
   assertEqual(numel(sessions_tsv), 5);
 
   sessions_tsv = bids.query(BIDS, 'data', 'suffix', 'sessions', ...
                             'sub', '01');
-  assertEqual(numel(sessions_tsv), 2);
+  assertEqual(numel(sessions_tsv), 1);
 
   sessions_tsv = bids.query(BIDS, 'data', 'suffix', 'sessions', ...
                             'sub', '01', ...
@@ -297,7 +299,7 @@ function test_query_sessions_tsv()
   assertEqual(numel(sessions_tsv), 3);
 
   data = bids.query(BIDS, 'data', 'sub', '01');
-  assertEqual(numel(data), 24);
+  assertEqual(numel(data), 23);
   assert(ismember('sub-01_sessions.tsv', ...
                   bids.internal.file_utils(data, 'filename')));
 
@@ -320,6 +322,9 @@ function test_query_scans_tsv()
   pth_bids_example = get_test_data_dir();
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'motion_spotrotation'));
+
+  suffixes = bids.query(BIDS, 'suffixes');
+  assert(ismember('scans', suffixes));
 
   scans_tsv = bids.query(BIDS, 'data', 'suffix', 'scans');
   assertEqual(numel(scans_tsv), 10);
