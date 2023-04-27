@@ -713,7 +713,7 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
 
     info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
     % skip files in the root folder with no sub entity
-    if isempty(info_src.sub_idx)
+    if isempty(info_src.sub_idx) || isempty(info_src.file_idx)
       continue
     end
     file = BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx);

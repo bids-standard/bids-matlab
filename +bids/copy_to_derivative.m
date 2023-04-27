@@ -239,7 +239,8 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip
 
   info = bids.internal.return_file_info(BIDS, data_file);
 
-  if ~isfield(info, 'sub_idx') || ~isfield(info, 'modality')
+  if ~isfield(info, 'sub_idx') || ~isfield(info, 'modality') ||  ...
+      isempty(info.sub_idx) || isempty(info.file_idx)
     % TODO: for we do not copy files in the root directory that have been indexed.
     return
   end
