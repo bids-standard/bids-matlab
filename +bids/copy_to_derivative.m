@@ -239,6 +239,13 @@ end
 
 function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip_dep, verbose)
 
+  bf = bids.File(data_file);
+  is_scans_or_sessions_tsv = ismember(bf.suffix, {'scans', 'sessions'});
+  if is_scans_or_sessions_tsv
+    % copy_session_scan_tsv handles it
+    return
+  end
+
   info = bids.internal.return_file_info(BIDS, data_file);
 
   if ~isfield(info, 'sub_idx') || ~isfield(info, 'modality') ||  ...

@@ -19,7 +19,7 @@ function test_bids_query_ieeg_basic()
   modalities = {'anat', 'ieeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  suffixes = {'T1w', 'channels', 'electrodes', 'events', 'ieeg'};
+  suffixes = {'T1w', 'channels', 'electrodes', 'events', 'ieeg', 'scans'};
   % Missing: 'coordsystem'
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
@@ -29,7 +29,7 @@ function test_bids_query_ieeg_basic()
   modalities = {'anat', 'ieeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  suffixes = {'T1w', 'channels', 'electrodes', 'events', 'ieeg', 'photo'};
+  suffixes = {'T1w', 'channels', 'electrodes', 'events', 'ieeg', 'photo', 'scans'};
   % Missing: 'coordsystem'
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
