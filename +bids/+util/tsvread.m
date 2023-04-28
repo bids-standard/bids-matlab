@@ -6,7 +6,7 @@ function file_content = tsvread(filename, field_to_return, hdr)
   %
   %   file_content = tsvread(filename, field_to_return, hdr)
   %
-  % :param filename: filename (can be gzipped) {txt,mat,csv,tsv,json}ename
+  % :param filename: filename (can be gzipped) {txt,mat,csv,tsv,json}
   % :type filename: string
   %
   % :param field_to_return: name of field to return if data stored in a structure
@@ -197,6 +197,10 @@ function x = dsv_read(filename, delim, header)
   end
   if S(end) ~= eol
     S = [S eol];
+  end
+  % Byte order mark (BOM),U+FEFF,0xEF,0xBB,0xBF
+  if S(1) == 65279
+    S(1) = [];
   end
   S = regexprep(S, {'\r\n', '\r', '(\n)\1+'}, {'\n', '\n', '$1'});
 
