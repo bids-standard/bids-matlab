@@ -6,6 +6,20 @@ function test_suite = test_bids_query %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_query_participants()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
+
+  participants = bids.query(BIDS,  'participants');
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001'));
+
+  participants = bids.query(BIDS,  'participants');
+
+end
+
 function test_query_impossible_suffix_should_return_empty()
 
   pth_bids_example = get_test_data_dir();
