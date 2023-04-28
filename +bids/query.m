@@ -229,12 +229,16 @@ function result = query(BIDS, query, varargin)
       result(cellfun('isempty', result)) = [];
 
     case 'tsv_content'
+      if isempty(result)
+        return
+      end
       extensions = bids.internal.file_utils(result, 'ext');
       if numel(unique(extensions)) > 1 || ~strcmp(unique(extensions), 'tsv')
         msg = sprintf(['Queries for ''tsv_content'' must be done only on tsv files.\n', ...
                        'Your query returned: %s'], ...
                       bids.internal.create_unordered_list(result));
         bids.internal.error_handling(mfilename(), 'notJustTsvFiles', msg, false);
+        return
       end
       tmp = {};
       for i_tsv_file = 1:numel(result)
