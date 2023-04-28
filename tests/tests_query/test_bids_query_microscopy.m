@@ -13,7 +13,7 @@ function test_bids_query_microscopy_basic()
   BIDS = bids.layout(fullfile(pth_bids_example, 'micr_SEM'));
 
   data = bids.query(BIDS, 'data');
-  assertEqual(numel(data), 5);
+  assertEqual(numel(data), 6);
 
   BIDS = bids.layout(fullfile(pth_bids_example, 'micr_SPIM'));
 

@@ -397,6 +397,8 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
 
     end
 
+    result = update_result_scans_sessions_tsv(query, result, this_subject, options);
+
   end
 
   result = update_result_with_root_content(query, options, result, BIDS);
@@ -483,6 +485,49 @@ function result = update_result(varargin)
 
     end
   end
+end
+
+function result = update_result_scans_sessions_tsv(query, result, this_subject, options)
+  %
+  % add scans.tsv and sessions.tsv to results list:
+  % - if user asked for data
+  % - filter by entities
+  %
+
+  if strcmp(query, 'data')
+
+    bf = bids.File(this_subject.scans);
+    status = bids.internal.keep_file_for_query(bf, options);
+    if status
+      result{end + 1} = this_subject.scans;
+    end
+
+    bf = bids.File(this_subject.sess);
+    status = bids.internal.keep_file_for_query(bf, options);
+    if status
+      result{end + 1} = this_subject.sess;
+      result = unique(result);
+    end
+
+  end
+
+  if strcmp(query, 'suffixes')
+    if ~isempty(this_subject.scans)
+      bf = bids.File(this_subject.scans);
+      status = bids.internal.keep_file_for_query(bf, options);
+      if status
+        result{end + 1} = 'scans';
+      end
+    end
+    if ~isempty(this_subject.sess)
+      bf = bids.File(this_subject.sess);
+      status = bids.internal.keep_file_for_query(bf, options);
+      if status
+        result{end + 1} = 'sessions';
+      end
+    end
+  end
+
 end
 
 function result = update_result_with_root_content(query, options, result, BIDS)

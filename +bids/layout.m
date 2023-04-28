@@ -711,6 +711,10 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
 
   for iFile = 1:size(file_list, 1)
 
+    if is_scans_or_sessions_tsv(file_list{iFile})
+      continue
+    end
+
     info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
     % skip files in the root folder with no sub entity
     if isempty(info_src.sub_idx) || isempty(info_src.file_idx)
@@ -760,6 +764,17 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
           .dependencies.explicit{end + 1, 1} = file_list{iFile};
     end
 
+  end
+
+end
+
+function status = is_scans_or_sessions_tsv(file)
+
+  bf = bids.File(file);
+
+  status = false;
+  if ismember(bf.suffix, {'scans', 'sessions'})
+    status =  true;
   end
 
 end
