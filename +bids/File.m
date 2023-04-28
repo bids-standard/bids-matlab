@@ -752,7 +752,9 @@ classdef File
       if ~isempty(str)
         res = regexp(str, pattern, 'once');
         if isempty(res)
-          msg = sprintf('%s do not satisfy pattern %s', str, pattern);
+          msg = sprintf('%s do not satisfy pattern %s', ...
+                        str, ...
+                        strrep(pattern, '\', '\\'));
           obj.bids_file_error(['Invalid' type], msg);
         end
       end
