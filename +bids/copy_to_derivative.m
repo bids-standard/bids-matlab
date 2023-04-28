@@ -30,6 +30,8 @@ function copy_to_derivative(varargin)
   %
   % :param unzip:           If ``true`` then all ``.gz`` files will be unzipped
   %                         after being copied.
+  %                         For MacOS and Unix system, this will require a
+  %                         version of gunzip >= 1.6.
   % :type  unzip:           logical
   %
   % :param force:           If set to ``false`` it will not overwrite any file already
@@ -241,7 +243,8 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip
 
   info = bids.internal.return_file_info(BIDS, data_file);
 
-  if ~isfield(info, 'sub_idx') || ~isfield(info, 'modality')
+  if ~isfield(info, 'sub_idx') || ~isfield(info, 'modality') ||  ...
+      isempty(info.sub_idx) || isempty(info.file_idx)
     % TODO: for we do not copy files in the root directory that have been indexed.
     return
   end
@@ -306,9 +309,9 @@ function copy_with_symlink(src, target, unzip_files, verbose)
   if  isunix
 
     if unzip_files && is_gunzipped(src)
-      command = sprintf('gunzip -kfc %s > %s', src, target(1:end - 3));
+      command = sprintf('gunzip --keep --force --stdout %s > %s', src, target(1:end - 3));
     else
-      command = sprintf('cp -R -L -f %s %s', src, target);
+      command = sprintf('cp --recursive --dereference --force %s %s', src, target);
     end
 
     status = system(command);
