@@ -258,6 +258,39 @@ function test_query_modalities()
 
 end
 
+function test_query_tsv_content()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_ds003645s_hed_inheritance'));
+
+  tsv_content = bids.query(BIDS, 'tsv_content', 'suffix', 'events');
+
+  assertEqual(numel(tsv_content), 3);
+  assertEqual(fieldnames(tsv_content{1}), ...
+              {'onset'; ...
+               'duration'; ...
+               'sample'; ...
+               'event_type'; ...
+               'face_type'; ...
+               'rep_status'; ...
+               'trial'; ...
+               'rep_lag'; ...
+               'value'; ...
+               'stim_file'});
+
+end
+
+function test_query_tsv_content_error()
+
+  pth_bids_example = get_test_data_dir();
+
+  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
+  assertExceptionThrown(@()bids.query(BIDS, 'tsv_content', 'extension', '.nii.gz'), ...
+                        'query:notJustTsvFiles');
+
+end
+
 function test_query_sessions()
 
   pth_bids_example = get_test_data_dir();

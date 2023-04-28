@@ -25,6 +25,7 @@ function result = query(BIDS, query, varargin)
   % - ``'dependencies'``
   % - ``'extensions'``
   % - ``'prefixes'``
+  % - ``'tsv_content'``
   %
   % And any of the BIDS entities:
   %
@@ -163,7 +164,8 @@ function result = query(BIDS, query, varargin)
                           'metafiles', ...
                           'dependencies', ...
                           'extensions', ...
-                          'prefixes'}, ...
+                          'prefixes', ...
+                          'tsv_content'}, ...
                       valid_entity_queries());
 
   if ~any(strcmp(query, VALID_QUERIES))
@@ -172,8 +174,6 @@ function result = query(BIDS, query, varargin)
                   strjoin(VALID_QUERIES, '\n- '));
     bids.internal.error_handling(mfilename(), 'unknownQuery', msg, false, true);
   end
-
-  %   bids_entities = schema_entities();
 
   BIDS = bids.layout(BIDS);
 
@@ -196,7 +196,11 @@ function result = query(BIDS, query, varargin)
   % Get optional target option for metadata query
   [target, options] = get_target(query, options);
 
-  result = perform_query(BIDS, query, options, subjects, modalities, target);
+  if strcmp(query, 'tsv_content')
+    result = perform_query(BIDS, 'data', options, subjects, modalities, target);
+  else
+    result = perform_query(BIDS, query, options, subjects, modalities, target);
+  end
 
   %% Postprocessing output variable
   switch query
@@ -223,6 +227,25 @@ function result = query(BIDS, query, varargin)
     case cat(2, {'suffixes',  'suffixes', 'extensions', 'prefixes'}, valid_entity_queries())
       result = unique(result);
       result(cellfun('isempty', result)) = [];
+
+    case 'tsv_content'
+      if isempty(result)
+        return
+      end
+      extensions = bids.internal.file_utils(result, 'ext');
+      if numel(unique(extensions)) > 1 || ~strcmp(unique(extensions), 'tsv')
+        msg = sprintf(['Queries for ''tsv_content'' must be done only on tsv files.\n', ...
+                       'Your query returned: %s'], ...
+                      bids.internal.create_unordered_list(result));
+        bids.internal.error_handling(mfilename(), 'notJustTsvFiles', msg, false);
+        return
+      end
+      tmp = {};
+      for i_tsv_file = 1:numel(result)
+        tmp{i_tsv_file} = bids.util.tsvread(result{i_tsv_file});
+      end
+      result = tmp;
+
   end
 
 end
