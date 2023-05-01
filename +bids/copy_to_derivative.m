@@ -316,9 +316,9 @@ function copy_with_symlink(src, target, unzip_files, verbose)
   if  isunix
 
     if unzip_files && is_gunzipped(src)
-      command = sprintf('gunzip --keep --force --stdout %s > %s', src, target(1:end - 3));
+      command = sprintf('gunzip -kfc %s > %s', src, target(1:end - 3));
     else
-      command = sprintf('cp --recursive --dereference --force %s %s', src, target);
+      command = sprintf('cp -rLf %s %s', src, target);
     end
 
     status = system(command);
