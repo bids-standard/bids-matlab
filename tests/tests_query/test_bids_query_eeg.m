@@ -22,6 +22,8 @@ function test_bids_query_eeg_basic()
   suffixes = {'channels', 'eeg', 'electrodes', 'events'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
+  extension = bids.query(BIDS, 'data', 'extension', '.tsv');
+
   %%
   BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_ds000117'));
 

@@ -18,7 +18,7 @@ function test_bids_query_meg_basic()
   modalities = {'anat', 'meg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
-  suffixes = {'T1w', 'channels', 'headshape', 'meg', 'photo'};
+  suffixes = {'T1w', 'channels', 'headshape', 'meg', 'photo', 'scans'};
   % missing: 'coordsystem'
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 

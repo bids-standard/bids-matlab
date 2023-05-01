@@ -26,7 +26,7 @@ function result = query(BIDS, query, varargin)
   %   or eeg.eeg file)
   % - ``'participants'``: content and metadata of participants.tsv
   % - ``'extensions'``
-  % - ``'prefixes'`
+  % - ``'tsv_content'``
   %
   % And any of the BIDS entities:
   %
@@ -166,7 +166,8 @@ function result = query(BIDS, query, varargin)
                           'dependencies', ...
                           'participants', ...
                           'extensions', ...
-                          'prefixes'}, ...
+                          'prefixes', ...
+                          'tsv_content'}, ...
                       valid_entity_queries());
 
   if ~any(strcmp(query, VALID_QUERIES))
@@ -175,8 +176,6 @@ function result = query(BIDS, query, varargin)
                   strjoin(VALID_QUERIES, '\n- '));
     bids.internal.error_handling(mfilename(), 'unknownQuery', msg, false, true);
   end
-
-  %   bids_entities = schema_entities();
 
   BIDS = bids.layout(BIDS);
 
@@ -204,7 +203,11 @@ function result = query(BIDS, query, varargin)
   % Get optional target option for metadata query
   [target, options] = get_target(query, options);
 
-  result = perform_query(BIDS, query, options, subjects, modalities, target);
+  if strcmp(query, 'tsv_content')
+    result = perform_query(BIDS, 'data', options, subjects, modalities, target);
+  else
+    result = perform_query(BIDS, query, options, subjects, modalities, target);
+  end
 
   %% Postprocessing output variable
   switch query
@@ -231,6 +234,25 @@ function result = query(BIDS, query, varargin)
     case cat(2, {'suffixes',  'suffixes', 'extensions', 'prefixes'}, valid_entity_queries())
       result = unique(result);
       result(cellfun('isempty', result)) = [];
+
+    case 'tsv_content'
+      if isempty(result)
+        return
+      end
+      extensions = bids.internal.file_utils(result, 'ext');
+      if numel(unique(extensions)) > 1 || ~strcmp(unique(extensions), 'tsv')
+        msg = sprintf(['Queries for ''tsv_content'' must be done only on tsv files.\n', ...
+                       'Your query returned: %s'], ...
+                      bids.internal.create_unordered_list(result));
+        bids.internal.error_handling(mfilename(), 'notJustTsvFiles', msg, false);
+        return
+      end
+      tmp = {};
+      for i_tsv_file = 1:numel(result)
+        tmp{i_tsv_file} = bids.util.tsvread(result{i_tsv_file});
+      end
+      result = tmp;
+
   end
 
 end
@@ -405,6 +427,8 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
 
     end
 
+    result = update_result_scans_sessions_tsv(query, result, this_subject, options);
+
   end
 
   result = update_result_with_root_content(query, options, result, BIDS);
@@ -491,6 +515,49 @@ function result = update_result(varargin)
 
     end
   end
+end
+
+function result = update_result_scans_sessions_tsv(query, result, this_subject, options)
+  %
+  % add scans.tsv and sessions.tsv to results list:
+  % - if user asked for data
+  % - filter by entities
+  %
+
+  if strcmp(query, 'data')
+
+    bf = bids.File(this_subject.scans);
+    status = bids.internal.keep_file_for_query(bf, options);
+    if status
+      result{end + 1} = this_subject.scans;
+    end
+
+    bf = bids.File(this_subject.sess);
+    status = bids.internal.keep_file_for_query(bf, options);
+    if status
+      result{end + 1} = this_subject.sess;
+      result = unique(result);
+    end
+
+  end
+
+  if strcmp(query, 'suffixes')
+    if ~isempty(this_subject.scans)
+      bf = bids.File(this_subject.scans);
+      status = bids.internal.keep_file_for_query(bf, options);
+      if status
+        result{end + 1} = 'scans';
+      end
+    end
+    if ~isempty(this_subject.sess)
+      bf = bids.File(this_subject.sess);
+      status = bids.internal.keep_file_for_query(bf, options);
+      if status
+        result{end + 1} = 'sessions';
+      end
+    end
+  end
+
 end
 
 function result = update_result_with_root_content(query, options, result, BIDS)
