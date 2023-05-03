@@ -16,15 +16,16 @@ function result = query(BIDS, query, varargin)
   %
   % Any of the following:
   %
-  % - ``'modalities'``
+  % - ``'modalities'``: known as datatype in BIDS (anat, func, eeg...)
   % - ``'entities'``
   % - ``'suffixes'``
-  % - ``'data'``
-  % - ``'metadata'``
-  % - ``'metafiles'``
-  % - ``'dependencies'``
+  % - ``'data'``: filenames
+  % - ``'metadata'``: associated metadata (using the inheriance principle)
+  % - ``'metafiles'``: json sidecar files
+  % - ``'dependencies'``: associated files (for example the event.tsv for a bold.nii
+  %   or eeg.eeg file)
+  % - ``'participants'``: content and metadata of participants.tsv
   % - ``'extensions'``
-  % - ``'prefixes'``
   % - ``'tsv_content'``
   %
   % And any of the BIDS entities:
@@ -59,7 +60,7 @@ function result = query(BIDS, query, varargin)
   %
   % .. warning::
   %
-  %   Note that all the query types are plurals.
+  %   Note that most of the query types are plurals.
   %
   % :param filter: filter for the query
   % :type  filter: structure or nX2 cell or series of key-value parameters
@@ -163,6 +164,7 @@ function result = query(BIDS, query, varargin)
                           'metadata', ...
                           'metafiles', ...
                           'dependencies', ...
+                          'participants', ...
                           'extensions', ...
                           'prefixes', ...
                           'tsv_content'}, ...
@@ -176,6 +178,11 @@ function result = query(BIDS, query, varargin)
   end
 
   BIDS = bids.layout(BIDS);
+
+  if strcmp(query, 'participants')
+    result = BIDS.participants;
+    return
+  end
 
   options = parse_query(varargin);
 
