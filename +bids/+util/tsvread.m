@@ -199,8 +199,13 @@ function x = dsv_read(filename, delim, header)
     S = [S eol];
   end
   % Byte order mark (BOM),U+FEFF,0xEF,0xBB,0xBF
+  % matlab case
   if S(1) == 65279
     S(1) = [];
+  end
+  % octave case
+  if numel(S) > 2 && isequal(S(1:3), [239 187 191])
+    S(1:3) = [];
   end
   S = regexprep(S, {'\r\n', '\r', '(\n)\1+'}, {'\n', '\n', '$1'});
 
