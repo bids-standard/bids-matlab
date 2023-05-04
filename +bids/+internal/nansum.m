@@ -5,7 +5,7 @@ function y = nansum(varargin)
   % (C) Copyright 2023 Remi Gau
 
   if ~isempty(which('nansum'))
-    y = nansum(varargin);
+    y = nansum(varargin{:});
     return
   end
 
