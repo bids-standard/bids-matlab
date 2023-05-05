@@ -55,7 +55,7 @@ function output_filename = create_participants_tsv(varargin)
   if ~isempty(layout.participants)
     msg = sprintf(['"participant.tsv" already exist for the following dataset. ', ...
                    'Will not overwrite.\n', ...
-                   '\t%s'], layout.pth);
+                   '\t%s'], bids.internal.format_path(layout.pth));
     bids.internal.error_handling(mfilename(), 'participantFileExist', msg, tolerant, verbose);
     return
   end

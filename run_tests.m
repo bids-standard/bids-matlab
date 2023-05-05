@@ -9,6 +9,10 @@ function success = run_tests(with_coverage)
     with_coverage = true;
   end
 
+  if ispc
+    with_coverage = false;
+  end
+
   addpath(fullfile(pwd, 'tests', 'utils'));
 
   folderToCover = fullfile(pwd, '+bids');

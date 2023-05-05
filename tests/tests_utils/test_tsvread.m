@@ -37,6 +37,14 @@ function test_tsvread_basic()
 
 end
 
+function test_tsvread_bug_552()
+
+  tsv_file = fullfile(get_test_data_dir(), '..', 'data', 'bom_bug_552.tsv');
+  content = bids.util.tsvread(tsv_file);
+  assert(ismember('onset', fieldnames(content)));
+
+end
+
 function [pth, expected] = fixture()
 
   pth = fullfile(get_test_data_dir(), '..', 'data');

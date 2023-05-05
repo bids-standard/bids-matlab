@@ -1,5 +1,5 @@
 ---
-name: tests
+name: 'octave: tests'
 
 on:
   push:
@@ -19,15 +19,7 @@ jobs:
 
     runs-on: ubuntu-22.04
 
-    strategy:
-      matrix:
-        platform: [matlab, octave]
-      fail-fast: false
-
     steps:
-
-    - name: ${{ matrix.platform }} - test
-      run: echo ${{ matrix.platform }} test
 
     - name: Clone bids-matlab
       uses: actions/checkout@v3
@@ -54,7 +46,6 @@ jobs:
         git clone https://github.com/MOcov/MOcov.git --depth 1
 
     - name: Install octave
-      if: matrix.platform == 'octave'
       run: |
         sudo apt-get -y -qq update
         sudo apt-get -y install \
@@ -69,7 +60,6 @@ jobs:
         make -C MOcov install
 
     - name: Install JSONio
-      if: matrix.platform == 'octave'
       run: |
         git clone https://github.com/gllmflndn/JSONio.git --depth 1
         cd JSONio
@@ -77,19 +67,5 @@ jobs:
         octave $OCTFLAGS --eval "addpath(fullfile(pwd)); savepath();"
 
     - name: Run unit tests Octave
-      if: matrix.platform == 'octave'
       run: |
         octave $OCTFLAGS --eval "success = run_tests(); assert(success);"
-
-    - name: Install MATLAB
-      if: matrix.platform == 'matlab'
-      uses: matlab-actions/setup-matlab@v1.2.4
-      with:
-        release: R2020a
-
-    - name: Run MATLAB tests
-      if: matrix.platform == 'matlab'
-      uses: matlab-actions/run-command@v1.1.2
-      with:
-        command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); addpath(getenv('GITHUB_WORKSPACE')); success = run_tests();
-          assert(success);

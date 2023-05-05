@@ -749,7 +749,9 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
       % to avoid excessive warning as sym link are not files
       if ~exist(dest, 'file')
         if ~BIDS.is_datalad_ds
-          msg = ['IntendedFor file ' dest ' from ' file.filename ' not found'];
+          msg = sprintf('IntendedFor file %s from %s not found', ...
+                        bids.internal.format_path(dest), ...
+                        bids.internal.format_path(file.filename));
           bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
         end
         continue

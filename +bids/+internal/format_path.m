@@ -22,11 +22,11 @@ function pth = format_path(pth)
   end
 
   if ischar(pth)
-    pth = strrep(pth, '\', '/');
+    pth = strrep(pth, '\', '\\');
 
   elseif iscell(pth)
     for i = 1:numel(pth)
-      pth{i} = pathToPrint(pth{i});
+      pth{i} = strrep(pth{i}, '\', '\\');
     end
   end
 

@@ -104,8 +104,9 @@ function test_multi_complex_filter_with_and()
   % THEN
   assert(all(ismember({'Famous'; 'FirstRep'}, fieldnames(new_content))));
   assertEqual(sum(strcmp(new_content.Famous, 'famous')), 52);
-  if ~bids.internal.is_octave
-    assertEqual(nansum(new_content.FirstRep), 52);
+
+  if ~isempty(which('nansum'))
+    assertEqual(bids.internal.nansum(new_content.FirstRep), 52);
   end
 
   %% GIVEN

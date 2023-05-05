@@ -7,7 +7,7 @@ function data_dir = get_test_data_dir()
 
   if strcmp(PLATFORM, 'GITHUB_ACTIONS')
 
-    data_dir = '/github/workspace/tests/';
+    data_dir = fullfile('/', 'github', 'workspace', 'tests');
 
   end
 
