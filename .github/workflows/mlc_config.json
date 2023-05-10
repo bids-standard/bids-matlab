@@ -1,7 +1,7 @@
 {
     "ignorePatterns": [
         {
-            "pattern": "fil.ion.ucl.ac.uk|mybinder.org"
+            "pattern": "fil.ion.ucl.ac.uk|mybinder.org|bids-standard/bids-matlab/blob/master/demos/notebooks/"
         }
     ]
 }
