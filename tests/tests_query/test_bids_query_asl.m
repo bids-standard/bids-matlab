@@ -8,9 +8,7 @@ end
 
 function test_bids_query_asl_basic_asl002()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl002'));
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -37,9 +35,7 @@ end
 
 function test_bids_query_asl_basic_asl001()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl001'));
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -68,9 +64,7 @@ end
 
 function test_bids_query_asl_basic_asl003()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl003'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl003'));
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -82,9 +76,7 @@ end
 
 function test_bids_query_asl_basic_asl004()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl004'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl004'));
 
   modalities = {'anat', 'fmap', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);

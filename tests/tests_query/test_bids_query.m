@@ -8,13 +8,11 @@ end
 
 function test_query_participants()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
 
   participants = bids.query(BIDS,  'participants');
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'asl001'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl001'));
 
   participants = bids.query(BIDS,  'participants');
 
@@ -22,9 +20,7 @@ end
 
 function test_query_impossible_suffix_should_return_empty()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
 
   % no suffix bold in anat
   filter = struct('sub', '01', ...
@@ -40,14 +36,12 @@ end
 
 function test_query_suffixes()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
 
   suffixes = {'T1w', 'pet'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
 
   suffixes = {'T1w'};
   assertEqual(bids.query(BIDS, 'suffixes', 'modality', 'anat'), suffixes);
@@ -56,9 +50,7 @@ end
 
 function test_query_subjects()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ieeg_visual'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ieeg_visual'));
 
   subjs = arrayfun(@(x) sprintf('%02d', x), 1:2, 'UniformOutput', false);
   assertEqual(bids.query(BIDS, 'subjects'), subjs);
@@ -93,9 +85,7 @@ end
 
 function test_query_regex_subjects()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000247'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000247'));
 
   data = bids.query(BIDS, 'data', 'sub', '.*', 'suffix', 'T1w');
 
@@ -109,9 +99,7 @@ end
 
 function test_query_with_indices()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds105'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds105'));
 
   data_1 = bids.query(BIDS, 'data', 'sub', '1', 'run', {3, 5, '7', '01'}, 'suffix', 'bold');
   data_2 = bids.query(BIDS, 'data', 'sub', '1', 'run', 1:2:7, 'suffix', 'bold');
@@ -122,9 +110,7 @@ end
 
 function test_query_entities()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_qsm'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_qsm'));
 
   entities = bids.query(BIDS, 'entities');
 
@@ -134,7 +120,7 @@ function test_query_entities()
   assertEqual(entities, expected);
 
   %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
 
   entities = bids.query(BIDS, 'entities', 'suffix', 'pet');
 
@@ -147,14 +133,12 @@ end
 
 function test_query_events_tsv_in_root()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
 
   data = bids.query(BIDS, 'data', 'sub', '01', 'ses', '01', 'task', 'nback', 'suffix', 'events');
 
   assertEqual(data, ...
-              {bids.internal.file_utils(fullfile(pth_bids_example, ...
+              {bids.internal.file_utils(fullfile(get_test_data_dir(), ...
                                                  'synthetic', ...
                                                  'task-nback_events.tsv'), 'cpath')});
 
@@ -162,9 +146,7 @@ end
 
 function test_query_exclude_entity()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000246'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000246'));
 
   filter = struct('sub', '0001');
   assertEqual(bids.query(BIDS, 'modalities', filter), {'anat', 'meg'});
@@ -183,9 +165,7 @@ end
 
 function test_query_basic()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'pet005'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet005'));
 
   tasks = {'eyes'};
   assertEqual(bids.query(BIDS, 'tasks'), tasks);
@@ -200,9 +180,7 @@ end
 
 function test_query_data_filter()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'pet005'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet005'));
 
   % make sure that query can work with filter
   filters = {'sub', {'01'}; ...
@@ -223,9 +201,7 @@ end
 
 function test_query_extension()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'));
 
   extensions = bids.query(BIDS, 'extensions');
 
@@ -244,9 +220,7 @@ end
 
 function test_query_metadata()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'));
 
   md = bids.query(BIDS, 'metadata', ...
                   'sub', '01', ...
@@ -260,9 +234,7 @@ end
 
 function test_query_modalities()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
 
   modalities = {'anat', 'pet'};
 
@@ -274,9 +246,7 @@ end
 
 function test_query_tsv_content()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_ds003645s_hed_inheritance'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'eeg_ds003645s_hed_inheritance'));
 
   tsv_content = bids.query(BIDS, 'tsv_content', 'suffix', 'events');
 
@@ -297,9 +267,7 @@ end
 
 function test_query_tsv_content_error()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'));
   assertExceptionThrown(@()bids.query(BIDS, 'tsv_content', 'extension', '.nii.gz'), ...
                         'query:notJustTsvFiles');
 
@@ -307,14 +275,12 @@ end
 
 function test_query_sessions()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
   sessions = {'01', '02'};
   assertEqual(bids.query(BIDS, 'sessions'), sessions);
   assertEqual(bids.query(BIDS, 'sessions', 'sub', '02'), sessions);
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'qmri_tb1tfl'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'));
 
   assert(isempty(bids.query(BIDS, 'sessions')));
 
@@ -322,9 +288,7 @@ end
 
 function test_query_sessions_tsv()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
 
   suffixes = bids.query(BIDS, 'suffixes');
   assert(ismember('sessions', suffixes));
@@ -366,9 +330,7 @@ end
 
 function test_query_scans_tsv()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'motion_spotrotation'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'motion_spotrotation'));
 
   suffixes = bids.query(BIDS, 'suffixes');
   assert(ismember('scans', suffixes));

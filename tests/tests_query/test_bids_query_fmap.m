@@ -9,9 +9,7 @@ end
 
 function test_query_extension()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'));
 
   BIDS.subjects(1).func(1).dependencies.explicit;
 

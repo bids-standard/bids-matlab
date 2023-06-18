@@ -11,9 +11,7 @@ function test_bids_query_func_basic()
   %   func queries
   %
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds001'));
 
   %% dependencies
   dependencies = bids.query(BIDS, 'dependencies', ...
