@@ -391,6 +391,8 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
 
     file_list = return_file_list(modality, subject, schema);
 
+    electrode_tsv = list_electrodes(modality, file_list);
+
     % dependency previous file
     previous = struct('group', struct('index', 0, 'base', '', 'len', 1), ...
                       'data', struct('index', 0, 'base', '', 'len', 1), ...
@@ -440,6 +442,9 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
 
             subject.(modality)(end) = manage_M0(subject.perf(end), pth, verbose);
 
+          case {'eeg', 'ieeg', 'nirs'}
+            subject = appent_electrodes(subject, modality, electrode_tsv);
+
         end
 
       end
@@ -448,6 +453,39 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
 
   end
 
+end
+
+function electrode_tsv = list_electrodes(modality, file_list)
+
+  electrode_tsv = {};
+
+  switch modality
+    case {'eeg', 'ieeg'}
+      suffix = 'electrodes';
+    case {'nirs'}
+      suffix = 'optodes';
+    otherwise
+      return
+  end
+
+  is_electrode_tsv = ~cellfun('isempty', ...
+                              strfind(file_list, ['_' suffix '.tsv']));
+  has_electrode_tsv = any(is_electrode_tsv);
+  if has_electrode_tsv
+    electrode_tsv = file_list(is_electrode_tsv);
+  end
+
+end
+
+function subject = appent_electrodes(subject, modality, electrode_tsv)
+  for i = 1:numel(electrode_tsv)
+    pth = fullfile(subject.path, modality);
+    fullpath_filename = fullfile(pth, electrode_tsv{i});
+    if ~ismember(fullpath_filename, ...
+                 subject.(modality)(end).dependencies.group)
+      subject.(modality)(end).dependencies.group{end + 1, 1} = fullpath_filename;
+    end
+  end
 end
 
 function BIDS = validate_description(BIDS, tolerant, verbose)
@@ -578,6 +616,8 @@ function [subject, previous] = index_dependencies(subject, modality, file, i, pr
   %              This groups file that logically need each other,
   %              like functional mri and events tabular file.
   %              It also takes care of fmap magnitude1/2 and phasediff.
+  %              This will also include files that are shared across
+  %              several runs (i.e electrodes.tsv)
 
   pth = fullfile(subject.path, modality);
   fullpath_filename = fullfile(pth, file);

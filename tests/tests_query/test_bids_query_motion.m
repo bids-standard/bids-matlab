@@ -11,9 +11,7 @@ function test_bids_query_motion_basic()
   %   motion queries
   %
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'motion_spotrotation'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'motion_spotrotation'));
 
   optodes_files = bids.query(BIDS, 'data', ...
                              'suffix', 'channels');

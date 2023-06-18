@@ -8,9 +8,7 @@ end
 
 function test_bids_query_derivatives_basic()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds000001-fmriprep'), ...
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000001-fmriprep'), ...
                      'use_schema', false);
 
   spaces = bids.query(BIDS, 'spaces');

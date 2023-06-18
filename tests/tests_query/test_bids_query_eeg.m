@@ -6,26 +6,39 @@ function test_suite = test_bids_query_eeg %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_bids_query_eeg_basic()
+function test_bids_query_eeg_basic_1()
   %
   %   eeg queries
   %
 
-  pth_bids_example = get_test_data_dir();
-
   %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_face13'));
+  BIDS = bids.layout(fullfile(get_test_data_dir, 'eeg_face13'));
 
   modalities = {'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
 
+  % Missing: 'coordsystem'
   suffixes = {'channels', 'eeg', 'electrodes', 'events'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   extension = bids.query(BIDS, 'data', 'extension', '.tsv');
 
+  %% dependencies
+  dependencies = bids.query(BIDS, 'dependencies', ...
+                            'sub', '001', ...
+                            'suffix', 'eeg');
+
+  assertEqual(numel(dependencies.group), 3);
+
+end
+
+function test_bids_query_eeg_basic_2()
+  %
+  %   eeg queries
+  %
+
   %%
-  BIDS = bids.layout(fullfile(pth_bids_example, 'eeg_ds000117'));
+  BIDS = bids.layout(fullfile(get_test_data_dir, 'eeg_ds000117'));
 
   modalities = {'anat', 'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -42,6 +55,6 @@ function test_bids_query_eeg_basic()
                             'extension', '.set');
 
   assertEqual(numel(dependencies.data), 1);
-  assertEqual(numel(dependencies.group), 1);
+  assertEqual(numel(dependencies.group), 2);
 
 end
