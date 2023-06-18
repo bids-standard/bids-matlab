@@ -3,8 +3,8 @@ function data = Assign(transformer, data)
   % The Assign transformation assigns one or more variables or columns (specified as the input)
   % to one or more other columns (specified by target and/or output as described below).
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -16,30 +16,28 @@ function data = Assign(transformer, data)
   %     "Output": ["face_modulated_by_RT"]
   %   }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**.  The name(s) of the columns
   %                               from which attribute values are to be drawn
   %                               (for assignment to the attributes of other columns).
   %                               Must exactly match the length of the target argument.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Target: **mandatory**. the name(s) of the columns to which
   %                               the attribute values taken from the input
   %                               are to be assigned.
   %                               Must exactly match the length of the input argument.
   %                               Names are mapped 1-to-1 from input to target.
-  % :type  Target: string or array
+  % :type  Target: char or array
   %
   % .. note::
   %
   %   If no output argument is specified, the columns named in target are modified in-place.
   %
-  %
   % :param Output: Optional. Names of the columns to output the result of the assignment to.
   %                          Must exactly match the length of the input and target arguments.
-  % :type Output: string or array
+  % :type Output: char or array
   %
   % If no output array is provided, columns named in target are modified in-place.
   %
@@ -53,13 +51,13 @@ function data = Assign(transformer, data)
   %                             Defaults to ``value``.
   %                             If a array is passed, its length must exactly match
   %                             that of the input and target arrays.
-  % :type  InputAttr: string or array
+  % :type  InputAttr: char or array
   %
   % :param TargetAttr: Optional. Specifies which attribute of the output column to assign to.
   %                              Defaults to ``value``.
   %                              If a array is passed, its length must exactly match
   %                              that of the input and target arrays.
-  % :type  TargetAttr: string or array
+  % :type  TargetAttr: char or array
   %
   % ``InputAttr`` and  ``TargetAttr`` must be one of:
   %
@@ -73,16 +71,16 @@ function data = Assign(transformer, data)
   %   In case where in-place assignment is desired (essentially, renaming a column),
   %   either use the rename transformation, or set output to the same value as the input.
   %
-  % Examples:
-  %
   % To reassign the value property of a variable named ``response_time``
   % to the duration property of a ``face`` variable
   % (as one might do in order to, e.g., model trial-by-trial reaction time differences
   % for a given condition using a varying-epoch approach),
   % and write it out as a new ``face_modulated_by_RT`` column.
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Assign', ...
   %                         'Input', 'response_time', ...
@@ -99,8 +97,6 @@ function data = Assign(transformer, data)
   %   data.face_modulated_by_RT
   %
   %   ans =
-  %
-  %
   %
   %
 

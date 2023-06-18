@@ -2,8 +2,8 @@ function data = Constant(transformer, data)
   %
   % Adds a new column with a constant value (numeric or char).
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -13,25 +13,24 @@ function data = Constant(transformer, data)
   %         "Output": "intercept"
   %       }
   %
-  %
   % Arguments:
   %
   % :param Output: **mandatory**. Name of the newly generated column.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   % :param Value: Optional. The value of the constant, defaults to ``1``.
   % :type  Value: float or char
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Constant', ...
   %                         'Value', 1, ...
   %                         'Output', 'intercept');
   %
-  %
   %   data = bids.transformers(transformer, data);
-  %
   %
   %   ans = TODO
   %

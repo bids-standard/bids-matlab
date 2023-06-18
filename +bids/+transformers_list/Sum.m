@@ -2,8 +2,8 @@ function data = Sum(transformer, data)
   %
   % Computes the (optionally weighted) row-wise sums of two or more columns.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -15,14 +15,13 @@ function data = Sum(transformer, data)
   %         "OmitNan": false,
   %       }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. Names of two or more columns to sum.
   % :type  Input: array
   %
   % :param Output: **mandatory**. Name of the newly generated column.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   % :param OmitNan: Optional. If ``false`` any column with nan values will return a nan value.
   %                           If ``true`` nan values are skipped. Defaults to ``false``.
@@ -36,8 +35,10 @@ function data = Sum(transformer, data)
   %                           defaults to unit weights (i.e., simple sum).
   % :type  Weights: array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Sum', ...
   %                         'Input',  {{'duration', 'reaction_time'}}, ...

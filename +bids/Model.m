@@ -6,12 +6,12 @@ classdef Model
   % <https://bids-standard.github.io/stats-models>`_
   % for more information.
   %
-  % USAGE::
+  % USAGE:: matlab
   %
   %   bm = bids.Model('init', true, ...
-  %                    'file', path_to_bids_stats_model_file, ...
-  %                    'tolerant', true,
-  %                    'verbose', false);
+  %                   'file', path_to_bids_stats_model_file, ...
+  %                   'tolerant', true,
+  %                   'verbose', false);
   %
   % :param init: if ``true`` this will initialize an empty model. Defaults to ``false``.
   % :type init: logical
@@ -25,14 +25,17 @@ classdef Model
   % :param verbose: silences warnings
   % :type verbose: logical
   %
-  % EXAMPLE::
+  % Examples
+  % --------
+  %
+  % .. code-block:: matlab
   %
   %   % initialize and write an empty model
   %   bm = bids.Model('init', true);
   %   filename = fullfile(pwd, 'model-foo_smdl.json');
   %   bm.write(filename);
   %
-  % EXAMPLE::
+  % .. code-block:: matlab
   %
   %   % load a stats model from a file
   %   model_file = fullfile(get_test_data_dir(), ...
@@ -251,17 +254,18 @@ classdef Model
       %
       % :param Level: Must be one of ``Run``, ``Session``, ``Subject``, ``Dataset``.
       %               Default to ``''``
-      % :type init: string
+      % :type init: char
       %
       % :param Name: Default to ``''``
       % :type file: path
       %
-      %
       % Returns: value - Node(s) as struct if there is only one or a cell if more
       %          idx   - Node index
       %
+      % Example
+      % -------
       %
-      % EXAMPLE::
+      % .. code-block:: matlab
       %
       %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
       %
@@ -425,7 +429,6 @@ classdef Model
       % USAGE::
       %
       %     edge = bm.get_edges(field, value)
-      %
       %
       % field can be any of {'Source', 'Destination'}
       %
@@ -658,7 +661,6 @@ classdef Model
       %
       %   transformations = bm.get_transformations('Name', 'node_name')
       %
-      %
       % :param Name: name of the node whose transformations we want
       % :type Name: char
       %
@@ -746,7 +748,10 @@ classdef Model
       % :param tasks: tasks to include in the model
       % :type  tasks: char or cellstr
       %
-      % EXAMPLE::
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
       %
       %   pth_bids_example = get_test_data_dir();
       %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));

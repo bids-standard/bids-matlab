@@ -12,7 +12,7 @@ function init(varargin)
   %             'verbose', false)
   %
   % :param pth: directory where to create the dataset
-  % :type  pth: string
+  % :type  pth: char
   %
   % :param folders: define the folder structure to create.
   %                 ``folders.subjects``

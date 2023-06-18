@@ -10,9 +10,8 @@ function trial_type_list = list_all_trial_types(varargin)
   %                                                        'tolerant', true, ...
   %                                                        'verbose', false)
   %
-  %
   % :param BIDS:              BIDS directory name or BIDS structure (from ``bids.layout``)
-  % :type  BIDS:              structure or string
+  % :type  BIDS:              structure or char
   %
   % :param task:              name of the task
   % :type  task:              char

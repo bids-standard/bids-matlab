@@ -2,14 +2,12 @@ function output_filename = create_participants_tsv(varargin)
   %
   % Creates a simple participants tsv for a BIDS dataset.
   %
-  %
   % USAGE::
   %
   %   output_filename = bids.util.create_participants_tsv(layout_or_path, ...
   %                                                       'use_schema', true, ...
   %                                                       'tolerant', true, ...
   %                                                       'verbose', false)
-  %
   %
   % :param layout_or_path:
   % :type  layout_or_path:  path or structure

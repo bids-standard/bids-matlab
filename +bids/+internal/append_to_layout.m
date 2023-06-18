@@ -7,11 +7,14 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
   %   subject = append_to_layout(file, subject, modality, schema == [])
   %
   % :param file:
-  % :type  file: string
+  % :type  file: char
+  %
   % :param subject: subject sub-structure from the BIDS layout
   % :type  subject: structure
+  %
   % :param modality:
-  % :type  modality: string
+  % :type  modality: char
+  %
   % :param schema:
   % :type  schema: structure
   %

@@ -2,8 +2,8 @@ function data = Split(transformer, data)
   %
   % Split a variable into N variables as defined by the levels of one or more other variables.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -18,7 +18,6 @@ function data = Split(transformer, data)
   %       ]
   %     }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name of the variable(s) to operate on.
@@ -32,8 +31,10 @@ function data = Split(transformer, data)
   % where a given row has values A=a and B=1,
   % the generated name will be ``Condition_BY_A_a_BY_B_1``.
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Split', ...
   %                         'Input', 'sex', ...

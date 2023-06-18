@@ -7,10 +7,10 @@ function result = query(BIDS, query, varargin)
   %   result = bids.query(BIDS, query, filter)
   %
   % :param BIDS: BIDS directory name or BIDS structure (from bids.layout)
-  % :type  BIDS: structure or string
+  % :type  BIDS: structure or char
   %
   % :param query: type of query (see list below)
-  % :type  query: string
+  % :type  query: char
   %
   % Type of queries allowed.
   %
@@ -90,25 +90,16 @@ function result = query(BIDS, query, varargin)
   %
   % If you want to exclude an entity, use ``''`` or ``[]``.
   %
+  % It is possible to use regular expressions in the queried values.
   %
-  % It is also possible to use regular expressions in the value.
+  % Examples
+  % --------
   %
-  % Regex example::
-  %
-  %     % The following 2 will return the same thing
-  %     data = bids.query(BIDS, 'data', 'sub', '01')
-  %     data = bids.query(BIDS, 'data', 'sub', '^01$')
-  %
-  %     % But the following would return all the data for all subjects
-  %     % whose label ends in '01'
-  %     data = bids.query(BIDS, 'data', 'sub', '.*01')
-  %
-  % ---
-  %
-  % Example 1:
   % Querying for 'BOLD' files for subject '01', for run 1 to 5
   % of the 'stopsignalwithpseudowordnaming' task
-  % with gunzipped nifti files::
+  % with gunzipped nifti files.
+  %
+  % .. code-block:: matlab
   %
   %    data = bids.query(BIDS, 'data', ...
   %                            'sub', '01', ...
@@ -117,8 +108,9 @@ function result = query(BIDS, query, varargin)
   %                            'extension', '.nii.gz', ...
   %                            'suffix', 'bold');
   %
-  % Example 2:
-  % Same as above but using a filter structure::
+  % Same as above but using a filter structure.
+  %
+  % .. code-block:: matlab
   %
   %     filters = struct('sub', '01', ...
   %                      'task', 'stopsignalwithpseudowordnaming', ...
@@ -128,10 +120,10 @@ function result = query(BIDS, query, varargin)
   %
   %     data = bids.query(BIDS, 'data', filters);
   %
-  %
-  % Example 3:
   % Same as above but using regular expression
-  % to query for subjects 1 to 5::
+  % to query for subjects 1 to 5.
+  %
+  % .. code-block:: matlab
   %
   %     filters = {'sub', '0[1-5]'; ...
   %                'task', 'stopsignal.*'; ...
@@ -141,10 +133,10 @@ function result = query(BIDS, query, varargin)
   %
   %     data = bids.query(BIDS, 'data', filters);
   %
-  %
-  % Example 4:
   % The following query would return all files that do not contain the
-  % task entity::
+  % task entity.
+  %
+  % .. code-block:: matlab
   %
   %     data = bids.query(BIDS, 'data', 'task', '')
   %

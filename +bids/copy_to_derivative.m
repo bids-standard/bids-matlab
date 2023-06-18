@@ -15,15 +15,14 @@ function copy_to_derivative(varargin)
   %                           'verbose', false, ...
   %                           'tolerant', false);
   %
-  %
   % :param BIDS:            BIDS directory name or BIDS structure (from bids.layout)
-  % :type  BIDS:            structure or string
+  % :type  BIDS:            structure or char
   %
   % :param pipeline_name:   name of pipeline to use
-  % :type  pipeline_name:   string
+  % :type  pipeline_name:   char
   %
   % :param out_path:        path to directory containing the derivatives
-  % :type  out_path:        string
+  % :type  out_path:        char
   %
   % :param filter:          list of filters to choose what files to copy (see bids.query)
   % :type  filter:          structure or cell
@@ -55,6 +54,28 @@ function copy_to_derivative(varargin)
   % All the metadata of each file is read through the whole hierarchy
   % and dumped into one side-car json file for each file copied.
   % In practice this "unravels" the inheritance principle.
+  %
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
+  %
+  %   dataset = fullfile(pwd, 'bids-examples', 'qmri_vfa');
+  %
+  %   output_path = fullfile(pwd, 'output');
+  %
+  %   filter =  struct('modality', 'anat',
+  %                    'sub', '01');
+  %
+  %   pipeline_name = 'SPM12';
+  %
+  %   bids.copy_to_derivative(dataset, ...
+  %                           'pipeline_name', pipeline_name, ...
+  %                           'out_path', output_path, ...
+  %                           'filter', filter, ...
+  %                           'force', true, ...
+  %                           'unzip', false, ...
+  %                           'verbose', true);
   %
   %
 

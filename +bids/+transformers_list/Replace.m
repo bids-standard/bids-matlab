@@ -2,8 +2,8 @@ function data = Replace(transformer, data)
   %
   % Replaces values in one or more input columns.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -20,11 +20,10 @@ function data = Replace(transformer, data)
   %        "Attribute": "all"
   %     }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. Name(s of column(s) to search and replace within.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Replace: **mandatory**. The mapping old values (``"key"``) to new values.
   %                                (``"value"``).
@@ -57,11 +56,12 @@ function data = Replace(transformer, data)
   %                          If no output values are provided,
   %                          the replacement transformation is applied in-place
   %                          to all the inputs.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
-  %
+  % .. code-block:: matlab
   %
   %       data.fruits = {'apple'; 'banana'; 'elusive'};
   %       data.onset = {1; 2; 3};
@@ -77,7 +77,6 @@ function data = Replace(transformer, data)
   %                            'Replace', replace);
   %
   %       data = bids.transformers(transformer, data);
-  %
   %
   %       data.fruits
   %

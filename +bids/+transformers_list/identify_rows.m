@@ -4,7 +4,10 @@ function rows = identify_rows(data, left, query_type, right)
   %
   %     rows = identify_rows(data, left, query_type, right)
   %
-  % EXAMPLE::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Filter', ...
   %                        'Input', 'sex', ...
@@ -17,14 +20,13 @@ function rows = identify_rows(data, left, query_type, right)
   %   rows = identify_rows(data, left, query_type, right);
   %
   %
-  %
 
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   if iscellstr(data.(left))
 
     if ismember(query_type, {'>', '<', '>=', '<='})
-      msg = sprtinf(['Types "%s" are not supported for queries on string\n'...
+      msg = sprtinf(['Types "%s" are not supported for queries on char\n'...
                      'in query %s'], ...
                     {'>, <, >=, <='}, ...
                     query);

@@ -2,8 +2,8 @@ function data = Basic(transformer, data)
   %
   % Performs a basic operation with a ``Value`` on the ``Input``
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -19,32 +19,33 @@ function data = Basic(transformer, data)
   % and performs a mathematical operation on the input column and a provided operand.
   % The operations are performed on each column independently.
   %
-  %
   % Arguments:
   %
   % :param Name: **mandatory**.  Any of ``Add``, ``Subtract``, ``Multiply``, ``Divide``, ``Power``.
-  % :type  Input: string
+  % :type  Input: char
   %
   % :param Input: **mandatory**.  A array of columns to perform operation on.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Value: **mandatory**.  The value to perform operation with (i.e. operand).
   % :type  Value: float
   %
   % :param Query: Optional. logical expression used to select on which rows to
   %               act.
-  % :type  Query: string
+  % :type  Query: char
   %
   % :param Output: Optional. List of column names to write out to.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   % By default, computation is done in-place on the input
   % (meaning that input columns are overwritten).
   % If provided, the number of values must exactly match the number of input values,
   % and the order will be mapped 1-to-1.
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Subtract', ...
   %                         'Input', 'onset', ...

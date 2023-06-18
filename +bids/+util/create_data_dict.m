@@ -20,9 +20,8 @@ function data_dict = create_data_dict(varargin)
   %                                          'level_limit', 10, ...
   %                                          'verbose', true);
   %
-  %
   % :param output:          filename for the output files. Can pass be a cell
-  %                         string of paths
+  %                         char of paths
   %
   % :param force:           If set to ``false`` it will not overwrite any file already
   %                         present in the destination.
@@ -36,7 +35,10 @@ function data_dict = create_data_dict(varargin)
   % :type  level_limit:
   %
   %
-  % EXAMPLE::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   BIDS = bids.layout(pth_bids_example, 'ds001'));
   %
@@ -47,7 +49,6 @@ function data_dict = create_data_dict(varargin)
   %   data_dict = bids.util.create_data_dict(tsv_files{1}, ...
   %                                          'output', 'tmp.json', ...
   %                                          'schema', true);
-  %
   %
   %
 

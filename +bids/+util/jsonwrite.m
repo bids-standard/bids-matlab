@@ -7,20 +7,27 @@ function varargout = jsonwrite(varargin)
   %     jsonwrite(filename, json)
   %
   % :param filename:  JSON filename
-  % :type filename:   string
-  % :param json:  JSON structure
-  % :type json:   structure
+  % :type  filename:   char
   %
-  % USAGE::
+  % :param json:  JSON structure
+  % :type  json:   structure
+  %
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %     S = jsonwrite(json)
   %
   % :param json:  JSON structure
   % :type json:   structure
   %
-  % :returns: S - serialized JSON structure (string)
+  % :returns: S - serialized JSON structure (char)
   %
-  % USAGE::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %     [...] = jsonwrite(..., opts)
   %

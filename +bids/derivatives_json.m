@@ -7,10 +7,11 @@ function json = derivatives_json(varargin)
   %   json = derivatives_json(derivative_filename, 'force', false)
   %
   % :param derivative_filename:
-  % :type derivative_filename: string
+  % :type  derivative_filename: char
+  %
   % :param force: when `true` it will force the creation of a json content even
-  %  when the filename contains no BIDS derivatives entity.
-  % :type force: logical
+  %               when the filename contains no BIDS derivatives entity.
+  % :type  force: logical
   %
 
   % (C) Copyright 2018 BIDS-MATLAB developers

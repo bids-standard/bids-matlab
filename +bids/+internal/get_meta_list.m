@@ -7,11 +7,10 @@ function metalist = get_meta_list(filename, pattern)
   %    meta = bids.internal.get_metadata(filename, pattern = '^.*%s\\.json$')
   %
   % :param filename: fullpath name of file following BIDS standard
-  % :type  filename: string
+  % :type  filename: char
   % :param pattern:  Regular expression matching the metadata file (default is ``'^.*%s\\.json$'``)
   %                  If provided, it must at least be ``'%s'``.
-  % :type  pattern:  string
-  %
+  % :type  pattern:  char
   %
   % metalist    - list of paths to metafiles
   %

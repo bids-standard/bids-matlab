@@ -2,8 +2,8 @@ function data = Filter(transformer, data)
   %
   % Subsets rows using a logical expression.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -13,31 +13,32 @@ function data = Filter(transformer, data)
   %       "Query": "age > 20"
   %     }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to operate on.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Query: **mandatory**. logical expression used to filter
-  % :type  Query: string
+  % :type  Query: char
   %
   % Supports:
   %
   %   - ``>``, ``<``, ``>=``, ``<=``, ``==``, ``~=`` for numeric values
   %
-  %   - ``==``, ``~=`` for string operation (case sensitive).
+  %   - ``==``, ``~=`` for char operation (case sensitive).
   %     Regular expressions are supported
   %
   % :param Output: Optional. The optional column names to write out to.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   % By default, computation is done in-place (i.e., input columnise overwritten).
   % If provided, the number of values must exactly match the number of input values,
   % and the order will be mapped 1-to-1.
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Filter', ...
   %                         'Input', 'sex', ...

@@ -10,9 +10,8 @@ function [data, headers, y_labels] = list_events(varargin)
   %                                                         'filter', struct(), ...
   %                                                         'trial_type_col', 'trial_type')
   %
-  %
   % :param BIDS:       BIDS directory name or BIDS structure (from ``bids.layout``)
-  % :type  BIDS:       structure or string
+  % :type  BIDS:       structure or char
   %
   % :param modality:   name of the modality
   % :type  modality:   char

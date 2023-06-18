@@ -6,7 +6,7 @@ function version_number = bids_matlab_version()
   %
   %   version_number = bids_matlab_version()
   %
-  % :returns: :version_number: (string) Use semantic versioning format (like v0.1.0)
+  % :returns: :version_number: (char) Use semantic versioning format (like v0.1.0)
   %
 
   % (C) Copyright 2021 BIDS-MATLAB developers

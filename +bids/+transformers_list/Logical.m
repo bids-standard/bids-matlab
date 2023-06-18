@@ -11,8 +11,8 @@ function data = Logical(transformer, data)
   %
   % - returning a single column as output.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -25,24 +25,25 @@ function data = Logical(transformer, data)
   % If non-logical input are passed, it is expected that:
   %
   % - all zero or nan (for numeric data types),
-  % - "NaN" or empty (for strings) values
+  % - "NaN" or empty (for char) values
   %
   % will evaluate to false and all other values will evaluate to true.
-  %
   %
   % Arguments:
   %
   % :param Name: **mandatory**.  Any of ``And``, ``Or``, ``Not``.
-  % :type  Input: string
+  % :type  Input: char
   %
   % :param Input: **mandatory**.  An array of columns to perform operation on. Only 1 for ``Not``
   % :type  Input: array
   %
   % :param Output: Optional. The name of the output column.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %     transformers = struct('Name', 'And', ...
   %                           'Input', {{'sex_m', 'age_gt_twenty'}}, ...

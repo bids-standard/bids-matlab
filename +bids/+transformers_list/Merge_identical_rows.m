@@ -2,8 +2,8 @@ function new_data = Merge_identical_rows(transformer, data)
   %
   % Merge consecutive identical rows.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -12,11 +12,10 @@ function new_data = Merge_identical_rows(transformer, data)
   %       "Input": "trial_type",
   %     }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to operate on.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % .. note::
   %
@@ -29,7 +28,10 @@ function new_data = Merge_identical_rows(transformer, data)
   %      this means that the content from other columns but the one specified in will be deleted
   %      execpt for the last one
   %
-  % **CODE EXAMPLE**::
+  % CODE EXAMPLE
+  % ------------
+  %
+  % .. code-block:: matlab
   %
   %    transformers(1).Name = 'MergeIdenticalRows';
   %    transformers(1).Input = {'trial_type'};
@@ -68,11 +70,10 @@ function new_data = Merge_identical_rows(transformer, data)
   %         2
   %
   %
-  %
 
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  % TODO: tests to see if works on columns with mixed content (cell of numbers and strings)
+  % TODO: tests to see if works on columns with mixed content (cell of numbers and char)
   % TODO: merge only if cell content matches some condition
 
   fields = fieldnames(data);

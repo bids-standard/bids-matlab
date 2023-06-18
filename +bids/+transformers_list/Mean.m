@@ -2,8 +2,8 @@ function data = Mean(transformer, data)
   %
   % Compute mean of a column.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -14,11 +14,10 @@ function data = Mean(transformer, data)
   %         "Output": "mean_RT"
   %       }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name of the variable to operate on.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param OmitNan: Optional. If ``false`` any column with nan values will return a nan value.
   %                           If ``true`` nan values are skipped. Defaults to ``false``.
@@ -26,10 +25,12 @@ function data = Mean(transformer, data)
   %
   % :param Output: Optional. The optional column names to write out to.
   %                    By default, computation is done in-place (i.e., input columnise overwritten).
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Mean', ...
   %                         'Input', 'reaction_time', ...

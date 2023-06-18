@@ -7,8 +7,8 @@ function data = Scale(transformer, data)
   % with the default being to apply both
   % (i.e., standardizing each value so that it has zero mean and unit SD).
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -21,11 +21,10 @@ function data = Scale(transformer, data)
   %         "Output": "scaled_reaction_time"
   %       }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**.  Names of columns to standardize.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Demean: Optional. If ``true``, subtracts the mean from each input column
   %                          (i.e., applies mean-centering).
@@ -46,10 +45,12 @@ function data = Scale(transformer, data)
   %                          and columns will be mapped 1-to-1 in order.
   %                          If no output values are provided,
   %                          the scaling transformation is applied in-place to all the input.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Scale', ...
   %                        'Input', 'reaction_time',

@@ -2,7 +2,6 @@ classdef File
   %
   % Class to deal with BIDS filenames
   %
-  %
   % USAGE::
   %
   %   file = bids.File(input, ...
@@ -23,17 +22,19 @@ classdef File
   % :type  verbose:    logical
   %
   %
-  % **Initialize with a filename**
+  % Examples
+  % --------
   %
-  % EXAMPLE::
+  % Initialize with a filename.
+  %
+  % .. code-block:: matlab
   %
   %   input = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
   %   file = bids.File(input);
   %
+  % Initialize with a structure
   %
-  % **Initialize with a structure**
-  %
-  % EXAMPLE::
+  % .. code-block:: matlab
   %
   %   input = struct('ext', '.nii', ...
   %                  'suffix', 'T1w', ...
@@ -41,10 +42,9 @@ classdef File
   %                                     'ses', '02'));
   %   file = bids.File(input);
   %
+  % Remove prefixes and add a ``desc-preproc`` entity-label pair.
   %
-  % **Remove prefixes and add a ``desc-preproc`` entity-label pair**
-  %
-  % EXAMPLE::
+  % .. code-block:: matlab
   %
   %   input = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
   %   file = bids.File(input, 'use_schema', false);
@@ -52,10 +52,9 @@ classdef File
   %   file.entities.desc = 'preproc';
   %   disp(file.filename)
   %
+  % Use the BIDS schema to get entities in the right order.
   %
-  % **Use the BIDS schema to get entities in the right order**
-  %
-  % EXAMPLE::
+  % .. code-block:: matlab
   %
   %   input.suffix = 'bold';
   %   input.ext = '.nii';
@@ -354,7 +353,10 @@ classdef File
       % If the no entity order is provided, it will try to rely on the schema to
       % find an appropriate order
       %
-      % EXAMPLE::
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
       %
       %   % filename with ses entity in the wrong position
       %   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
@@ -425,7 +427,7 @@ classdef File
       %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', [], 'force', false);
       %
       % :param spec: structure specifying what entities, suffix, extension... to apply
-      % :type spec: structure
+      % :type  spec: structure
       %
       % :param dry_run: If ``true`` no file is actually renamed.
       %                 ``true`` is the default to avoid renaming files by mistake.
@@ -437,7 +439,8 @@ classdef File
       % :param force: Overwrites existing file.
       % :type force: logical
       %
-      % EXAMPLE:
+      % Example
+      % -------
       %
       % .. code-block:: matlab
       %
@@ -456,7 +459,6 @@ classdef File
       %   spec.entity_order = {'sub', 'task', 'desc'};
       %
       %   file = file.rename('spec', spec, 'dry_run', false, 'verbose', true);
-      %
       %
       %   %% Get a specific file from a dataset to rename
       %

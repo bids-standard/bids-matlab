@@ -11,7 +11,6 @@ function out_path = download_ds(varargin)
   %                                 'verbose', true, ...
   %                                 'delete_previous', true);
   %
-  %
   % SPM::
   %
   %     bids.util.download_ds('source', 'spm', 'demo', 'moae')

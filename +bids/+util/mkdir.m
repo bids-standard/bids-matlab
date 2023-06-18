@@ -1,21 +1,22 @@
 function sts = mkdir(varargin)
   %
-  % Make new directory trees
+  % Make new directory trees.
   %
   % USAGE::
   %
   %   sts = bids.util.mkdir(dir, ...)
   %
-  %
   % :param dir: directory structure to create
-  % :type dir: character array, or cell array of strings
-  %
+  % :type  dir: character array, or cell array of strings
   %
   % :returns:
   %   - :sts: status is ``true`` if all directories were successfully created or already
   %                   existing, ``false`` otherwise.
   %
-  % EXAMPLE::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   bids.util.mkdir('dataset', {'sub-01', 'sub-02'}, {'mri', 'eeg'});
   %

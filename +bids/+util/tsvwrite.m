@@ -7,10 +7,10 @@ function tsvwrite(filename, var)
   %   tsvwrite(f, var)
   %
   % :param filename:
-  % :type filename: string
-  % :param var:
-  % :type var: data array or structure
+  % :type  filename: string
   %
+  % :param var:
+  % :type  var: data array or structure
   %
   % Based on spm_save.m from SPM12.
   %
