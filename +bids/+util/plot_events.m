@@ -20,7 +20,7 @@ function plot_events(varargin)
   %                     before plotting
   % :type  model_file: fullpath
   %
-  % EXAMPLE::
+  % Example::
   %
   %   data_dir = fullfile(get_test_data_dir(), 'ds108');
   %

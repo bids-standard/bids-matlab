@@ -25,7 +25,7 @@ classdef File
   %
   % **Initialize with a filename**
   %
-  % EXAMPLE::
+  % Example::
   %
   %   input = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
   %   file = bids.File(input);
@@ -33,7 +33,7 @@ classdef File
   %
   % **Initialize with a structure**
   %
-  % EXAMPLE::
+  % Example::
   %
   %   input = struct('ext', '.nii', ...
   %                  'suffix', 'T1w', ...
@@ -44,7 +44,7 @@ classdef File
   %
   % **Remove prefixes and add a ``desc-preproc`` entity-label pair**
   %
-  % EXAMPLE::
+  % Example::
   %
   %   input = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
   %   file = bids.File(input, 'use_schema', false);
@@ -55,7 +55,7 @@ classdef File
   %
   % **Use the BIDS schema to get entities in the right order**
   %
-  % EXAMPLE::
+  % Example::
   %
   %   input.suffix = 'bold';
   %   input.ext = '.nii';
@@ -354,7 +354,7 @@ classdef File
       % If the no entity order is provided, it will try to rely on the schema to
       % find an appropriate order
       %
-      % EXAMPLE::
+      % Example::
       %
       %   % filename with ses entity in the wrong position
       %   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
@@ -437,7 +437,7 @@ classdef File
       % :param force: Overwrites existing file.
       % :type force: logical
       %
-      % EXAMPLE:
+      % Example:
       %
       % .. code-block:: matlab
       %

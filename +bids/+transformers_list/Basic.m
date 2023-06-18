@@ -23,20 +23,20 @@ function data = Basic(transformer, data)
   % Arguments:
   %
   % :param Name: **mandatory**.  Any of ``Add``, ``Subtract``, ``Multiply``, ``Divide``, ``Power``.
-  % :type  Input: string
+  % :type  Input: char
   %
   % :param Input: **mandatory**.  A array of columns to perform operation on.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Value: **mandatory**.  The value to perform operation with (i.e. operand).
   % :type  Value: float
   %
   % :param Query: Optional. logical expression used to select on which rows to
   %               act.
-  % :type  Query: string
+  % :type  Query: char
   %
   % :param Output: Optional. List of column names to write out to.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   % By default, computation is done in-place on the input
   % (meaning that input columns are overwritten).

@@ -7,7 +7,7 @@ function varargout = jsonwrite(varargin)
   %     jsonwrite(filename, json)
   %
   % :param filename:  JSON filename
-  % :type filename:   string
+  % :type filename:   char
   % :param json:  JSON structure
   % :type json:   structure
   %
@@ -18,7 +18,7 @@ function varargout = jsonwrite(varargin)
   % :param json:  JSON structure
   % :type json:   structure
   %
-  % :returns: S - serialized JSON structure (string)
+  % :returns: S - serialized JSON structure (char)
   %
   % USAGE::
   %

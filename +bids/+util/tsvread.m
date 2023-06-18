@@ -7,14 +7,14 @@ function file_content = tsvread(filename, field_to_return, hdr)
   %   file_content = tsvread(filename, field_to_return, hdr)
   %
   % :param filename: filename (can be gzipped) {txt,mat,csv,tsv,json}
-  % :type filename: string
+  % :type  filename: char
   %
   % :param field_to_return: name of field to return if data stored in a structure
   %                       [default: ``''``]; or index of column if data stored as an array
-  % :type field_to_return:
+  % :type  field_to_return:
   %
   % :param hdr: detect the presence of a header row for csv/tsv [default: ``true``]
-  % :type hdr: logical
+  % :type  hdr: logical
   %
   %
   % :returns: - :file_content: corresponding data array or structure

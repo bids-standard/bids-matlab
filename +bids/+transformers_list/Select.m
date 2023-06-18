@@ -28,7 +28,7 @@ function data = Select(transformer, data)
   %                              Any columns not in this array will be deleted and
   %                              will not be available to any subsequent transformations
   %                              or downstream analyses.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % .. note::
   %

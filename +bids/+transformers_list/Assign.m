@@ -23,14 +23,14 @@ function data = Assign(transformer, data)
   %                               from which attribute values are to be drawn
   %                               (for assignment to the attributes of other columns).
   %                               Must exactly match the length of the target argument.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Target: **mandatory**. the name(s) of the columns to which
   %                               the attribute values taken from the input
   %                               are to be assigned.
   %                               Must exactly match the length of the input argument.
   %                               Names are mapped 1-to-1 from input to target.
-  % :type  Target: string or array
+  % :type  Target: char or array
   %
   % .. note::
   %
@@ -39,7 +39,7 @@ function data = Assign(transformer, data)
   %
   % :param Output: Optional. Names of the columns to output the result of the assignment to.
   %                          Must exactly match the length of the input and target arguments.
-  % :type Output: string or array
+  % :type Output: char or array
   %
   % If no output array is provided, columns named in target are modified in-place.
   %
@@ -53,13 +53,13 @@ function data = Assign(transformer, data)
   %                             Defaults to ``value``.
   %                             If a array is passed, its length must exactly match
   %                             that of the input and target arrays.
-  % :type  InputAttr: string or array
+  % :type  InputAttr: char or array
   %
   % :param TargetAttr: Optional. Specifies which attribute of the output column to assign to.
   %                              Defaults to ``value``.
   %                              If a array is passed, its length must exactly match
   %                              that of the input and target arrays.
-  % :type  TargetAttr: string or array
+  % :type  TargetAttr: char or array
   %
   % ``InputAttr`` and  ``TargetAttr`` must be one of:
   %

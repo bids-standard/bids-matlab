@@ -16,7 +16,7 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   %                                 'split_by', {''})
   %
   % :param BIDS:       BIDS directory name or BIDS structure (from ``bids.layout``)
-  % :type  BIDS:       structure or string
+  % :type  BIDS:       structure or char
   %
   % :param split_by:   splits results by a given BIDS entity (now only ``task`` is supported)
   % :type  split_by:   cell

@@ -20,7 +20,7 @@ function data = Label_identical_rows(transformer, data)
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to operate on.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Cumulative: **optional**. Defaults to ``False``.
   %                    If ``True``, the labels are not reset to 0

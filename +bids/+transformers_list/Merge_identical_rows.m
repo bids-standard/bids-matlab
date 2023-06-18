@@ -16,7 +16,7 @@ function new_data = Merge_identical_rows(transformer, data)
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to operate on.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % .. note::
   %
@@ -72,7 +72,7 @@ function new_data = Merge_identical_rows(transformer, data)
 
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  % TODO: tests to see if works on columns with mixed content (cell of numbers and strings)
+  % TODO: tests to see if works on columns with mixed content (cell of numbers and char)
   % TODO: merge only if cell content matches some condition
 
   fields = fieldnames(data);

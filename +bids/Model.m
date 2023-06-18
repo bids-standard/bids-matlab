@@ -25,14 +25,14 @@ classdef Model
   % :param verbose: silences warnings
   % :type verbose: logical
   %
-  % EXAMPLE::
+  % Example::
   %
   %   % initialize and write an empty model
   %   bm = bids.Model('init', true);
   %   filename = fullfile(pwd, 'model-foo_smdl.json');
   %   bm.write(filename);
   %
-  % EXAMPLE::
+  % Example::
   %
   %   % load a stats model from a file
   %   model_file = fullfile(get_test_data_dir(), ...
@@ -251,7 +251,7 @@ classdef Model
       %
       % :param Level: Must be one of ``Run``, ``Session``, ``Subject``, ``Dataset``.
       %               Default to ``''``
-      % :type init: string
+      % :type init: char
       %
       % :param Name: Default to ``''``
       % :type file: path
@@ -261,7 +261,7 @@ classdef Model
       %          idx   - Node index
       %
       %
-      % EXAMPLE::
+      % Example::
       %
       %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
       %
@@ -746,7 +746,7 @@ classdef Model
       % :param tasks: tasks to include in the model
       % :type  tasks: char or cellstr
       %
-      % EXAMPLE::
+      % Example::
       %
       %   pth_bids_example = get_test_data_dir();
       %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));

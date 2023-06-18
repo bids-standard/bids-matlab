@@ -7,7 +7,7 @@ classdef Description
   %   ds_desc = bids.Description(pipeline, BIDS);
   %
   % :param pipeline: pipeline name
-  % :type  pipeline: string
+  % :type  pipeline: char
   %
   % :param BIDS: output from BIDS layout to identify the source dataset
   %              used when creating a derivatives dataset

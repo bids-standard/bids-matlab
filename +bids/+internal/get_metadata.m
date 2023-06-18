@@ -7,7 +7,7 @@ function meta = get_metadata(metafile)
   %    meta = bids.internal.get_metadata(metafile)
   %
   % :param metafile: list of fullpath names of metadata files.
-  % :type  metafile: string or array of strings
+  % :type  metafile: char or array of chars
   %
   % :returns: - :meta: metadata structure
   %

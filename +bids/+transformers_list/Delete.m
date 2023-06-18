@@ -19,7 +19,7 @@ function data = Delete(transformer, data)
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the columns(s) to delete.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   %
   % .. note::

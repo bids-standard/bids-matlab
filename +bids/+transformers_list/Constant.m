@@ -17,7 +17,7 @@ function data = Constant(transformer, data)
   % Arguments:
   %
   % :param Output: **mandatory**. Name of the newly generated column.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   % :param Value: Optional. The value of the constant, defaults to ``1``.
   % :type  Value: float or char

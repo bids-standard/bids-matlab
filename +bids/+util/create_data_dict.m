@@ -22,7 +22,7 @@ function data_dict = create_data_dict(varargin)
   %
   %
   % :param output:          filename for the output files. Can pass be a cell
-  %                         string of paths
+  %                         char of paths
   %
   % :param force:           If set to ``false`` it will not overwrite any file already
   %                         present in the destination.
@@ -36,7 +36,7 @@ function data_dict = create_data_dict(varargin)
   % :type  level_limit:
   %
   %
-  % EXAMPLE::
+  % Example::
   %
   %   BIDS = bids.layout(pth_bids_example, 'ds001'));
   %

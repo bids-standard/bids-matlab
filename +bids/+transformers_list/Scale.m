@@ -25,7 +25,7 @@ function data = Scale(transformer, data)
   % Arguments:
   %
   % :param Input: **mandatory**.  Names of columns to standardize.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Demean: Optional. If ``true``, subtracts the mean from each input column
   %                          (i.e., applies mean-centering).
@@ -46,7 +46,7 @@ function data = Scale(transformer, data)
   %                          and columns will be mapped 1-to-1 in order.
   %                          If no output values are provided,
   %                          the scaling transformation is applied in-place to all the input.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   %
   % **CODE EXAMPLE**::

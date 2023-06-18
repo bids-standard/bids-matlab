@@ -19,7 +19,7 @@ function data = Threshold(transformer, data)
   % Arguments:
   %
   % :param Input: **mandatory**.  The name(s)of the column(s) to threshold/binarize.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Threshold: Optional. The cut-off to use for thresholding. Defaults to ``0``.
   % :type  Threshold: float
@@ -50,7 +50,7 @@ function data = Threshold(transformer, data)
   %                          If no output values are provided,
   %                          the threshold transformation is applied
   %                          in-place to all the inputs.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   %
   % **CODE EXAMPLE**::

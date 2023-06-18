@@ -23,7 +23,7 @@ function data = Concatenate(transformer, data)
   % :type  Input: array
   %
   % :param Output: Optional. Name of the output column.
-  % :type  Output: string
+  % :type  Output: char
   %
   % **CODE EXAMPLE**::
   %

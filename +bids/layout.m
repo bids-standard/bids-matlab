@@ -14,22 +14,20 @@ function BIDS = layout(varargin)
   %
   % :param root:       directory of the dataset formatted according to BIDS
   %                    [default: ``pwd``]
-  % :type  root:       string
+  % :type  root:       char
   %
   % :param use_schema: If set to ``true``, the parsing of the dataset
   %                    will follow the bids-schema provided with bids-matlab.
   %                    If set to ``false`` files just have to be of the form
   %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
-  %                    If a folder path is provided, then the schema contained
-  %                    in that folder will be used for parsing.
   % :type  use_schema: logical
   %
   % :param index_derivatives: if ``true`` this will index the content of the
   %                           any ``derivatives`` folder in the BIDS dataset.
   % :type  index_derivatives: logical
   %
-  % :param index_dependencies: if ``true`` this will index the dependencies (json files,
-  %                           associated TSV files for each file...)
+  % :param index_dependencies: if ``true`` this will index the dependencies
+  %                            (json files, associated TSV files for each file...)
   % :type  index_dependencies: logical
   %
   % :param filter: Can be used to index only a subset of the dataset.

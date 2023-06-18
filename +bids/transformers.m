@@ -15,7 +15,9 @@ function [new_content, json] = transformers(varargin)
   % :returns: - :new_content: (structure)
   %           - :json: (structure) json equivalent of the transformers
   %
-  % EXAMPLE::
+  % Example
+  %
+  % .. code-block:: matlab
   %
   %     data = bids.util.tsvread(path_to_tsv);
   %

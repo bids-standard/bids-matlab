@@ -13,7 +13,7 @@ function filename = report(varargin)
   %                 'verbose', verbose);
   %
   % :param BIDS:  Path to BIDS dataset or output of bids.layout [Default = pwd]
-  % :type  BIDS:  string or structure
+  % :type  BIDS:  char or structure
   %
   % :param filter: Specifies which the subject, session, ... to take as template.
   %                [Default = struct('sub', '', 'ses', '')]. See bids.query
@@ -22,7 +22,7 @@ function filename = report(varargin)
   %
   % :param output_path:  Folder where the report should be printed. If empty
   %                      (default) then the output is sent to the prompt.
-  % :type  output_path:  string
+  % :type  output_path:  char
   %
   % :param read_nifti:  If set to ``true`` (default) the function will try to read the
   %                     NIfTI file to get more information. This relies on the

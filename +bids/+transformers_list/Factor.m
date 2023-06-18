@@ -18,7 +18,7 @@ function data = Factor(transformer, data)
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to dummy-code.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % By default it is the first factor level when sorting in alphabetical order
   % (e.g., if a condition has levels 'dog', 'apple', and 'helsinki',

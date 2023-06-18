@@ -145,7 +145,7 @@ classdef Schema
       %     order = schema.entity_order(entity_list)
       %
       %
-      % EXAMPLE::
+      % Example::
       %
       %     schema = bids.Schema();
       %
@@ -206,7 +206,7 @@ classdef Schema
       %
       %     key = schema.return_entity_key(entity)
       %
-      % EXAMPLE::
+      % Example::
       %
       %     key = schema.return_entity_key('description')
       %
@@ -286,7 +286,7 @@ classdef Schema
       % :param datatype:
       % :type  datatype:  char
       %
-      % EXAMPLE::
+      % Example::
       %
       %  suffix_groups = schema.return_suffix_groups_for_datatype('func')
       %
@@ -307,7 +307,7 @@ classdef Schema
       % :param suffix_group:
       % :type  suffix_group:  struct
       %
-      % EXAMPLE::
+      % Example::
       %
       %  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
       %  entities = schema.return_entities_for_suffix_group(suffix_groups(1))
@@ -375,7 +375,7 @@ classdef Schema
       %
       %  suffix_group = schema.find_suffix_group(modality, suffix)
       %
-      % EXAMPLE::
+      % Example::
       %
       %     schema = bids.Schema();
       %     suffix_group = schema.find_suffix_group('anat', 'T1w');
@@ -422,7 +422,7 @@ classdef Schema
       % :param suffix:
       % :type  suffix:  char
       %
-      % EXAMPLE::
+      % Example::
       %
       %       schema = bids.Schema();
       %       datatypes = schema.return_datatypes_for_suffix('bold');

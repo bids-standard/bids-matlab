@@ -22,7 +22,7 @@ function data = Sum(transformer, data)
   % :type  Input: array
   %
   % :param Output: **mandatory**. Name of the newly generated column.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   % :param OmitNan: Optional. If ``false`` any column with nan values will return a nan value.
   %                           If ``true`` nan values are skipped. Defaults to ``false``.

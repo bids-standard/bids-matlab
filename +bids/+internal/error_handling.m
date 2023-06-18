@@ -8,10 +8,10 @@ function error_handling(varargin)
   % :type function_name:
   %
   % :param id: default = ``unspecified``
-  % :type id: string
+  % :type id: char
   %
   % :param msg: default = ``unspecified``
-  % :type msg: string
+  % :type msg: char
   %
   % :param tolerant:
   % :type tolerant: logical
@@ -19,7 +19,7 @@ function error_handling(varargin)
   % :param verbose:
   % :type verbose:  logical
   %
-  % EXAMPLE::
+  % Example::
   %
   %   bids.internal.error_handling(mfilename(), 'thisError', 'this is an error', tolerant, verbose)
   %

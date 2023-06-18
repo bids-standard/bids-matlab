@@ -15,7 +15,7 @@ function sts = mkdir(varargin)
   %   - :sts: status is ``true`` if all directories were successfully created or already
   %                   existing, ``false`` otherwise.
   %
-  % EXAMPLE::
+  % Example::
   %
   %   bids.util.mkdir('dataset', {'sub-01', 'sub-02'}, {'mri', 'eeg'});
   %

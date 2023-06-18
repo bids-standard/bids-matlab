@@ -24,7 +24,7 @@ function data = Replace(transformer, data)
   % Arguments:
   %
   % :param Input: **mandatory**. Name(s of column(s) to search and replace within.
-  % :type  Input: string or array
+  % :type  Input: char or array
   %
   % :param Replace: **mandatory**. The mapping old values (``"key"``) to new values.
   %                                (``"value"``).
@@ -57,7 +57,7 @@ function data = Replace(transformer, data)
   %                          If no output values are provided,
   %                          the replacement transformation is applied in-place
   %                          to all the inputs.
-  % :type  Output: string or array
+  % :type  Output: char or array
   %
   %
   % **CODE EXAMPLE**::
