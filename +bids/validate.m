@@ -21,7 +21,6 @@ function [sts, msg] = validate(root, options)
   % https://bids-standard.github.io/bids-validator/
   %
   %
-  %
 
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %

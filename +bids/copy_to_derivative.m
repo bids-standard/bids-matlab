@@ -15,7 +15,6 @@ function copy_to_derivative(varargin)
   %                           'verbose', false, ...
   %                           'tolerant', false);
   %
-  %
   % :param BIDS:            BIDS directory name or BIDS structure (from bids.layout)
   % :type  BIDS:            structure or char
   %
@@ -56,8 +55,8 @@ function copy_to_derivative(varargin)
   % and dumped into one side-car json file for each file copied.
   % In practice this "unravels" the inheritance principle.
   %
-  %
   % Example
+  % -------
   %
   % .. code-block:: matlab
   %

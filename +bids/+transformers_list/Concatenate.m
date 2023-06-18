@@ -2,8 +2,8 @@ function data = Concatenate(transformer, data)
   %
   % Concatenate columns together.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -16,7 +16,6 @@ function data = Concatenate(transformer, data)
   %       "Output": "face_type_repetition"
   %     }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. Column(s) to concatenate. Must all be of the same length.
@@ -25,7 +24,10 @@ function data = Concatenate(transformer, data)
   % :param Output: Optional. Name of the output column.
   % :type  Output: char
   %
-  % **CODE EXAMPLE**::
+  % CODE EXAMPLE
+  % ------------
+  %
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Concatenate', ...
   %                         'Input', {{'face_type', 'face_repetition'}}, ...

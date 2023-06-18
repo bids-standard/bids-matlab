@@ -25,14 +25,17 @@ classdef Model
   % :param verbose: silences warnings
   % :type verbose: logical
   %
-  % Example::
+  % Examples
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   % initialize and write an empty model
   %   bm = bids.Model('init', true);
   %   filename = fullfile(pwd, 'model-foo_smdl.json');
   %   bm.write(filename);
   %
-  % Example::
+  % .. code-block:: matlab
   %
   %   % load a stats model from a file
   %   model_file = fullfile(get_test_data_dir(), ...
@@ -256,12 +259,13 @@ classdef Model
       % :param Name: Default to ``''``
       % :type file: path
       %
-      %
       % Returns: value - Node(s) as struct if there is only one or a cell if more
       %          idx   - Node index
       %
+      % Example
+      % -------
       %
-      % Example::
+      % .. code-block:: matlab
       %
       %   bm = bids.Model('file', model_file('narps'), 'verbose', false);
       %
@@ -425,7 +429,6 @@ classdef Model
       % USAGE::
       %
       %     edge = bm.get_edges(field, value)
-      %
       %
       % field can be any of {'Source', 'Destination'}
       %
@@ -658,7 +661,6 @@ classdef Model
       %
       %   transformations = bm.get_transformations('Name', 'node_name')
       %
-      %
       % :param Name: name of the node whose transformations we want
       % :type Name: char
       %
@@ -746,7 +748,10 @@ classdef Model
       % :param tasks: tasks to include in the model
       % :type  tasks: char or cellstr
       %
-      % Example::
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
       %
       %   pth_bids_example = get_test_data_dir();
       %   BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));

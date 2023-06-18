@@ -1,6 +1,6 @@
 function [new_content, json] = transformers(varargin)
   %
-  % Apply transformers to a structure
+  % Apply transformers to a structure.
   %
   % USAGE::
   %
@@ -16,6 +16,7 @@ function [new_content, json] = transformers(varargin)
   %           - :json: (structure) json equivalent of the transformers
   %
   % Example
+  % -------
   %
   % .. code-block:: matlab
   %
@@ -31,7 +32,6 @@ function [new_content, json] = transformers(varargin)
   %     % if all fields in the structure have the same number of rows one
   %     % create a new tsv file
   %     bids.util.tsvwrite(path_to_new_tsv, new_content)
-  %
   %
   % See also: bids.Model
   %

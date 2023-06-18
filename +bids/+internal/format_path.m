@@ -1,6 +1,5 @@
 function pth = format_path(pth)
   %
-  %
   % USAGE::
   %
   %   pth = bids.internal.format_path(pth)
@@ -11,7 +10,6 @@ function pth = format_path(pth)
   % :param pth: If pth is a cellstr of paths, pathToPrint will work
   %             recursively on it.
   % :type pth: char or cellstr$
-  %
   %
   %
 

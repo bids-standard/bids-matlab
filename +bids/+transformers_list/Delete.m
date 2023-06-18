@@ -2,8 +2,8 @@ function data = Delete(transformer, data)
   %
   % Deletes column(s) from further analysis.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -15,20 +15,20 @@ function data = Delete(transformer, data)
   %       ]
   %     }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the columns(s) to delete.
   % :type  Input: char or array
-  %
   %
   % .. note::
   %
   %   The ``Select`` transformation provides the inverse function
   %   (selection of columns to keep for subsequent analysis).
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Delete', ...
   %                         'Input', {{'sex_m', age_gt_twenty}});
@@ -41,8 +41,6 @@ function data = Delete(transformer, data)
   %   data.
   %
   %   ans = TODO
-  %
-  %
   %
   %
 

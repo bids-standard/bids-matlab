@@ -2,14 +2,12 @@ function output_filenames = create_sessions_tsv(varargin)
   %
   % Create a simple sessions.tsv for each participant of a BIDS dataset.
   %
-  %
   % USAGE::
   %
   %   output_filename = bids.util.create_sessions_tsv(layout_or_path, ...
   %                                                   'use_schema', true, ...
   %                                                   'tolerant', true, ...
   %                                                   'verbose', false)
-  %
   %
   % :param layout_or_path:
   % :type  layout_or_path:  path or structure

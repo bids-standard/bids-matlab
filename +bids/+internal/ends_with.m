@@ -11,7 +11,6 @@ function res = ends_with(str, pattern)
   % :param pattern:
   % :type pattern: character array
   %
-  %
   % Based on the equivalent function from SPM12
   %
 

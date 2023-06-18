@@ -5,8 +5,8 @@ function data = Label_identical_rows(transformer, data)
   % This can for example be used to label consecutive events of the same trial_type in
   % a block.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -15,7 +15,6 @@ function data = Label_identical_rows(transformer, data)
   %       "Input": "trial_type",
   %       "Cumulative": False
   %     }
-  %
   %
   % Arguments:
   %
@@ -31,8 +30,10 @@ function data = Label_identical_rows(transformer, data)
   %
   %     The labels will be by default be put in a column called Input(i)_label
   %
-  % **CODE EXAMPLE**::
+  % CODE EXAMPLE
+  % ------------
   %
+  % .. code-block:: matlab
   %
   %   transformers(1).Name = 'LabelIdenticalRows';
   %   transformers(1).Input = {'trial_type', 'stim_type'};
@@ -44,7 +45,6 @@ function data = Label_identical_rows(transformer, data)
   %
   %   assertEqual(new_content.trial_type_label, [1;2;1;2;3;4;1]);
   %   assertEqual(new_content.stim_type_label,  [1;2;3;1;1;1;1]);
-  %
   %
   %
 

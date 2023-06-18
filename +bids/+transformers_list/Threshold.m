@@ -2,8 +2,8 @@ function data = Threshold(transformer, data)
   %
   % Thresholds input values at a specified cut-off and optionally binarizes the result.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -14,7 +14,6 @@ function data = Threshold(transformer, data)
   %         "Binarize": true,
   %         "Output": "delayed_onset"
   %       }
-  %
   %
   % Arguments:
   %
@@ -52,8 +51,10 @@ function data = Threshold(transformer, data)
   %                          in-place to all the inputs.
   % :type  Output: char or array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Threshold', ...
   %                         'Input', 'onset', ...

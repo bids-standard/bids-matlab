@@ -12,7 +12,6 @@ function metalist = get_meta_list(filename, pattern)
   %                  If provided, it must at least be ``'%s'``.
   % :type  pattern:  char
   %
-  %
   % metalist    - list of paths to metafiles
   %
   %

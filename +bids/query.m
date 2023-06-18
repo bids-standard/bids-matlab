@@ -90,22 +90,11 @@ function result = query(BIDS, query, varargin)
   %
   % If you want to exclude an entity, use ``''`` or ``[]``.
   %
+  % It is possible to use regular expressions in the queried values.
   %
-  % It is also possible to use regular expressions in the value.
+  % Examples
+  % --------
   %
-  % Regex example::
-  %
-  %     % The following 2 will return the same thing
-  %     data = bids.query(BIDS, 'data', 'sub', '01')
-  %     data = bids.query(BIDS, 'data', 'sub', '^01$')
-  %
-  %     % But the following would return all the data for all subjects
-  %     % whose label ends in '01'
-  %     data = bids.query(BIDS, 'data', 'sub', '.*01')
-  %
-  % ---
-  %
-  % Example 1:
   % Querying for 'BOLD' files for subject '01', for run 1 to 5
   % of the 'stopsignalwithpseudowordnaming' task
   % with gunzipped nifti files.
@@ -119,7 +108,6 @@ function result = query(BIDS, query, varargin)
   %                            'extension', '.nii.gz', ...
   %                            'suffix', 'bold');
   %
-  % Example 2:
   % Same as above but using a filter structure.
   %
   % .. code-block:: matlab
@@ -132,8 +120,6 @@ function result = query(BIDS, query, varargin)
   %
   %     data = bids.query(BIDS, 'data', filters);
   %
-  %
-  % Example 3:
   % Same as above but using regular expression
   % to query for subjects 1 to 5.
   %
@@ -147,8 +133,6 @@ function result = query(BIDS, query, varargin)
   %
   %     data = bids.query(BIDS, 'data', filters);
   %
-  %
-  % Example 4:
   % The following query would return all files that do not contain the
   % task entity.
   %

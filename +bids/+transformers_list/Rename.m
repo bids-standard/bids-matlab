@@ -2,8 +2,8 @@ function data = Rename(transformer, data)
   %
   %   Rename a variable.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -19,7 +19,6 @@ function data = Rename(transformer, data)
   %       ]
   %     }
   %
-  %
   % Arguments:
   %
   % :param Input: **mandatory**. The name(s) of the variable(s) to rename.
@@ -30,8 +29,10 @@ function data = Rename(transformer, data)
   %                          and columns will be mapped 1-to-1 in order.
   % :type  Output: string or array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Rename', ...
   %                         'Input', {{'age_gt_70', 'age_lt_18'}}, ...
@@ -44,7 +45,6 @@ function data = Rename(transformer, data)
   %   data. TODO
   %
   %   ans = TODO
-  %
   %
   %
 

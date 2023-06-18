@@ -11,8 +11,8 @@ function data = Logical(transformer, data)
   %
   % - returning a single column as output.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -29,7 +29,6 @@ function data = Logical(transformer, data)
   %
   % will evaluate to false and all other values will evaluate to true.
   %
-  %
   % Arguments:
   %
   % :param Name: **mandatory**.  Any of ``And``, ``Or``, ``Not``.
@@ -41,8 +40,10 @@ function data = Logical(transformer, data)
   % :param Output: Optional. The name of the output column.
   % :type  Output: char or array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %     transformers = struct('Name', 'And', ...
   %                           'Input', {{'sex_m', 'age_gt_twenty'}}, ...

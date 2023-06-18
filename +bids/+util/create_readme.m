@@ -2,13 +2,11 @@ function create_readme(varargin)
   %
   % Create a README in a BIDS dataset.
   %
-  %
   % USAGE::
   %
   %   bids.util.create_readme(layout_or_path, is_datalad_ds, ...
   %                           'tolerant', true, ...
   %                           'verbose', false)
-  %
   %
   % :param layout_or_path:
   % :type  layout_or_path:  path or structure

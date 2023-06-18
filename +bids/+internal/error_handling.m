@@ -19,7 +19,10 @@ function error_handling(varargin)
   % :param verbose:
   % :type verbose:  logical
   %
-  % Example::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   bids.internal.error_handling(mfilename(), 'thisError', 'this is an error', tolerant, verbose)
   %

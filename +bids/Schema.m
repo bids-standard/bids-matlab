@@ -45,7 +45,7 @@ classdef Schema
 
     function obj = load(obj, use_schema)
       %
-      % Loads schema
+      % Load schema.
       %
       % USAGE::
       %
@@ -136,22 +136,24 @@ classdef Schema
     %% ENTITIES
     function order = entity_order(obj, varargin)
       %
-      % Returns the 'correct' order for entities of entity list. If there are
-      % non BIDS entities they are added after the BIDS ones in alphabetical
-      % order.
+      % Return the 'correct' order for entities of entity list.
+      %
+      % If there are non BIDS entities they are added
+      % after the BIDS ones in alphabetical order.
       %
       % USAGE::
       %
       %     order = schema.entity_order(entity_list)
       %
+      % Example
+      % -------
       %
-      % Example::
+      % .. code-block:: matlab
       %
       %     schema = bids.Schema();
       %
       %     %  get the order of all the BIDS entities
       %     order = schema.entity_order()
-      %
       %
       %     % reorder typical BIDS entities
       %     entity_list_to_order = {'description'
@@ -200,13 +202,16 @@ classdef Schema
 
     function key = return_entity_key(obj, entity)
       %
-      % Returns the key of an entity
+      % Return the key of an entity.
       %
       % USAGE::
       %
       %     key = schema.return_entity_key(entity)
       %
-      % Example::
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
       %
       %     key = schema.return_entity_key('description')
       %
@@ -231,7 +236,6 @@ classdef Schema
       %
       %   groups = schema.return_modality_groups()
       %
-      %
       % Returns a dummy variable if we go schema less
       %
 
@@ -245,7 +249,8 @@ classdef Schema
     %% SUFFIX GROUP
 
     function suffix_groups = list_suffix_groups(obj, datatype, scope)
-      % creates a structure of all the suffix group of a datatype
+      %
+      % Creates a structure of all the suffix group of a datatype.
       %
       % USAGE::
       %
@@ -277,7 +282,7 @@ classdef Schema
     end
 
     function  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
-      % returns a structure of all the suffix group of a datatype
+      % Returns a structure of all the suffix group of a datatype.
       %
       % USAGE::
       %
@@ -286,7 +291,10 @@ classdef Schema
       % :param datatype:
       % :type  datatype:  char
       %
-      % Example::
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
       %
       %  suffix_groups = schema.return_suffix_groups_for_datatype('func')
       %
@@ -298,7 +306,7 @@ classdef Schema
     end
 
     function entities = return_entities_for_suffix_group(obj, suffix_group)
-      % entities are returned in the expected order according to the schema
+      % Entities are returned in the expected order according to the schema.
       %
       % USAGE::
       %
@@ -307,10 +315,13 @@ classdef Schema
       % :param suffix_group:
       % :type  suffix_group:  struct
       %
-      % Example::
+      % Example
+      % -------
       %
-      %  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
-      %  entities = schema.return_entities_for_suffix_group(suffix_groups(1))
+      % .. code-block:: matlab
+      %
+      %   suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      %   entities = schema.return_entities_for_suffix_group(suffix_groups(1))
       %
 
       suffix_group = obj.ci_check(suffix_group);
@@ -325,15 +336,15 @@ classdef Schema
 
     function required_entities = required_entities_for_suffix_group(obj, this_suffix_group)
       %
-      %  Returns a logical vector to track which entities of a suffix group
-      %  are required in the bids schema
-      %
-      % :param this_suffix_group:
-      % :type  this_suffix_group:  struct
+      % Return a logical vector to track which entities of a suffix group
+      % are required in the bids schema.
       %
       % USAGE::
       %
       %  required_entities = schema.required_entities_for_suffix_group(this_suffix_group)
+      %
+      % :param this_suffix_group:
+      % :type  this_suffix_group:  struct
       %
 
       this_suffix_group = obj.ci_check(this_suffix_group);
@@ -362,8 +373,12 @@ classdef Schema
 
     function suffix_group = find_suffix_group(obj, modality, suffix)
       %
-      % For a given sufffix and modality, this returns the "suffix group" this
-      % suffix belongs to
+      % For a given sufffix and modality, this return the "suffix group" this
+      % suffix belongs to.
+      %
+      % USAGE::
+      %
+      %  suffix_group = schema.find_suffix_group(modality, suffix)
       %
       % :param modality:
       % :type  modality:  char
@@ -371,11 +386,10 @@ classdef Schema
       % :param suffix:
       % :type  suffix:  char
       %
-      % USAGE::
+      % Example
+      % -------
       %
-      %  suffix_group = schema.find_suffix_group(modality, suffix)
-      %
-      % Example::
+      % .. code-block:: matlab
       %
       %     schema = bids.Schema();
       %     suffix_group = schema.find_suffix_group('anat', 'T1w');
@@ -419,10 +433,14 @@ classdef Schema
       %
       % For a given suffix, returns all the possible datatypes that have this suffix.
       %
+      %
       % :param suffix:
       % :type  suffix:  char
       %
-      % Example::
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
       %
       %       schema = bids.Schema();
       %       datatypes = schema.return_datatypes_for_suffix('bold');
@@ -472,15 +490,15 @@ classdef Schema
       %
       % returns the list of entities for a given suffix of a given modality
       %
+      % USAGE::
+      %
+      %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
+      %
       % :param modality:
       % :type  modality:  char
       %
       % :param suffix:
       % :type  suffix:  char
-      %
-      % USAGE::
-      %
-      %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
       %
 
       suffix_group = obj.find_suffix_group(modality, suffix);
@@ -503,14 +521,13 @@ classdef Schema
       %
       % creates a regular expression of suffixes for a given imaging modality
       %
-      % :param modality:
-      % :type  modality:  char
-      %
       % USAGE::
       %
       %   reg_ex = schema.return_modality_suffixes_regex(modality)
       %
-
+      % :param modality:
+      % :type  modality:  char
+      %
       reg_ex = obj.return_regex(modality, 'suffixes');
     end
 
@@ -518,12 +535,14 @@ classdef Schema
       %
       % creates a regular expression of extensions for a given imaging modality
       %
-      % :param modality:
-      % :type  modality:  char
-      %
       % USAGE::
       %
-      %   reg_ex = schema.return_modality_extensions_regex(modality)
+      %   reg_ex = schema.return_modality_regex(modality)
+      %
+      %
+      %
+      % :param modality:
+      % :type  modality:  char
       %
 
       reg_ex = obj.return_regex(modality, 'extensions');
@@ -536,9 +555,7 @@ classdef Schema
       % :param modality:
       % :type  modality:  char
       %
-      % USAGE::
-      %
-      %   reg_ex = schema.return_modality_regex(modality)
+
       %
 
       suffixes = obj.return_modality_suffixes_regex(modality);

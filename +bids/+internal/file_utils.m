@@ -11,7 +11,6 @@ function varargout = file_utils(str, varargin)
   %   [dirs]        = bids.internal.file_utils('List',   directory, 'dir', regexp)
   %   [dirs]        = bids.internal.file_utils('FPList', directory, 'dir', regexp)
   %
-  %
   % To get a certain piece of information from a file::
   %
   %   str = bids.internal.file_utils(str, option)
@@ -20,7 +19,6 @@ function varargout = file_utils(str, varargin)
   %
   % option     - char of requested item - one among:
   %              {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}
-  %
   %
   % To set a certain piece of information from a file::
   %
@@ -32,7 +30,6 @@ function varargout = file_utils(str, varargin)
   %              {'path', 'basename', 'ext', 'filename', 'prefix', 'suffix'}
   %
   % opt_val    - char of new value for feature
-  %
   %
   % Based on spm_file.m and spm_select.m from SPM12.
   %

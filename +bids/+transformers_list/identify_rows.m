@@ -4,7 +4,10 @@ function rows = identify_rows(data, left, query_type, right)
   %
   %     rows = identify_rows(data, left, query_type, right)
   %
-  % Example::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Filter', ...
   %                        'Input', 'sex', ...
@@ -15,7 +18,6 @@ function rows = identify_rows(data, left, query_type, right)
   %
   %   [left, query_type, right] = bids.transformers_list.get_query(transformer);
   %   rows = identify_rows(data, left, query_type, right);
-  %
   %
   %
 

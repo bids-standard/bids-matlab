@@ -3,7 +3,8 @@ function data = Factor(transformer, data)
   % Converts a nominal/categorical variable with N unique levels
   % to either N indicators (i.e., dummy-coding).
   %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -33,7 +34,10 @@ function data = Factor(transformer, data)
   % - ``gender_M_age_30``
   % - ``gender_M_age_30``
   %
-  % **CODE EXAMPLE**::
+  % CODE EXAMPLE
+  % ------------
+  %
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Factor', ...
   %                        'Input', {{'gender', 'age'}});
@@ -46,7 +50,6 @@ function data = Factor(transformer, data)
   %   data.gender_F_age_20
   %
   %   ans = TODO
-  %
   %
   %
 

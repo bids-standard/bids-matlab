@@ -3,8 +3,8 @@ function data = Assign(transformer, data)
   % The Assign transformation assigns one or more variables or columns (specified as the input)
   % to one or more other columns (specified by target and/or output as described below).
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -15,7 +15,6 @@ function data = Assign(transformer, data)
   %     "TargetAttr": "duration",
   %     "Output": ["face_modulated_by_RT"]
   %   }
-  %
   %
   % Arguments:
   %
@@ -35,7 +34,6 @@ function data = Assign(transformer, data)
   % .. note::
   %
   %   If no output argument is specified, the columns named in target are modified in-place.
-  %
   %
   % :param Output: Optional. Names of the columns to output the result of the assignment to.
   %                          Must exactly match the length of the input and target arguments.
@@ -73,16 +71,16 @@ function data = Assign(transformer, data)
   %   In case where in-place assignment is desired (essentially, renaming a column),
   %   either use the rename transformation, or set output to the same value as the input.
   %
-  % Examples:
-  %
   % To reassign the value property of a variable named ``response_time``
   % to the duration property of a ``face`` variable
   % (as one might do in order to, e.g., model trial-by-trial reaction time differences
   % for a given condition using a varying-epoch approach),
   % and write it out as a new ``face_modulated_by_RT`` column.
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Assign', ...
   %                         'Input', 'response_time', ...
@@ -99,8 +97,6 @@ function data = Assign(transformer, data)
   %   data.face_modulated_by_RT
   %
   %   ans =
-  %
-  %
   %
   %
 

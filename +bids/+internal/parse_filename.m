@@ -12,7 +12,10 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   % :param fields:   cell of strings of the entities to use for parsing
   % :type  fields:   cell
   %
-  % Example::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   %
@@ -30,7 +33,10 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   %                        'run', '1', ...
   %                        'acq', 'hd');
   %
-  % Example::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   %   fields = {'sub', 'ses', 'run', 'acq', 'ce'};

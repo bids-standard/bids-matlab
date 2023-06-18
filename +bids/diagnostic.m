@@ -43,7 +43,10 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   %                           Defaults to ``true``.
   % :type  verbose:    logical
   %
-  % Examples::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   BIDS = bids.layout(path_to_dataset);
   %   diagnostic_table = bids.diagnostic(BIDS, 'output_path', pwd);

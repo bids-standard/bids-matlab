@@ -7,7 +7,7 @@ function plot_events(varargin)
   %                             'model_file', path_to_model)
   %
   % :param events_files: BIDS events TSV files.
-  % :type events_files: path or cellstr of paths
+  % :type  events_files: path or cellstr of paths
   %
   % :param include: Optional. Restrict conditions to plot.
   % :type  include: char or cellstr

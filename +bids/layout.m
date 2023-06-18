@@ -40,8 +40,10 @@ function BIDS = layout(varargin)
   % :param verbose: Set to ``true`` to get more feedback
   % :type  verbose: logical
   %
+  % Example
+  % -------
   %
-  % Example::
+  % .. code-block:: matlab
   %
   %     BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
   %                        'use_schema', true, ...

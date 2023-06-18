@@ -7,8 +7,8 @@ function data = Scale(transformer, data)
   % with the default being to apply both
   % (i.e., standardizing each value so that it has zero mean and unit SD).
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -20,7 +20,6 @@ function data = Scale(transformer, data)
   %         "ReplaceNa": true,
   %         "Output": "scaled_reaction_time"
   %       }
-  %
   %
   % Arguments:
   %
@@ -48,8 +47,10 @@ function data = Scale(transformer, data)
   %                          the scaling transformation is applied in-place to all the input.
   % :type  Output: char or array
   %
+  % CODE EXAMPLE
+  % ------------
   %
-  % **CODE EXAMPLE**::
+  % .. code-block:: matlab
   %
   %   transformer = struct('Name', 'Scale', ...
   %                        'Input', 'reaction_time',

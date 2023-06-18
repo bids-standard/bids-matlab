@@ -2,8 +2,8 @@ function new_data = Merge_identical_rows(transformer, data)
   %
   % Merge consecutive identical rows.
   %
-  %
-  % **JSON EXAMPLE**:
+  % JSON EXAMPLE
+  % ------------
   %
   % .. code-block:: json
   %
@@ -11,7 +11,6 @@ function new_data = Merge_identical_rows(transformer, data)
   %       "Name": "MergeIdenticalRows",
   %       "Input": "trial_type",
   %     }
-  %
   %
   % Arguments:
   %
@@ -29,7 +28,10 @@ function new_data = Merge_identical_rows(transformer, data)
   %      this means that the content from other columns but the one specified in will be deleted
   %      execpt for the last one
   %
-  % **CODE EXAMPLE**::
+  % CODE EXAMPLE
+  % ------------
+  %
+  % .. code-block:: matlab
   %
   %    transformers(1).Name = 'MergeIdenticalRows';
   %    transformers(1).Input = {'trial_type'};
@@ -66,7 +68,6 @@ function new_data = Merge_identical_rows(transformer, data)
   %         2
   %         4
   %         2
-  %
   %
   %
 
