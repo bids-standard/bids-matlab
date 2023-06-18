@@ -23,7 +23,7 @@ function test_query_extension()
 
   assertEqual(numel(dependencies.group), 2);
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'hcp_example_bids')); % sub-100307
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'hcp_example_bids')); % sub-100307
 
   BIDS.subjects(1).anat(1).dependencies.explicit;
 
