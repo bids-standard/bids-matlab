@@ -6,6 +6,90 @@ function test_suite = test_copy_to_derivative %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_copy_to_derivative_unzip_force_false_572
+  % unzip should not occur if output file already exist and force is false
+
+  [pth, out_path, filter, cfg] = fixture('MoAEpilot');
+
+  pipeline_name = 'bids-matlab';
+  unzip = true;
+  force = false;
+  use_schema = true;
+  verbose = cfg.verbose;
+  skip_dependencies = true;
+
+  bids.copy_to_derivative(pth, ...
+                          'pipeline_name', pipeline_name, ...
+                          'out_path', out_path, ...
+                          'filter', filter, ...
+                          'use_schema', use_schema, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
+
+  derivatives = bids.layout(fullfile(out_path, pipeline_name), ...
+                            'use_schema', false, 'verbose', verbose);
+
+  t1w = bids.query(derivatives, 'data', 'modality', 'anat');
+  folder = fileparts(t1w{1});
+  files = dir(fullfile(folder, '*.nii'));
+  timestamp = files.date;
+
+  pause(1);
+
+  bids.copy_to_derivative(pth, ...
+                          'pipeline_name', pipeline_name, ...
+                          'out_path', out_path, ...
+                          'filter', filter, ...
+                          'use_schema', use_schema, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
+
+  t1w = bids.query(derivatives, 'data', 'modality', 'anat');
+  folder = fileparts(t1w{1});
+  files = dir(fullfile(folder, '*.nii'));
+  assertEqual(files.date, timestamp);
+
+  derivatives = bids.layout(fullfile(out_path, pipeline_name), ...
+                            'use_schema', false, 'verbose', verbose);
+
+  zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
+  assertEqual(numel(zipped_files), 0);
+
+end
+
+function test_copy_to_derivative_unzip_force_false
+
+  [pth, out_path, filter, cfg] = fixture('MoAEpilot');
+
+  pipeline_name = 'bids-matlab';
+  unzip = true;
+  force = false;
+  use_schema = true;
+  verbose = cfg.verbose;
+  skip_dependencies = true;
+
+  bids.copy_to_derivative(pth, ...
+                          'pipeline_name', pipeline_name, ...
+                          'out_path', out_path, ...
+                          'filter', filter, ...
+                          'use_schema', use_schema, ...
+                          'unzip', unzip, ...
+                          'force', force, ...
+                          'skip_dep', skip_dependencies, ...
+                          'verbose', verbose);
+
+  derivatives = bids.layout(fullfile(out_path, pipeline_name), ...
+                            'use_schema', false, 'verbose', verbose);
+
+  zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
+  assertEqual(numel(zipped_files), 0);
+
+end
+
 function test_copy_to_derivative_exclude_with_regex()
 
   [BIDS, out_path, filter, cfg] = fixture('ds002');
@@ -39,8 +123,6 @@ function test_copy_to_derivative_exclude_with_regex()
                                               '.*_events.json');
   assert(isempty(no_file_expected));
 
-  teardown(out_path);
-
 end
 
 function test_copy_to_derivative_GeneratedBy()
@@ -62,8 +144,6 @@ function test_copy_to_derivative_GeneratedBy()
   BIDS = bids.layout(fullfile(out_path, 'SPM12'));
 
   assertEqual(BIDS.description.GeneratedBy.Name, 'SPM12');
-
-  teardown(out_path);
 
 end
 
@@ -100,13 +180,11 @@ function test_copy_to_derivative_basic()
                           'skip_dep', skip_dependencies, ...
                           'verbose', verbose);
 
-  teardown(out_path);
-
 end
 
 function test_copy_to_derivative_unzip
 
-  [pth, out_path, filter, cfg, bu_folder] = fixture('MoAEpilot');
+  [pth, out_path, filter, cfg] = fixture('MoAEpilot');
 
   pipeline_name = 'bids-matlab';
   unzip = true;
@@ -130,8 +208,6 @@ function test_copy_to_derivative_unzip
 
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
-
-  teardown_moae(bu_folder);
 
 end
 
@@ -163,10 +239,9 @@ function test_copy_to_derivative_dependencies()
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 10);
 
-  teardown(out_path);
-  bids.util.mkdir(out_path);
-
   %%
+  [BIDS, out_path, filter] = fixture('qmri_mp2rageme');
+
   skip_dependencies = false;
 
   bids.copy_to_derivative(BIDS, ...
@@ -184,8 +259,6 @@ function test_copy_to_derivative_dependencies()
                             'verbose', verbose);
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 11);
-
-  teardown(out_path);
 
 end
 
@@ -216,13 +289,9 @@ function test_copy_to_derivative_sessions_scans_tsv
   assert(~isempty(derivatives.subjects(1).scans));
   assertEqual(derivatives.subjects(1).sess, derivatives.subjects(2).sess);
 
-  teardown(out_path);
-
 end
 
-function [BIDS, out_path, filter, cfg, bu_folder] = fixture(dataset)
-
-  bu_folder = '';
+function [BIDS, out_path, filter, cfg] = fixture(dataset)
 
   cfg = set_test_cfg();
 
@@ -234,11 +303,7 @@ function [BIDS, out_path, filter, cfg, bu_folder] = fixture(dataset)
   %
   %   input_dir = fullfile('..', 'data', 'ds000117');
 
-  out_path = fullfile(pwd, 'data', dataset, 'derivatives');
-
-  if exist(out_path, 'dir')
-    teardown(out_path);
-  end
+  out_path = fullfile(temp_dir, 'data', dataset, 'derivatives');
 
   bids.util.mkdir(out_path);
 
@@ -269,8 +334,6 @@ function [BIDS, out_path, filter, cfg, bu_folder] = fixture(dataset)
 
       if ~isdir(fullfile(BIDS, 'sub-01'))
 
-        bu_folder = fixture_moae();
-
         bids.util.download_ds('source', 'spm', ...
                               'demo', 'moae', ...
                               'force', true, ...
@@ -294,8 +357,4 @@ function [BIDS, out_path, filter, cfg, bu_folder] = fixture(dataset)
 
   end
 
-end
-
-function teardown(out_path)
-  rmdir(out_path, 's');
 end

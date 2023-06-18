@@ -268,18 +268,18 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip
 
   %% ignore already existing files
   % avoid circular references
-  if ~force && exist(fullfile(out_dir, file.filename), 'file')
+  if ~force && output_file_exists(out_dir, file, unzip_files)
     if verbose
       fprintf(1, '\n skipping: %s', bids.internal.format_path(file.filename));
     end
     return
+
   else
     file.meta = bids.internal.get_metadata(file.metafile);
+
   end
 
-  if ~exist(out_dir, 'dir')
-    mkdir(out_dir);
-  end
+  bids.util.mkdir(out_dir);
 
   %% copy data file
   % we follow any eventual symlink and gunzip the data
@@ -406,4 +406,20 @@ end
 
 function status = is_gunzipped(file)
   status = bids.internal.ends_with(file, '.gz');
+end
+
+function status = output_file_exists(out_dir, file, unzip_files)
+
+  status = false;
+
+  if exist(fullfile(out_dir, file.filename), 'file')
+    status = true;
+  end
+
+  if unzip_files && ...
+     is_gunzipped(file.filename) && ...
+     exist(fullfile(out_dir, file.filename(1:end - 3)), 'file')
+    status = true;
+  end
+
 end
