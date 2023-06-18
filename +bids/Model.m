@@ -6,12 +6,12 @@ classdef Model
   % <https://bids-standard.github.io/stats-models>`_
   % for more information.
   %
-  % USAGE::
+  % USAGE:: matlab
   %
   %   bm = bids.Model('init', true, ...
-  %                    'file', path_to_bids_stats_model_file, ...
-  %                    'tolerant', true,
-  %                    'verbose', false);
+  %                   'file', path_to_bids_stats_model_file, ...
+  %                   'tolerant', true,
+  %                   'verbose', false);
   %
   % :param init: if ``true`` this will initialize an empty model. Defaults to ``false``.
   % :type init: logical
@@ -26,7 +26,7 @@ classdef Model
   % :type verbose: logical
   %
   % Examples
-  % -------
+  % --------
   %
   % .. code-block:: matlab
   %
