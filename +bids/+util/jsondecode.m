@@ -33,6 +33,12 @@ function value = jsondecode(file, varargin)
         ismember(exist('jsondecode', 'file'), [2 3]); % jsonstuff / Matlab-compatible implementation
   end
 
+  if ~exist(file, 'file')
+    msg = sprintf('Unable to read file ''%s'': file not found', file);
+    bids.internal.error_handling(mfilename(), 'FileNotFound', ...
+                                 msg, false);
+  end
+
   if has_jsondecode
     try
       value = jsondecode(fileread(file));
@@ -68,6 +74,7 @@ function value = jsondecode(file, varargin)
 end
 
 function warning_cannot_read_json(file)
-  warning('jsondecode:CannotReadJson', ...
-          'Could not read file:\n%s', file);
+  msg = sprintf('Could not read file:\n%s', file);
+  bids.internal.error_handling(mfilename(), 'CannotReadJson', ...
+                               msg, true, true);
 end

@@ -6,7 +6,17 @@ function test_suite = test_json_decode %#ok<*STOUT>
   initTestSuite;
 end
 
-function test_json_decode_error()
+function test_json_decode_file_not_found()
+
+  % write dummy faulty json
+
+  filename = fullfile(temp_dir, 'foo.json');
+  assertExceptionThrown(@() bids.util.jsondecode(filename), ...
+                        'jsondecode:FileNotFound');
+
+end
+
+function test_json_decode_parse_error()
 
   % write dummy faulty json
 
