@@ -34,19 +34,40 @@ function value = jsondecode(file, varargin)
   end
 
   if has_jsondecode
-    value = jsondecode(fileread(file));
+    try
+      value = jsondecode(fileread(file));
+    catch ME
+      warning_cannot_read_json(file);
+      rethrow(ME);
+    end
 
     % JSONio
   elseif exist('jsonread', 'file') == 3
-    value = jsonread(file, varargin{:});
+    try
+      value = jsonread(file, varargin{:});
+    catch ME
+      warning_cannot_read_json(file);
+      rethrow(ME);
+    end
 
     % SPM12
   elseif exist('spm_jsonread', 'file') == 3
-    value = spm_jsonread(file, varargin{:});
+    try
+      value = spm_jsonread(file, varargin{:});
+    catch ME
+      warning_cannot_read_json(file);
+      rethrow(ME);
+    end
 
   else
     url = 'https://github.com/gllmflndn/JSONio';
     error('JSON library required: install JSONio from: %s', url);
+
   end
 
+end
+
+function warning_cannot_read_json(file)
+  warning('jsondecode:CannotReadJson', ...
+          'Could not read file:\n%s', file);
 end
