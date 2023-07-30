@@ -164,6 +164,16 @@ function BIDS = layout(varargin)
       continue
     end
 
+    if use_schema && isempty(ls(fullfile(BIDS.pth, subjects{iSub})))
+      if verbose
+        msg = sprintf('subject ''%s'' is empty. Skipping.', ...
+                      subjects{iSub});
+        bids.internal.error_handling(mfilename, 'EmptySubject', ...
+                                     msg, tolerant, verbose);
+      end
+      continue
+    end
+
     if verbose
       fprintf(1, ' Indexing subject: %s [', subjects{iSub});
     end
