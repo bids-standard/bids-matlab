@@ -567,7 +567,8 @@ function file_list = return_file_list(modality, subject, schema)
 
   % sub and ses part
   pattern = [prefix subject.name '_'];
-  if ~isempty(subject.session)
+  if isempty(schema.content)
+  elseif ~isempty(subject.session)
     pattern = [pattern subject.session '_'];
   end
 
