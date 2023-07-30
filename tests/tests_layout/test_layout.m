@@ -21,6 +21,11 @@ function test_layout_do_not_include_empty_subject()
   assertWarning(@()bids.layout(bids_dir, 'verbose', verbose), ...
                 'layout:EmptySubject');
 
+  verbose = false;
+  BIDS = bids.layout(bids_dir, 'verbose', verbose, 'use_schema', false);
+  assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
+  assertEqual(numel(BIDS.subjects), 2);
+
 end
 
 function test_layout_filter()
