@@ -83,7 +83,11 @@ function BIDS = layout(varargin)
   addParameter(args, 'use_schema', default_use_schema);
   addParameter(args, 'verbose', default_verbose);
 
-  parse(args, varargin{:});
+  try
+    parse(args, varargin{:});
+  catch ME
+    handle_invalid_input(ME, varargin{1});
+  end
 
   root = args.Results.root;
   index_derivatives = args.Results.index_derivatives;
@@ -116,6 +120,7 @@ function BIDS = layout(varargin)
   % BIDS.description   -- content of dataset_description.json
   % BIDS.sessions      -- cellstr of sessions
   % BIDS.participants  -- for participants.tsv
+  % BIDS.phenotype     -- for content of the phenotype folder
   % BIDS.subjects      -- structure array of subjects
   % BIDS.root          -- tsv and json files in the root folder
 
@@ -123,6 +128,7 @@ function BIDS = layout(varargin)
                 'description', struct([]), ...
                 'sessions', {{}}, ...
                 'participants', struct([]), ...
+                'phenotype', struct([]), ...
                 'subjects', struct([]));
 
   BIDS = validate_description(BIDS, tolerant, verbose);
@@ -137,6 +143,20 @@ function BIDS = layout(varargin)
 
   BIDS.participants = [];
   BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, 'participants.tsv', verbose);
+
+  BIDS.phenotype = struct('file', [], 'metafile', []);
+
+  assessments = bids.internal.file_utils('FPList', ...
+                                         fullfile(BIDS.pth, 'phenotype'), ...
+                                         '.*\.tsv$');
+  for i = 1:size(assessments, 1)
+    file = deblank(assessments(i, :));
+    sidecar = bids.internal.file_utils(file, 'ext', 'json');
+    BIDS.phenotype(i).file = file;
+    if exist(sidecar, 'file') == 2
+      BIDS.phenotype(i).metafile = sidecar;
+    end
+  end
 
   BIDS = index_root_directory(BIDS);
 
@@ -220,6 +240,22 @@ function BIDS = layout(varargin)
     BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, 'samples.tsv', verbose);
   end
 
+end
+
+function handle_invalid_input(ME, root)
+  % TODO improve as this may send the wrong message on octave
+  % for ANY failed input parsing
+  if (~bids.internal.is_octave && ...
+      bids.internal.starts_with(ME.message, ...
+                                'The value of ''root''')) || ...
+    bids.internal.is_octave
+    if ischar(root)
+      msg = sprintf(['First input argument must be an existing directory.'...
+                     '\nGot: ''%s.'''], root);
+      bids.internal.error_handling(mfilename(), 'InvalidInput', ...
+                                   msg, false);
+    end
+  end
 end
 
 function value = exclude(filter, entity, label)
@@ -577,7 +613,8 @@ function file_list = return_file_list(modality, subject, schema)
 
   % sub and ses part
   pattern = [prefix subject.name '_'];
-  if ~isempty(subject.session)
+  if isempty(schema.content)
+  elseif ~isempty(subject.session)
     pattern = [pattern subject.session '_'];
   end
 
