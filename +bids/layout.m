@@ -83,7 +83,11 @@ function BIDS = layout(varargin)
   addParameter(args, 'use_schema', default_use_schema);
   addParameter(args, 'verbose', default_verbose);
 
-  parse(args, varargin{:});
+  try
+    parse(args, varargin{:});
+  catch ME
+    handle_invalid_input(ME, varargin{1});
+  end
 
   root = args.Results.root;
   index_derivatives = args.Results.index_derivatives;
@@ -210,6 +214,22 @@ function BIDS = layout(varargin)
     BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, 'samples.tsv', verbose);
   end
 
+end
+
+function handle_invalid_input(ME, root)
+  % TODO improve as this may send the wrong message on octave
+  % for ANY failed input parsing
+  if (~bids.internal.is_octave && ...
+      bids.internal.starts_with(ME.message, ...
+                                'The value of ''root''')) || ...
+    bids.internal.is_octave
+    if ischar(root)
+      msg = sprintf(['First input argument must be an existing directory.'...
+                     '\nGot: ''%s.'''], root);
+      bids.internal.error_handling(mfilename(), 'InvalidInput', ...
+                                   msg, false);
+    end
+  end
 end
 
 function value = exclude(filter, entity, label)

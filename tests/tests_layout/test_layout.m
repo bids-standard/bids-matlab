@@ -6,6 +6,12 @@ function test_suite = test_layout %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_error_message
+
+  assertExceptionThrown(@()bids.layout('foo'), 'layout:InvalidInput');
+
+end
+
 function test_layout_filter()
 
   verbose = false;
