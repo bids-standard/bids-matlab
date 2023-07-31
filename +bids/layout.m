@@ -99,14 +99,11 @@ function BIDS = layout(varargin)
 
   if ischar(root)
     root = bids.internal.file_utils(root, 'CPath');
-
   elseif isstruct(root)
     BIDS = root; % for bids.query
     return
-
   else
     error('Invalid syntax.');
-
   end
 
   if verbose
@@ -144,19 +141,7 @@ function BIDS = layout(varargin)
   BIDS.participants = [];
   BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, 'participants.tsv', verbose);
 
-  BIDS.phenotype = struct('file', [], 'metafile', []);
-
-  assessments = bids.internal.file_utils('FPList', ...
-                                         fullfile(BIDS.pth, 'phenotype'), ...
-                                         '.*\.tsv$');
-  for i = 1:size(assessments, 1)
-    file = deblank(assessments(i, :));
-    sidecar = bids.internal.file_utils(file, 'ext', 'json');
-    BIDS.phenotype(i).file = file;
-    if exist(sidecar, 'file') == 2
-      BIDS.phenotype(i).metafile = sidecar;
-    end
-  end
+  BIDS = index_phenotype(BIDS);
 
   BIDS = index_root_directory(BIDS);
 
@@ -181,6 +166,16 @@ function BIDS = layout(varargin)
   for iSub = 1:numel(subjects)
 
     if exclude_subject(filter, strrep(subjects{iSub}, 'sub-', ''))
+      continue
+    end
+
+    if use_schema && isempty(ls(fullfile(BIDS.pth, subjects{iSub})))
+      if verbose
+        msg = sprintf('subject ''%s'' is empty. Skipping.', ...
+                      subjects{iSub});
+        bids.internal.error_handling(mfilename, 'EmptySubject', ...
+                                     msg, tolerant, verbose);
+      end
       continue
     end
 
@@ -244,6 +239,22 @@ function handle_invalid_input(ME, root)
                      '\nGot: ''%s.'''], root);
       bids.internal.error_handling(mfilename(), 'InvalidInput', ...
                                    msg, false);
+    end
+  end
+end
+
+function BIDS = index_phenotype(BIDS)
+  BIDS.phenotype = struct('file', [], 'metafile', []);
+
+  assessments = bids.internal.file_utils('FPList', ...
+                                         fullfile(BIDS.pth, 'phenotype'), ...
+                                         '.*\.tsv$');
+  for i = 1:size(assessments, 1)
+    file = deblank(assessments(i, :));
+    sidecar = bids.internal.file_utils(file, 'ext', 'json');
+    BIDS.phenotype(i).file = file;
+    if exist(sidecar, 'file') == 2
+      BIDS.phenotype(i).metafile = sidecar;
     end
   end
 end
