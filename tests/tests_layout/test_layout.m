@@ -6,6 +6,55 @@ function test_suite = test_layout %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_do_not_include_empty_subject()
+
+  if ispc
+    % TODO investigate
+    moxunit_throw_test_skipped_exception('fail on windows');
+  end
+
+  bids_dir = fullfile(get_test_data_dir(), 'qmri_tb1tfl');
+  empty_sub = fullfile(bids_dir, 'sub-02');
+  bids.util.mkdir(fullfile(bids_dir, 'sub-02'));
+
+  verbose = false;
+
+  BIDS = bids.layout(bids_dir, 'verbose', verbose, 'use_schema', false);
+  assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
+  assertEqual(numel(BIDS.subjects), 2);
+
+  BIDS = bids.layout(bids_dir, 'verbose', verbose);
+  assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
+  assertEqual(numel(BIDS.subjects), 1);
+
+  rmdir(empty_sub);
+
+end
+
+function test_layout_do_not_include_empty_subject_warning()
+
+  if bids.internal.is_octave() || ispc
+    moxunit_throw_test_skipped_exception('Octave mixed-string-concat or fail on windows');
+  end
+
+  bids_dir = fullfile(get_test_data_dir(), 'qmri_tb1tfl');
+  empty_sub = fullfile(bids_dir, 'sub-02');
+  bids.util.mkdir(fullfile(bids_dir, 'sub-02'));
+
+  verbose = true;
+  assertWarning(@()bids.layout(bids_dir, 'verbose', verbose), ...
+                'layout:EmptySubject');
+
+  rmdir(empty_sub);
+
+end
+
+function test_layout_error_message
+
+  assertExceptionThrown(@()bids.layout('foo'), 'layout:InvalidInput');
+
+end
+
 function test_layout_filter()
 
   verbose = false;
@@ -46,15 +95,6 @@ function test_layout_filter_regex()
   subjects = bids.query(BIDS, 'sessions');
   assertEqual(subjects, {'1'});
 
-end
-
-function test_layout_empty_subject_folder_allowed_when_schemaless()
-
-  verbose = false;
-
-  bids.util.mkdir(fullfile(pwd, 'tmp/sub-01'));
-  bids.layout(fullfile(pwd, 'tmp'), 'use_schema', false, 'verbose', verbose);
-  rmdir(fullfile(pwd, 'tmp'), 's');
 end
 
 function test_layout_smoke_test()

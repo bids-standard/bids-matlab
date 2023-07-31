@@ -6,6 +6,30 @@ function test_suite = test_bids_query %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_query_phenotype()
+
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
+
+  phenotype = bids.query(BIDS,  'phenotype');
+
+  assertEqual(phenotype, struct('file', [], 'metafile', []));
+
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'fnirs_automaticity'), ...
+                     'filter', struct('sub', {{'^06$'}}));
+
+  phenotype = bids.query(BIDS,  'phenotype');
+
+  assertEqual(phenotype(1).file, fullfile(get_test_data_dir(), ...
+                                          'fnirs_automaticity', ...
+                                          'phenotype', ...
+                                          'practicelogbook.tsv'));
+  assertEqual(phenotype(1).metafile, fullfile(get_test_data_dir(), ...
+                                              'fnirs_automaticity', ...
+                                              'phenotype', ...
+                                              'practicelogbook.json'));
+
+end
+
 function test_query_participants()
 
   BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
