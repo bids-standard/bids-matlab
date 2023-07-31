@@ -12,33 +12,21 @@ function test_query_phenotype()
 
   phenotype = bids.query(BIDS,  'phenotype');
 
-  assertEqual(phenotype, struct('name', [], 'data', [], 'metadata', []));
+  assertEqual(phenotype, struct('file', [], 'metafile', []));
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'fnirs_automaticity'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'fnirs_automaticity'), ...
+                     'filter', struct('sub', {{'^06$'}}));
 
   phenotype = bids.query(BIDS,  'phenotype');
 
-  assertEqual(phenotype(1).name, 'practicelogbook');
-
-  assertEqual(fieldnames(phenotype(1).data), ...
-              {'participant_id'
-               'day'
-               'hour'
-               'practiceduration_finger'
-               'practiceduration_foot'
-               'selfassessment_finger'
-               'selfassessment_foot'
-               'notes'});
-
-  assertEqual(fieldnames(phenotype(1).metadata), ...
-              {'MeasurementToolMetadata'
-               'day'
-               'hour'
-               'practiceduration_finger'
-               'practiceduration_foot'
-               'selfassessment_finger'
-               'selfassessment_foot'
-               'notes'});
+  assertEqual(phenotype(1).file, fullfile(get_test_data_dir(), ...
+                                          'fnirs_automaticity', ...
+                                          'phenotype', ...
+                                          'practicelogbook.tsv'));
+  assertEqual(phenotype(1).metafile, fullfile(get_test_data_dir(), ...
+                                              'fnirs_automaticity', ...
+                                              'phenotype', ...
+                                              'practicelogbook.json'));
 
 end
 

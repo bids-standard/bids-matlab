@@ -140,7 +140,7 @@ function BIDS = layout(varargin)
   BIDS.participants = [];
   BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, 'participants.tsv', verbose);
 
-  BIDS.phenotype = struct('name', [], 'data', [], 'metadata', []);
+  BIDS.phenotype = struct('file', [], 'metafile', []);
 
   assessments = bids.internal.file_utils('FPList', ...
                                          fullfile(BIDS.pth, 'phenotype'), ...
@@ -148,11 +148,9 @@ function BIDS = layout(varargin)
   for i = 1:size(assessments, 1)
     file = deblank(assessments(i, :));
     sidecar = bids.internal.file_utils(file, 'ext', 'json');
-    BIDS.phenotype(i).name = bids.internal.file_utils(file, 'basename');
-    BIDS.phenotype(i).data = bids.util.tsvread(file);
-    BIDS.phenotype(i).metadata = {};
+    BIDS.phenotype(i).file = file;
     if exist(sidecar, 'file') == 2
-      BIDS.phenotype(i).metadata = bids.util.jsondecode(sidecar);
+      BIDS.phenotype(i).metafile = sidecar;
     end
   end
 
