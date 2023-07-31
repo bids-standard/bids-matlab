@@ -120,6 +120,7 @@ function BIDS = layout(varargin)
   % BIDS.description   -- content of dataset_description.json
   % BIDS.sessions      -- cellstr of sessions
   % BIDS.participants  -- for participants.tsv
+  % BIDS.phenotype     -- for content of the phenotype folder
   % BIDS.subjects      -- structure array of subjects
   % BIDS.root          -- tsv and json files in the root folder
 
@@ -127,6 +128,7 @@ function BIDS = layout(varargin)
                 'description', struct([]), ...
                 'sessions', {{}}, ...
                 'participants', struct([]), ...
+                'phenotype', struct([]), ...
                 'subjects', struct([]));
 
   BIDS = validate_description(BIDS, tolerant, verbose);
@@ -141,6 +143,20 @@ function BIDS = layout(varargin)
 
   BIDS.participants = [];
   BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, 'participants.tsv', verbose);
+
+  BIDS.phenotype = struct('file', [], 'metafile', []);
+
+  assessments = bids.internal.file_utils('FPList', ...
+                                         fullfile(BIDS.pth, 'phenotype'), ...
+                                         '.*\.tsv$');
+  for i = 1:size(assessments, 1)
+    file = deblank(assessments(i, :));
+    sidecar = bids.internal.file_utils(file, 'ext', 'json');
+    BIDS.phenotype(i).file = file;
+    if exist(sidecar, 'file') == 2
+      BIDS.phenotype(i).metafile = sidecar;
+    end
+  end
 
   BIDS = index_root_directory(BIDS);
 

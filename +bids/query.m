@@ -25,6 +25,7 @@ function result = query(BIDS, query, varargin)
   % - ``'dependencies'``: associated files (for example the event.tsv for a bold.nii
   %   or eeg.eeg file)
   % - ``'participants'``: content and metadata of participants.tsv
+  % - ``'phenotype'``: content and metadata of the phenotype folder
   % - ``'extensions'``
   % - ``'tsv_content'``
   %
@@ -157,6 +158,7 @@ function result = query(BIDS, query, varargin)
                           'metafiles', ...
                           'dependencies', ...
                           'participants', ...
+                          'phenotype', ...
                           'extensions', ...
                           'prefixes', ...
                           'tsv_content'}, ...
@@ -171,8 +173,8 @@ function result = query(BIDS, query, varargin)
 
   BIDS = bids.layout(BIDS);
 
-  if strcmp(query, 'participants')
-    result = BIDS.participants;
+  if ismember(query, {'participants', 'phenotype'})
+    result = BIDS.(query);
     return
   end
 
