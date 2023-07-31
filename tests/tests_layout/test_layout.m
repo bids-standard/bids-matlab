@@ -13,13 +13,14 @@ function test_layout_do_not_include_empty_subject()
   bids.util.mkdir(fullfile(bids_dir, 'sub-02'));
 
   verbose = false;
-  BIDS = bids.layout(bids_dir, 'verbose', verbose);
-  assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
-  assertEqual(numel(BIDS.subjects), 1);
 
   BIDS = bids.layout(bids_dir, 'verbose', verbose, 'use_schema', false);
   assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
   assertEqual(numel(BIDS.subjects), 2);
+
+  BIDS = bids.layout(bids_dir, 'verbose', verbose);
+  assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
+  assertEqual(numel(BIDS.subjects), 1);
 
   rmdir(empty_sub);
 
