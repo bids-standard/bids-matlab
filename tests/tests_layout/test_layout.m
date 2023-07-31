@@ -17,14 +17,29 @@ function test_layout_do_not_include_empty_subject()
   assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
   assertEqual(numel(BIDS.subjects), 1);
 
+  BIDS = bids.layout(bids_dir, 'verbose', verbose, 'use_schema', false);
+  assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
+  assertEqual(numel(BIDS.subjects), 2);
+
+  rmdir(empty_sub);
+
+end
+
+function test_layout_do_not_include_empty_subject_warning()
+
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
+  end
+
+  bids_dir = fullfile(get_test_data_dir(), 'qmri_tb1tfl');
+  empty_sub = fullfile(bids_dir, 'sub-02');
+  bids.util.mkdir(fullfile(bids_dir, 'sub-02'));
+
   verbose = true;
   assertWarning(@()bids.layout(bids_dir, 'verbose', verbose), ...
                 'layout:EmptySubject');
 
-  verbose = false;
-  BIDS = bids.layout(bids_dir, 'verbose', verbose, 'use_schema', false);
-  assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
-  assertEqual(numel(BIDS.subjects), 2);
+  rmdir(empty_sub);
 
 end
 
