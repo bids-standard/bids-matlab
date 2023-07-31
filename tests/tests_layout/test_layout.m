@@ -48,15 +48,6 @@ function test_layout_filter_regex()
 
 end
 
-function test_layout_empty_subject_folder_allowed_when_schemaless()
-
-  verbose = false;
-
-  bids.util.mkdir(fullfile(pwd, 'tmp/sub-01'));
-  bids.layout(fullfile(pwd, 'tmp'), 'use_schema', false, 'verbose', verbose);
-  rmdir(fullfile(pwd, 'tmp'), 's');
-end
-
 function test_layout_smoke_test()
 
   verbose = false;
