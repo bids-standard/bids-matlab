@@ -25,7 +25,7 @@ function test_layout_do_not_include_empty_subject()
   BIDS = bids.layout(bids_dir, 'verbose', verbose, 'use_schema', false);
   assertEqual(numel(bids.query(BIDS, 'subjects')), 1);
   assertEqual(numel(BIDS.subjects), 2);
-  
+
 end
 
 function test_layout_error_message
