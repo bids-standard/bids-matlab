@@ -22,9 +22,11 @@ jobs:
         version: [R2021a, R2021b, R2022a, R2022b]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
+
     runs-on: ${{matrix.os}}
 
     steps:
+
     - name: Install MATLAB
       uses: matlab-actions/setup-matlab@v1.2.4
       with:

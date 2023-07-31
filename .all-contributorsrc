@@ -236,6 +236,17 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "coxroy",
+      "name": "coxroy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26691793?v=4",
+      "profile": "https://github.com/coxroy",
+      "contributions": [
+        "bug",
+        "ideas",
+        "userTesting"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -244,5 +255,6 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,
-  "commitConvention": "angular"
+  "commitConvention": "angular",
+  "commitType": "docs"
 }
