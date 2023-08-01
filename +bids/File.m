@@ -68,14 +68,14 @@ classdef File
   % Load metadata (supporting inheritance).
   %
   % .. code-block:: matlab
-  % 
+  %
   %   f = bids.File('tests/data/synthetic/sub-01/anat/sub-01_T1w.nii.gz');
   %   f = f.set_metadata();
   %
   % Acess metadata
   %
   % .. code-block:: matlab
-  % 
+  %
   %   f.metadata()
   %     struct with fields:
   %       Manufacturer: 'Siemens'
@@ -84,7 +84,7 @@ classdef File
   % Modify metadata
   %
   % .. code-block:: matlab
-  % 
+  %
   %   f = f.metadata_update('Description', 'Source file');
   %   f.metadata()
   %     struct with fields:
@@ -95,9 +95,8 @@ classdef File
   % Export metadata as json:
   %
   % .. code-block:: matlab
-  % 
+  %
   %   f.metadata_export()
-
 
   % (C) Copyright 2021 BIDS-MATLAB developers
 
@@ -746,7 +745,7 @@ classdef File
       % Update stored metadata with new values passed in varargin,
       % which can be either a structure, or pairs of key-values.
       %
-      % See also 
+      % See also
       %    bids.util.update_struct
       %
       % USAGE::
@@ -766,7 +765,7 @@ classdef File
       % current File object, and only exported into file. Use
       % bids.File.metadata_update to update currect metadata.
       %
-      % See also 
+      % See also
       %    bids.util.update_struct
       %
       % USAGE::
@@ -780,7 +779,6 @@ classdef File
       der_json = bids.util.update_struct(obj.metadata, varargin{:});
       bids.util.jsonencode(out_file, der_json, 'indent', '  ');
     end
-
 
     %% Things that might go private
 

@@ -10,7 +10,7 @@ classdef JSONFile < bids.File
       for ii = 1:2:size(varargin, 2)
         par_key = varargin{ii};
         try
-          par_value = varargin{ii+1};
+          par_value = varargin{ii + 1};
 
           % Removing field from json structure
           if isempty(par_value)
