@@ -10,6 +10,15 @@ classdef JSONFile < bids.File
         par_key = varargin{ii};
         try
           par_value = varargin{ii+1};
+
+          % Removing field from json structure
+          if isempty(par_value)
+            if isfield(js, par_key)
+              js = rmfield(js, par_key);
+            end
+            continue
+          end
+
           if bids.internal.ends_with(par_key, '-add')
             par_key = par_key(1: end - 4);
             if isfield(js, par_key)
@@ -23,7 +32,7 @@ classdef JSONFile < bids.File
           js.(par_key) = par_value;
 
         catch ME
-          err_msg = sprintf('''%s'' (%d)', par_key, ii);
+          err_msg = sprintf('''%s'' (%d) -- %s', par_key, ii, ME.msg);
           obj.bids_file_error('jsonStructure', err_msg);
         end
       end
@@ -34,7 +43,7 @@ classdef JSONFile < bids.File
     function obj = JSONFile(varargin)
       obj@bids.File(varargin{:});
 
-      obj = obj.load_json()
+      obj = obj.load_json();
     end
 
     function obj = load_json(obj)
