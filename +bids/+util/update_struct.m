@@ -32,15 +32,15 @@ function js = update_struct(js, varargin)
   %   struct with fields:
   %      a: 'val_a'
   %      b: {'val_b'; 'val_b2'}
-  %   
+  %
 
   % (C) Copyright 2023 BIDS-MATLAB developers
 
   if numel(varargin) == 0
     % Nothing to do
-    return;
+    return
   end
-  varargin
+
   if numel(varargin) > 1
     key_list = varargin(1:2:end);
     val_list = varargin(2:2:end);
