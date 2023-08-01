@@ -1,10 +1,11 @@
 classdef JSONFile < bids.File
 
   properties
-    json_struct = [];
+    json_struct = []
   end
 
   methods (Static = true)
+
     function js = static_update_json(js, varargin)
       for ii = 1:2:size(varargin, 2)
         par_key = varargin{ii};
@@ -20,7 +21,7 @@ classdef JSONFile < bids.File
           end
 
           if bids.internal.ends_with(par_key, '-add')
-            par_key = par_key(1: end - 4);
+            par_key = par_key(1:end - 4);
             if isfield(js, par_key)
               if ischar(js.(par_key))
                 par_value = {js.(par_key); par_value}; %#ok<AGROW>
@@ -37,9 +38,11 @@ classdef JSONFile < bids.File
         end
       end
     end
+
   end
 
   methods (Access = public)
+
     function obj = JSONFile(varargin)
       obj@bids.File(varargin{:});
 
@@ -57,17 +60,17 @@ classdef JSONFile < bids.File
     end
 
     function obj = update_json(obj, varargin)
-        obj.json_struct = bids.JSONFile.static_update_json(obj.json_struct, varargin{:});
+      obj.json_struct = bids.JSONFile.static_update_json(obj.json_struct, varargin{:});
     end
 
     function write_json(obj, varargin)
-        [path, ~, ~] = fileparts(obj.path);
-        out_file = fullfile(path, obj.json_filename);
+      [path, ~, ~] = fileparts(obj.path);
+      out_file = fullfile(path, obj.json_filename);
 
-        der_json = obj.static_update_json(obj.json_struct, varargin{:});
-        bids.util.jsonencode(out_file, der_json, 'indent', '  ');
+      der_json = obj.static_update_json(obj.json_struct, varargin{:});
+      bids.util.jsonencode(out_file, der_json, 'indent', '  ');
     end
-  end
 
+  end
 
 end

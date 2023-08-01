@@ -59,10 +59,16 @@ function status = keep_file_for_query(file_struct, options)
 
 end
 
-function  status = check(status, structure, key, values)
+function  status = check(status, file_struct, key, values)
 
   % does the file have the entity or does the filename structure has this fieldname ?
-  has_key = ismember(key, fieldnames(structure));
+  if isstruct(file_struct)
+    fields = fieldnames(file_struct);
+  elseif strcmp(class(file_struct), 'bids.File')
+    fields = properties(file_struct);
+  end
+
+  has_key = ismember(key, fields);
   % do we want to exclude the file (by passing an empty option) bassed on that key ?
   exclude = numel(values) == 1 && isempty(values{1});
 
@@ -75,7 +81,7 @@ function  status = check(status, structure, key, values)
     return
   end
 
-  value = structure.(key);
+  value = file_struct.(key);
 
   if has_key && exclude && ...
           ~isempty(value)
