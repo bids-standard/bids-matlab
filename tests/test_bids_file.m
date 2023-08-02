@@ -67,6 +67,33 @@ function test_get_metadata_suffixes_basic()
 
   assertEqual(bf.metadata, expected_metadata);
 
+  % test metadata manipulation
+  bf = bf.metadata_update('Testing', 'adding field');
+  assertTrue(isfield(bf.metadata, 'Testing'));
+  assertEqual(bf.metadata.Testing, 'adding field');
+
+  bf = bf.metadata_update('Testing', 'modifying field');
+  assertEqual(bf.metadata.Testing, 'modifying field');
+
+  bf = bf.metadata_update('Testing', []);
+  assertFalse(isfield(bf.metadata, 'Testing'));
+
+  % Exporting metadata
+  bf.prefix = 'test_';
+  out_file = bf.metadata_export();
+  assertTrue(exist(out_file, 'file') > 0);
+  exported_metadata = bids.util.jsondecode(out_file);
+  assertEqual(bf.metadata, exported_metadata);
+  teardown(out_file);
+
+  % Exporting modified metadata
+  out_file = bf.metadata_export('Testing', 'exporting');
+  exported_metadata = bids.util.jsondecode(out_file);
+  teardown(out_file);
+  assertTrue(isfield(exported_metadata, 'Testing'));
+  assertFalse(isfield(bf.metadata, 'Testing'));
+  assertEqual(exported_metadata.Testing, 'exporting');
+
 end
 
 function test_rename()

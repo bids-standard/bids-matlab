@@ -197,7 +197,7 @@ classdef File
         obj = obj.use_schema();
       end
 
-      % obj = obj.set_metadata();
+      obj = obj.set_metadata();
 
       obj = obj.update();
     end
@@ -757,13 +757,14 @@ classdef File
       obj.metadata = bids.util.update_struct(obj.metadata, varargin{:});
     end
 
-    function metadata_export(obj, varargin)
+    function out_file = metadata_export(obj, varargin)
       % Export current content of metadata to sidecar json with
       % same name as current file. Metadata fields can be modified
       % with new values passed in varargin, which can be either a structure,
       % or pairs of key-values. These modifications do not affect
       % current File object, and only exported into file. Use
       % bids.File.metadata_update to update currect metadata.
+      % Returns full path to the exported sidecar json file.
       %
       % See also
       %    bids.util.update_struct
