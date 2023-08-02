@@ -72,7 +72,7 @@ classdef File
   %   f = bids.File('tests/data/synthetic/sub-01/anat/sub-01_T1w.nii.gz');
   %   f = f.set_metadata();
   %
-  % Acess metadata
+  % Access metadata
   %
   % .. code-block:: matlab
   %
@@ -763,7 +763,7 @@ classdef File
       % with new values passed in varargin, which can be either a structure,
       % or pairs of key-values. These modifications do not affect
       % current File object, and only exported into file. Use
-      % bids.File.metadata_update to update currect metadata.
+      % bids.File.metadata_update to update current metadata.
       % Returns full path to the exported sidecar json file.
       %
       % See also
