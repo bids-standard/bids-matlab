@@ -106,11 +106,13 @@ classdef File
   %       manufacturer: 'siemens'
   %       flipangle: 10
   %
-  % Modify several fields of metadata 
+  % Modify several fields of metadata
   %
   % .. code-block:: matlab
   %
-  %   f = f.metadata_update('Description', 'source file', 'NewField', 'new value', 'manufacturer', []);
+  %   f = f.metadata_update('Description', 'source file', ...
+  %                         'NewField', 'new value', ...
+  %                         'manufacturer', []);
   %   f.metadata()
   %     struct with fields:
   %       flipangle: 10
@@ -792,9 +794,9 @@ classdef File
       % transformed into cellarray.
       if isfield(obj.metadata, field)
         if ischar(obj.metadata.(field))
-          value = {obj.metadata.(field); value}; %#ok<AGROW>
+          value = {obj.metadata.(field); value};
         else
-          value = [obj.metadata.(field); value]; %#ok<AGROW>
+          value = [obj.metadata.(field); value];
         end
       end
       obj.metadata(1).(field) = value;
@@ -803,7 +805,7 @@ classdef File
     function obj = metadata_remove(obj, field)
       % Removes field from metadata
       if isfield(obj.metadata, field)
-         obj.metadata = rmfield(obj.metadata, field);
+        obj.metadata = rmfield(obj.metadata, field);
       end
     end
 
