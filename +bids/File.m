@@ -70,7 +70,6 @@ classdef File
   % .. code-block:: matlab
   %
   %   f = bids.File('tests/data/synthetic/sub-01/anat/sub-01_T1w.nii.gz');
-  %   f = f.set_metadata();
   %
   % Access metadata
   %
@@ -84,19 +83,45 @@ classdef File
   % Modify metadata
   %
   % .. code-block:: matlab
-  %
-  %   f = f.metadata_update('Description', 'Source file');
+  %   % Adding new value
+  %   f = f.metadata_add('NewField', 'new value');
   %   f.metadata()
   %     struct with fields:
-  %       Manufacturer: 'Siemens'
-  %       FlipAngle: 10
-  %       Description: 'Source file'
+  %       manufacturer: 'siemens'
+  %       flipangle: 10
+  %       NewField: 'new value'
+  %
+  %   % Appending to existing value
+  %   f = f.metadata_append('NewField', 'new value 1');
+  %   f.metadata()
+  %     struct with fields:
+  %       manufacturer: 'siemens'
+  %       flipangle: 10
+  %       NewField: {'new value'; 'new value 1'}
+  %
+  %   % Removing value
+  %   f = f.metadata_remove('NewField');
+  %   f.metadata()
+  %     struct with fields:
+  %       manufacturer: 'siemens'
+  %       flipangle: 10
+  %
+  % Modify several fields of metadata 
+  %
+  % .. code-block:: matlab
+  %
+  %   f = f.metadata_update('Description', 'source file', 'NewField', 'new value', 'manufacturer', []);
+  %   f.metadata()
+  %     struct with fields:
+  %       flipangle: 10
+  %       description: 'source file'
+  %       NewField: 'new value'
   %
   % Export metadata as json:
   %
   % .. code-block:: matlab
   %
-  %   f.metadata_export()
+  %   f.metadata_write()
 
   % (C) Copyright 2021 BIDS-MATLAB developers
 
@@ -753,11 +778,36 @@ classdef File
       %  f = f.metadata_update(key1, value1, key2, value2);
       %  f = f.metadata_update(struct(key1, value1, ...
       %                        key2, value2));
-
       obj.metadata = bids.util.update_struct(obj.metadata, varargin{:});
     end
 
-    function out_file = metadata_export(obj, varargin)
+    function obj = metadata_add(obj, field, value)
+      % Add a new field (or replace existing) to the metadata structure
+      obj.metadata.(field) = value;
+    end
+
+    function obj = metadata_append(obj, field, value)
+      % Append new value to a metadata.(field)
+      % If metadata.(field) is a chararray, it will be first
+      % transformed into cellarray.
+      if isfield(obj.metadata, field)
+        if ischar(obj.metadata.(field))
+          value = {obj.metadata.(field); value}; %#ok<AGROW>
+        else
+          value = [obj.metadata.(field); value]; %#ok<AGROW>
+        end
+      end
+      obj.metadata(1).(field) = value;
+    end
+
+    function obj = metadata_remove(obj, field)
+      % Removes field from metadata
+      if isfield(obj.metadata, field)
+         obj.metadata = rmfield(obj.metadata, field);
+      end
+    end
+
+    function out_file = metadata_write(obj, varargin)
       % Export current content of metadata to sidecar json with
       % same name as current file. Metadata fields can be modified
       % with new values passed in varargin, which can be either a structure,
@@ -771,8 +821,8 @@ classdef File
       %
       % USAGE::
       %
-      %  f.metadata_export(key1, value1, key2, value2);
-      %  f.metadata_export(struct(key1, value1, ...
+      %  f.metadata_write(key1, value1, key2, value2);
+      %  f.metadata_write(struct(key1, value1, ...
       %                    key2, value2));
       [path, ~, ~] = fileparts(obj.path);
       out_file = fullfile(path, obj.json_filename);
