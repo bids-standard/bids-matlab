@@ -235,6 +235,7 @@ function result = query(BIDS, query, varargin)
       end
       extensions = bids.internal.file_utils(result, 'ext');
       if numel(unique(extensions)) > 1 || ~strcmp(unique(extensions), 'tsv')
+        result = bids.internal.format_path(result);
         msg = sprintf(['Queries for ''tsv_content'' must be done only on tsv files.\n', ...
                        'Your query returned: %s'], ...
                       bids.internal.create_unordered_list(result));
