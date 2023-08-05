@@ -56,6 +56,11 @@ function test_return_entity_key()
 end
 
 function test_return_entities()
+
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('TODO: argument DATATYPE is not a valid parameter');
+  end
+
   schema = bids.Schema();
   entities = schema.return_entities('datatype', 'func', ...
                                     'suffix', 'bold', ...
@@ -86,6 +91,10 @@ function test_return_entities()
 end
 
 function test_return_entities_with_only_datatype_as_argument()
+
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('TODO: argument DATATYPE is not a valid parameter');
+  end
 
   schema = bids.Schema();
   entities = schema.return_entities('datatype', 'func', ...
