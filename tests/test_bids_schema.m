@@ -25,11 +25,24 @@ function test_get_datatypes()
                                                  'perf', ...
                                                  'pet'})');
 
-  assertEqual(fieldnames(datatypes.func), {    'func'
+  assertEqual(fieldnames(datatypes.func), {'func'
                                            'phase'
                                            'events__mri'
                                            'timeseries__func'});
 
+end
+
+function test_return_suffixes()
+  schema = bids.Schema();
+  suffixes = schema.return_suffixes('datatypes', 'func');
+  assertEqual(suffixes, ...
+              {'bold'; ...
+               'cbv'; ...
+               'sbref'; ...
+               'phase'; ...
+               'events'; ...
+               'physio'; ...
+               'stim'});
 end
 
 function test_return_entity_key()
@@ -39,6 +52,73 @@ function test_return_entity_key()
   assertEqual(entity_key, 'desc');
 
   assertExceptionThrown(@()schema.return_entity_key('foo'), 'Schema:UnknownEnitity');
+
+end
+
+function test_return_entities()
+
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('TODO: argument DATATYPE is not a valid parameter');
+  end
+
+  schema = bids.Schema();
+  entities = schema.return_entities('datatype', 'func', ...
+                                    'suffix', 'bold', ...
+                                    'required_only', false);
+  expected_entities = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
+  assertEqual(entities, expected_entities);
+
+  schema = bids.Schema();
+  entities = schema.return_entities('datatype', 'func', ...
+                                    'suffix', 'bold', ...
+                                    'required_only', true);
+  expected_entities = {'sub', 'task'};
+  assertEqual(entities, expected_entities);
+
+  schema = bids.Schema();
+  entities = schema.return_entities('datatype', 'func', ...
+                                    'suffix', {'bold', 'cbv'}, ...
+                                    'required_only', false);
+  expected_entities = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', 'dir', 'run', 'echo', 'part'};
+  assertEqual(entities, expected_entities);
+
+  % smoke test
+  schema = bids.Schema();
+  entities = schema.return_entities('datatype', 'anat', ...
+                                    'suffix', {'T1w', 'MP2RAGE'}, ...
+                                    'required_only', false);
+
+end
+
+function test_return_entities_with_only_datatype_as_argument()
+
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('TODO: argument DATATYPE is not a valid parameter');
+  end
+
+  schema = bids.Schema();
+  entities = schema.return_entities('datatype', 'func', ...
+                                    'required_only', false);
+  expected_entities = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', ...
+                       'dir', 'run', 'echo', 'part', 'recording'};
+  assertEqual(entities, expected_entities);
+
+end
+
+function test_return_entity_name()
+  schema = bids.Schema();
+
+  entity_name = schema.return_entity_name('desc');
+  assertEqual(entity_name, 'description');
+
+  entity_name = schema.return_entity_name({'ses', 'sub'});
+  assertEqual(entity_name, {'session'; 'subject'});
+
+  entity_name = schema.return_entity_name({'ses', 'foo'});
+  assertEqual(entity_name, 'session');
+
+  entity_name = schema.return_entity_name('foo');
+  assert(isempty(entity_name));
 
 end
 
@@ -98,7 +178,7 @@ function test_return_suffix_groups_for_datatype()
   schema = bids.Schema();
 
   suffix_groups = schema.return_suffix_groups_for_datatype('func');
-  assertEqual(suffix_groups, {    'func'
+  assertEqual(suffix_groups, {'func'
                               'phase'
                               'events__mri'
                               'timeseries__func'});
@@ -244,6 +324,20 @@ function test_return_entity_order
   expected = {'subject'
               'run'
               'description'};
+
+  assertEqual(order, expected);
+
+end
+
+function test_return_entity_order_short_form
+
+  schema = bids.Schema();
+
+  entity_list_to_order = {'desc', 'run', 'sub'};
+
+  order = schema.entity_order(entity_list_to_order, 'use_short_form', true);
+
+  expected = {'sub', 'run', 'desc'};
 
   assertEqual(order, expected);
 
