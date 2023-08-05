@@ -93,6 +93,37 @@ classdef Schema
     end
 
     function entities = return_entities(varargin)
+      %
+      % Return all the entities for or one or more datatype and one or more suffixes.
+      %
+      %
+      % USAGE::
+      %
+      %     entities = schema.return_entities('datatypes', datatypes, ...
+      %                                       'suffixes', suffixes, ...
+      %                                       'required_only', false)
+      %
+      % :param datatypes:  For example ``'func'``.
+      % :type  datatypes:  char or cellstr
+      %
+      % :param suffixes:  For example ``'bold'``.
+      % :type  suffixes:  char or cellstr
+      %
+      % :param required_only:  If true, only the required entities are returned.
+      % :type  required_only:  logical
+      %
+      %
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
+      %
+      %     suffixes = schema.return_entities('datatypes', 'func')
+      %     suffixes = schema.return_entities('datatypes', 'func', 'suffixes', 'bold')
+      %     suffixes = schema.return_suffixes('datatypes', {'anat', 'func'}, ...
+      %                                       'suffixes', {'T1w', 'bold'}, ...
+      %                                       'required_only', true)
+      %
 
       is_char_or_cellstr = @(x) ischar(x) || iscellstr(x);
 
@@ -378,8 +409,9 @@ classdef Schema
       %
       %   suffix_groups = schema.list_suffix_groups(datatype, scope)
       %
-      % :param datatype: for example ``'func'``
+      % :param datatype:  for example ``'func'``
       % :type  datatype:  char
+      %
       % :param scope: ``'raw'`` or ``'derivatives'`` or ``'all'``
       % :type  scope:  char
       %
@@ -552,6 +584,23 @@ classdef Schema
     % ----------------------------------------------------------------------- %
     %% SUFFIXES
     function suffixes = return_suffixes(varargin)
+      %
+      % Return all the suffixes for or one or more datatype.
+      %
+      %
+      % USAGE::
+      %
+      %     suffixes = schema.return_suffixes('datatypes', datatypes)
+      %
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
+      %
+      %     suffixes = schema.return_suffixes('datatypes', 'func')
+      %
+      %     suffixes = schema.return_suffixes('datatypes', {'anat', 'func'})
+      %
       is_char_or_cellstr = @(x) ischar(x) || iscellstr(x);
 
       args = inputParser;
