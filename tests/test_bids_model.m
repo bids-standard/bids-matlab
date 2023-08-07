@@ -6,6 +6,36 @@ function test_suite = test_bids_model %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_build_dag()
+  %
+  % model is run --> subject --> dataset
+  %             \
+  %              --> session
+  %
+  % but nodes and edges and not ordered properly
+  %
+
+  bm = bids.Model('init', true);
+
+  bm.Nodes{1} = bm.empty_node('dataset');
+  bm.Nodes{4} = bm.empty_node('session');
+  bm.Nodes{2} = bm.empty_node('run');
+  bm.Nodes{3} = bm.empty_node('subject');
+
+  bm.Edges{1} = struct('Source', 'subject', 'Destination', 'dataset');
+  bm.Edges{3} = struct('Source', 'run', 'Destination', 'session');
+  bm.Edges{2} = struct('Source', 'run', 'Destination', 'subject');
+
+  bm = bm.build_dag();
+
+  assertEqual(bm.dag_built, true);
+  assertEqual(bm.Nodes{1}.parent, 'subject');
+  assert(~isfield(bm.Nodes{2}, 'parent'));
+  assertEqual(bm.Nodes{3}.parent, 'run');
+  assertEqual(bm.Nodes{4}.parent, 'run');
+
+end
+
 function test_model_node_not_in_edges()
 
   bm = bids.Model('file', model_file('narps'), 'verbose', false);
@@ -32,6 +62,33 @@ function test_model_load_edges()
   assertEqual(edges{4}, struct('Source', 'subject', ...
                                'Destination', 'between-groups', ...
                                'Filter', struct('contrast', {{'loss'}})));
+
+end
+
+function test_model_with_edges_and_node_not_in_order()
+  %
+  % model is run --> subject --> dataset
+  %             \
+  %              --> session
+  %
+  % but nodes and edges and not ordered properly
+  %
+
+  bm = bids.Model('init', true);
+
+  bm.Nodes{1} = bm.empty_node('dataset');
+  bm.Nodes{4} = bm.empty_node('session');
+  bm.Nodes{2} = bm.empty_node('run');
+  bm.Nodes{3} = bm.empty_node('subject');
+
+  bm.Edges{1} = struct('Source', 'subject', 'Destination', 'dataset');
+  bm.Edges{3} = struct('Source', 'run', 'Destination', 'session');
+  bm.Edges{2} = struct('Source', 'run', 'Destination', 'subject');
+
+  assertEqual(bm.get_source_node('session'), bm.get_nodes('Name', 'run'));
+
+  [root_node, root_node_name] = bm.get_root_node();
+  assertEqual(root_node_name, 'run');
 
 end
 
