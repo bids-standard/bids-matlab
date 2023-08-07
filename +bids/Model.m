@@ -69,6 +69,8 @@ classdef Model
 
     verbose = true % hides warning if ``false``
 
+    dag_built = false % if the directed acyclic graph has been built
+
   end
 
   methods
@@ -187,6 +189,7 @@ classdef Model
 
         end
 
+        obj = obj.build_dag;
         obj.validate();
 
       end
@@ -367,60 +370,67 @@ classdef Model
 
     end
 
+    function source_nodes = get_parent(obj, node_name)
+      source_nodes = obj.get_source_node(node_name);
+    end
+
     function source_nodes = get_source_node(obj, node_name)
+
+      obj = obj.build_dag;
 
       source_nodes = {};
 
-      if isempty(obj.Edges)
-        obj = obj.get_edges_from_nodes;
-      end
-
-      if strcmp(node_name, obj.Edges{1}.Source)
-        % The root node cannot have a source
+      % The root node cannot have a source
+      [~, root_node_name] = obj.get_root_node();
+      if strcmp(node_name, root_node_name)
         return
       end
 
-      % we should only get 1 value
-      for i = 1:numel(obj.Edges)
-        if strcmp(obj.Edges{i}.Destination, node_name)
-          source = obj.Edges{i}.Source;
-          source_nodes{end + 1} = obj.get_nodes('Name', source);
-        end
-      end
-
-      assert(numel(source_nodes) == 1);
-
-      if numel(source_nodes) == 1
-        source_nodes = source_nodes{1};
-      end
+      node = obj.get_nodes('Name', node_name);
+      source_nodes = obj.get_nodes('Name', node.parent);
 
     end
 
     function [root_node, root_node_name] = get_root_node(obj)
 
+      obj = obj.build_dag;
       edges = obj.Edges;
 
       if isempty(edges)
+        % assume a serial model
         root_node = obj.Nodes(1);
-
-      elseif iscell(edges)
-        root_node_name = edges{1}.Source;
-        root_node = obj.get_nodes('Name', root_node_name);
-
-      elseif isstruct(edges(1))
-        root_node_name = edges(1).Source;
-        root_node = obj.get_nodes('Name', root_node_name);
-
-      else
-        root_node = obj.Nodes(1);
-
+        if iscell(root_node)
+          root_node = root_node{1};
+        end
+        root_node_name = root_node.Name;
+        return
       end
+
+      % start from the first edge and go up the DAG
+      if iscell(edges)
+        current_node_name = edges{1}.Source;
+      elseif isstruct(edges(1))
+        current_node_name = edges(1).Source;
+      end
+
+      while true
+
+        current_node = obj.get_nodes('Name', current_node_name);
+        has_parent = isfield(current_node, 'parent');
+
+        if ~has_parent
+          root_node_name = current_node.Name;
+          break
+        end
+
+        current_node_name = current_node.parent;
+      end
+
+      root_node = current_node;
 
       if iscell(root_node)
         root_node = root_node{1};
       end
-
-      root_node_name = root_node.Name;
 
     end
 
@@ -495,6 +505,24 @@ classdef Model
 
     function value = node_names(obj)
       value = cellfun(@(x) x.Name, obj.Nodes, 'UniformOutput', false);
+    end
+
+    function obj = build_dag(obj)
+      if  obj.dag_built
+        return
+      end
+      if isempty(obj.Edges)
+        obj = obj.get_edges_from_nodes;
+      end
+      for iEdge = 1:numel(obj.Edges)
+        source = obj.Edges{iEdge}.Source;
+        destination = obj.Edges{iEdge}.Destination;
+        [~, idx] = obj.get_nodes('Name', destination);
+        % assume can only have a single parent
+        % so we use a char and note cellstr
+        obj.Nodes{idx}.parent = source;
+      end
+      obj.dag_built = true;
     end
 
     function validate(obj)
@@ -871,6 +899,10 @@ classdef Model
             this_node.Contrasts{j} = this_contrast;
 
           end
+        end
+
+        if isfield(this_node, 'parent')
+          this_node = rmfield(this_node, 'parent');
         end
 
         obj.content.Nodes{i} = this_node;
