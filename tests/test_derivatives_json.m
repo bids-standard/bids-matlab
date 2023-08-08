@@ -24,8 +24,8 @@ end
 
 function test_derivatives_json_entity_as_number()
 
-  if bids.internal.is_octave
-    return
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
 
   filename = 'sub-01_ses-test_task-faceRecognition_run-02_res-2_bold.nii';

@@ -28,7 +28,7 @@ function test_report_asl()
 
   % TODO make it work on Octave
   if bids.internal.is_octave()
-    return
+    moxunit_throw_test_skipped_exception('Octave: TODO');
   end
   assertEqual(content, expected);
 
@@ -63,7 +63,7 @@ function test_report_basic()
 
       % TODO make it work on Octave
       if bids.internal.is_octave()
-        return
+        moxunit_throw_test_skipped_exception('Octave: TODO');
       end
 
       assertEqual(content, expected);
@@ -93,9 +93,8 @@ function test_report_pet()
   content = get_report_content(report);
   expected = get_expected_content(cfg, datasets, filter.modality);
 
-  % TODO make it work on Octave
   if bids.internal.is_octave()
-    return
+    moxunit_throw_test_skipped_exception('Octave: TODO');
   end
   assertEqual(content, expected);
 
@@ -131,9 +130,8 @@ function test_report_moae_data()
   content = get_report_content(report);
   expected = get_expected_content(cfg, 'MoAE', 'all');
 
-  % TODO make it work on Octave
   if bids.internal.is_octave()
-    return
+    moxunit_throw_test_skipped_exception('Octave: TODO');
   end
   assertEqual(content, expected);
 

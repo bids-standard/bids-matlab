@@ -181,10 +181,7 @@ end
 function test_model_validate()
 
   if bids.internal.is_octave()
-    % TODO fix Octave error in CI
-    % failure: warning 'Octave:mixed-string-concat' was raised,
-    % expected 'Model:missingField'. Stack trace:
-    return
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
 
   bm = bids.Model();
