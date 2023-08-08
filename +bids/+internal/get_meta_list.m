@@ -1,29 +1,40 @@
-function metalist = get_meta_list(filename, pattern)
+function metalist = get_meta_list(varargin)
   %
   % Read a BIDS's file metadata according to the inheritance principle
   %
   % USAGE::
   %
-  %    meta = bids.internal.get_metadata(filename, pattern = '^.*%s\\.json$')
+  %    metalist = bids.internal.get_metadata(filename, ...
+  %                                          pattern, ...
+  %                                          use_inheritance)
   %
   % :param filename: fullpath name of file following BIDS standard
   % :type  filename: char
-  % :param pattern:  Regular expression matching the metadata file (default is ``'^.*%s\\.json$'``)
+  %
+  % :param pattern:  Regular expression matching the metadata file
+  %                  default = ``'^.*%s\\.json$'``
   %                  If provided, it must at least be ``'%s'``.
   % :type  pattern:  char
   %
-  % metalist    - list of paths to metafiles
+  % :return: metalist - list of paths to metafiles
   %
   %
 
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  %
-
   % (C) Copyright 2018 BIDS-MATLAB developers
 
-  if nargin == 1
-    pattern = '^.*%s\\.json$';
-  end
+  args = inputParser;
+
+  addRequired(args, 'filename', @ischar);
+  % Default is to assume it is a JSON file
+  addOptional(args, 'pattern', '^.*%s\\.json$', @ischar);
+  addParameter(args, 'use_inheritance', true, @islogical);
+
+  parse(args, varargin{:});
+
+  filename = args.Results.filename;
+  pattern = args.Results.pattern;
+  use_inheritance = args.Results.use_inheritance;
 
   pth = fileparts(filename);
   metalist = {};
@@ -33,12 +44,12 @@ function metalist = get_meta_list(filename, pattern)
   end
 
   % Default assumes we are dealing with a file in the root directory
-  % like "participants.tsv"
+  % like "participants.tsv".
   % If the file has underscore separated entities ("sub-01_T1w.nii")
-  % then we look through the hierarchy for potential metadata file associated
-  % with queried file.
+  % then we look through the hierarchy for potential metadata file
+  % associated with queried file.
   N = 1;
-  if isfield(p, 'entities')
+  if use_inheritance && isfield(p, 'entities')
     N = 3;
     % -There is a session level in the hierarchy
     if isfield(p.entities, 'ses') && ~isempty(p.entities.ses)
@@ -49,7 +60,6 @@ function metalist = get_meta_list(filename, pattern)
   for n = 1:N
 
     % List the potential metadata files associated with this file suffix type
-    % Default is to assume it is a JSON file
     metafile = bids.internal.file_utils('FPList', pth, sprintf(pattern, p.suffix));
 
     if isempty(metafile)
@@ -58,8 +68,8 @@ function metalist = get_meta_list(filename, pattern)
       metafile = cellstr(metafile);
     end
 
-    % For all those files we find which one is potentially associated with
-    % the file of interest
+    % For all those files we find which one is potentially associated
+    % with the file of interest
     % TODO: not more than one file per level is allowed
     for i = 1:numel(metafile)
 

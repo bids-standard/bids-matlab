@@ -34,7 +34,8 @@ function value = jsondecode(file, varargin)
   end
 
   if ~exist(file, 'file')
-    msg = sprintf('Unable to read file ''%s'': file not found', file);
+    msg = sprintf('Unable to read file ''%s'': file not found', ...
+                  bids.internal.format_path(file));
     bids.internal.error_handling(mfilename(), 'FileNotFound', ...
                                  msg, false);
   end
@@ -74,7 +75,8 @@ function value = jsondecode(file, varargin)
 end
 
 function warning_cannot_read_json(file)
-  msg = sprintf('Could not read file:\n%s', file);
+  msg = sprintf('Could not read file:\n%s', ...
+                bids.internal.format_path(file));
   bids.internal.error_handling(mfilename(), 'CannotReadJson', ...
                                msg, true, true);
 end

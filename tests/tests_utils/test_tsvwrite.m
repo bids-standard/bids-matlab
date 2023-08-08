@@ -6,6 +6,41 @@ function test_suite = test_tsvwrite %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_datetime_in_table()
+  % TODO fix line issue on windows
+  if bids.internal.is_octave() || ispc()
+    moxunit_throw_test_skipped_exception('no datetime in Octave and line issue in windows');
+  end
+  x = '201401010000';
+  acq_time = datetime(x, 'InputFormat', 'yyyyMMddHHmm');
+  sub_id = {'foo'};
+  patients = table(sub_id, acq_time);
+  file = fullfile(tempname(), 'foo.tsv');
+  bids.util.mkdir(fileparts(file));
+  bids.util.tsvwrite(file, patients);
+
+  FID = fopen(file, 'r');
+  C = textscan(FID, '%s%s', 'Delimiter', '\t', 'EndOfLine', '\n');
+  assertEqual(C{2}{2}, '2014-01-01T00:00:00.000');
+end
+
+function test_nan_in_table()
+  % TODO fix line issue on windows
+  if bids.internal.is_octave()  || ispc()
+    moxunit_throw_test_skipped_exception('no table in Octave and line issue in windows');
+  end
+  sub_id = {'foo'; 'bar'};
+  age = [25; nan];
+  patients = table(sub_id, age);
+  file = fullfile(tempname(), 'foo.tsv');
+  bids.util.mkdir(fileparts(file));
+  bids.util.tsvwrite(file, patients);
+
+  FID = fopen(file, 'r');
+  C = textscan(FID, '%s%s', 'Delimiter', '\t', 'EndOfLine', '\n');
+  assertEqual(C{2}{3}, 'n/a');
+end
+
 function test_tsvwrite_basic()
 
   pth = fileparts(mfilename('fullpath'));
@@ -67,7 +102,7 @@ function test_tsvwrite_array
 
   FID = fopen(tsv_file, 'r');
   C = textscan(FID, '%s%s', 'Delimiter', '\t', 'EndOfLine', '\n');
-  assertEqual(C{1}{2}, 'n/a'); %
+  assertEqual(C{1}{2}, 'n/a');
 
   delete(tsv_file);
 

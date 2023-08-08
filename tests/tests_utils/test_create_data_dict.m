@@ -64,8 +64,8 @@ end
 
 function test_create_data_dict_warning
 
-  if bids.internal.is_octave
-    return
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
 
   dataset = 'ds000248';

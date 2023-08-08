@@ -54,7 +54,7 @@ function output_filenames = create_sessions_tsv(varargin)
   sessions_list = bids.query(layout, 'sessions');
   if isempty(sessions_list) && use_schema
     msg = sprintf(['There are no session in this dataset:\n', ...
-                   '\t%s'], layout.pth);
+                   '\t%s'], bids.internal.format_path(layout.pth));
     bids.internal.error_handling(mfilename(), 'noSessionInDataset', msg, tolerant, verbose);
     return
   end
@@ -74,7 +74,9 @@ function output_filenames = create_sessions_tsv(varargin)
     if exist(sessions_file, 'file')
       msg = sprintf(['"sessions.tsv" %s already exist for the following dataset.', ...
                      'Will not overwrite.\n', ...
-                     '\t%s'], sessions_file, layout.pth);
+                     '\t%s'], ...
+                    bids.internal.format_path(sessions_file), ...
+                    bids.internal.format_path(layout.pth));
       bids.internal.error_handling(mfilename(), 'sessionsFileExist', msg, true, verbose);
       continue
     end
@@ -105,6 +107,8 @@ function output_filenames = create_sessions_tsv(varargin)
   end
 
   if verbose && ~isempty(output_filenames)
+    output_filenames = bids.internal.format_path(output_filenames);
+
     fprintf(1, ['\nCreated the following "sessions.tsv" in the dataset.', ...
                 '\n\t%s\n', ...
                 'Please add any extra information manually.\n', ...
