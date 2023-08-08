@@ -67,33 +67,65 @@ function test_get_metadata_suffixes_basic()
 
   assertEqual(bf.metadata, expected_metadata);
 
-  % test metadata manipulation
-  % metadata_update
+end
+
+function test_metadata_update()
+  % Testung updating metadata with metadata_update function
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+
+  % Adding
   bf = bf.metadata_update('Testing', 'adding field');
   assertTrue(isfield(bf.metadata, 'Testing'));
   assertEqual(bf.metadata.Testing, 'adding field');
 
+  % Modifying
   bf = bf.metadata_update('Testing', 'modifying field');
   assertEqual(bf.metadata.Testing, 'modifying field');
 
+  % Removing
   bf = bf.metadata_update('Testing', []);
   assertFalse(isfield(bf.metadata, 'Testing'));
+end
 
-  % metadata_add
+function test_metadata_add()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
   bf = bf.metadata_add('Testing', 'adding field');
   assertTrue(isfield(bf.metadata, 'Testing'));
   assertEqual(bf.metadata.Testing, 'adding field');
+end
 
-  % metadada_append
+function test_metadata_append()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
   bf = bf.metadata_append('Testing', 'adding field1');
-  assertEqual(bf.metadata.Testing, {'adding field'; 'adding field1'});
   bf = bf.metadata_append('Testing', 'adding field2');
   assertEqual(bf.metadata.Testing, ...
-              {'adding field'; 'adding field1'; 'adding field2'});
+              {'adding field1'; 'adding field2'});
+  % testing char to cell conversion
+  bf = bf.metadata_add('Testing2', 1);
+  bf = bf.metadata_append('Testing2', 2);
+  assertEqual(bf.metadata.Testing2, [1; 2]);
+end
 
-  % metadata_remove
+function test_metadata_remove()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+  bf = bf.metadata_add('Testing', 'adding field');
+  assertTrue(isfield(bf.metadata, 'Testing'));
   bf = bf.metadata_remove('Testing');
   assertFalse(isfield(bf.metadata, 'Testing'));
+end
+
+function test_metadata_write()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
 
   % Writing metadata
   bf.prefix = 'test_';
@@ -109,8 +141,9 @@ function test_get_metadata_suffixes_basic()
   teardown(out_file);
   assertTrue(isfield(exported_metadata, 'Testing'));
   assertFalse(isfield(bf.metadata, 'Testing'));
-  assertEqual(exported_metadata.Testing, 'exporting');
 
+  bf = bf.metadata_add('Testing', 'exporting');
+  assertEqual(bf.metadata, exported_metadata);
 end
 
 function test_rename()
