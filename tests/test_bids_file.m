@@ -69,6 +69,83 @@ function test_get_metadata_suffixes_basic()
 
 end
 
+function test_metadata_update()
+  % Testung updating metadata with metadata_update function
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+
+  % Adding
+  bf = bf.metadata_update('Testing', 'adding field');
+  assertTrue(isfield(bf.metadata, 'Testing'));
+  assertEqual(bf.metadata.Testing, 'adding field');
+
+  % Modifying
+  bf = bf.metadata_update('Testing', 'modifying field');
+  assertEqual(bf.metadata.Testing, 'modifying field');
+
+  % Removing
+  bf = bf.metadata_update('Testing', []);
+  assertFalse(isfield(bf.metadata, 'Testing'));
+end
+
+function test_metadata_add()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+  bf = bf.metadata_add('Testing', 'adding field');
+  assertTrue(isfield(bf.metadata, 'Testing'));
+  assertEqual(bf.metadata.Testing, 'adding field');
+end
+
+function test_metadata_append()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+  bf = bf.metadata_append('Testing', 'adding field1');
+  bf = bf.metadata_append('Testing', 'adding field2');
+  assertEqual(bf.metadata.Testing, ...
+              {'adding field1'; 'adding field2'});
+  % testing char to cell conversion
+  bf = bf.metadata_add('Testing2', 1);
+  bf = bf.metadata_append('Testing2', 2);
+  assertEqual(bf.metadata.Testing2, [1; 2]);
+end
+
+function test_metadata_remove()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+  bf = bf.metadata_add('Testing', 'adding field');
+  assertTrue(isfield(bf.metadata, 'Testing'));
+  bf = bf.metadata_remove('Testing');
+  assertFalse(isfield(bf.metadata, 'Testing'));
+end
+
+function test_metadata_write()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+
+  % Writing metadata
+  bf.prefix = 'test_';
+  out_file = bf.metadata_write();
+  assertTrue(exist(out_file, 'file') > 0);
+  exported_metadata = bids.util.jsondecode(out_file);
+  assertEqual(bf.metadata, exported_metadata);
+  teardown(out_file);
+
+  % Writing modified metadata
+  out_file = bf.metadata_write('Testing', 'exporting');
+  exported_metadata = bids.util.jsondecode(out_file);
+  teardown(out_file);
+  assertTrue(isfield(exported_metadata, 'Testing'));
+  assertFalse(isfield(bf.metadata, 'Testing'));
+
+  bf = bf.metadata_add('Testing', 'exporting');
+  assertEqual(bf.metadata, exported_metadata);
+end
+
 function test_rename()
 
   input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';

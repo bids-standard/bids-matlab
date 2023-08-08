@@ -65,6 +65,65 @@ classdef File
   %
   %   file = bids.File(name_spec, 'use_schema', true);
   %
+  % Load metadata (supporting inheritance).
+  %
+  % .. code-block:: matlab
+  %
+  %   f = bids.File('tests/data/synthetic/sub-01/anat/sub-01_T1w.nii.gz');
+  %
+  % Access metadata
+  %
+  % .. code-block:: matlab
+  %
+  %   f.metadata()
+  %     struct with fields:
+  %       Manufacturer: 'Siemens'
+  %       FlipAngle: 10
+  %
+  % Modify metadata
+  %
+  % .. code-block:: matlab
+  %   % Adding new value
+  %   f = f.metadata_add('NewField', 'new value');
+  %   f.metadata()
+  %     struct with fields:
+  %       manufacturer: 'siemens'
+  %       flipangle: 10
+  %       NewField: 'new value'
+  %
+  %   % Appending to existing value
+  %   f = f.metadata_append('NewField', 'new value 1');
+  %   f.metadata()
+  %     struct with fields:
+  %       manufacturer: 'siemens'
+  %       flipangle: 10
+  %       NewField: {'new value'; 'new value 1'}
+  %
+  %   % Removing value
+  %   f = f.metadata_remove('NewField');
+  %   f.metadata()
+  %     struct with fields:
+  %       manufacturer: 'siemens'
+  %       flipangle: 10
+  %
+  % Modify several fields of metadata
+  %
+  % .. code-block:: matlab
+  %
+  %   f = f.metadata_update('Description', 'source file', ...
+  %                         'NewField', 'new value', ...
+  %                         'manufacturer', []);
+  %   f.metadata()
+  %     struct with fields:
+  %       flipangle: 10
+  %       description: 'source file'
+  %       NewField: 'new value'
+  %
+  % Export metadata as json:
+  %
+  % .. code-block:: matlab
+  %
+  %   f.metadata_write()
 
   % (C) Copyright 2021 BIDS-MATLAB developers
 
@@ -90,7 +149,7 @@ classdef File
 
     metadata_files = {} % list of metadata files related
 
-    metadata  % list of metadata for this file
+    metadata  = [] % list of metadata for this file
 
     entity_required = {}  % Required entities
 
@@ -705,6 +764,73 @@ classdef File
         obj.bids_file_error('requiredEntity', msg);
       end
 
+    end
+
+    % Functions related to metadata manipulation
+
+    function obj = metadata_update(obj, varargin)
+      % Update stored metadata with new values passed in varargin,
+      % which can be either a structure, or pairs of key-values.
+      %
+      % See also
+      %    bids.util.update_struct
+      %
+      % USAGE::
+      %
+      %  f = f.metadata_update(key1, value1, key2, value2);
+      %  f = f.metadata_update(struct(key1, value1, ...
+      %                        key2, value2));
+      obj.metadata = bids.util.update_struct(obj.metadata, varargin{:});
+    end
+
+    function obj = metadata_add(obj, field, value)
+      % Add a new field (or replace existing) to the metadata structure
+      obj.metadata.(field) = value;
+    end
+
+    function obj = metadata_append(obj, field, value)
+      % Append new value to a metadata.(field)
+      % If metadata.(field) is a chararray, it will be first
+      % transformed into cellarray.
+      if isfield(obj.metadata, field)
+        if ischar(obj.metadata.(field))
+          value = {obj.metadata.(field); value};
+        else
+          value = [obj.metadata.(field); value];
+        end
+      end
+      obj.metadata(1).(field) = value;
+    end
+
+    function obj = metadata_remove(obj, field)
+      % Removes field from metadata
+      if isfield(obj.metadata, field)
+        obj.metadata = rmfield(obj.metadata, field);
+      end
+    end
+
+    function out_file = metadata_write(obj, varargin)
+      % Export current content of metadata to sidecar json with
+      % same name as current file. Metadata fields can be modified
+      % with new values passed in varargin, which can be either a structure,
+      % or pairs of key-values. These modifications do not affect
+      % current File object, and only exported into file. Use
+      % bids.File.metadata_update to update current metadata.
+      % Returns full path to the exported sidecar json file.
+      %
+      % See also
+      %    bids.util.update_struct
+      %
+      % USAGE::
+      %
+      %  f.metadata_write(key1, value1, key2, value2);
+      %  f.metadata_write(struct(key1, value1, ...
+      %                    key2, value2));
+      [path, ~, ~] = fileparts(obj.path);
+      out_file = fullfile(path, obj.json_filename);
+
+      der_json = bids.util.update_struct(obj.metadata, varargin{:});
+      bids.util.jsonencode(out_file, der_json, 'indent', '  ');
     end
 
     %% Things that might go private
