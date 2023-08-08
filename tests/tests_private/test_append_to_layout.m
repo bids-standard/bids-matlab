@@ -13,42 +13,44 @@ function test_layout_missing_subgroup()
   synthetic_derivatives = fullfile(get_test_data_dir(), '..', ...
                                    'data', 'synthetic', 'derivatives', 'manual');
 
-  if ~bids.internal.is_octave % skipping because Octave:mixed-string-concat
-    assertWarning(@()bids.layout(synthetic_derivatives, 'verbose', true), ...
-                  'append_to_layout:unknownSuffix');
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
+
+  assertWarning(@()bids.layout(synthetic_derivatives, 'verbose', true), ...
+                'append_to_layout:unknownSuffix');
 
 end
 
 function test_append_to_layout_schema_unknown_entity()
 
-  if ~bids.internal.is_octave()
-
-    [subject, modality, schema, previous] = set_up('meg');
-
-    file = 'sub-16_task-bar_foo-bar_meg.ds';
-
-    assertWarning( ...
-                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
-                  'append_to_layout:unknownEntity');
-
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
+
+  [subject, modality, schema, previous] = set_up('meg');
+
+  file = 'sub-16_task-bar_foo-bar_meg.ds';
+
+  assertWarning( ...
+                @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                'append_to_layout:unknownEntity');
 
 end
 
 function test_append_to_layout_schema_unknown_extension()
 
-  if ~bids.internal.is_octave()
-
-    [subject, modality, schema, previous] = set_up('meg');
-
-    file = 'sub-16_task-bar_meg.foo';
-
-    assertWarning( ...
-                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
-                  'append_to_layout:unknownExtension');
-
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
+
+  [subject, modality, schema, previous] = set_up('meg');
+
+  file = 'sub-16_task-bar_meg.foo';
+
+  assertWarning( ...
+                @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                'append_to_layout:unknownExtension');
 
 end
 
@@ -85,17 +87,18 @@ end
 
 function test_append_to_layout_schema_missing_required_entity()
 
-  if ~bids.internal.is_octave()
-    [subject, modality, schema, previous] = set_up('func');
-
-    % func with missing task entity
-    file = 'sub-16_bold.nii.gz';
-
-    assertWarning( ...
-                  @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
-                  'append_to_layout:missingRequiredEntity');
-
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
+
+  [subject, modality, schema, previous] = set_up('func');
+
+  % func with missing task entity
+  file = 'sub-16_bold.nii.gz';
+
+  assertWarning( ...
+                @()bids.internal.append_to_layout(file, subject, modality, schema, previous), ...
+                'append_to_layout:missingRequiredEntity');
 
 end
 

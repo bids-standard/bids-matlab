@@ -18,8 +18,8 @@ function test_create_sessions_tsv_no_session()
 
   validate_dataset(bids_path);
 
-  if bids.internal.is_octave
-    return
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
 
   assertWarning(@() bids.util.create_sessions_tsv(bids_path, 'verbose', true), ...

@@ -26,8 +26,8 @@ end
 
 function test_create_readme_warning_already_present()
 
-  if bids.internal.is_octave
-    return
+  if bids.internal.is_octave()
+    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
   end
 
   bids_path = fullfile(get_test_data_dir(), 'ds116');
