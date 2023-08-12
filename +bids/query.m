@@ -483,7 +483,11 @@ function result = update_result(varargin)
             try
               result{end} = subsref(result{end}, target);
             catch
-              warning('Non-existent field "%s" for metadata.', target.subs);
+              msg = sprintf('Non-existent field "%s" for metadata.', target.subs);
+              bids.internal.error_handling(mfilename(), ...
+                                           'unknownMetadata', ...
+                                           msg, ...
+                                           true);
               result{end} = [];
             end
           end
