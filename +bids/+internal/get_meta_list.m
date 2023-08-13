@@ -43,6 +43,15 @@ function metalist = get_meta_list(varargin)
     return
   end
 
+  % in deepest level look for file with only a change in extension
+  basename = bids.internal.file_utils(filename, 'basename');
+  if strcmp(bids.internal.file_utils(basename, 'ext'), 'nii')
+    basename = bids.internal.file_utils(basename, 'basename');
+  end
+  ideal_metafile = bids.internal.file_utils('FPList', ...
+                                            pth, ...
+                                            sprintf(pattern, basename));
+
   % Default assumes we are dealing with a file in the root directory
   % like "participants.tsv".
   % If the file has underscore separated entities ("sub-01_T1w.nii")
@@ -59,13 +68,21 @@ function metalist = get_meta_list(varargin)
 
   for n = 1:N
 
-    % List the potential metadata files associated with this file suffix type
+    % List the metadata files associated with this file
     metafile = bids.internal.file_utils('FPList', pth, sprintf(pattern, p.suffix));
 
     if isempty(metafile)
       metafile = {};
     else
       metafile = cellstr(metafile);
+    end
+
+    % in deepest level look for file with only a change in extension
+    if n == 1  && ~isempty(ideal_metafile)
+      metalist{end + 1, 1} = ideal_metafile; %#ok<*AGROW>
+      % Go up to the parent folder
+      pth = fullfile(pth, '..');
+      continue
     end
 
     % For all those files we find which one is potentially associated
@@ -102,7 +119,7 @@ function metalist = get_meta_list(varargin)
 
       % append path to list
       if ismeta
-        metalist{end + 1, 1} = metafile{i}; %#ok<AGROW>
+        metalist{end + 1, 1} = metafile{i};
       end
 
     end
