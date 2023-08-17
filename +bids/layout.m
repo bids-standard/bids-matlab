@@ -26,8 +26,8 @@ function BIDS = layout(varargin)
   %                           any ``derivatives`` folder in the BIDS dataset.
   % :type  index_derivatives: logical
   %
-  % :param index_dependencies: if ``true`` this will index the dependencies
-  %                            (json files, associated TSV files for each file...)
+  % :param index_dependencies: if ``true`` this will index the explicit dependencies
+  %                            (with "IntendedFor" in json files)
   % :type  index_dependencies: logical
   %
   % :param filter: Can be used to index only a subset of the dataset.
