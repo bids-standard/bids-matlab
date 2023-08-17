@@ -49,7 +49,8 @@ function output_filenames = create_sessions_tsv(varargin)
   %%
   output_filenames = {};
 
-  layout = bids.layout(layout_or_path, 'use_schema', use_schema);
+  layout = bids.layout(layout_or_path, 'use_schema', use_schema, ...
+                       'index_dependencies', false);
 
   sessions_list = bids.query(layout, 'sessions');
   if isempty(sessions_list) && use_schema

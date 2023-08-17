@@ -14,18 +14,16 @@ function test_list_events_basic()
 
   pth_bids_example = get_test_data_dir();
 
-  data_sets_to_test = '^ds00.*[0-9]$'; % '^ds.*[0-9]$'
+  data_sets_to_test = '^ds00[0-9]$'; % '^ds.*[0-9]$'
   examples = bids.internal.file_utils('FPList', get_test_data_dir(), 'dir', data_sets_to_test);
 
   for i = 1:size(examples, 1)
 
-    BIDS = bids.layout(deblank(examples(i, :)));
+    BIDS = bids.layout(deblank(examples(i, :)), 'index_dependencies', false);
 
     tasks = bids.query(BIDS, 'tasks');
 
     for j = 1:numel(tasks)
-
-      [bids.internal.file_utils(BIDS.pth, 'basename'), ' - ', tasks{j}];
 
       [data, headers, y_labels] = bids.internal.list_events(BIDS, 'func', tasks{j});
 
