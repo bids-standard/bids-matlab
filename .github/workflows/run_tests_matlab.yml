@@ -62,9 +62,14 @@ jobs:
         git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
         git clone https://github.com/MOcov/MOcov.git --depth 1
 
-    - name: set environment variable
-      if: matrix.test == 'slow'
+    - name: set environment variable unix
+      if: matrix.test == 'slow' && matrix.os == 'ubuntu-latest'
       run: export SLOW=true
+
+    - name: set environment variable windows
+      if: matrix.test == 'slow' && matrix.os == 'windows-latest'
+      run: |
+        setx SLOW "true"
 
     - name: Run commands
       uses: matlab-actions/run-command@v1.1.3
