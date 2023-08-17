@@ -9,6 +9,7 @@ end
 function test_bids_query_derivatives_basic()
 
   BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000001-fmriprep'), ...
+                     'index_dependencies', false, ...
                      'use_schema', false);
 
   spaces = bids.query(BIDS, 'spaces');

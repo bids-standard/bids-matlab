@@ -14,7 +14,7 @@ function test_report_asl()
 
   BIDS = fullfile(cfg.pth_bids_example, datasets);
 
-  BIDS = bids.layout(BIDS, 'use_schema', true);
+  BIDS = bids.layout(BIDS, 'use_schema', true, 'index_dependencies', false);
 
   filter.modality = 'perf';
 
@@ -46,7 +46,7 @@ function test_report_basic()
   for i = 1:numel(datasets)
 
     BIDS = fullfile(cfg.pth_bids_example, datasets{i});
-    BIDS = bids.layout(BIDS, 'use_schema', true);
+    BIDS = bids.layout(BIDS, 'use_schema', true, 'index_dependencies', false);
 
     for j = 1:numel(modalities)
 
@@ -81,7 +81,7 @@ function test_report_pet()
 
   BIDS = fullfile(cfg.pth_bids_example, datasets);
 
-  BIDS = bids.layout(BIDS, 'use_schema', true);
+  BIDS = bids.layout(BIDS, 'use_schema', true, 'index_dependencies', false);
 
   filter.modality = 'pet';
 
@@ -120,7 +120,7 @@ function test_report_moae_data()
                               'verbose', true, ...
                               'delete_previous', false);
 
-  BIDS = bids.layout(pth, 'use_schema', true);
+  BIDS = bids.layout(pth, 'use_schema', true, 'index_dependencies', false);
 
   report = bids.report(BIDS, ...
                        'output_path', cfg.output_path, ...

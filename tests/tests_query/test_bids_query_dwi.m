@@ -11,7 +11,8 @@ function test_bids_query_dwi_basic()
   %   dwi queries
   %
   %%
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'eeg_rest_fmri'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'eeg_rest_fmri'),   ...
+                     'index_dependencies', false);
 
   modalities = {'anat',    'dwi',    'eeg', 'func'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);

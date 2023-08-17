@@ -8,12 +8,14 @@ end
 
 function test_bids_query_microscopy_basic()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'micr_SEM'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'micr_SEM'), ...
+                     'index_dependencies', false);
 
   data = bids.query(BIDS, 'data');
   assertEqual(numel(data), 6);
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'micr_SPIM'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'micr_SPIM'), ...
+                     'index_dependencies', false);
 
   data = bids.query(BIDS, 'data');
   assertEqual(numel(data), 11);

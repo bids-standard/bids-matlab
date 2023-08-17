@@ -1,6 +1,7 @@
 function test_query_bug_453()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000248'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000248'), ...
+                     'index_dependencies', false);
 
   assertEqual(bids.query(BIDS, 'modalities'), {'anat', 'meg'});
   assertEqual(bids.query(BIDS, 'modalities', 'task', '.*'), {'meg'});

@@ -19,7 +19,7 @@ function test_diagnostic_basic()
 
   for i = 1:size(examples, 1)
 
-    BIDS = bids.layout(deblank(examples(i, :)));
+    BIDS = bids.layout(deblank(examples(i, :)), 'index_dependencies', false);
 
     diagnostic_table = bids.diagnostic(BIDS, 'output_path', pwd);
     diagnostic_table = bids.diagnostic(BIDS, 'split_by', {'suffix'}, 'output_path', pwd);
