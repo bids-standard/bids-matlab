@@ -25,6 +25,7 @@ jobs:
       matrix:
         version: [R2021a, R2023a]
         os: [ubuntu-latest, macos-latest, windows-latest]
+        test: [slow, fast]
 
 
     runs-on: ${{matrix.os}}
@@ -60,6 +61,10 @@ jobs:
       run: |
         git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
         git clone https://github.com/MOcov/MOcov.git --depth 1
+
+    - name: set environment variable
+      if: matrix.test == 'slow'
+      run: export SLOW=true
 
     - name: Run commands
       uses: matlab-actions/run-command@v1.1.3

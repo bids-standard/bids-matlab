@@ -21,6 +21,11 @@ env:
 jobs:
   test:
 
+    strategy:
+      fail-fast: false
+      matrix:
+        test: [slow, fast]
+
     runs-on: ubuntu-22.04
 
     steps:
@@ -69,6 +74,10 @@ jobs:
         cd JSONio
         mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
         octave $OCTFLAGS --eval "addpath(fullfile(pwd)); savepath();"
+
+    - name: set environment variable
+      if: matrix.test == 'slow'
+      run: export SLOW=true
 
     - name: Run unit tests Octave
       run: |
