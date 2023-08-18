@@ -24,6 +24,7 @@ To see how to install BIDS-Matlab, please check
    stats_model
    transformers
    schema
+   performance
    dev_doc
 
 

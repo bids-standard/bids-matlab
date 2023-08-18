@@ -83,6 +83,7 @@ classdef File
   % Modify metadata
   %
   % .. code-block:: matlab
+  %
   %   % Adding new value
   %   f = f.metadata_add('NewField', 'new value');
   %   f.metadata()
