@@ -3,6 +3,8 @@ function success = run_tests(with_coverage)
 
   % (C) Copyright 2021 BIDS-MATLAB developers
 
+  tic;
+
   fprintf('\nRunning tests\n');
 
   if nargin < 1
@@ -39,5 +41,7 @@ function success = run_tests(with_coverage)
                                '-recursive');
 
   end
+
+  toc;
 
 end

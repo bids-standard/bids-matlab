@@ -10,6 +10,10 @@ end
 
 function test_diagnostic_basic()
 
+  if ~run_slow_test_only()
+    moxunit_throw_test_skipped_exception('slow test only');
+  end
+
   close all;
 
   pth_bids_example = get_test_data_dir();
