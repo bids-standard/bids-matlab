@@ -3,7 +3,7 @@ function value = run_slow_test_only()
   global SLOW
   ENV_SLOW = getenv('SLOW');
   value = false;
-  if ~isempty(ENV_SLOW) || SLOW
+  if ~isempty(ENV_SLOW) || (~isempty(SLOW) && SLOW)
     value = true;
   end
 end
