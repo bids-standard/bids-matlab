@@ -1,6 +1,10 @@
 ---
 name: 'matlab: tests'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -19,8 +23,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [R2021a, R2021b, R2022a, R2022b]
+        version: [R2021a, R2023a]
         os: [ubuntu-latest, macos-latest, windows-latest]
+        test: [slow, fast]
 
 
     runs-on: ${{matrix.os}}
@@ -57,7 +62,15 @@ jobs:
         git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
         git clone https://github.com/MOcov/MOcov.git --depth 1
 
-    - name: Run commands
+    - name: Run slow tests
+      if: matrix.test == 'slow'
+      uses: matlab-actions/run-command@v1.1.3
+      with:
+        command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); global SLOW; SLOW=true; addpath(getenv('GITHUB_WORKSPACE'));
+          success = run_tests(); assert(success);
+
+    - name: Run fast tests
+      if: matrix.test == 'fast'
       uses: matlab-actions/run-command@v1.1.3
       with:
         command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); addpath(getenv('GITHUB_WORKSPACE')); success = run_tests();

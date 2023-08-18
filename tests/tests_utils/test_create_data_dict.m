@@ -10,7 +10,8 @@ function test_create_data_dict_basic()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'), ...
+                     'index_dependencies', false);
 
   tsv_files = bids.query(BIDS, 'data', ...
                          'sub', '01', ...
@@ -48,7 +49,8 @@ function test_create_data_dict_schema()
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'));
+  BIDS = bids.layout(fullfile(pth_bids_example, 'ds001'), ...
+                     'index_dependencies', false);
 
   tsv_files = bids.query(BIDS, 'data', ...
                          'suffix', 'events');
@@ -76,7 +78,8 @@ function test_create_data_dict_warning
 
   pth_bids_example = get_test_data_dir();
 
-  BIDS = bids.layout(fullfile(pth_bids_example, dataset));
+  BIDS = bids.layout(fullfile(pth_bids_example, dataset), ...
+                     'index_dependencies', false);
 
   tasks =  bids.query(BIDS, 'tasks');
 
@@ -154,7 +157,8 @@ function test_create_data_dict_several_tsv()
 
     dataset = datasets{i_dataset};
 
-    BIDS = bids.layout(fullfile(pth_bids_example, dataset));
+    BIDS = bids.layout(fullfile(pth_bids_example, dataset), ...
+                       'index_dependencies', false);
 
     tasks =  bids.query(BIDS, 'tasks');
 

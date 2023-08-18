@@ -78,7 +78,8 @@ function [diagnostic_table, sub_ses, headers] = diagnostic(varargin)
   parse(args, varargin{:});
 
   %%
-  BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema);
+  BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema, ...
+                     'index_dependencies', false);
 
   output_path = args.Results.output_path;
 

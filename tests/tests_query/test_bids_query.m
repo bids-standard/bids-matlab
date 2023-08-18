@@ -8,7 +8,8 @@ end
 
 function test_query_phenotype()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'), ...
+                     'index_dependencies', false);
 
   phenotype = bids.query(BIDS,  'phenotype');
 
@@ -32,11 +33,13 @@ end
 
 function test_query_participants()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'), ...
+                     'index_dependencies', false);
 
   participants = bids.query(BIDS,  'participants');
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl001'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl001'), ...
+                     'index_dependencies', false);
 
   participants = bids.query(BIDS,  'participants');
 
@@ -44,7 +47,8 @@ end
 
 function test_query_impossible_suffix_should_return_empty()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'), ...
+                     'index_dependencies', false);
 
   % no suffix bold in anat
   filter = struct('sub', '01', ...
@@ -60,12 +64,14 @@ end
 
 function test_query_suffixes()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'), ...
+                     'index_dependencies', false);
 
   suffixes = {'T1w', 'pet'};
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'), ...
+                     'index_dependencies', false);
 
   suffixes = {'T1w'};
   assertEqual(bids.query(BIDS, 'suffixes', 'modality', 'anat'), suffixes);
@@ -74,7 +80,8 @@ end
 
 function test_query_subjects()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ieeg_visual'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ieeg_visual'), ...
+                     'index_dependencies', false);
 
   subjs = arrayfun(@(x) sprintf('%02d', x), 1:2, 'UniformOutput', false);
   assertEqual(bids.query(BIDS, 'subjects'), subjs);
@@ -95,7 +102,8 @@ function test_query_regex_subjects_no_regex_by_default()
     %
   end
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), '..', 'data', 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), '..', 'data', 'synthetic'), ...
+                     'index_dependencies', false);
 
   data = bids.query(BIDS, 'subjects', 'sub', '01');
 
@@ -109,7 +117,8 @@ end
 
 function test_query_regex_subjects()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000247'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000247'), ...
+                     'index_dependencies', false);
 
   data = bids.query(BIDS, 'data', 'sub', '.*', 'suffix', 'T1w');
 
@@ -123,7 +132,8 @@ end
 
 function test_query_with_indices()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds105'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds105'), ...
+                     'index_dependencies', false);
 
   data_1 = bids.query(BIDS, 'data', 'sub', '1', 'run', {3, 5, '7', '01'}, 'suffix', 'bold');
   data_2 = bids.query(BIDS, 'data', 'sub', '1', 'run', 1:2:7, 'suffix', 'bold');
@@ -134,7 +144,8 @@ end
 
 function test_query_entities()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_qsm'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_qsm'), ...
+                     'index_dependencies', false);
 
   entities = bids.query(BIDS, 'entities');
 
@@ -144,7 +155,8 @@ function test_query_entities()
   assertEqual(entities, expected);
 
   %%
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'), ...
+                     'index_dependencies', false);
 
   entities = bids.query(BIDS, 'entities', 'suffix', 'pet');
 
@@ -157,7 +169,8 @@ end
 
 function test_query_events_tsv_in_root()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'), ...
+                     'index_dependencies', false);
 
   data = bids.query(BIDS, 'data', 'sub', '01', 'ses', '01', 'task', 'nback', 'suffix', 'events');
 
@@ -170,7 +183,8 @@ end
 
 function test_query_exclude_entity()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000246'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000246'), ...
+                     'index_dependencies', false);
 
   filter = struct('sub', '0001');
   assertEqual(bids.query(BIDS, 'modalities', filter), {'anat', 'meg'});
@@ -189,7 +203,8 @@ end
 
 function test_query_basic()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet005'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet005'), ...
+                     'index_dependencies', false);
 
   tasks = {'eyes'};
   assertEqual(bids.query(BIDS, 'tasks'), tasks);
@@ -204,7 +219,8 @@ end
 
 function test_query_data_filter()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet005'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet005'), ...
+                     'index_dependencies', false);
 
   % make sure that query can work with filter
   filters = {'sub', {'01'}; ...
@@ -225,7 +241,8 @@ end
 
 function test_query_extension()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'), ...
+                     'index_dependencies', false);
 
   extensions = bids.query(BIDS, 'extensions');
 
@@ -244,7 +261,8 @@ end
 
 function test_query_metadata()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'), ...
+                     'index_dependencies', false);
 
   md = bids.query(BIDS, 'metadata', ...
                   'sub', '01', ...
@@ -258,7 +276,8 @@ end
 
 function test_query_modalities()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'pet002'), ...
+                     'index_dependencies', false);
 
   modalities = {'anat', 'pet'};
 
@@ -270,7 +289,8 @@ end
 
 function test_query_tsv_content()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'eeg_ds003645s_hed_inheritance'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'eeg_ds003645s_hed_inheritance'), ...
+                     'index_dependencies', false);
 
   tsv_content = bids.query(BIDS, 'tsv_content', 'suffix', 'events');
 
@@ -291,7 +311,8 @@ end
 
 function test_query_tsv_content_error()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'qmri_tb1tfl'), ...
+                     'index_dependencies', false);
   assertExceptionThrown(@()bids.query(BIDS, 'tsv_content', 'extension', '.nii.gz'), ...
                         'query:notJustTsvFiles');
 
@@ -299,7 +320,8 @@ end
 
 function test_query_sessions()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'), ...
+                     'index_dependencies', false);
   sessions = {'01', '02'};
   assertEqual(bids.query(BIDS, 'sessions'), sessions);
   assertEqual(bids.query(BIDS, 'sessions', 'sub', '02'), sessions);
@@ -312,7 +334,8 @@ end
 
 function test_query_sessions_tsv()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'synthetic'), ...
+                     'index_dependencies', false);
 
   suffixes = bids.query(BIDS, 'suffixes');
   assert(ismember('sessions', suffixes));
@@ -354,7 +377,8 @@ end
 
 function test_query_scans_tsv()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'motion_spotrotation'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'motion_spotrotation'), ...
+                     'index_dependencies', false);
 
   suffixes = bids.query(BIDS, 'suffixes');
   assert(ismember('scans', suffixes));

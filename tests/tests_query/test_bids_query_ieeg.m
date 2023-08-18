@@ -12,7 +12,8 @@ function test_bids_query_ieeg_basic_1()
   %
 
   %%
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ieeg_epilepsy'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ieeg_epilepsy'), ...
+                     'index_dependencies', false);
 
   modalities = {'anat', 'ieeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -38,7 +39,8 @@ function test_bids_query_ieeg_basic_2()
   %
 
   %%
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ieeg_epilepsy_ecog'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ieeg_epilepsy_ecog'), ...
+                     'index_dependencies', false);
 
   modalities = {'anat', 'ieeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);

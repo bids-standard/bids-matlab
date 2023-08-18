@@ -35,7 +35,8 @@ end
 
 function test_bids_query_asl_basic_asl001()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl001'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl001'), ...
+                     'index_dependencies', false);
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -64,7 +65,8 @@ end
 
 function test_bids_query_asl_basic_asl003()
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl003'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'asl003'), ...
+                     'index_dependencies', false);
 
   modalities = {'anat', 'perf'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);

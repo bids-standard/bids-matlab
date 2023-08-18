@@ -11,7 +11,8 @@ function test_bids_query_meg_basic()
   %   meg queries
   %
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000246'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000246'), ...
+                     'index_dependencies', false);
 
   modalities = {'anat', 'meg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -21,9 +22,8 @@ function test_bids_query_meg_basic()
   assertEqual(bids.query(BIDS, 'suffixes'), suffixes);
 
   % smoke tests
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000247'));
-
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000248'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds000248'), ...
+                     'index_dependencies', false);
 
   dependencies = bids.query(BIDS, 'dependencies', 'sub', '01', 'suffix', 'meg');
 

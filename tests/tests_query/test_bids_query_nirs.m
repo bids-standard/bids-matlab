@@ -11,7 +11,8 @@ function test_bids_query_nirs_basic()
   %   nirs queries
   %
 
-  BIDS = bids.layout(fullfile(get_test_data_dir(), 'fnirs_tapping'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'fnirs_tapping'), ...
+                     'index_dependencies', false);
 
   optodes_files = bids.query(BIDS, 'data', ...
                              'suffix', 'optodes');

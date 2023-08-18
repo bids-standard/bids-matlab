@@ -10,6 +10,10 @@ end
 
 function test_download_ds_moae()
 
+  if ~run_slow_test_only()
+    moxunit_throw_test_skipped_exception('slow test only');
+  end
+
   output_dir = bids.util.download_ds('source', 'spm', ...
                                      'demo', 'moae', ...
                                      'out_path', temp_dir(), ...
@@ -34,6 +38,10 @@ function test_download_ds_moae()
 end
 
 function test_download_ds_facerep()
+
+  if ~run_slow_test_only()
+    moxunit_throw_test_skipped_exception('slow test only');
+  end
 
   output_dir = bids.util.download_ds('source', 'spm', ...
                                      'demo', 'facerep', ...

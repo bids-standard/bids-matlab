@@ -1,6 +1,11 @@
 ---
 name: tests_examples
 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:

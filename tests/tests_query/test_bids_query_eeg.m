@@ -12,7 +12,8 @@ function test_bids_query_eeg_basic_1()
   %
 
   %%
-  BIDS = bids.layout(fullfile(get_test_data_dir, 'eeg_face13'));
+  BIDS = bids.layout(fullfile(get_test_data_dir, 'eeg_face13'), ...
+                     'index_dependencies', false);
 
   modalities = {'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);
@@ -38,7 +39,8 @@ function test_bids_query_eeg_basic_2()
   %
 
   %%
-  BIDS = bids.layout(fullfile(get_test_data_dir, 'eeg_ds000117'));
+  BIDS = bids.layout(fullfile(get_test_data_dir, 'eeg_ds000117'), ...
+                     'index_dependencies', false);
 
   modalities = {'anat', 'eeg'};
   assertEqual(bids.query(BIDS, 'modalities'), modalities);

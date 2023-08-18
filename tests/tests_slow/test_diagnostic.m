@@ -10,6 +10,10 @@ end
 
 function test_diagnostic_basic()
 
+  if ~run_slow_test_only()
+    moxunit_throw_test_skipped_exception('slow test only');
+  end
+
   close all;
 
   pth_bids_example = get_test_data_dir();
@@ -19,7 +23,7 @@ function test_diagnostic_basic()
 
   for i = 1:size(examples, 1)
 
-    BIDS = bids.layout(deblank(examples(i, :)));
+    BIDS = bids.layout(deblank(examples(i, :)), 'index_dependencies', false);
 
     diagnostic_table = bids.diagnostic(BIDS, 'output_path', pwd);
     diagnostic_table = bids.diagnostic(BIDS, 'split_by', {'suffix'}, 'output_path', pwd);
