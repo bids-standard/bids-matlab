@@ -75,10 +75,13 @@ jobs:
         mkoctfile --mex jsonread.c jsmn.c -DJSMN_PARENT_LINKS
         octave $OCTFLAGS --eval "addpath(fullfile(pwd)); savepath();"
 
-    - name: set environment variable
-      if: matrix.test == 'slow'
-      run: export SLOW=true
-
-    - name: Run unit tests Octave
+    - name: Run fast tests Octave
+      if: matrix.test == 'fast'
       run: |
+        octave $OCTFLAGS --eval "success = run_tests(); assert(success);"
+
+    - name: Run slow tests Octave
+      if: matrix.test == 'slow'
+      run: |
+        export SLOW=true
         octave $OCTFLAGS --eval "success = run_tests(); assert(success);"

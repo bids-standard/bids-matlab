@@ -1,8 +1,9 @@
 function value = run_slow_test_only()
   % (C) Copyright 2023 BIDS-MATLAB developers
-  SLOW = getenv('SLOW');
+  global SLOW
+  ENV_SLOW = getenv('SLOW');
   value = false;
-  if ~isempty(SLOW)
+  if ~isempty(ENV_SLOW) || SLOW
     value = true;
   end
 end
