@@ -56,6 +56,7 @@ function output_dir = convert_facerep_ds(input_dir, output_dir)
   create_changelog(output_dir);
   create_datasetdescription(output_dir, opt);
   create_bold_json(output_dir, task_name, repetition_time, nb_slices, echo_time, opt);
+  bids.util.create_participants_tsv(output_dir);
 
 end
 
