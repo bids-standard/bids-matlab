@@ -75,10 +75,14 @@ function out_path = download_ds(varargin)
 
   verbose = args.Results.verbose;
 
+  source = args.Results.source;
+
+  demo = args.Results.demo;
+
   out_path = args.Results.out_path;
   if isempty(out_path)
     out_path = fullfile(bids.internal.root_dir, 'demos');
-    out_path = fullfile(out_path, args.Results.source, args.Results.demo);
+    out_path = fullfile(out_path, source, demo);
   end
 
   % clean previous runs
@@ -96,7 +100,7 @@ function out_path = download_ds(varargin)
   end
   bids.util.mkdir(out_path);
 
-  [URL] = get_URL(args.Results.source, args.Results.demo, verbose);
+  [URL] = get_URL(source, demo, verbose);
   filename = bids.internal.download(URL, bids.internal.root_dir(), verbose);
 
   % Unzipping dataset
@@ -109,9 +113,12 @@ function out_path = download_ds(varargin)
     print_to_screen(msg, verbose);
 
     unzip(filename, out_path);
+    if strcmpi(source, 'spm') && strcmpi(demo, 'moae')
+      bids.util.create_participants_tsv(out_path);
+    end
     delete(filename);
 
-    switch args.Results.demo
+    switch demo
       case {'moae', 'facerep'}
       case 'eeg'
         copyfile(fullfile(bids.internal.root_dir, 'EEG', '*'), out_path);

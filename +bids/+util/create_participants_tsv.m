@@ -48,7 +48,9 @@ function output_filename = create_participants_tsv(varargin)
 
   %%
 
-  layout = bids.layout(layout_or_path, 'use_schema', use_schema);
+  layout = bids.layout(layout_or_path, ...
+                       'use_schema', use_schema, ...
+                       'index_dependencies', false);
 
   if ~isempty(layout.participants)
     msg = sprintf(['"participant.tsv" already exist for the following dataset. ', ...

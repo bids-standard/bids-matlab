@@ -4,7 +4,7 @@ classdef File
   %
   % USAGE::
   %
-  %   file = bids.File(input, ...
+  %   bf = bids.File(input, ...
   %                    'use_schema', false, ...
   %                    'tolerant', true,
   %                    'verbose', false);
@@ -30,7 +30,7 @@ classdef File
   % .. code-block:: matlab
   %
   %   input = fullfile(pwd, 'sub-01_ses-02_T1w.nii');
-  %   file = bids.File(input);
+  %   bf = bids.File(input);
   %
   % Initialize with a structure
   %
@@ -40,16 +40,16 @@ classdef File
   %                  'suffix', 'T1w', ...
   %                  'entities', struct('sub', '01', ...
   %                                     'ses', '02'));
-  %   file = bids.File(input);
+  %   bf = bids.File(input);
   %
   % Remove prefixes and add a ``desc-preproc`` entity-label pair.
   %
   % .. code-block:: matlab
   %
   %   input = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
-  %   file = bids.File(input, 'use_schema', false);
-  %   file.prefix = '';
-  %   file.entities.desc = 'preproc';
+  %   bf = bids.File(input, 'use_schema', false);
+  %   bf.prefix = '';
+  %   bf.entities.desc = 'preproc';
   %   disp(file.filename)
   %
   % Use the BIDS schema to get entities in the right order.
@@ -63,19 +63,20 @@ classdef File
   %                           'run', '02', ...
   %                           'task', 'face recognition');
   %
-  %   file = bids.File(name_spec, 'use_schema', true);
+  %   bf = bids.File(name_spec, 'use_schema', true);
   %
   % Load metadata (supporting inheritance).
   %
   % .. code-block:: matlab
   %
-  %   f = bids.File('tests/data/synthetic/sub-01/anat/sub-01_T1w.nii.gz');
+  %   bf = bids.File('tests/data/synthetic/sub-01/anat/sub-01_T1w.nii.gz');
   %
   % Access metadata
   %
   % .. code-block:: matlab
   %
-  %   f.metadata()
+  %   bf.metadata()
+  %
   %     struct with fields:
   %       Manufacturer: 'Siemens'
   %       FlipAngle: 10
@@ -85,24 +86,30 @@ classdef File
   % .. code-block:: matlab
   %
   %   % Adding new value
-  %   f = f.metadata_add('NewField', 'new value');
-  %   f.metadata()
+  %
+  %   bf = bf.metadata_add('NewField', 'new value');
+  %   bf.metadata()
+  %
   %     struct with fields:
   %       manufacturer: 'siemens'
   %       flipangle: 10
   %       NewField: 'new value'
   %
   %   % Appending to existing value
-  %   f = f.metadata_append('NewField', 'new value 1');
-  %   f.metadata()
+  %
+  %   bf = bf.metadata_append('NewField', 'new value 1');
+  %   bf.metadata()
+  %
   %     struct with fields:
   %       manufacturer: 'siemens'
   %       flipangle: 10
   %       NewField: {'new value'; 'new value 1'}
   %
   %   % Removing value
-  %   f = f.metadata_remove('NewField');
-  %   f.metadata()
+  %
+  %   bf = bf.metadata_remove('NewField');
+  %   bf.metadata()
+  %
   %     struct with fields:
   %       manufacturer: 'siemens'
   %       flipangle: 10
@@ -111,10 +118,11 @@ classdef File
   %
   % .. code-block:: matlab
   %
-  %   f = f.metadata_update('Description', 'source file', ...
+  %   bf = bf.metadata_update('Description', 'source file', ...
   %                         'NewField', 'new value', ...
   %                         'manufacturer', []);
-  %   f.metadata()
+  %   bf.metadata()
+  %
   %     struct with fields:
   %       flipangle: 10
   %       description: 'source file'
@@ -124,7 +132,9 @@ classdef File
   %
   % .. code-block:: matlab
   %
-  %   f.metadata_write()
+  %   bf.metadata_write()
+  %
+  %
 
   % (C) Copyright 2021 BIDS-MATLAB developers
 
@@ -811,12 +821,14 @@ classdef File
     end
 
     function out_file = metadata_write(obj, varargin)
-      % Export current content of metadata to sidecar json with
-      % same name as current file. Metadata fields can be modified
-      % with new values passed in varargin, which can be either a structure,
-      % or pairs of key-values. These modifications do not affect
-      % current File object, and only exported into file. Use
-      % bids.File.metadata_update to update current metadata.
+      % Export current content of metadata to sidecar json
+      % with same name as current file.
+      %
+      % Metadata fields can be modified with new values passed in varargin,
+      % which can be either a structure, or pairs of key-values.
+      % These modifications do not affect current File object,
+      % and only exported into file.
+      % Use bids.File.metadata_update to update current metadata.
       % Returns full path to the exported sidecar json file.
       %
       % See also
@@ -826,7 +838,9 @@ classdef File
       %
       %  f.metadata_write(key1, value1, key2, value2);
       %  f.metadata_write(struct(key1, value1, ...
-      %                    key2, value2));
+      %                          key2, value2));
+      %
+
       [path, ~, ~] = fileparts(obj.path);
       out_file = fullfile(path, obj.json_filename);
 
