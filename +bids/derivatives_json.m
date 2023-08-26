@@ -69,38 +69,20 @@ function json = derivatives_json(varargin)
 
     %% entity related content
     if any(ismember(fieldnames(p.entities), 'res'))
-      try
-        content.Resolution = {{ struct(p.entities.res, 'REQUIRED if "res" entity') }};
-      catch
-        bids.internal.error_handling(mfilename(), 'invalidFieldname', ....
-                                     sprintf('Invalid field name for entity res-%s', ...
-                                             p.entities.res), ...
-                                     true, ...
-                                     true);
-      end
+      content.Resolution = p.entities.res;
     end
 
     if any(ismember(fieldnames(p.entities), 'den'))
-      try
-        content.Density = {{ struct(p.entities.den, 'REQUIRED if "den" entity') }};
-      catch
-        bids.internal.error_handling(mfilename(), 'invalidFieldname', ....
-                                     sprintf('Invalid field name for entity den-%s', ...
-                                             p.entities.den), ...
-                                     true, ...
-                                     true);
-      end
+      content.Density = p.entities.den;
     end
 
     %% suffix related content
     if any(ismember(p.suffix, {'dseg', 'probseg'}))
       content.Manual = {{'OPTIONAL'}};
-      content.Atlas = {{'OPTIONAL'}};
     end
 
     if any(ismember(p.suffix, {'mask'}))
       content.RawSources = {{'REQUIRED'}};
-      content.Atlas = {{'OPTIONAL'}};
       content.Type = {{'OPTIONAL'}};
     end
 
