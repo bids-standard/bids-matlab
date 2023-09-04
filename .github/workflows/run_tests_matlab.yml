@@ -19,14 +19,12 @@ on:
 jobs:
   test:
 
-
     strategy:
       fail-fast: false
       matrix:
         version: [R2021a, R2023a]
         os: [ubuntu-latest, macos-latest, windows-latest]
         test: [slow, fast]
-
 
     runs-on: ${{matrix.os}}
 
