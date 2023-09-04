@@ -71,6 +71,7 @@ function test_append_to_layout_basic()
                                             'acq', 'hd', ...
                                             'ce', '', ...
                                             'rec', '', ...
+                                            'echo', '', ...
                                             'part', ''));
 
   expected.anat.metafile = {};
@@ -79,6 +80,10 @@ function test_append_to_layout_basic()
   expected.anat.dependencies.data = {};
   expected.anat.dependencies.group = {};
 
+  fields = fieldnames(expected.anat);
+  for i = 1:numel(fields)
+    assertEqual(subject.anat.(fields{i}), expected.anat.(fields{i}));
+  end
   assertEqual(subject.anat, expected.anat);
 
 end
@@ -123,6 +128,7 @@ function test_append_to_structure_basic_test()
                                                   'acq', 'hd', ...
                                                   'ce', '', ...
                                                   'rec', '', ...
+                                                  'echo', '', ...
                                                   'part', ''));
   expected.anat(1, 1).metafile = {};
 
