@@ -5,6 +5,6 @@ function validate_dataset(bids_path)
   end
 
   [sts, msg] = bids.validate(bids_path,  '--config.ignore=99 --ignoreNiftiHeaders');
-  assertEqual(sts, 0);
+  assert(sts == 0, msg);
 
 end
