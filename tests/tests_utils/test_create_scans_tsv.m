@@ -11,8 +11,11 @@ function test_create_scans_tsv_basic_no_session()
   source_ds = fullfile(get_test_data_dir(), 'asl001');
   tmp_path = temp_dir();
   copyfile(source_ds, tmp_path);
-
-  bids_path = fullfile(tmp_path);
+  if bids.internal.is_octave()
+    bids_path = fullfile(tmp_path, 'asl001');
+  else
+    bids_path = tmp_path;
+  end
 
   validate_dataset(bids_path);
 
@@ -32,8 +35,11 @@ function test_create_scans_tsv_basic()
   source_ds = fullfile(get_test_data_dir(), 'ds006');
   tmp_path = temp_dir();
   copyfile(source_ds, tmp_path);
-
-  bids_path = fullfile(tmp_path);
+  if bids.internal.is_octave()
+    bids_path = fullfile(tmp_path, 'ds006');
+  else
+    bids_path = tmp_path;
+  end
 
   validate_dataset(bids_path);
 
