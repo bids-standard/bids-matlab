@@ -74,7 +74,11 @@ function output_filenames = create_scans_tsv(varargin)
   %%
   output_filenames = {};
 
-  layout = bids.layout(layout_or_path, 'use_schema', use_schema);
+  layout = bids.layout(layout_or_path, ...
+                       'use_schema', use_schema, ...
+                       'index_dependencies', false, ...
+                       'tolerant', tolerant, ...
+                       'verbose', verbose);
 
   subjects_list = bids.query(layout, 'subjects');
 
@@ -126,7 +130,7 @@ function output_filenames = create_scans_tsv(varargin)
                        'acq_time', {cell(numel(data), 1)}, ...
                        'comments', {cell(numel(data), 1)});
 
-      output_filenames{end + 1} = scans_file; %#ok<AGROW>
+      output_filenames{end + 1} = scans_file;
 
       bids.util.tsvwrite(fullfile(layout.pth, scans_file), content);
 
