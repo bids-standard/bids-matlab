@@ -99,6 +99,12 @@ function data_dict = create_data_dict(varargin)
                            'new_level_name', {{}});
 
   for i = 1:numel(headers)
+    if strcmp(bids.internal.file_utils(tsv_file{1}, ...
+                                       'basename'), ...
+              'participants') && ...
+        strcmp(headers{i}, 'participant_id')
+      continue
+    end
     data_dict.(headers{i}) = set_dict(headers{i}, schema);
     [data_dict, modified_levels] = add_levels_desc(data_dict, ...
                                                    headers{i}, ...
@@ -242,7 +248,8 @@ function [json, modified] = add_levels_desc(json, hdr, tsv, lvl_limit, modified,
       warning_modified_level_name(level_name_before, hdr, this_level, verbose);
     end
 
-    json.(hdr).Levels.(this_level) = 'TODO';
+    json.(hdr).Levels.(this_level) = struct('Description', level_name_before, ...
+                                            'TermURL', 'TODO');
 
   end
 
