@@ -112,7 +112,7 @@ function BIDS = layout(varargin)
 
   %% BIDS structure
   % ==========================================================================
-  % BIDS.dir           -- BIDS directory
+  % BIDS.pth           -- BIDS directory
   % BIDS.is_datalad_ds -- BIDS directory
   % BIDS.description   -- content of dataset_description.json
   % BIDS.sessions      -- cellstr of sessions
