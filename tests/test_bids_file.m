@@ -407,7 +407,7 @@ function test_reorder_schemaless()
                                   'split'
                                   'recording'
                                   'chunk'
-                                  'atlas'
+                                  'seg'
                                   'res'
                                   'den'
                                   'label'
@@ -436,7 +436,8 @@ function test_reorder_with_schema()
                                   'dir'
                                   'run'
                                   'echo'
-                                  'part'});
+                                  'part'
+                                  'chunk'});
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 end
 
