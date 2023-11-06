@@ -39,10 +39,10 @@ function [new_content, json] = transformers(varargin)
 
   % (C) Copyright 2022 BIDS-MATLAB developers
 
-  SUPPORTED_TRANSFORMERS = lower(cat(1, basic_transfomers, ...
-                                     munge_transfomers, ...
-                                     logical_transfomers, ...
-                                     compute_transfomers));
+  SUPPORTED_TRANSFORMERS = lower(cat(1, basic_transformers, ...
+                                     munge_transformers, ...
+                                     logical_transformers, ...
+                                     compute_transformers));
 
   p = inputParser;
 
@@ -98,16 +98,16 @@ function output = apply_transformer(trans, data)
 
   switch transformerName
 
-    case lower(basic_transfomers)
+    case lower(basic_transformers)
       output = bids.transformers_list.Basic(trans, data);
 
-    case lower(logical_transfomers)
+    case lower(logical_transformers)
       output = bids.transformers_list.Logical(trans, data);
 
-    case lower(munge_transfomers)
+    case lower(munge_transformers)
       output = apply_munge(trans, data);
 
-    case lower(compute_transfomers)
+    case lower(compute_transformers)
       output = apply_compute(trans, data);
 
     otherwise
@@ -211,7 +211,7 @@ function not_implemented(name)
                                false);
 end
 
-function BASIC = basic_transfomers()
+function BASIC = basic_transformers()
   BASIC = {'Add'
            'Divide'
            'Multiply'
@@ -219,13 +219,13 @@ function BASIC = basic_transfomers()
            'Subtract'};
 end
 
-function LOGICAL = logical_transfomers()
+function LOGICAL = logical_transformers()
   LOGICAL = {'And'
              'Or'
              'Not'};
 end
 
-function MUNGE = munge_transfomers()
+function MUNGE = munge_transformers()
   MUNGE = {'Assign'
            'Concatenate'
            'Constant'
@@ -242,7 +242,7 @@ function MUNGE = munge_transfomers()
            'Split'};
 end
 
-function COMPUTE = compute_transfomers()
+function COMPUTE = compute_transformers()
   COMPUTE = {'Mean'
              'Product'
              'Scale'
