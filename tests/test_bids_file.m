@@ -146,7 +146,8 @@ function test_reorder()
                                   'dir'; ...
                                   'run'; ...
                                   'echo'; ...
-                                  'part'});
+                                  'part'; ...
+                                  'chunk'});
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
 
 end
@@ -204,7 +205,8 @@ function test_bids_file_parsing_filename_schema_based()
                'dir'
                'run'
                'echo'
-               'part'});
+               'part'
+               'chunk'});
 
   assertEqual(file.prefix, '');
   assertEqual(file.suffix, 'bold');
