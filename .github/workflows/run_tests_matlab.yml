@@ -50,6 +50,7 @@ jobs:
     - name: Install bids validator
       run: npm install -g bids-validator
 
+
     - name: Install bids example
       run: |
         cd tests
