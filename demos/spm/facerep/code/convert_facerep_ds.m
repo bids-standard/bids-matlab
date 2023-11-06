@@ -302,7 +302,7 @@ function create_readme(output_dir)
          '- 2 presentations of 26 Famous and 26 Nonfamous Greyscale photographs, '
          '  for 0.5s, randomly intermixed, for fame judgment task '
          '  (one of two right finger key presses).'
-         '- Parameteric factor "lag" = number of faces intervening '
+         '- Parametric factor "lag" = number of faces intervening '
          '  between repetition of a specific face + 1'
          '- Minimal SOA=4.5s, with probability 2/3 (ie 1/3 null events)'
          ''

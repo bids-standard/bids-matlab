@@ -26,7 +26,7 @@ function new_data = Merge_identical_rows(transformer, data)
   %    - If a variable is found, but is empty, it is ignored
   %    - The content of the other columns corresponds to the last row being merged:
   %      this means that the content from other columns but the one specified in will be deleted
-  %      execpt for the last one
+  %      except for the last one
   %
   % CODE EXAMPLE
   % ------------

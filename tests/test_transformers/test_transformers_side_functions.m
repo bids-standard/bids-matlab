@@ -53,7 +53,7 @@ end
 function status = test_is_run_level()
 
   data = struct('onset', [], 'duration', [], 'foo', 'bar');
-  assert(bids.transfomers.is_run_level(data));
+  assert(bids.transformers.is_run_level(data));
 
 end
 
