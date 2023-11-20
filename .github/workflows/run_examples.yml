@@ -28,7 +28,7 @@ jobs:
         release: R2020a
 
     - name: Clone bids-matlab
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: true
         fetch-depth: 1
