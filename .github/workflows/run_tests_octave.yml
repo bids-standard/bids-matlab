@@ -8,8 +8,7 @@ concurrency:
 on:
   push:
     branches:
-    - master
-    - dev
+    - main
     paths:
     - '**.m'
   pull_request:

@@ -31,8 +31,8 @@ See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the
 Download, unzip this repository and add its content to the MATLAB/Octave path.
 
 ```Matlab
-unzip('https://github.com/bids-standard/bids-matlab/archive/master.zip');
-addpath('bids-matlab-master');
+unzip('https://github.com/bids-standard/bids-matlab/archive/main.zip');
+addpath('bids-matlab-main');
 ```
 
 Or clone it with git:
@@ -131,7 +131,7 @@ content = bids.util.jsondecode('/home/data/some_json_file.json');
 ```
 
 A
-[tutorials](https://github.com/bids-standard/bids-matlab/blob/master/lib/bids-matlab/demos/notebooks)
+[tutorials](https://github.com/bids-standard/bids-matlab/blob/main/lib/bids-matlab/demos/notebooks)
 are available as a Jupyter Notebooks and scripts and can be run interactively via
 [Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/dev?urlpath=demos).
 

@@ -50,8 +50,8 @@ a version of gunzip >= 1.6.
 Download, unzip this repository and add its content to the MATLAB/Octave path.
 
 ```Matlab
-unzip('https://github.com/bids-standard/bids-matlab/archive/master.zip');
-addpath('bids-matlab-master');
+unzip('https://github.com/bids-standard/bids-matlab/archive/main.zip');
+addpath('bids-matlab-main');
 ```
 
 Or clone it with git:

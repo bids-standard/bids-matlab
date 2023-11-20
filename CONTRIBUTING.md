@@ -405,7 +405,7 @@ as a contributor (or ask to be added if we forgot).
 ## Updating the bids-schema
 
 The schema of the BIDS specification is available as a
-[set of yaml files in the bids-standards repository](https://github.com/bids-standard/bids-specification/blob/master/CONTRIBUTING.md#updating-the-schema).
+[set of yaml files in the bids-standards repository](https://github.com/bids-standard/bids-specification/blob/main/CONTRIBUTING.md#updating-the-schema).
 
 A JSON version is also available here: https://bids-specification.readthedocs.io/en/latest/schema.json
 
