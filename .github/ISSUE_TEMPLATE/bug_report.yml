@@ -94,7 +94,6 @@ body:
     render: Markdown
     value: |
       - main 29b689dd
-      - dev 1bda0162
 
 - type: textarea
   attributes:
