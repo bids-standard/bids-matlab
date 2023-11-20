@@ -16,7 +16,7 @@ jobs:
   validate_cff:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Check whether the citation metadata from CITATION.cff is valid
       uses: citation-file-format/cffconvert-github-action@2.0.0
       with:
@@ -25,13 +25,13 @@ jobs:
   codespell:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: codespell-project/actions-codespell@master
 
   markdown_link_check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
       with:
         use-quiet-mode: yes
@@ -45,7 +45,7 @@ jobs:
         command: [mh_style, mh_metric --ci, mh_lint]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
         fetch-depth: 1
