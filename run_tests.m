@@ -25,6 +25,11 @@ function success = run_tests(with_coverage)
     testFolder = fullfile(pwd, 'tests', 'tests_slow');
   end
 
+  if is_octave()
+    warning('off', 'Octave:mixed-string-concat');
+    warning('off', 'Octave:shadowed-function');
+  end
+
   if with_coverage
     success = moxunit_runtests(testFolder, ...
                                '-verbose', ...
@@ -44,4 +49,8 @@ function success = run_tests(with_coverage)
 
   toc;
 
+end
+
+function status = is_octave()
+  status = (exist ('OCTAVE_VERSION', 'builtin') > 0);
 end
