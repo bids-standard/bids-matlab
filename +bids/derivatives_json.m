@@ -7,11 +7,13 @@ function json = derivatives_json(varargin)
   %   json = derivatives_json(derivative_filename, 'force', false)
   %
   % :param derivative_filename:
-  % :type derivative_filename: string
-  % :param force: when `true` it will force the creation of a json content even
-  %  when the filename contains no BIDS derivatives entity.
-  % :type force: boolean
+  % :type  derivative_filename: char
   %
+  % :param force: when `true` it will force the creation of a json content even
+  %               when the filename contains no BIDS derivatives entity.
+  % :type  force: logical
+  %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %
@@ -67,22 +69,20 @@ function json = derivatives_json(varargin)
 
     %% entity related content
     if any(ismember(fieldnames(p.entities), 'res'))
-      content.Resolution = {{ struct(p.entities.res, 'REQUIRED if "res" entity') }};
+      content.Resolution = p.entities.res;
     end
 
     if any(ismember(fieldnames(p.entities), 'den'))
-      content.Density = {{ struct(p.entities.den, 'REQUIRED if "den" entity') }};
+      content.Density = p.entities.den;
     end
 
     %% suffix related content
     if any(ismember(p.suffix, {'dseg', 'probseg'}))
       content.Manual = {{'OPTIONAL'}};
-      content.Atlas = {{'OPTIONAL'}};
     end
 
     if any(ismember(p.suffix, {'mask'}))
       content.RawSources = {{'REQUIRED'}};
-      content.Atlas = {{'OPTIONAL'}};
       content.Type = {{'OPTIONAL'}};
     end
 

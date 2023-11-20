@@ -1,0 +1,13 @@
+
+*/*/README
+*/*/CHANGES
+*/*/sub*
+*/*/sourcedata
+*/*/derivatives
+
+spm/moae/MoAEpilot
+spm/facerep/raw
+
+*.mat
+*.nii*
+*json

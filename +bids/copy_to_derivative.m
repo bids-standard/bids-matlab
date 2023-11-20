@@ -1,7 +1,6 @@
 function copy_to_derivative(varargin)
   %
-  % Copy selected data from BIDS layout to given derivatives folder,
-  % returning layout of new derivatives folder
+  % Copy selected data from BIDS layout to given derivatives folder.
   %
   % USAGE::
   %
@@ -12,49 +11,74 @@ function copy_to_derivative(varargin)
   %                           'unzip', true, ...
   %                           'force', false, ...
   %                           'skip_dep', false, ...
-  %                           'use_schema, use_schema, ...
-  %                           'verbose', true);
-  %
+  %                           'use_schema, true, ...
+  %                           'verbose', false, ...
+  %                           'tolerant', false);
   %
   % :param BIDS:            BIDS directory name or BIDS structure (from bids.layout)
-  % :type  BIDS:            structure or string
+  % :type  BIDS:            structure or char
   %
   % :param pipeline_name:   name of pipeline to use
-  % :type  pipeline_name:   string
+  % :type  pipeline_name:   char
   %
   % :param out_path:        path to directory containing the derivatives
-  % :type  out_path:        string
+  % :type  out_path:        char
   %
   % :param filter:          list of filters to choose what files to copy (see bids.query)
   % :type  filter:          structure or cell
   %
   % :param unzip:           If ``true`` then all ``.gz`` files will be unzipped
   %                         after being copied.
-  % :type  unzip:           boolean
+  %                         For MacOS and Unix system, this will require a
+  %                         version of gunzip >= 1.6.
+  % :type  unzip:           logical
   %
   % :param force:           If set to ``false`` it will not overwrite any file already
   %                         present in the destination.
-  % :type  force:           boolean
+  % :type  force:           logical
   %
   % :param skip_dep:        If set to ``false`` it will copy all the
   %                         dependencies of each file.
-  % :type  skip_dep:        boolean
+  % :type  skip_dep:        logical
   %
   % :param tolerant:        Defaults to ``false``. Set to ``true`` to turn errors into warnings.
   % :type  tolerant:        boolean
   %
   % :param use_schema:      If set to ``true`` it will only copy files
   %                         that are BIDS valid.
-  % :type  use_schema:      boolean
+  % :type  use_schema:      logical
   %
-  % :param  verbose:
-  % :type  verbose:         boolean
+  % :param verbose:
+  % :type  verbose:         logical
   %
   % All the metadata of each file is read through the whole hierarchy
   % and dumped into one side-car json file for each file copied.
   % In practice this "unravels" the inheritance principle.
   %
+  % Example
+  % -------
   %
+  % .. code-block:: matlab
+  %
+  %   dataset = fullfile(pwd, 'bids-examples', 'qmri_vfa');
+  %
+  %   output_path = fullfile(pwd, 'output');
+  %
+  %   filter =  struct('modality', 'anat',
+  %                    'sub', '01');
+  %
+  %   pipeline_name = 'SPM12';
+  %
+  %   bids.copy_to_derivative(dataset, ...
+  %                           'pipeline_name', pipeline_name, ...
+  %                           'out_path', output_path, ...
+  %                           'filter', filter, ...
+  %                           'force', true, ...
+  %                           'unzip', false, ...
+  %                           'verbose', true);
+  %
+  %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   default_pipeline_name = '';
@@ -82,7 +106,8 @@ function copy_to_derivative(varargin)
 
   parse(args, varargin{:});
 
-  BIDS = bids.layout(args.Results.BIDS, 'use_schema', args.Results.use_schema, ...
+  BIDS = bids.layout(args.Results.BIDS, ...
+                     'use_schema', args.Results.use_schema, ...
                      'verbose', args.Results.verbose);
 
   % Check that we actually have to copy something
@@ -90,9 +115,9 @@ function copy_to_derivative(varargin)
   subjects_list = bids.query(BIDS, 'subjects', args.Results.filter);
 
   if isempty(data_list)
-    disp(args.Results.filter);
-    msg = sprintf('No data found for this query in dataset:\n\t%s', ...
-                  BIDS.pth);
+    msg = sprintf('No data found for this query:\t%s\n\nin dataset:\n\t%s', ...
+                  bids.internal.create_unordered_list(args.Results.filter), ...
+                  bids.internal.format_path(BIDS.pth));
     bids.internal.error_handling(mfilename, 'noData', msg, ...
                                  args.Results.tolerant, ...
                                  args.Results.verbose);
@@ -153,12 +178,11 @@ function copy_to_derivative(varargin)
 
 end
 
-function copy_participants_tsv(BIDS, derivatives_folder, p)
+function copy_participants_tsv(BIDS, derivatives_folder, args)
   %
   % Very "brutal" approach where we copy the whole file
   %
-  % TODO:
-  %   -  if only certain subjects are copied only copy those entries from the TSV
+  % TODO: if only certain subjects are copied only copy those entries from the TSV
   %
 
   if ~isempty(BIDS.participants)
@@ -166,15 +190,15 @@ function copy_participants_tsv(BIDS, derivatives_folder, p)
     src = fullfile(BIDS.pth, 'participants.tsv');
     target = fullfile(derivatives_folder, 'participants.tsv');
 
-    copy_tsv(src, target, p);
+    copy_tsv(src, target, args);
 
   end
 end
 
-function copy_tsv(src, target, p)
+function copy_tsv(src, target, args)
 
   flag = false;
-  if p.Results.force
+  if args.Results.force
     flag = true;
   else
     if exist(target, 'file') == 0
@@ -183,29 +207,28 @@ function copy_tsv(src, target, p)
   end
 
   if flag
-    copy_with_symlink(src, target, p.Results.unzip, p.Results.verbose);
+    copy_with_symlink(src, target, args.Results.unzip, args.Results.verbose);
     if exist(bids.internal.file_utils(src, 'ext', '.json'), 'file')
       copy_with_symlink(bids.internal.file_utils(src, 'ext', '.json'), ...
                         bids.internal.file_utils(target, 'ext', '.json'), ...
-                        p.Results.unzip, ...
-                        p.Results.verbose);
+                        args.Results.unzip, ...
+                        args.Results.verbose);
     end
   end
 
 end
 
-function copy_session_scan_tsv(BIDS, derivatives_folder, p)
+function copy_session_scan_tsv(BIDS, derivatives_folder, args)
   %
   % Very "brutal" approach where we copy the whole file
   %
-  % TODO:
-  %   -  only copy the entries of the sessions / files that are copied
+  % TODO: only copy the entries of the sessions / files that are copied
   %
 
   % identify in the BIDS layout the subjects / sessions combination that we
   % need to keep to copy
-  subjects_list = bids.query(BIDS, 'subjects', p.Results.filter);
-  sessions_list = bids.query(BIDS, 'sessions', p.Results.filter);
+  subjects_list = bids.query(BIDS, 'subjects', args.Results.filter);
+  sessions_list = bids.query(BIDS, 'sessions', args.Results.filter);
 
   subjects = {BIDS.subjects.name}';
   subjects = cellfun(@(x) x(5:end), subjects, 'UniformOutput', false);
@@ -221,7 +244,7 @@ function copy_session_scan_tsv(BIDS, derivatives_folder, p)
       target = fullfile(derivatives_folder, ...
                         BIDS.subjects(keep(i)).name, ...
                         bids.internal.file_utils(src, 'filename'));
-      copy_tsv(src, target, p);
+      copy_tsv(src, target, args);
     end
 
     if ~isempty(BIDS.subjects(keep(i)).scans)
@@ -230,7 +253,7 @@ function copy_session_scan_tsv(BIDS, derivatives_folder, p)
                         BIDS.subjects(keep(i)).name, ...
                         BIDS.subjects(keep(i)).session, ...
                         bids.internal.file_utils(src, 'filename'));
-      copy_tsv(src, target, p);
+      copy_tsv(src, target, args);
     end
 
   end
@@ -239,9 +262,17 @@ end
 
 function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip_dep, verbose)
 
+  bf = bids.File(data_file);
+  is_scans_or_sessions_tsv = ismember(bf.suffix, {'scans', 'sessions'});
+  if is_scans_or_sessions_tsv
+    % copy_session_scan_tsv handles it
+    return
+  end
+
   info = bids.internal.return_file_info(BIDS, data_file);
 
-  if ~isfield(info, 'sub_idx') || ~isfield(info, 'modality')
+  if ~isfield(info, 'sub_idx') || ~isfield(info, 'modality') ||  ...
+      isempty(info.sub_idx) || isempty(info.file_idx)
     % TODO: for we do not copy files in the root directory that have been indexed.
     return
   end
@@ -258,18 +289,18 @@ function copy_file(BIDS, derivatives_folder, data_file, unzip_files, force, skip
 
   %% ignore already existing files
   % avoid circular references
-  if ~force && exist(fullfile(out_dir, file.filename), 'file')
+  if ~force && output_file_exists(out_dir, file, unzip_files)
     if verbose
-      fprintf(1, '\n skipping: %s', file.filename);
+      fprintf(1, '\n skipping: %s', bids.internal.format_path(file.filename));
     end
     return
+
   else
     file.meta = bids.internal.get_metadata(file.metafile);
+
   end
 
-  if ~exist(out_dir, 'dir')
-    mkdir(out_dir);
-  end
+  bids.util.mkdir(out_dir);
 
   %% copy data file
   % we follow any eventual symlink and gunzip the data
@@ -296,8 +327,7 @@ end
 
 function copy_with_symlink(src, target, unzip_files, verbose)
   %
-  % TODO:
-  % - test with actual datalad datasets on all OS
+  % TODO: test with actual datalad datasets on all OS
   %
 
   if verbose
@@ -309,7 +339,7 @@ function copy_with_symlink(src, target, unzip_files, verbose)
     if unzip_files && is_gunzipped(src)
       command = sprintf('gunzip -kfc %s > %s', src, target(1:end - 3));
     else
-      command = sprintf('cp -R -L -f %s %s', src, target);
+      command = sprintf('cp -rLf %s %s', src, target);
     end
 
     status = system(command);
@@ -349,6 +379,11 @@ function use_copyfile(src, target, unzip_files, verbose)
 
   if ~status
     msg = [messageId ': ' message];
+    if strcmp(messageId, 'MATLAB:COPYFILE:OSError')
+      msg = [msg, ...
+             '\n If you are on Windows and using a datalad dataset,', ...
+             '\n try to ''datalad unlock'' your input dataset.'];
+    end
     bids.internal.error_handling(mfilename, 'copyError', msg, false, verbose);
   end
 
@@ -362,8 +397,7 @@ function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_de
 
     for dep = 1:numel(dependencies)
 
-      %         % TODO
-      %         % Dirty hack to prevent the copy of ASL data to crash here.
+      %         % TODO Dirty hack to prevent the copy of ASL data to crash here.
       %         % But this means that dependencies of ASL data will not be copied until
       %         % this is fixed.
       %         if ismember(dependencies{dep}, {'context', 'm0'})
@@ -379,7 +413,7 @@ function copy_dependencies(file, BIDS, derivatives_folder, unzip, force, skip_de
           copy_file(BIDS, derivatives_folder, dep_file, unzip, force, ~skip_dep, verbose);
         else
 
-          msg = sprintf('Dependency file %s not found', dep_file);
+          msg = sprintf('Dependency file %s not found', bids.internal.format_path(dep_file));
           bids.internal.error_handling(mfilename, 'missingDependencyFile', msg, true, verbose);
 
         end
@@ -393,4 +427,20 @@ end
 
 function status = is_gunzipped(file)
   status = bids.internal.ends_with(file, '.gz');
+end
+
+function status = output_file_exists(out_dir, file, unzip_files)
+
+  status = false;
+
+  if exist(fullfile(out_dir, file.filename), 'file')
+    status = true;
+  end
+
+  if unzip_files && ...
+     is_gunzipped(file.filename) && ...
+     exist(fullfile(out_dir, file.filename(1:end - 3)), 'file')
+    status = true;
+  end
+
 end

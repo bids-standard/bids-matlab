@@ -7,20 +7,27 @@ function varargout = jsonwrite(varargin)
   %     jsonwrite(filename, json)
   %
   % :param filename:  JSON filename
-  % :type filename:   string
-  % :param json:  JSON structure
-  % :type json:   structure
+  % :type  filename:   char
   %
-  % USAGE::
+  % :param json:  JSON structure
+  % :type  json:   structure
+  %
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %     S = jsonwrite(json)
   %
   % :param json:  JSON structure
   % :type json:   structure
   %
-  % :returns: S - serialized JSON structure (string)
+  % :returns: S - serialized JSON structure (char)
   %
-  % USAGE::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %     [...] = jsonwrite(..., opts)
   %
@@ -39,6 +46,7 @@ function varargout = jsonwrite(varargin)
   %  - `JSON Standard <https://www.json.org/>`_
   %  - `jsonencode <https://www.mathworks.com/help/matlab/ref/jsonencode.html>`_
   %
+
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
   % $Id: spm_jsonwrite.m 8031 2020-12-10 13:37:00Z guillaume $
@@ -99,7 +107,9 @@ function varargout = jsonwrite(varargin)
   else
     fid = fopen(filename, 'wt');
     if fid == -1
-      error('Unable to open file "%s" for writing.', filename);
+      error(['Unable to open file "%s" for writing.', ...
+             '\nIf you are using a datalad dataset, make sure the file is unlocked.'], ...
+            bids.internal.file_utils(filename, 'cpath'));
     end
     fprintf(fid, '%s', S);
     fclose(fid);

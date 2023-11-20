@@ -14,7 +14,7 @@ function test_report_asl()
 
   BIDS = fullfile(cfg.pth_bids_example, datasets);
 
-  BIDS = bids.layout(BIDS, 'use_schema', true);
+  BIDS = bids.layout(BIDS, 'use_schema', true, 'index_dependencies', false);
 
   filter.modality = 'perf';
 
@@ -28,7 +28,7 @@ function test_report_asl()
 
   % TODO make it work on Octave
   if bids.internal.is_octave()
-    return
+    moxunit_throw_test_skipped_exception('Octave: TODO');
   end
   assertEqual(content, expected);
 
@@ -46,7 +46,7 @@ function test_report_basic()
   for i = 1:numel(datasets)
 
     BIDS = fullfile(cfg.pth_bids_example, datasets{i});
-    BIDS = bids.layout(BIDS, 'use_schema', true);
+    BIDS = bids.layout(BIDS, 'use_schema', true, 'index_dependencies', false);
 
     for j = 1:numel(modalities)
 
@@ -63,7 +63,7 @@ function test_report_basic()
 
       % TODO make it work on Octave
       if bids.internal.is_octave()
-        return
+        moxunit_throw_test_skipped_exception('Octave: TODO');
       end
 
       assertEqual(content, expected);
@@ -81,7 +81,7 @@ function test_report_pet()
 
   BIDS = fullfile(cfg.pth_bids_example, datasets);
 
-  BIDS = bids.layout(BIDS, 'use_schema', true);
+  BIDS = bids.layout(BIDS, 'use_schema', true, 'index_dependencies', false);
 
   filter.modality = 'pet';
 
@@ -93,9 +93,8 @@ function test_report_pet()
   content = get_report_content(report);
   expected = get_expected_content(cfg, datasets, filter.modality);
 
-  % TODO make it work on Octave
   if bids.internal.is_octave()
-    return
+    moxunit_throw_test_skipped_exception('Octave: TODO');
   end
   assertEqual(content, expected);
 
@@ -103,16 +102,25 @@ end
 
 function test_report_moae_data()
 
-  % temporary silence
-  return
+  % no spm in CI
+  if bids.internal.is_github_ci()
+    return
+  end
 
   cfg = set_up();
 
   cfg.read_nifti = true;
 
-  BIDS = fullfile(bids.internal.root_dir(), 'examples', 'MoAEpilot');
+  bu_folder = fixture_moae();
 
-  BIDS = bids.layout(BIDS, 'use_schema', true);
+  pth = bids.util.download_ds('source', 'spm', ...
+                              'demo', 'moae', ...
+                              'out_path', fullfile(pwd, 'tmp'), ...
+                              'force', true, ...
+                              'verbose', true, ...
+                              'delete_previous', false);
+
+  BIDS = bids.layout(pth, 'use_schema', true, 'index_dependencies', false);
 
   report = bids.report(BIDS, ...
                        'output_path', cfg.output_path, ...
@@ -122,11 +130,12 @@ function test_report_moae_data()
   content = get_report_content(report);
   expected = get_expected_content(cfg, 'MoAE', 'all');
 
-  % TODO make it work on Octave
   if bids.internal.is_octave()
-    return
+    moxunit_throw_test_skipped_exception('Octave: TODO');
   end
   assertEqual(content, expected);
+
+  teardown_moae(bu_folder);
 
 end
 

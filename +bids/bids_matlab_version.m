@@ -1,14 +1,14 @@
 function version_number = bids_matlab_version()
   %
-  % Reads the version number of the pipeline from the txt file in the root of the
-  % repository.
+  % Return bids matlab version.
   %
   % USAGE::
   %
   %   version_number = bids_matlab_version()
   %
-  % :returns: :version_number: (string) Use semantic versioning format (like v0.1.0)
+  % :returns: :version_number: (char) Use semantic versioning format (like v0.1.0)
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   try

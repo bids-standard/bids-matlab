@@ -6,9 +6,10 @@ classdef Schema
   %
   %   schema = bids.Schema(use_schema)
   %
-  % use_schema: boolean
+  % use_schema: logical
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   % TODO use schema to access regular expressions
@@ -32,7 +33,7 @@ classdef Schema
       %
       %   schema = bids.Schema(use_schema)
       %
-      % use_schema: boolean
+      % use_schema: logical
       %
 
       obj.content = [];
@@ -44,7 +45,7 @@ classdef Schema
 
     function obj = load(obj, use_schema)
       %
-      % Loads schema
+      % Load schema.
       %
       % USAGE::
       %
@@ -58,7 +59,8 @@ classdef Schema
 
       schema_file = fullfile(bids.internal.root_dir(), 'schema.json');
       if ~exist(schema_file, 'file')
-        msg = sprintf('The schema.json file %s does not exist.', schema_dir);
+        msg = sprintf('The schema.json file %s does not exist.', ...
+                      bids.internal.format_path(schema_file));
         bids.internal.error_handling(mfilename(), 'missingSchema', msg, false, true);
       end
 
@@ -75,7 +77,6 @@ classdef Schema
       for i = 1:numel(mod_grps)
 
         mods = obj.return_modalities([], mod_grps{i});
-
         for j = 1:numel(mods)
 
           suffix_groups = obj.list_suffix_groups(mods{j}, 'raw');
@@ -84,6 +85,98 @@ classdef Schema
 
         end
       end
+
+    end
+
+    function sts = eq(obj)
+      sts = true;
+    end
+
+    function entities = return_entities(varargin)
+      %
+      % Return all the entities for or one or more datatype and one or more suffixes.
+      %
+      %
+      % USAGE::
+      %
+      %     entities = schema.return_entities('datatypes', datatypes, ...
+      %                                       'suffixes', suffixes, ...
+      %                                       'required_only', false)
+      %
+      % :param datatypes:  For example ``'func'``.
+      % :type  datatypes:  char or cellstr
+      %
+      % :param suffixes:  For example ``'bold'``.
+      % :type  suffixes:  char or cellstr
+      %
+      % :param required_only:  If true, only the required entities are returned.
+      % :type  required_only:  logical
+      %
+      %
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
+      %
+      %     suffixes = schema.return_entities('datatypes', 'func')
+      %     suffixes = schema.return_entities('datatypes', 'func', 'suffixes', 'bold')
+      %     suffixes = schema.return_suffixes('datatypes', {'anat', 'func'}, ...
+      %                                       'suffixes', {'T1w', 'bold'}, ...
+      %                                       'required_only', true)
+      %
+
+      is_char_or_cellstr = @(x) ischar(x) || iscellstr(x);
+
+      args = inputParser;
+
+      addRequired(args, 'obj');
+      addParameter(args, 'datatypes', '', is_char_or_cellstr);
+      addParameter(args, 'suffixes', '', is_char_or_cellstr);
+      addParameter(args, 'required_only', false, @islogical);
+
+      parse(args, varargin{:});
+
+      obj = args.Results.obj;
+      datatypes = args.Results.datatypes;
+      sufffixes = args.Results.suffixes;
+      required_only = args.Results.required_only;
+
+      if ~isempty(datatypes)
+        if ischar(datatypes)
+          datatypes = cellstr(datatypes);
+        end
+      end
+
+      if ~isempty(sufffixes)
+        if ischar(sufffixes)
+          sufffixes = cellstr(sufffixes);
+        end
+      end
+
+      values = {};
+
+      for i_datatype = 1:numel(datatypes)
+        if isempty(sufffixes)
+          tmp = return_suffixes(obj, 'datatypes', datatypes{i_datatype});
+        else
+          tmp = sufffixes;
+        end
+        for i_suffix = 1:numel(tmp)
+          [entities, required] = return_entities_for_suffix_modality(obj, ...
+                                                                     tmp{i_suffix}, ...
+                                                                     datatypes{i_datatype});
+          if required_only
+            entities = required;
+          end
+
+          values = cat(2, values, entities);
+        end
+
+      end
+
+      entities = unique(values);
+
+      entities = obj.entity_order(entities, 'use_short_form', true);
 
     end
 
@@ -129,27 +222,163 @@ classdef Schema
     end
 
     %% ENTITIES
-    function order = entity_order(obj, entity_list)
+    function order = entity_order(varargin)
       %
-      % Returns the order of the entities in the list according to the BIDS official order.
+      % Return the 'correct' order for entities of entity list.
+      %
+      % If there are non BIDS entities they are added
+      % after the BIDS ones in alphabetical order.
       %
       % USAGE::
       %
-      %   order = schema.entity_order(entity_list)
+      %     order = schema.entity_order(entity_list, 'use_short_form', true)
       %
-      % :param entity_list:  List of entities
-      % :type  entity_list:  char or cellstr
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
+      %
+      %     schema = bids.Schema();
+      %
+      %     %  get the order of all the BIDS entities
+      %     order = schema.entity_order()
+      %
+      %     % reorder typical BIDS entities
+      %     entity_list_to_order = {'description'
+      %                             'run'
+      %                             'subject'};
+      %     order = schema.entity_order(entity_list_to_order)
+      %
+      %         {'subject'
+      %          'run'
+      %          'description'};
+      %
+      %     % reorder non-BIDS and typical BIDS entities
+      %     entity_list_to_order = {'description'
+      %                             'run'
+      %                             'foo'
+      %                             'subject'};
+      %     order = schema.entity_order(entity_list_to_order)
+      %
+      %         {'subject'
+      %          'run'
+      %          'description'
+      %          'foo'};
       %
 
+      ischar_or_iscell = @(x) ischar(x) || iscellstr(x);
+
+      args = inputParser;
+
+      addRequired(args, 'obj');
+      addOptional(args, 'entity_list', '', ischar_or_iscell);
+      addParameter(args, 'use_short_form', false, @islogical);
+
+      parse(args, varargin{:});
+
+      obj = args.Results.obj;
+      entity_list = args.Results.entity_list;
+      use_short_form = args.Results.use_short_form;
+
+      if isempty(entity_list)
+        entity_list =  fieldnames(obj.content.objects.entities);
+      end
       if ischar(entity_list)
         entity_list = cellstr(entity_list);
+      end
+      if use_short_form
+        entity_list = obj.return_entity_name(entity_list);
       end
 
       order = obj.content.rules.entities;
       is_in_schema = ismember(order, entity_list);
       is_not_in_schema = ~ismember(entity_list, order);
       order = order(is_in_schema);
-      order = cat(1, order, entity_list(is_not_in_schema));
+      order = cat(1, order, sort(entity_list(is_not_in_schema)));
+
+      if use_short_form
+        order = obj.return_entity_key(order);
+      end
+
+    end
+
+    function entity_name = return_entity_name(obj, entity_key)
+      %
+      % Return the name of an entity key.
+      %
+      % USAGE::
+      %
+      %     entity_name = schema.return_entity_key(entity_key)
+      %
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
+      %
+      %     key = schema.return_entity_key('desc')
+      %
+      %         'description'
+      %
+      %
+      %     key = schema.return_entity_key({'desc', 'sub'})
+      %
+      %         {'description'; 'subject'}
+      %
+
+      tmp = structfun(@(x) x.name, obj.content.objects.entities, ...
+                      'UniformOutput', false);
+      all_names = fieldnames(tmp);
+      keys = {};
+      for i = 1:numel(all_names)
+        keys{i} = tmp.(all_names{i});
+      end
+      idx = ismember(keys, entity_key);
+      entity_name = all_names(idx);
+
+      if numel(entity_name) == 1
+        entity_name = entity_name{1};
+      end
+
+    end
+
+    function keys = return_entity_key(obj, entity_names)
+      %
+      % Return the key of an entity.
+      %
+      % USAGE::
+      %
+      %     key = schema.return_entity_key(entity)
+      %
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
+      %
+      %     key = schema.return_entity_key('description')
+      %
+      %         'desc'
+      %
+
+      if ~iscellstr(entity_names)
+        entity_names = cellstr(entity_names);
+      end
+
+      keys = {};
+      for i = 1:numel(entity_names)
+        entity = entity_names{i};
+        if ~ismember(entity, fieldnames(obj.content.objects.entities))
+          msg = sprintf('No entity ''%s'' in schema.\n Available entities are:\n- ', ...
+                        entity, ...
+                        strjoin(fieldnames(obj.content.objects.entities), '\n- '));
+          bids.internal.error_handling(mfilename, 'UnknownEnitity', msg, false);
+        end
+
+        keys{i} = obj.content.objects.entities.(entity).name;
+      end
+
+      if numel(keys) == 1
+        keys = keys{1};
+      end
 
     end
 
@@ -159,7 +388,6 @@ classdef Schema
       % USAGE::
       %
       %   groups = schema.return_modality_groups()
-      %
       %
       % Returns a dummy variable if we go schema less
       %
@@ -174,14 +402,16 @@ classdef Schema
     %% SUFFIX GROUP
 
     function suffix_groups = list_suffix_groups(obj, datatype, scope)
-      % creates a structure of all the suffix group of a datatype
+      %
+      % Creates a structure of all the suffix group of a datatype.
       %
       % USAGE::
       %
       %   suffix_groups = schema.list_suffix_groups(datatype, scope)
       %
-      % :param datatype: for example ``'func'``
+      % :param datatype:  for example ``'func'``
       % :type  datatype:  char
+      %
       % :param scope: ``'raw'`` or ``'derivatives'`` or ``'all'``
       % :type  scope:  char
       %
@@ -205,8 +435,8 @@ classdef Schema
 
     end
 
-    function  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
-      % returns a structure of all the suffix group of a datatype
+    function suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      % Returns a structure of all the suffix group of a datatype.
       %
       % USAGE::
       %
@@ -215,7 +445,10 @@ classdef Schema
       % :param datatype:
       % :type  datatype:  char
       %
-      % EXAMPLE::
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
       %
       %  suffix_groups = schema.return_suffix_groups_for_datatype('func')
       %
@@ -227,6 +460,7 @@ classdef Schema
     end
 
     function entities = return_entities_for_suffix_group(obj, suffix_group)
+      % Entities are returned in the expected order according to the schema.
       %
       % USAGE::
       %
@@ -235,10 +469,13 @@ classdef Schema
       % :param suffix_group:
       % :type  suffix_group:  struct
       %
-      % EXAMPLE::
+      % Example
+      % -------
       %
-      %  suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
-      %  entities = schema.return_entities_for_suffix_group(suffix_groups(1))
+      % .. code-block:: matlab
+      %
+      %   suffix_groups = return_suffix_groups_for_datatype(obj, datatype)
+      %   entities = schema.return_entities_for_suffix_group(suffix_groups(1))
       %
 
       suffix_group = obj.ci_check(suffix_group);
@@ -253,15 +490,15 @@ classdef Schema
 
     function required_entities = required_entities_for_suffix_group(obj, this_suffix_group)
       %
-      %  Returns a logical vector to track which entities of a suffix group
-      %  are required in the bids schema
-      %
-      % :param this_suffix_group:
-      % :type  this_suffix_group:  struct
+      % Return a logical vector to track which entities of a suffix group
+      % are required in the bids schema.
       %
       % USAGE::
       %
       %  required_entities = schema.required_entities_for_suffix_group(this_suffix_group)
+      %
+      % :param this_suffix_group:
+      % :type  this_suffix_group:  struct
       %
 
       this_suffix_group = obj.ci_check(this_suffix_group);
@@ -290,8 +527,12 @@ classdef Schema
 
     function suffix_group = find_suffix_group(obj, modality, suffix)
       %
-      % For a given sufffix and modality, this returns the "suffix group" this
-      % suffix belongs to
+      % For a given sufffix and modality, this return the "suffix group" this
+      % suffix belongs to.
+      %
+      % USAGE::
+      %
+      %  suffix_group = schema.find_suffix_group(modality, suffix)
       %
       % :param modality:
       % :type  modality:  char
@@ -299,11 +540,10 @@ classdef Schema
       % :param suffix:
       % :type  suffix:  char
       %
-      % USAGE::
+      % Example
+      % -------
       %
-      %  suffix_group = schema.find_suffix_group(modality, suffix)
-      %
-      % EXAMPLE::
+      % .. code-block:: matlab
       %
       %     schema = bids.Schema();
       %     suffix_group = schema.find_suffix_group('anat', 'T1w');
@@ -318,8 +558,6 @@ classdef Schema
         return
       end
 
-      % the following loop could probably be improved with some cellfun magic
-      %   cellfun(@(x, y) any(strcmp(x,y)), {p.type}, suffix_groups)
       datatypes = obj.get_datatypes();
 
       suffix_groups = obj.return_suffix_groups_for_datatype(modality);
@@ -345,14 +583,65 @@ classdef Schema
 
     % ----------------------------------------------------------------------- %
     %% SUFFIXES
+    function suffixes = return_suffixes(varargin)
+      %
+      % Return all the suffixes for or one or more datatype.
+      %
+      %
+      % USAGE::
+      %
+      %     suffixes = schema.return_suffixes('datatypes', datatypes)
+      %
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
+      %
+      %     suffixes = schema.return_suffixes('datatypes', 'func')
+      %
+      %     suffixes = schema.return_suffixes('datatypes', {'anat', 'func'})
+      %
+      is_char_or_cellstr = @(x) ischar(x) || iscellstr(x);
+
+      args = inputParser;
+
+      addRequired(args, 'obj');
+      addParameter(args, 'datatypes', '', is_char_or_cellstr);
+
+      parse(args, varargin{:});
+
+      obj = args.Results.obj;
+      datatypes = args.Results.datatypes;
+
+      if ~isempty(datatypes)
+        if ischar(datatypes)
+          datatypes = cellstr(datatypes);
+        end
+      end
+
+      suffixes = {};
+      for i = 1:numel(datatypes)
+        suffix_groups = list_suffix_groups(obj, datatypes{i});
+        names = fieldnames(suffix_groups);
+        for i_group = 1:numel(names)
+          suffixes = cat(1, suffixes, suffix_groups.(names{i_group}).suffixes);
+        end
+      end
+
+    end
+
     function datatypes = return_datatypes_for_suffix(obj, suffix)
       %
       % For a given suffix, returns all the possible datatypes that have this suffix.
       %
+      %
       % :param suffix:
       % :type  suffix:  char
       %
-      % EXAMPLE::
+      % Example
+      % -------
+      %
+      % .. code-block:: matlab
       %
       %       schema = bids.Schema();
       %       datatypes = schema.return_datatypes_for_suffix('bold');
@@ -392,21 +681,25 @@ classdef Schema
         end
 
       end
+
+      % in case we get duplicates
+      datatypes = unique(datatypes);
+
     end
 
     function [entities, required] = return_entities_for_suffix_modality(obj, suffix, modality)
       %
       % returns the list of entities for a given suffix of a given modality
       %
+      % USAGE::
+      %
+      %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
+      %
       % :param modality:
       % :type  modality:  char
       %
       % :param suffix:
       % :type  suffix:  char
-      %
-      % USAGE::
-      %
-      %  [entities, required] = schema.return_entities_for_suffix_modality(suffix, modality)
       %
 
       suffix_group = obj.find_suffix_group(modality, suffix);
@@ -429,14 +722,13 @@ classdef Schema
       %
       % creates a regular expression of suffixes for a given imaging modality
       %
-      % :param modality:
-      % :type  modality:  char
-      %
       % USAGE::
       %
       %   reg_ex = schema.return_modality_suffixes_regex(modality)
       %
-
+      % :param modality:
+      % :type  modality:  char
+      %
       reg_ex = obj.return_regex(modality, 'suffixes');
     end
 
@@ -444,12 +736,14 @@ classdef Schema
       %
       % creates a regular expression of extensions for a given imaging modality
       %
-      % :param modality:
-      % :type  modality:  char
-      %
       % USAGE::
       %
-      %   reg_ex = schema.return_modality_extensions_regex(modality)
+      %   reg_ex = schema.return_modality_regex(modality)
+      %
+      %
+      %
+      % :param modality:
+      % :type  modality:  char
       %
 
       reg_ex = obj.return_regex(modality, 'extensions');
@@ -462,14 +756,46 @@ classdef Schema
       % :param modality:
       % :type  modality:  char
       %
-      % USAGE::
-      %
-      %   reg_ex = schema.return_modality_regex(modality)
+
       %
 
       suffixes = obj.return_modality_suffixes_regex(modality);
       extensions = obj.return_modality_extensions_regex(modality);
       reg_ex = ['^%s.*' suffixes extensions '$'];
+    end
+
+    function [def, status] = get_definition(obj, word)
+      %
+      % finds definition of a column header in a the BIDS schema
+      %
+      % USAGE::
+      %
+      %   [def, status] = schema.get_definition(word)
+      %
+
+      status =  false;
+      if ~isfield(obj.content.objects, 'metadata')
+        obj.load_schema_metadata = true;
+        obj = obj.load();
+      end
+
+      if isfield(obj.content.objects.columns, word)
+        status = true;
+        def = obj.content.objects.columns.(word);
+      end
+
+      if ~status && isfield(obj.content.objects.metadata, word)
+        status = true;
+        def = obj.content.objects.metadata.(word);
+      end
+
+      if ~status
+        def = struct('LongName', word, ...
+                     'Description', 'TODO', ...
+                     'Units', 'TODO', ...
+                     'TermURL', 'TODO');
+      end
+
     end
 
   end

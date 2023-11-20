@@ -15,6 +15,235 @@ end
 %
 % end
 
+function test_no_entity_warning
+
+  assertWarning(@()bids.File('TStatistic.nii', 'verbose', true), ...
+                'File:noEntity');
+
+end
+
+function test_participants
+
+  pth_bids_example = get_test_data_dir();
+
+  file = fullfile(pth_bids_example, 'pet002', 'participants.tsv');
+
+  bf = bids.File(file);
+
+end
+
+function test_get_metadata_suffixes_basic()
+  % ensures that "similar" suffixes are distinguished
+
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+
+  file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.shape.gii');
+  side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_thickness.json');
+
+  bf = bids.File(file);
+
+  % TODO only only json file per folder level allowed
+  % assertEqual(numel(bf.metadata_files), 1)
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+  file = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.surf.gii');
+  side_car = fullfile(data_dir, 'sub-06_hemi-R_space-individual_den-native_midthickness.json');
+
+  bf = bids.File(file);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  side_car = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.json');
+
+  bf = bids.File(file);
+
+  expected_metadata = bids.util.jsondecode(side_car);
+
+  assertEqual(bf.metadata, expected_metadata);
+
+end
+
+function test_metadata_update()
+  % Testung updating metadata with metadata_update function
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+
+  % Adding
+  bf = bf.metadata_update('Testing', 'adding field');
+  assertTrue(isfield(bf.metadata, 'Testing'));
+  assertEqual(bf.metadata.Testing, 'adding field');
+
+  % Modifying
+  bf = bf.metadata_update('Testing', 'modifying field');
+  assertEqual(bf.metadata.Testing, 'modifying field');
+
+  % Removing
+  bf = bf.metadata_update('Testing', []);
+  assertFalse(isfield(bf.metadata, 'Testing'));
+end
+
+function test_metadata_add()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+  bf = bf.metadata_add('Testing', 'adding field');
+  assertTrue(isfield(bf.metadata, 'Testing'));
+  assertEqual(bf.metadata.Testing, 'adding field');
+end
+
+function test_metadata_append()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+  bf = bf.metadata_append('Testing', 'adding field1');
+  bf = bf.metadata_append('Testing', 'adding field2');
+  assertEqual(bf.metadata.Testing, ...
+              {'adding field1'; 'adding field2'});
+  % testing char to cell conversion
+  bf = bf.metadata_add('Testing2', 1);
+  bf = bf.metadata_append('Testing2', 2);
+  assertEqual(bf.metadata.Testing2, [1; 2]);
+end
+
+function test_metadata_remove()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+  bf = bf.metadata_add('Testing', 'adding field');
+  assertTrue(isfield(bf.metadata, 'Testing'));
+  bf = bf.metadata_remove('Testing');
+  assertFalse(isfield(bf.metadata, 'Testing'));
+end
+
+function test_metadata_write()
+  data_dir = fullfile(fileparts(mfilename('fullpath')), 'data', 'surface_data');
+  file = fullfile(data_dir, 'sub-06_space-individual_den-native_thickness.dscalar.nii');
+  bf = bids.File(file);
+
+  % Writing metadata
+  bf.prefix = 'test_';
+  out_file = bf.metadata_write();
+  assertTrue(exist(out_file, 'file') > 0);
+  exported_metadata = bids.util.jsondecode(out_file);
+  assertEqual(bf.metadata, exported_metadata);
+  teardown(out_file);
+
+  % Writing modified metadata
+  out_file = bf.metadata_write('Testing', 'exporting');
+  exported_metadata = bids.util.jsondecode(out_file);
+  teardown(out_file);
+  assertTrue(isfield(exported_metadata, 'Testing'));
+  assertFalse(isfield(bf.metadata, 'Testing'));
+
+  bf = bf.metadata_add('Testing', 'exporting');
+  assertEqual(bf.metadata, exported_metadata);
+end
+
+function test_rename()
+
+  input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  input_file = fullfile(fileparts(mfilename('fullpath')), input_filename);
+  output_filename = 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii';
+  output_file = fullfile(fileparts(mfilename('fullpath')), output_filename);
+
+  set_up(input_file);
+  teardown(output_file);
+
+  file = bids.File(input_file, 'use_schema', false, 'verbose', false);
+
+  assertEqual(file.path, input_file);
+
+  file.prefix = '';
+  file.entities.desc = 'preproc';
+  assertEqual(file.filename, output_filename);
+
+  file.rename();
+  assertEqual(exist(output_file, 'file'), 0);
+
+  file.rename('dry_run', true);
+  assertEqual(exist(output_file, 'file'), 0);
+
+  file = file.rename('dry_run', false);
+  assertEqual(exist(input_file, 'file'), 0);
+  assertEqual(exist(output_file, 'file'), 2);
+  assertEqual(file.path, output_file);
+
+  teardown(output_file);
+
+end
+
+function test_rename_with_spec()
+
+  input_filename = 'wuasub-01_task-faceRecognition_bold.nii';
+  output_filename = 'sub-01_task-faceRecognition_label-GM_desc-bold_dseg.json';
+  file = bids.File(input_filename, 'use_schema', false);
+
+  spec.prefix = '';
+  spec.entities.desc = 'bold';
+  spec.entities.label = 'GM';
+  spec.suffix = 'dseg';
+  spec.ext = '.json';
+  spec.entity_order = {'sub', 'task', 'label', 'desc'};
+
+  file = file.rename('spec', spec);
+  assertEqual(file.filename, output_filename);
+
+end
+
+function test_rename_force()
+
+  input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  input_file = fullfile(fileparts(mfilename('fullpath')), input_filename);
+  output_filename = 'sub-01_ses-test_task-faceRecognition_run-02_desc-preproc_bold.nii';
+  output_file = fullfile(fileparts(mfilename('fullpath')), output_filename);
+
+  set_up(input_file);
+  set_up(output_file);
+
+  system(sprintf('touch %s', input_file));
+  system(sprintf('touch %s', output_file));
+  file = bids.File(input_file, 'use_schema', false, 'verbose', false);
+
+  assertEqual(file.path, input_file);
+
+  file.prefix = '';
+  file.entities.desc = 'preproc';
+  file.verbose = true;
+  if bids.internal.is_github_ci && ~bids.internal.is_octave
+    % failure: warning 'Octave:mixed-string-concat' was raised, expected 'File:fileAlreadyExists'.
+    assertWarning(@() file.rename('dry_run', false), 'File:fileAlreadyExists');
+  end
+
+  file = file.rename('dry_run', false, 'verbose', false);
+  assertEqual(exist(input_file, 'file'), 2);
+  assertEqual(exist(output_file, 'file'), 2);
+
+  file = file.rename('dry_run', false, 'force', true, 'verbose', false);
+  assertEqual(exist(input_file, 'file'), 0);
+  assertEqual(exist(output_file, 'file'), 2);
+
+  teardown(input_file);
+  teardown(output_file);
+
+end
+
+function test_camel_case()
+
+  filename = 'sub-01_ses-test_task-faceRecognition_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+
+  file.entities.task = 'test bla';
+  assertEqual(file.filename, 'sub-01_ses-test_task-testBla_run-02_bold.nii');
+
+end
+
 function test_invalid_entity()
 
   % https://github.com/bids-standard/bids-matlab/issues/362
@@ -22,13 +251,10 @@ function test_invalid_entity()
   input.suffix = 'eeg';
   input.ext = '.bdf';
   input.entities.sub = '01';
-  input.entities.task = '0.05';
+  input.entities.task = '0-0 .%5';
 
-  assertExceptionThrown(@() bids.File(input, 'use_schema', false, 'tolerant', false), ...
-                        'File:InvalidEntityValue');
-
-  assertWarning(@() bids.File(input, 'use_schema', true, 'tolerant', true, 'verbose', true), ...
-                'File:InvalidEntityValue');
+  bf =  bids.File(input, 'use_schema', false, 'tolerant', false);
+  assertEqual(bf.filename, 'sub-01_task-005_eeg.bdf');
 
 end
 
@@ -149,6 +375,117 @@ function test_reorder()
                                   'part'; ...
                                   'chunk'});
   assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+
+end
+
+function test_reorder_schemaless()
+
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', false);
+  file = file.reorder_entities();
+  assertEqual(file.entity_order, {'sub'
+                                  'ses'
+                                  'sample'
+                                  'task'
+                                  'tracksys'
+                                  'acq'
+                                  'ce'
+                                  'trc'
+                                  'stain'
+                                  'rec'
+                                  'dir'
+                                  'run'
+                                  'mod'
+                                  'echo'
+                                  'flip'
+                                  'inv'
+                                  'mt'
+                                  'part'
+                                  'proc'
+                                  'hemi'
+                                  'space'
+                                  'split'
+                                  'recording'
+                                  'chunk'
+                                  'seg'
+                                  'res'
+                                  'den'
+                                  'label'
+                                  'desc'});
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+end
+
+function test_reorder_schemaless_with_extra_entity()
+
+  filename = 'sub-01_foo-bar_task-face_ses-test_run-02_mask.nii';
+  file = bids.File(filename, 'use_schema', false);
+  file = file.reorder_entities();
+  assertEqual(file.json_filename, 'sub-01_ses-test_task-face_run-02_foo-bar_mask.json');
+end
+
+function test_reorder_with_schema()
+  filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
+  file = bids.File(filename, 'use_schema', true);
+  file = file.reorder_entities();
+  assertEqual(file.entity_order, {'sub'
+                                  'ses'
+                                  'task'
+                                  'acq'
+                                  'ce'
+                                  'rec'
+                                  'dir'
+                                  'run'
+                                  'echo'
+                                  'part'
+                                  'chunk'});
+  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+end
+
+function test_create_file_with_schema_ignore_extra_entities()
+  name_spec.modality = 'fmap';
+  name_spec.suffix = 'phasediff';
+  name_spec.ext = '.json';
+  name_spec.entities = struct('ses', 'test', ...
+                              'task', 'face', ...
+                              'run', '02', ...
+                              'acq', 'low', ...
+                              'sub', '01');
+  file = bids.File(name_spec, 'use_schema', true);
+  assertEqual(file.filename, 'sub-01_ses-test_acq-low_run-02_phasediff.json');
+end
+
+function test_create_file_anat()
+
+  name_spec.modality = 'anat';
+  name_spec.suffix = 'T1w';
+  name_spec.ext = '.json';
+
+  name_spec.entities = struct('ses', '01', ...
+                              'acq', 'FullExample', ...
+                              'run', '01', ...
+                              'sub', '01');
+
+  file = bids.File(name_spec, 'use_schema', true);
+
+  assertEqual(file.filename, 'sub-01_ses-01_acq-FullExample_run-01_T1w.json');
+
+end
+
+function test_create_file_meg()
+
+  name_spec.modality = 'meg';
+  name_spec.suffix = 'meg';
+  name_spec.ext = '.json';
+  name_spec.entities = struct('sub', '01', ...
+                              'acq', 'CTF', ...
+                              'ses', '01', ...
+                              'task', 'FullExample', ...
+                              'run', '1', ...
+                              'proc', 'sss');
+
+  bids_file = bids.File(name_spec, 'use_schema', true);
+
+  assertEqual(bids_file.filename, 'sub-01_ses-01_task-FullExample_acq-CTF_run-1_proc-sss_meg.json');
 
 end
 
@@ -292,7 +629,7 @@ end
 
 function test_name_validation()
   filename = 'wuasub-01_task-faceRecognition_ses-test_run-02_bold.nii';
-  assertExceptionThrown(@() bids.File(filename, 'tolerant', false), ...
+  assertExceptionThrown(@() bids.File(filename, 'tolerant', false, 'use_schema', true), ...
                         'File:prefixDefined');
 
   filename = 'bold.nii';
@@ -346,4 +683,17 @@ function test_validation()
                         'File:InvalidWord');
   assertExceptionThrown(@() bf.validate_word('abc-def', 'Word'), ...
                         'File:InvalidWord');
+end
+
+function set_up(filename)
+  if exist(filename, 'file')
+    delete(filename);
+  end
+  system(sprintf('touch %s', filename));
+end
+
+function teardown(filename)
+  if exist(filename, 'file')
+    delete(filename);
+  end
 end

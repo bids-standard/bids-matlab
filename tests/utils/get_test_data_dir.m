@@ -7,7 +7,7 @@ function data_dir = get_test_data_dir()
 
   if strcmp(PLATFORM, 'GITHUB_ACTIONS')
 
-    data_dir = '/github/workspace/tests/';
+    data_dir = fullfile('/', 'github', 'workspace', 'tests');
 
   end
 
@@ -20,5 +20,7 @@ function data_dir = get_test_data_dir()
                    'git clone git://github.com/bids-standard/bids-examples.git --depth 1']);
     error(msg); %#ok<SPERR>
   end
+
+  data_dir =  bids.internal.file_utils(data_dir, 'cpath');
 
 end

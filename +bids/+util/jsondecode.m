@@ -6,24 +6,24 @@ function value = jsondecode(file, varargin)
   %
   %   json = bids.util.jsondecode(file, opts)
   %
-  % :param file: name of a JSON file or JSON string
-  % :type file: string
-  % :param opts: structure of optional parameters (only with JSONio):
-  % :type opts: structure
+  % :param file: name of a JSON file or JSON char
+  % :type  file: char
   %
-  % ``opt.replacementStyle``: string to control how non-alphanumeric characters are replaced.
+  % :param opts: structure of optional parameters (only with JSONio):
+  % :type  opts: structure
+  %
+  % ``opt.replacementStyle``: char to control how non-alphanumeric characters are replaced.
   %
   %    - ``'underscore'`` Default
   %    - ``'hex'``
   %    - ``'delete'``
   %    - ``'nop'``
   %
-  %
   % :returns: - :json: JSON structure
   %
   %
+
   % (C) Copyright 2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   persistent has_jsondecode
@@ -33,20 +33,50 @@ function value = jsondecode(file, varargin)
         ismember(exist('jsondecode', 'file'), [2 3]); % jsonstuff / Matlab-compatible implementation
   end
 
+  if ~exist(file, 'file')
+    msg = sprintf('Unable to read file ''%s'': file not found', ...
+                  bids.internal.format_path(file));
+    bids.internal.error_handling(mfilename(), 'FileNotFound', ...
+                                 msg, false);
+  end
+
   if has_jsondecode
-    value = jsondecode(fileread(file));
+    try
+      value = jsondecode(fileread(file));
+    catch ME
+      warning_cannot_read_json(file);
+      rethrow(ME);
+    end
 
     % JSONio
   elseif exist('jsonread', 'file') == 3
-    value = jsonread(file, varargin{:});
+    try
+      value = jsonread(file, varargin{:});
+    catch ME
+      warning_cannot_read_json(file);
+      rethrow(ME);
+    end
 
     % SPM12
   elseif exist('spm_jsonread', 'file') == 3
-    value = spm_jsonread(file, varargin{:});
+    try
+      value = spm_jsonread(file, varargin{:});
+    catch ME
+      warning_cannot_read_json(file);
+      rethrow(ME);
+    end
 
   else
     url = 'https://github.com/gllmflndn/JSONio';
     error('JSON library required: install JSONio from: %s', url);
+
   end
 
+end
+
+function warning_cannot_read_json(file)
+  msg = sprintf('Could not read file:\n%s', ...
+                bids.internal.format_path(file));
+  bids.internal.error_handling(mfilename(), 'CannotReadJson', ...
+                               msg, true, true);
 end

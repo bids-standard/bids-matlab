@@ -1,6 +1,6 @@
 function varargout = file_utils(str, varargin)
   %
-  % Character array (or cell array of strings) handling facility
+  % Character array (or cell array of char) handling facility
   %
   % USAGE:
   %
@@ -11,33 +11,32 @@ function varargout = file_utils(str, varargin)
   %   [dirs]        = bids.internal.file_utils('List',   directory, 'dir', regexp)
   %   [dirs]        = bids.internal.file_utils('FPList', directory, 'dir', regexp)
   %
-  %
   % To get a certain piece of information from a file::
   %
   %   str = bids.internal.file_utils(str, option)
   %
-  % str        - character array, or cell array of strings
+  % str        - character array, or cell array of char
   %
-  % option     - string of requested item - one among:
+  % option     - char of requested item - one among:
   %              {'path', 'basename', 'ext', 'filename', 'cpath', 'fpath'}
-  %
   %
   % To set a certain piece of information from a file::
   %
   %   str = bids.internal.file_utils(str, opt_key, opt_val, ...)
   %
-  % str        - character array, or cell array of strings
+  % str        - character array, or cell array of char
   %
-  % opt_key    - string of targeted item - one among:
+  % opt_key    - char of targeted item - one among:
   %              {'path', 'basename', 'ext', 'filename', 'prefix', 'suffix'}
   %
-  % opt_val    - string of new value for feature
-  %
+  % opt_val    - char of new value for feature
   %
   % Based on spm_file.m and spm_select.m from SPM12.
   %
+
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %#ok<*AGROW>

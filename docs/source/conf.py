@@ -12,17 +12,19 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+
+sys.path.insert(0, os.path.abspath("../.."))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'bids-matlab'
-copyright = '2018, BIDS-MATLAB developers'
-author = 'BIDS-MATLAB developers'
+project = "bids-matlab"
+copyright = "2018, BIDS-MATLAB developers"
+author = "BIDS-MATLAB developers"
 
 # The full version, including alpha/beta/rc tags
-release = 'v0.1.0'
+with open("../../version.txt", encoding="utf-8") as version_file:
+    release = version_file.read()
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,14 +33,16 @@ release = 'v0.1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinxcontrib.matlab',
-    'sphinx.ext.autodoc',
-    'sphinx_copybutton']
-matlab_src_dir = os.path.dirname(os.path.abspath('../../+bids'))
-primary_domain = 'mat'
+    "sphinxcontrib.matlab",
+    "sphinx.ext.autodoc",
+    "sphinx_copybutton",
+    "myst_parser",
+]
+matlab_src_dir = os.path.dirname(os.path.abspath("../../+bids"))
+primary_domain = "mat"
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -46,15 +50,15 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ".rst"
 
-autodoc_member_order = 'bysource'
+autodoc_member_order = "bysource"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -62,7 +66,7 @@ autodoc_member_order = 'bysource'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -84,11 +88,11 @@ html_theme = 'sphinx_rtd_theme'
 # }
 
 html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
-        'donate.html',
+    "**": [
+        "about.html",
+        "navigation.html",
+        "relations.html",  # needs 'show_related': True theme option to display
+        "searchbox.html",
+        "donate.html",
     ]
 }

@@ -1,10 +1,10 @@
-function p = parse_filename(filename, fields, tolerant)
+function p = parse_filename(filename, fields, tolerant, verbose)
   %
   % Split a filename into its building constituents
   %
   % USAGE::
   %
-  %   p = bids.internal.parse_filename(filename, fields)
+  %   p = bids.internal.parse_filename(filename, fields, tolerant, verbose)
   %
   % :param filename: filename to parse that follows the pattern
   %                  ``sub-label[_entity-label]*_suffix.extension``
@@ -12,7 +12,10 @@ function p = parse_filename(filename, fields, tolerant)
   % :param fields:   cell of strings of the entities to use for parsing
   % :type  fields:   cell
   %
-  % Example::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   %
@@ -30,7 +33,10 @@ function p = parse_filename(filename, fields, tolerant)
   %                        'run', '1', ...
   %                        'acq', 'hd');
   %
-  % Example::
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
   %
   %   filename = '../sub-16/anat/sub-16_ses-mri_run-1_acq-hd_T1w.nii.gz';
   %   fields = {'sub', 'ses', 'run', 'acq', 'ce'};
@@ -50,8 +56,10 @@ function p = parse_filename(filename, fields, tolerant)
   %                     'prefix', '');
   %
   %
+
   % (C) Copyright 2011-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   if nargin < 2 || isempty(fields)
@@ -60,6 +68,15 @@ function p = parse_filename(filename, fields, tolerant)
 
   if nargin < 3 || isempty(tolerant)
     tolerant = true;
+  end
+
+  if nargin < 4 || isempty(verbose)
+    verbose = true;
+  end
+
+  if isempty(filename)
+    p = struct([]);
+    return
   end
 
   fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
@@ -81,7 +98,7 @@ function p = parse_filename(filename, fields, tolerant)
   % Identify extension
   [basename, p.ext] = strtok(basename, '.');
 
-  p = parse_entity_label_pairs(p, basename, tolerant);
+  p = parse_entity_label_pairs(p, basename, tolerant, verbose);
 
   % Extra fields can be added to the structure and ordered specifically.
   if ~isempty(fields)
@@ -92,15 +109,15 @@ function p = parse_filename(filename, fields, tolerant)
       p = orderfields(p, fields_order);
       p.entities = orderfields(p.entities, fields);
     catch
-      msg = sprintf('Ignoring file %s not matching template.', filename);
-      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, true);
+      msg = sprintf('Ignoring file %s not matching template.', bids.internal.format_path(filename));
+      bids.internal.error_handling(mfilename, 'noMatchingTemplate', msg, tolerant, verbose);
       p = struct([]);
     end
   end
 
 end
 
-function p = parse_entity_label_pairs(p, basename, tolerant)
+function p = parse_entity_label_pairs(p, basename, tolerant, verbose)
 
   p.entities = struct();
   p.suffix = '';
@@ -159,7 +176,7 @@ function p = parse_entity_label_pairs(p, basename, tolerant)
     catch ME
 
       msg = sprintf('Entity-label pair ''%s'' of file %s is not valid: %s.', ...
-                    parts{i}, p.filename, ME.message);
+                    parts{i}, bids.internal.format_path(p.filename), ME.message);
       if tolerant
         msg = sprintf('%s\n\tThis file will be ignored.', msg);
       end
@@ -167,7 +184,7 @@ function p = parse_entity_label_pairs(p, basename, tolerant)
       bids.internal.error_handling(mfilename, error_id, ...
                                    msg, ...
                                    tolerant, ...
-                                   true);
+                                   verbose);
 
       if tolerant
         p = struct([]);

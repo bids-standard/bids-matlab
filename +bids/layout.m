@@ -7,34 +7,57 @@ function BIDS = layout(varargin)
   %   BIDS = bids.layout(pwd, ...
   %                      'use_schema', true, ...
   %                      'index_derivatives', false, ...
+  %                      'index_dependencies', true, ...
+  %                      'filter', struct([]), ...
   %                      'tolerant', true, ...
   %                      'verbose', false)
   %
   % :param root:       directory of the dataset formatted according to BIDS
   %                    [default: ``pwd``]
-  % :type  root:       string
+  % :type  root:       char
   %
   % :param use_schema: If set to ``true``, the parsing of the dataset
   %                    will follow the bids-schema provided with bids-matlab.
   %                    If set to ``false`` files just have to be of the form
   %                    ``sub-label_[entity-label]_suffix.ext`` to be parsed.
-  %                    If a folder path is provided, then the schema contained
-  %                    in that folder will be used for parsing.
-  % :type  use_schema: boolean
+  % :type  use_schema: logical
   %
   % :param index_derivatives: if ``true`` this will index the content of the
   %                           any ``derivatives`` folder in the BIDS dataset.
-  % :type  index_derivatives: boolean
+  % :type  index_derivatives: logical
+  %
+  % :param index_dependencies: if ``true`` this will index the explicit dependencies
+  %                            (with "IntendedFor" in json files)
+  % :type  index_dependencies: logical
+  %
+  % :param filter: Can be used to index only a subset of the dataset.
+  % :type  filter: struct with optional fields ``sub``, ``ses``, ``modality``.
+  %                Regular expression can be used for ``sub`` and ``ses``.
   %
   % :param tolerant: Set to ``true`` to turn validation errors into warnings
-  % :type  tolerant: boolean
+  % :type  tolerant: logical
   %
   % :param verbose: Set to ``true`` to get more feedback
-  % :type  verbose: boolean
+  % :type  verbose: logical
+  %
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
+  %
+  %     BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
+  %                        'use_schema', true, ...
+  %                        'verbose', true, ...
+  %                        'index_derivatives', false, ...
+  %                        'filter', struct('sub', {{'^0[12]'}}, ...
+  %                                         'modality', {{'anat', 'func'}}, ...
+  %                                         'ses', {{'1', '2'}}));
   %
   %
+
   % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %% Validate input arguments
@@ -42,54 +65,67 @@ function BIDS = layout(varargin)
 
   default_root = pwd;
   default_index_derivatives = false;
+  default_index_dependencies = true;
   default_tolerant = true;
+  default_filter = struct([]);
   default_use_schema = true;
   default_verbose = false;
 
-  isDirOrStruct = @(x) (isstruct(x) || isdir(x));
+  is_dir_or_struct = @(x) (isstruct(x) || isdir(x));
 
   args = inputParser();
 
-  addOptional(args, 'root', default_root, isDirOrStruct);
+  addOptional(args, 'root', default_root, is_dir_or_struct);
   addParameter(args, 'index_derivatives', default_index_derivatives);
+  addParameter(args, 'index_dependencies', default_index_dependencies);
+  addParameter(args, 'filter', default_filter, @isstruct);
   addParameter(args, 'tolerant', default_tolerant);
   addParameter(args, 'use_schema', default_use_schema);
   addParameter(args, 'verbose', default_verbose);
 
-  parse(args, varargin{:});
+  try
+    parse(args, varargin{:});
+  catch ME
+    handle_invalid_input(ME, varargin{1});
+  end
 
   root = args.Results.root;
   index_derivatives = args.Results.index_derivatives;
+  index_dependencies = args.Results.index_dependencies;
+  filter = args.Results.filter;
   tolerant = args.Results.tolerant;
   use_schema = args.Results.use_schema;
   verbose = args.Results.verbose;
 
   if ischar(root)
     root = bids.internal.file_utils(root, 'CPath');
-
   elseif isstruct(root)
     BIDS = root; % for bids.query
     return
-
   else
     error('Invalid syntax.');
+  end
 
+  if verbose
+    fprintf(1, '\n\nIndexing dataset:\n\t%s\n', bids.internal.format_path(root));
   end
 
   %% BIDS structure
   % ==========================================================================
-  % BIDS.dir          -- BIDS directory
-  % BIDS.description  -- content of dataset_description.json
-  % BIDS.sessions     -- cellstr of sessions
-  % BIDS.participants -- for participants.tsv
-  % BIDS.subjects     -- structure array of subjects
-  % BIDS.root         -- tsv and json files in the root folder
+  % BIDS.pth           -- BIDS directory
+  % BIDS.is_datalad_ds -- BIDS directory
+  % BIDS.description   -- content of dataset_description.json
+  % BIDS.sessions      -- cellstr of sessions
+  % BIDS.participants  -- for participants.tsv
+  % BIDS.phenotype     -- for content of the phenotype folder
+  % BIDS.subjects      -- structure array of subjects
+  % BIDS.root          -- tsv and json files in the root folder
 
-  BIDS = struct( ...
-                'pth', root, ...
+  BIDS = struct('pth', root, ...
                 'description', struct([]), ...
                 'sessions', {{}}, ...
                 'participants', struct([]), ...
+                'phenotype', struct([]), ...
                 'subjects', struct([]));
 
   BIDS = validate_description(BIDS, tolerant, verbose);
@@ -105,6 +141,8 @@ function BIDS = layout(varargin)
   BIDS.participants = [];
   BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, 'participants.tsv', verbose);
 
+  BIDS = index_phenotype(BIDS);
+
   BIDS = index_root_directory(BIDS);
 
   %% Subjects
@@ -112,28 +150,57 @@ function BIDS = layout(varargin)
   subjects = cellstr(bids.internal.file_utils('List', BIDS.pth, 'dir', '^sub-.*$'));
   if isequal(subjects, {''})
     msg = sprintf('No subjects found in BIDS directory: ''%s''', ...
-                  BIDS.pth);
+                  bids.internal.format_path(BIDS.pth));
     bids.internal.error_handling(mfilename, 'noSubject', msg, tolerant, verbose);
     return
+  end
+
+  BIDS.is_datalad_ds = false;
+  if isdir(fullfile(BIDS.pth, '.datalad')) && isdir(fullfile(BIDS.pth, '.git'))
+    BIDS.is_datalad_ds = true;
   end
 
   schema = bids.Schema(use_schema);
   schema.verbose = verbose;
 
   for iSub = 1:numel(subjects)
+
+    if exclude_subject(filter, strrep(subjects{iSub}, 'sub-', ''))
+      continue
+    end
+
+    if use_schema && isempty(ls(fullfile(BIDS.pth, subjects{iSub})))
+      if verbose
+        msg = sprintf('subject ''%s'' is empty. Skipping.', ...
+                      subjects{iSub});
+        bids.internal.error_handling(mfilename, 'EmptySubject', ...
+                                     msg, tolerant, verbose);
+      end
+      continue
+    end
+
+    if verbose
+      fprintf(1, ' Indexing subject: %s [', subjects{iSub});
+    end
+
     sessions = cellstr(bids.internal.file_utils('List', ...
                                                 fullfile(BIDS.pth, subjects{iSub}), ...
                                                 'dir', ...
                                                 '^ses-.*$'));
 
     for iSess = 1:numel(sessions)
+
+      if exclude_session(filter, strrep(sessions{iSess}, 'ses-', ''))
+        continue
+      end
+
       if isempty(BIDS.subjects)
         BIDS.subjects = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, ...
-                                      schema, tolerant, verbose);
+                                      schema, filter, tolerant, verbose);
 
       else
         new_subject = parse_subject(BIDS.pth, subjects{iSub}, sessions{iSess}, ...
-                                    schema, tolerant, verbose);
+                                    schema, filter, tolerant, verbose);
         [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
                                                                             new_subject);
         % TODO: this can be added to "match_structure_fields"
@@ -143,9 +210,13 @@ function BIDS = layout(varargin)
 
     end
 
+    if verbose
+      fprintf(1, ']\n');
+    end
+
   end
 
-  BIDS = manage_dependencies(BIDS, verbose);
+  BIDS = manage_dependencies(BIDS, index_dependencies, verbose);
 
   BIDS = index_derivatives_dir(BIDS, index_derivatives, verbose);
 
@@ -154,6 +225,66 @@ function BIDS = layout(varargin)
     BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, 'samples.tsv', verbose);
   end
 
+end
+
+function handle_invalid_input(ME, root)
+  % TODO improve as this may send the wrong message on octave
+  % for ANY failed input parsing
+  if (~bids.internal.is_octave && ...
+      bids.internal.starts_with(ME.message, ...
+                                'The value of ''root''')) || ...
+    bids.internal.is_octave
+    if ischar(root)
+      msg = sprintf(['First input argument must be an existing directory.'...
+                     '\nGot: ''%s.'''], root);
+      bids.internal.error_handling(mfilename(), 'InvalidInput', ...
+                                   msg, false);
+    end
+  end
+end
+
+function BIDS = index_phenotype(BIDS)
+  BIDS.phenotype = struct('file', [], 'metafile', []);
+
+  assessments = bids.internal.file_utils('FPList', ...
+                                         fullfile(BIDS.pth, 'phenotype'), ...
+                                         '.*\.tsv$');
+  for i = 1:size(assessments, 1)
+    file = deblank(assessments(i, :));
+    sidecar = bids.internal.file_utils(file, 'ext', 'json');
+    BIDS.phenotype(i).file = file;
+    if exist(sidecar, 'file') == 2
+      BIDS.phenotype(i).metafile = sidecar;
+    end
+  end
+end
+
+function value = exclude(filter, entity, label)
+  value = false;
+  % skip if not included in filter
+  if ~isfield(filter, entity)
+    return
+  end
+  % use regex when filter is a cell of numel 1
+  if numel(filter.(entity)) == 1
+    if cellfun('isempty', regexp(label, filter.(entity)))
+      value = true;
+    end
+    return
+  end
+  % otherwise we just check all elements
+  if ~ismember(label, filter.(entity))
+    value = true;
+    return
+  end
+end
+
+function value = exclude_subject(filter, sub_label)
+  value = exclude(filter, 'sub', sub_label);
+end
+
+function value = exclude_session(filter, ses_label)
+  value = exclude(filter, 'ses', ses_label);
 end
 
 function BIDS = index_root_directory(BIDS)
@@ -195,8 +326,7 @@ function BIDS = index_derivatives_dir(BIDS, idx_deriv, verbose)
                                                    '.*'));
 
     for iDir = 1:numel(der_folders)
-      BIDS.derivatives.(der_folders{iDir}) = bids.layout( ...
-                                                         fullfile(BIDS.pth, ...
+      BIDS.derivatives.(der_folders{iDir}) = bids.layout(fullfile(BIDS.pth, ...
                                                                   'derivatives', ...
                                                                   der_folders{iDir}), ...
                                                          'use_schema', false, ...
@@ -208,7 +338,7 @@ function BIDS = index_derivatives_dir(BIDS, idx_deriv, verbose)
   end
 end
 
-function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbose)
+function subject = parse_subject(pth, subjname, sesname, schema, filter, tolerant, verbose)
   %
   % Parse a subject's directory
   %
@@ -243,7 +373,14 @@ function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbo
     % if we go schema-less, we pass an empty schema.content to all the parsing functions
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
+
+      if isfield(filter, 'modality') && ...
+          ~ismember(modalities{iModality}, filter.modality)
+        continue
+      end
+
       switch modalities{iModality}
+
         case {'anat', ...
               'func', ...
               'beh', ...
@@ -256,11 +393,17 @@ function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbo
               'perf', ...
               'micr', ...
               'nirs'}
+
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
+
         otherwise
+
+          if isempty(modalities{iModality})
+            continue
+          end
+
           % in case we are going schemaless
           % or the modality is not one of the usual suspect
-
           if ~bids.internal.is_valid_fieldname(modalities{iModality})
             msg = sprintf('subject ''%s'' contains an invalid subfolder ''%s''. Skipping.', ...
                           subject.path, ...
@@ -273,6 +416,7 @@ function subject = parse_subject(pth, subjname, sesname, schema, tolerant, verbo
 
           subject.(modalities{iModality}) = struct([]);
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
+
       end
     end
 
@@ -286,9 +430,15 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
 
   if exist(pth, 'dir')
 
+    if verbose
+      fprintf(1, '.');
+    end
+
     subject = bids.internal.add_missing_field(subject, modality);
 
     file_list = return_file_list(modality, subject, schema);
+
+    electrode_tsv = list_electrodes(modality, file_list);
 
     % dependency previous file
     previous = struct('group', struct('index', 0, 'base', '', 'len', 1), ...
@@ -331,14 +481,16 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
             aslcontext_file = strrep(subject.perf(end).filename, ...
                                      ['_asl' subject.perf(end).ext], ...
                                      '_aslcontext.tsv');
-            subject.(modality)(end).dependencies.context = manage_tsv( ...
-                                                                      struct('content', [], ...
+            subject.(modality)(end).dependencies.context = manage_tsv(struct('content', [], ...
                                                                              'meta', []), ...
                                                                       pth, ...
                                                                       aslcontext_file, ...
                                                                       verbose);
 
             subject.(modality)(end) = manage_M0(subject.perf(end), pth, verbose);
+
+          case {'eeg', 'ieeg', 'nirs'}
+            subject = appent_electrodes(subject, modality, electrode_tsv);
 
         end
 
@@ -350,19 +502,55 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
 
 end
 
+function electrode_tsv = list_electrodes(modality, file_list)
+
+  electrode_tsv = {};
+
+  switch modality
+    case {'eeg', 'ieeg'}
+      suffix = 'electrodes';
+    case {'nirs'}
+      suffix = 'optodes';
+    otherwise
+      return
+  end
+
+  is_electrode_tsv = ~cellfun('isempty', ...
+                              strfind(file_list, ['_' suffix '.tsv']));
+  has_electrode_tsv = any(is_electrode_tsv);
+  if has_electrode_tsv
+    electrode_tsv = file_list(is_electrode_tsv);
+  end
+
+end
+
+function subject = appent_electrodes(subject, modality, electrode_tsv)
+  for i = 1:numel(electrode_tsv)
+    pth = fullfile(subject.path, modality);
+    fullpath_filename = fullfile(pth, electrode_tsv{i});
+    if ~ismember(fullpath_filename, ...
+                 subject.(modality)(end).dependencies.group)
+      subject.(modality)(end).dependencies.group{end + 1, 1} = fullpath_filename;
+    end
+  end
+end
+
 function BIDS = validate_description(BIDS, tolerant, verbose)
 
   if ~exist(fullfile(BIDS.pth, 'dataset_description.json'), 'file')
 
-    msg = sprintf('BIDS directory not valid: missing dataset_description.json: ''%s''', ...
-                  BIDS.pth);
+    msg = sprintf(['BIDS directory not valid: missing dataset_description.json: ''%s''', ...
+                   '\nSee this section of the BIDS specification:\n\t%s\n'], ...
+                  bids.internal.format_path(BIDS.pth), ...
+                  bids.internal.url('description'));
     bids.internal.error_handling(mfilename, 'missingDescripton', msg, tolerant, verbose);
 
   end
   try
     BIDS.description = bids.util.jsondecode(fullfile(BIDS.pth, 'dataset_description.json'));
   catch err
-    msg = sprintf('BIDS dataset description could not be read: %s', err.message);
+    msg = sprintf('BIDS dataset description could not be read:\n %s', ...
+                  bids.internal.format_path(err.message));
     bids.internal.error_handling(mfilename, 'cannotReadDescripton', msg, tolerant, verbose);
   end
 
@@ -370,14 +558,14 @@ function BIDS = validate_description(BIDS, tolerant, verbose)
   for iField = 1:numel(fields_to_check)
 
     if ~isfield(BIDS.description, fields_to_check{iField})
-      msg = sprintf( ...
-                    'BIDS dataset description not valid: missing %s field.', ...
-                    fields_to_check{iField});
+      msg = sprintf(['BIDS dataset description not valid: missing %s field.', ...
+                     'See this section of the BIDS specification:\n\t%s\n'], ...
+                    fields_to_check{iField}, ...
+                    bids.internal.url('description'));
       bids.internal.error_handling(mfilename, 'invalidDescripton', msg, tolerant, verbose);
     end
 
-    % TODO
-    % Add warning if bids version does not match schema version
+    % TODO Add warning if bids version does not match schema version
 
   end
 
@@ -412,12 +600,10 @@ function file_list = return_file_list(modality, subject, schema)
   %  - can include a prefix
   %  - can be json
 
-  % TODO
-  % it should be possible to create some of those patterns for the regexp
+  % TODO it should be possible to create some of those patterns for the regexp
   % based on some of the required entities written down in the schema
 
-  % TODO
-  % this does not cover coordsystem.json
+  % TODO this does not cover coordsystem.json
 
   % prefix only for shemaless data
   if isempty(schema.content)
@@ -428,7 +614,8 @@ function file_list = return_file_list(modality, subject, schema)
 
   % sub and ses part
   pattern = [prefix subject.name '_'];
-  if ~isempty(subject.session)
+  if isempty(schema.content)
+  elseif ~isempty(subject.session)
     pattern = [pattern subject.session '_'];
   end
 
@@ -477,6 +664,8 @@ function [subject, previous] = index_dependencies(subject, modality, file, i, pr
   %              This groups file that logically need each other,
   %              like functional mri and events tabular file.
   %              It also takes care of fmap magnitude1/2 and phasediff.
+  %              This will also include files that are shared across
+  %              several runs (i.e electrodes.tsv)
 
   pth = fullfile(subject.path, modality);
   fullpath_filename = fullfile(pth, file);
@@ -550,7 +739,31 @@ function structure = manage_tsv(structure, pth, filename, verbose)
                                       ['^' strrep(filename, ['.' ext], ['\.' ext]) '$']);
 
   if isempty(tsv_file)
-    msg = sprintf('Missing: %s', fullfile(pth, filename));
+
+    missing_file = bids.internal.file_utils(filename, 'basename');
+    switch missing_file
+      case 'participants'
+        msg = sprintf(['Missing: participant.tsv', ...
+                       '\n\n', ...
+                       'To silence this warning, ', ...
+                       'consider adding a "participants.tsv" to your dataset.', ...
+                       '\n', ...
+                       'See the function: bids.util.create_participants_tsv\n', ...
+                       'See also this section of the BIDS specification:\n\t%s'], ...
+                      bids.internal.url('participants'));
+      case 'samples'
+        msg = sprintf(['Missing: samples.tsv', ...
+                       '\n\n', ...
+                       'To silence this warning, ', ...
+                       'consider adding a "samples.tsv" to your dataset.', ...
+                       '\n', ...
+                       'See this section of the BIDS specification:\n\t%s'], ...
+                      bids.internal.url('samples'));
+      otherwise
+        msg = sprintf(' Missing: %s', ...
+                      bids.internal.format_path(fullfile(pth, filename)));
+    end
+
     bids.internal.error_handling(mfilename, 'tsvMissing', msg, tolerant, verbose);
 
   else
@@ -567,10 +780,14 @@ function structure = manage_tsv(structure, pth, filename, verbose)
 
 end
 
-function BIDS = manage_dependencies(BIDS, verbose)
+function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
   %
   % Loops over all files and retrieve all files that current file depends on
   %
+
+  if ~index_dependencies
+    return
+  end
 
   tolerant = true;
 
@@ -578,9 +795,13 @@ function BIDS = manage_dependencies(BIDS, verbose)
 
   for iFile = 1:size(file_list, 1)
 
+    if is_scans_or_sessions_tsv(file_list{iFile})
+      continue
+    end
+
     info_src = bids.internal.return_file_info(BIDS, file_list{iFile});
     % skip files in the root folder with no sub entity
-    if isempty(info_src.sub_idx)
+    if isempty(info_src.sub_idx) || isempty(info_src.file_idx)
       continue
     end
     file = BIDS.subjects(info_src.sub_idx).(info_src.modality)(info_src.file_idx);
@@ -598,16 +819,31 @@ function BIDS = manage_dependencies(BIDS, verbose)
     end
 
     for iIntended = 1:numel(intended)
+
       dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, ...
                       intended{iIntended});
+      % TODO: need to better take care of URI
+      if strfind(intended{iIntended}, ':')
+        tmp =  strsplit(intended{iIntended}, '/');
+        this_intended =  strjoin(tmp(2:end), '/');
+        dest = fullfile(BIDS.pth, BIDS.subjects(info_src.sub_idx).name, this_intended);
+      end
+
+      % only throw warning for non-datalad dataset
+      % to avoid excessive warning as sym link are not files
       if ~exist(dest, 'file')
-        msg = ['IntendedFor file ' dest ' from ' file.filename ' not found'];
-        bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
+        if ~BIDS.is_datalad_ds
+          msg = sprintf('IntendedFor file %s from %s not found', ...
+                        bids.internal.format_path(dest), ...
+                        bids.internal.format_path(file.filename));
+          bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
+        end
         continue
       end
       info_dest = bids.internal.return_file_info(BIDS, dest);
       if isempty(info_dest.file_idx)
-        msg = ['IntendedFor file ' dest ' from ' file.filename ' not indexed'];
+        msg = ['IntendedFor file ' dest ' from ' ...
+               bids.internal.format_path(file.filename) ' not indexed.'];
         bids.internal.error_handling(mfilename, 'IntendedForMissing', msg, tolerant, verbose);
         continue
       end
@@ -615,6 +851,17 @@ function BIDS = manage_dependencies(BIDS, verbose)
           .dependencies.explicit{end + 1, 1} = file_list{iFile};
     end
 
+  end
+
+end
+
+function status = is_scans_or_sessions_tsv(file)
+
+  bf = bids.File(file);
+
+  status = false;
+  if ismember(bf.suffix, {'scans', 'sessions'})
+    status =  true;
   end
 
 end
@@ -627,7 +874,7 @@ function perf = manage_M0(perf, pth, verbose)
 
   if ~isfield(perf.meta, 'M0Type')
 
-    msg = sprintf('M0Type field missing for %s', perf.filename);
+    msg = sprintf('M0Type field missing for %s', bids.internal.format_path(perf.filename));
     bids.internal.error_handling(mfilename, 'm0typeMissing', msg, tolerant, verbose);
 
   else
@@ -653,7 +900,7 @@ function perf = manage_M0(perf, pth, verbose)
                              ['_m0scan' perf.ext]);
 
         if ~exist(fullfile(pth, m0_filename), 'file')
-          msg = ['Missing: ' m0_filename];
+          msg = ['Missing: ' bids.internal.format_path(m0_filename)];
           bids.internal.error_handling(mfilename, 'm0FileMissing', msg, tolerant, verbose);
 
         else
@@ -667,7 +914,7 @@ function perf = manage_M0(perf, pth, verbose)
                             '_m0scan.json');
 
         if ~exist(fullfile(pth, m0_sidecar), 'file')
-          msg = ['Missing: ' m0_sidecar];
+          msg = ['Missing: ' bids.internal.format_path(m0_sidecar)];
           bids.internal.error_handling(mfilename, 'm0JsonMissing', msg, tolerant, verbose);
 
         else
@@ -700,15 +947,13 @@ function perf = manage_M0(perf, pth, verbose)
 
       case 'Estimate'
         m0_type = 'single_value';
-        m0_explanation = [ ...
-                          'this is a single estimated M0 value, ', ...
+        m0_explanation = ['this is a single estimated M0 value, ', ...
                           'e.g. when the M0 is obtained from an external scan and/or study'];
         m0_value = perf.meta.M0Estimate;
 
       case 'Absent'
         m0_type = 'use_control_as_m0';
-        m0_explanation = [ ...
-                          'M0 is absent, so we can use the (average) control volume ', ...
+        m0_explanation = ['M0 is absent, so we can use the (average) control volume ', ...
                           'as pseudo-M0 (if no background suppression was used)'];
 
         if perf.meta.BackgroundSuppression == true

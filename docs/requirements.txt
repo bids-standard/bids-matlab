@@ -3,3 +3,6 @@ sphinxcontrib-matlabdomain
 sphinxcontrib-napoleon
 sphinx_rtd_theme
 sphinx-copybutton
+myst-parser
+rich
+urllib3==1.26.15
