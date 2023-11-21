@@ -79,9 +79,11 @@ function p = parse_filename(filename, fields, tolerant, verbose)
     return
   end
 
-  fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
+  fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix', 'modality'};
 
-  filename = bids.internal.file_utils(filename, 'filename');
+  % filename = bids.internal.file_utils(filename, 'filename');
+  [dirname, filename, ext] = fileparts(filename);
+  filename = [filename, ext];
   p.filename = filename;
 
   % identify an eventual prefix to the file
@@ -114,6 +116,9 @@ function p = parse_filename(filename, fields, tolerant, verbose)
       p = struct([]);
     end
   end
+
+  % Retrieving modality
+  p.modality = get_modality(dirname, p.entities);
 
 end
 
@@ -193,6 +198,29 @@ function p = parse_entity_label_pairs(p, basename, tolerant, verbose)
 
     end
 
+  end
+
+end
+
+function modality = get_modality(path, entities)
+  % Retrieves modsality out of the path by checking if
+  % 2-level up folder is same as ses or sub entities
+  modality = '';
+  [path, cand, ext] = fileparts(path);
+  cand = [cand, ext];
+  [~, ent_path, ext] = fileparts(path);
+  if ~isempty(ext)
+    return
+  end
+
+  comp_path = '';
+  if isfield(entities, 'ses') && ~isempty(entities.ses)
+    comp_path = ['ses-' entities.ses];
+  elseif isfield(entities, 'sub')
+    comp_path = ['sub-' entities.sub];
+  end
+  if ~isempty(comp_path) && strcmp(ent_path, comp_path)
+      modality = cand;
   end
 
 end
