@@ -5,7 +5,7 @@
 [![miss_hit](https://github.com/bids-standard/bids-matlab/actions/workflows/miss_hit.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/miss_hit.yml)
 [![tests_matlab](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml)
 [![tests_octave](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/dev?urlpath=demos)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/main?urlpath=demos)
 [![View bids-matlab on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5910584.svg)](https://doi.org/10.5281/zenodo.5910584)
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
@@ -31,8 +31,8 @@ See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the
 Download, unzip this repository and add its content to the MATLAB/Octave path.
 
 ```Matlab
-unzip('https://github.com/bids-standard/bids-matlab/archive/master.zip');
-addpath('bids-matlab-master');
+unzip('https://github.com/bids-standard/bids-matlab/archive/main.zip');
+addpath('bids-matlab-main');
 ```
 
 Or clone it with git:
@@ -49,18 +49,20 @@ addpath('bids-matlab');
 
 ### Get the latest features
 
-The latest features of bids-matlab that are in development are in our `dev`
+Stable versions should be fetched from a specific version tag.
+
+The latest features of bids-matlab that are in development are in our `main`
 "branch".
 
-To access them you can either download the `dev` branch from there:
-https://github.com/bids-standard/bids-matlab/tree/dev
+To access them you can either download the `main` branch from there:
+https://github.com/bids-standard/bids-matlab/tree/main
 
-Or you can check it out the `dev` branch after the adding this official
+Or you can check it out the `main` branch after the adding this official
 bids-matlab repository as a remote.
 
 ```
 git add remote upstream https://github.com/bids-standard/bids-matlab.git
-git checkout upstream/dev
+git checkout upstream/main
 ```
 
 ## Features
@@ -131,9 +133,9 @@ content = bids.util.jsondecode('/home/data/some_json_file.json');
 ```
 
 A
-[tutorials](https://github.com/bids-standard/bids-matlab/blob/master/lib/bids-matlab/demos/notebooks)
+[tutorials](https://github.com/bids-standard/bids-matlab/blob/main/lib/bids-matlab/demos/notebooks)
 are available as a Jupyter Notebooks and scripts and can be run interactively via
-[Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/dev?urlpath=demos).
+[Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/main?urlpath=demos).
 
 ## Requirements
 

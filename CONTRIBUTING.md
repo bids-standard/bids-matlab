@@ -240,11 +240,6 @@ Please detail the changes you are attempting to make.
 
 Please keep the title of your pull request short but informative.
 
-It is important that your pull-request should target the development branch
-(`dev`) of the BIDS-MATLAB parent repository: this is because we aim to keep the
-stable version of the toolbox in the `main` branch and the latest version in the
-`dev` branch.
-
 Use one of the following prefixes in the title of your pull request:
 
 - `[ENH]` - enhancement of the software that adds a new feature or support for

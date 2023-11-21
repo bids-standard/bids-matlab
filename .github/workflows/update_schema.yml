@@ -26,12 +26,6 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    branches:
-    - master
-  pull_request:
-    branches:
-    - master
   schedule:
   - cron: 0 0 * * 1     # every monday
 
@@ -59,8 +53,8 @@ jobs:
       with:
         commit-message: BIDS schema update
         assignees: Remi-Gau
-        base: master
+        base: main
         token: ${{ secrets.PR_TOKEN }}
         delete-branch: true
         title: '[BOT] update schema'
-        body: done via this [GitHub Action](https://github.com/bids-standard/bids-matlab/blob/master/.github/workflows/update_schema.yml)
+        body: done via this [GitHub Action](https://github.com/bids-standard/bids-matlab/blob/main/.github/workflows/update_schema.yml)
