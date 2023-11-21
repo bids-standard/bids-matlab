@@ -244,7 +244,6 @@ bids-matlab (Version 0.1.0) Zenodo. doi: [10.5281/zenodo.5910585](https://doi.or
 If you want to contribute make sure to check our [contributing guidelines](CONTRIBUTING.md)
 and our [code of conduct](CODE_OF_CONDUCT.md).
 
-
 Thanks goes to these wonderful people
 ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
