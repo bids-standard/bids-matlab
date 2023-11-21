@@ -7,24 +7,27 @@ function result = query(BIDS, query, varargin)
   %   result = bids.query(BIDS, query, filter)
   %
   % :param BIDS: BIDS directory name or BIDS structure (from bids.layout)
-  % :type  BIDS: structure or string
+  % :type  BIDS: structure or char
   %
   % :param query: type of query (see list below)
-  % :type  query: string
+  % :type  query: char
   %
   % Type of queries allowed.
   %
   % Any of the following:
   %
-  % - ``'modalities'``
+  % - ``'modalities'``: known as datatype in BIDS (anat, func, eeg...)
   % - ``'entities'``
   % - ``'suffixes'``
-  % - ``'data'``
-  % - ``'metadata'``
-  % - ``'metafiles'``
-  % - ``'dependencies'``
+  % - ``'data'``: filenames
+  % - ``'metadata'``: associated metadata (using the inheriance principle)
+  % - ``'metafiles'``: json sidecar files
+  % - ``'dependencies'``: associated files (for example the event.tsv for a bold.nii
+  %   or eeg.eeg file)
+  % - ``'participants'``: content and metadata of participants.tsv
+  % - ``'phenotype'``: content and metadata of the phenotype folder
   % - ``'extensions'``
-  % - ``'prefixes'``
+  % - ``'tsv_content'``
   %
   % And any of the BIDS entities:
   %
@@ -58,7 +61,7 @@ function result = query(BIDS, query, varargin)
   %
   % .. warning::
   %
-  %   Note that all the query types are plurals.
+  %   Note that most of the query types are plurals.
   %
   % :param filter: filter for the query
   % :type  filter: structure or nX2 cell or series of key-value parameters
@@ -88,25 +91,16 @@ function result = query(BIDS, query, varargin)
   %
   % If you want to exclude an entity, use ``''`` or ``[]``.
   %
+  % It is possible to use regular expressions in the queried values.
   %
-  % It is also possible to use regular expressions in the value.
+  % Examples
+  % --------
   %
-  % Regex example::
-  %
-  %     % The following 2 will return the same thing
-  %     data = bids.query(BIDS, 'data', 'sub', '01')
-  %     data = bids.query(BIDS, 'data', 'sub', '^01$')
-  %
-  %     % But the following would return all the data for all subjects
-  %     % whose label ends in '01'
-  %     data = bids.query(BIDS, 'data', 'sub', '.*01')
-  %
-  % ---
-  %
-  % Example 1:
   % Querying for 'BOLD' files for subject '01', for run 1 to 5
   % of the 'stopsignalwithpseudowordnaming' task
-  % with gunzipped nifti files::
+  % with gunzipped nifti files.
+  %
+  % .. code-block:: matlab
   %
   %    data = bids.query(BIDS, 'data', ...
   %                            'sub', '01', ...
@@ -115,8 +109,9 @@ function result = query(BIDS, query, varargin)
   %                            'extension', '.nii.gz', ...
   %                            'suffix', 'bold');
   %
-  % Example 2:
-  % Same as above but using a filter structure::
+  % Same as above but using a filter structure.
+  %
+  % .. code-block:: matlab
   %
   %     filters = struct('sub', '01', ...
   %                      'task', 'stopsignalwithpseudowordnaming', ...
@@ -126,10 +121,10 @@ function result = query(BIDS, query, varargin)
   %
   %     data = bids.query(BIDS, 'data', filters);
   %
-  %
-  % Example 3:
   % Same as above but using regular expression
-  % to query for subjects 1 to 5::
+  % to query for subjects 1 to 5.
+  %
+  % .. code-block:: matlab
   %
   %     filters = {'sub', '0[1-5]'; ...
   %                'task', 'stopsignal.*'; ...
@@ -139,16 +134,15 @@ function result = query(BIDS, query, varargin)
   %
   %     data = bids.query(BIDS, 'data', filters);
   %
-  %
-  % Example 4:
   % The following query would return all files that do not contain the
-  % task entity::
+  % task entity.
+  %
+  % .. code-block:: matlab
   %
   %     data = bids.query(BIDS, 'data', 'task', '')
   %
-  %
+
   % (C) Copyright 2016-2018 Guillaume Flandin, Wellcome Centre for Human Neuroimaging
-  %
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   %#ok<*AGROW>
@@ -163,8 +157,11 @@ function result = query(BIDS, query, varargin)
                           'metadata', ...
                           'metafiles', ...
                           'dependencies', ...
+                          'participants', ...
+                          'phenotype', ...
                           'extensions', ...
-                          'prefixes'}, ...
+                          'prefixes', ...
+                          'tsv_content'}, ...
                       valid_entity_queries());
 
   if ~any(strcmp(query, VALID_QUERIES))
@@ -174,9 +171,12 @@ function result = query(BIDS, query, varargin)
     bids.internal.error_handling(mfilename(), 'unknownQuery', msg, false, true);
   end
 
-  bids_entities = schema_entities();
-
   BIDS = bids.layout(BIDS);
+
+  if ismember(query, {'participants', 'phenotype'})
+    result = BIDS.(query);
+    return
+  end
 
   options = parse_query(varargin);
 
@@ -197,7 +197,11 @@ function result = query(BIDS, query, varargin)
   % Get optional target option for metadata query
   [target, options] = get_target(query, options);
 
-  result = perform_query(BIDS, query, options, subjects, modalities, target, bids_entities);
+  if strcmp(query, 'tsv_content')
+    result = perform_query(BIDS, 'data', options, subjects, modalities, target);
+  else
+    result = perform_query(BIDS, query, options, subjects, modalities, target);
+  end
 
   %% Postprocessing output variable
   switch query
@@ -224,6 +228,26 @@ function result = query(BIDS, query, varargin)
     case cat(2, {'suffixes',  'suffixes', 'extensions', 'prefixes'}, valid_entity_queries())
       result = unique(result);
       result(cellfun('isempty', result)) = [];
+
+    case 'tsv_content'
+      if isempty(result)
+        return
+      end
+      extensions = bids.internal.file_utils(result, 'ext');
+      if numel(unique(extensions)) > 1 || ~strcmp(unique(extensions), 'tsv')
+        result = bids.internal.format_path(result);
+        msg = sprintf(['Queries for ''tsv_content'' must be done only on tsv files.\n', ...
+                       'Your query returned: %s'], ...
+                      bids.internal.create_unordered_list(result));
+        bids.internal.error_handling(mfilename(), 'notJustTsvFiles', msg, false);
+        return
+      end
+      tmp = {};
+      for i_tsv_file = 1:numel(result)
+        tmp{i_tsv_file} = bids.util.tsvread(result{i_tsv_file});
+      end
+      result = tmp;
+
   end
 
 end
@@ -325,6 +349,12 @@ function [subjects, options] = get_subjects(BIDS, options)
     subjects = options{ismember(options(:, 1), 'sub'), 2};
     options(ismember(options(:, 1), 'sub'), :) = [];
   else
+    if ~isfield(BIDS, 'subjects') || ~isfield(BIDS.subjects, 'name')
+      msg = sprintf(['No subject present in dataset:\n\t%s.', ...
+                     '\nDid you run bids.layout first?'], ...
+                    bids.internal.format_path(BIDS.pth));
+      bids.internal.error_handling(mfilename(), 'noSubjectField', msg, false);
+    end
     subjects = unique({BIDS.subjects.name});
     subjects = regexprep(subjects, '^[a-zA-Z0-9]+-', '');
   end
@@ -363,7 +393,7 @@ function [target, options] = get_target(query, options)
 
 end
 
-function result = perform_query(BIDS, query, options, subjects, modalities, target, bids_entities)
+function result = perform_query(BIDS, query, options, subjects, modalities, target)
 
   % Initialise output variable
   result = {};
@@ -388,13 +418,15 @@ function result = perform_query(BIDS, query, options, subjects, modalities, targ
       end
 
       result = update_result(query, options, result, this_subject, ...
-                             this_modality, target, bids_entities);
+                             this_modality, target);
 
     end
 
+    result = update_result_scans_sessions_tsv(query, result, this_subject, options);
+
   end
 
-  result = update_result_with_root_content(query, options, result, BIDS, bids_entities);
+  result = update_result_with_root_content(query, options, result, BIDS);
 
 end
 
@@ -409,7 +441,6 @@ function result = update_result(varargin)
   this_subject = varargin{4};
   this_modality = varargin{5};
   target = varargin{6};
-  bids_entities = varargin{7};
 
   d = this_subject.(this_modality);
 
@@ -452,7 +483,11 @@ function result = update_result(varargin)
             try
               result{end} = subsref(result{end}, target);
             catch
-              warning('Non-existent field for metadata.');
+              msg = sprintf('Non-existent field "%s" for metadata.', target.subs);
+              bids.internal.error_handling(mfilename(), ...
+                                           'unknownMetadata', ...
+                                           msg, ...
+                                           true);
               result{end} = [];
             end
           end
@@ -463,7 +498,7 @@ function result = update_result(varargin)
 
         case valid_entity_queries()
 
-          result = update_if_entity(query, result, d(k), bids_entities);
+          result = update_if_entity(query, result, d(k));
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -481,7 +516,50 @@ function result = update_result(varargin)
   end
 end
 
-function result = update_result_with_root_content(query, options, result, BIDS, bids_entities)
+function result = update_result_scans_sessions_tsv(query, result, this_subject, options)
+  %
+  % add scans.tsv and sessions.tsv to results list:
+  % - if user asked for data
+  % - filter by entities
+  %
+
+  if strcmp(query, 'data')
+
+    bf = bids.File(this_subject.scans);
+    status = bids.internal.keep_file_for_query(bf, options);
+    if status
+      result{end + 1} = this_subject.scans;
+    end
+
+    bf = bids.File(this_subject.sess);
+    status = bids.internal.keep_file_for_query(bf, options);
+    if status
+      result{end + 1} = this_subject.sess;
+      result = unique(result);
+    end
+
+  end
+
+  if strcmp(query, 'suffixes')
+    if ~isempty(this_subject.scans)
+      bf = bids.File(this_subject.scans);
+      status = bids.internal.keep_file_for_query(bf, options);
+      if status
+        result{end + 1} = 'scans';
+      end
+    end
+    if ~isempty(this_subject.sess)
+      bf = bids.File(this_subject.sess);
+      status = bids.internal.keep_file_for_query(bf, options);
+      if status
+        result{end + 1} = 'sessions';
+      end
+    end
+  end
+
+end
+
+function result = update_result_with_root_content(query, options, result, BIDS)
 
   d = BIDS.root;
 
@@ -515,7 +593,7 @@ function result = update_result_with_root_content(query, options, result, BIDS, 
 
         case valid_entity_queries()
 
-          result = update_if_entity(query, result, d(k), bids_entities);
+          result = update_if_entity(query, result, d(k));
 
         case {'suffixes', 'prefixes'}
           field = query(1:end - 2);
@@ -535,7 +613,7 @@ function value = schema_entities()
   value = schema.content.objects.entities;
 end
 
-function result = update_if_entity(query, result, dk, bids_entities)
+function result = update_if_entity(query, result, dk)
 
   if ismember(query, short_valid_entity_queries())
     field = query(1:end - 1);
@@ -544,6 +622,8 @@ function result = update_if_entity(query, result, dk, bids_entities)
     field =  'atlas';
 
   elseif ismember(query, long_valid_entity_queries())
+
+    bids_entities = schema_entities();
     field =  bids_entities.(query(1:end - 1)).name;
 
   else

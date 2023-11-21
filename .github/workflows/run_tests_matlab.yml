@@ -1,12 +1,16 @@
-name: "matlab: tests"
+---
+name: 'matlab: tests'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
   push:
     branches:
-      - master
-      - dev
+    - main
   pull_request:
-    branches: ["*"]
+    branches: ['*']
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -14,52 +18,58 @@ on:
 jobs:
   test:
 
-
     strategy:
       fail-fast: false
       matrix:
-        version: ["R2020a", "R2020b", "R2021a", "R2021b", "R2022a", "R2022b"]
-        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
-        exclude:
-          - os: windows-latest
-            version: "R2020a" # MATLAB not available
-          - os: windows-latest
-            version: "R2020b" # MATLAB not available
+        version: [R2021a, R2023a]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        test: [slow, fast]
 
     runs-on: ${{matrix.os}}
 
     steps:
-      - name: Install MATLAB
-        uses: matlab-actions/setup-matlab@v1.2.4
-        with:
-          # MATLAB release to set up R2020a
-          release: ${{matrix.version}}
 
-      - name: Clone bids-matlab
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-          fetch-depth: 1
+    - name: Install MATLAB
+      uses: matlab-actions/setup-matlab@v1.2.5
+      with:
+        release: ${{matrix.version}}
 
-      - name: Install bids example
-        run: |
-          cd tests
-          make data
+    - name: Clone bids-matlab
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 1
 
-      - name: Install Moxunit and MOcov
-        run: |
-          git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
-          git clone https://github.com/MOcov/MOcov.git --depth 1
+    - name: Install dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get -y -qq update
+        sudo apt-get -y install unzip wget
 
-      - name: Run commands
-        uses: matlab-actions/run-command@v1.2.0
-        with:
-          command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); addpath(getenv('GITHUB_WORKSPACE')); success = run_tests(); assert(success);
+    - name: Install bids validator
+      run: npm install -g bids-validator
 
-      # - name: Code coverage
-      #   uses: codecov/codecov-action@v1
-      #   with:
-      #     file: coverage.xml # optional
-      #     flags: unittests # optional
-      #     name: codecov-umbrella # optional
-      #     fail_ci_if_error: true # optional (default = false)
+
+    - name: Install bids example
+      run: |
+        cd tests
+        make data
+
+    - name: Install Moxunit and MOcov
+      run: |
+        git clone https://github.com/MOxUnit/MOxUnit.git --depth 1
+        git clone https://github.com/MOcov/MOcov.git --depth 1
+
+    - name: Run slow tests
+      if: matrix.test == 'slow'
+      uses: matlab-actions/run-command@v1.2.2
+      with:
+        command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); global SLOW; SLOW=true; addpath(getenv('GITHUB_WORKSPACE'));
+          success = run_tests(); assert(success);
+
+    - name: Run fast tests
+      if: matrix.test == 'fast'
+      uses: matlab-actions/run-command@v1.2.2
+      with:
+        command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); addpath(getenv('GITHUB_WORKSPACE')); success = run_tests();
+          assert(success);

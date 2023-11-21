@@ -4,10 +4,11 @@ function status = is_octave()
   %
   % USAGE::
   %
-  %   status = isOctave()
+  %   status = bids.internal.is_octave()
   %
-  % :returns: :status: (boolean)
+  % :returns: :status: (logical)
   %
+
   % (C) Copyright 2020 Agah Karakuzu
 
   persistent cacheval   % speeds up repeated calls

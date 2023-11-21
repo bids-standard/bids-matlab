@@ -7,15 +7,19 @@ function [subject, status, previous] = append_to_layout(file, subject, modality,
   %   subject = append_to_layout(file, subject, modality, schema == [])
   %
   % :param file:
-  % :type  file: string
+  % :type  file: char
+  %
   % :param subject: subject sub-structure from the BIDS layout
   % :type  subject: structure
+  %
   % :param modality:
-  % :type  modality: string
+  % :type  modality: char
+  %
   % :param schema:
   % :type  schema: structure
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   pth = [subject.path, filesep, modality];
@@ -156,7 +160,7 @@ end
 
 function [msg, msg_id] = error_message(msg_id, file, extra)
 
-  msg = sprintf('Skipping file: %s.\n', file);
+  msg = sprintf('Skipping file: %s.\n', bids.internal.format_path(file));
 
   switch msg_id
 

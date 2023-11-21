@@ -8,13 +8,14 @@ function str = camel_case(str)
   %   str = camel_case(str)
   %
   % :param str:
-  % :type str: string
+  % :type str: char
   %
   % :returns:
-  %           :str: (string) returns the input with an upper case for first letter
+  %           :str: (char) returns the input with an upper case for first letter
   %                  for all words but the first one (``camelCase``) and
   %                  removes invalid characters (like spaces).
   %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   % camel case: upper case for first letter for all words but the first one

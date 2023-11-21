@@ -44,8 +44,8 @@ function test_derivatives_json_preproc()
 
   content = expected_content();
 
-  content.Resolution = {{ struct('hi', 'REQUIRED if "res" entity') }};
-  content.Density = {{ struct('lo', 'REQUIRED if "den" entity') }};
+  content.Resolution = 'hi';
+  content.Density = 'lo';
 
   expected.content = content;
   expected.filename = 'sub-01_task-faceRecognition_res-hi_den-lo_desc-preproc_bold.json';
@@ -63,7 +63,6 @@ function test_derivatives_json_segmentation()
 
   content = expected_content();
   content.Manual = {{'OPTIONAL'}};
-  content.Atlas = {{'OPTIONAL'}};
 
   expected.content = content;
   expected.filename = 'sub-01_desc-T1w_dseg.json';
@@ -81,7 +80,6 @@ function test_derivatives_json_mask()
 
   content = expected_content();
   content.RawSources = {{'REQUIRED'}};
-  content.Atlas = {{'OPTIONAL'}};
   content.Type = {{'OPTIONAL'}};
 
   expected.content = content;

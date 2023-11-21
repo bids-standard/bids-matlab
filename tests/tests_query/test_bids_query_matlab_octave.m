@@ -11,9 +11,8 @@ end
 
 function test_query_impossible_suffix_should_return_empty()
 
-  pth_bids_example = get_test_data_dir();
-
-  BIDS = bids.layout(fullfile(pth_bids_example, '7t_trt'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), '7t_trt'), ...
+                     'index_dependencies', false);
 
   subjects = bids.query(BIDS, 'subjects');
   assertEqual(size(subjects), [1, 22]);

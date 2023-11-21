@@ -52,4 +52,5 @@ function [pth, expected] = fixture()
   expected.onset = ([42 126 210 294 378 462 546])';
   expected.duration = repmat(42, 7, 1);
   expected.trial_type = repmat({'listening'}, 7, 1);
+
 end

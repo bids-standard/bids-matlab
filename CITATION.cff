@@ -4,9 +4,9 @@ cff-version: 1.2.0
 
 title: bids-matlab
 
-version: 0.1.0
+version: 0.1.0dev
 
-license: GPL-3.0
+license: MIT
 
 repository-code: "https://github.com/bids-standard/bids-matlab"
 

@@ -8,6 +8,7 @@ function status = is_valid_fieldname(some_str)
   %
   %     status = is_valid_fieldname(some_str)
   %
+
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   status = true;

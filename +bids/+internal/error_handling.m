@@ -6,15 +6,27 @@ function error_handling(varargin)
   %
   % :param function_name: default = ``bidsMatlab``
   % :type function_name:
-  % :param id: default = ``unspecified``
-  % :type id: string
-  % :param msg: default = ``unspecified``
-  % :type msg: string
-  % :param tolerant:
-  % :type tolerant: boolean
-  % :param verbose:
-  % :type verbose:  boolean
   %
+  % :param id: default = ``unspecified``
+  % :type id: char
+  %
+  % :param msg: default = ``unspecified``
+  % :type msg: char
+  %
+  % :param tolerant:
+  % :type tolerant: logical
+  %
+  % :param verbose:
+  % :type verbose:  logical
+  %
+  % Example
+  % -------
+  %
+  % .. code-block:: matlab
+  %
+  %   bids.internal.error_handling(mfilename(), 'thisError', 'this is an error', tolerant, verbose)
+  %
+
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   default_function_name = 'bidsMatlab';
@@ -23,28 +35,28 @@ function error_handling(varargin)
   default_tolerant = true;
   default_verbose = false;
 
-  p = inputParser;
+  args = inputParser;
 
-  addOptional(p, 'function_name', default_function_name, @ischar);
-  addOptional(p, 'id', default_id, @ischar);
-  addOptional(p, 'msg', default_msg, @ischar);
-  addOptional(p, 'tolerant', default_tolerant, @islogical);
-  addOptional(p, 'verbose', default_verbose, @islogical);
+  addOptional(args, 'function_name', default_function_name, @ischar);
+  addOptional(args, 'id', default_id, @ischar);
+  addOptional(args, 'msg', default_msg, @ischar);
+  addOptional(args, 'tolerant', default_tolerant, @islogical);
+  addOptional(args, 'verbose', default_verbose, @islogical);
 
-  parse(p, varargin{:});
+  parse(args, varargin{:});
 
-  function_name = bids.internal.file_utils(p.Results.function_name, 'basename');
+  function_name = bids.internal.file_utils(args.Results.function_name, 'basename');
 
-  id = [function_name, ':' p.Results.id];
-  msg = p.Results.msg;
+  id = [function_name, ':' args.Results.id];
+  msg = sprintf(['\n' args.Results.msg '\n']);
 
-  if ~p.Results.tolerant
+  if ~args.Results.tolerant
     errorStruct.identifier = id;
     errorStruct.message = msg;
     error(errorStruct);
   end
 
-  if p.Results.verbose
+  if args.Results.verbose
     warning(id, msg);
   end
 

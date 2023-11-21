@@ -1,0 +1,57 @@
+{
+   "Name": "balloonanalogrisktask",
+   "BIDSModelVersion": "1.0.0",
+   "Description": "default model for balloonanalogrisktask",
+   "Input": {
+      "task": [
+         "balloonanalogrisktask"
+      ]
+   },
+   "Nodes": [
+      {
+         "Level": "Run",
+         "Name": "run_level",
+         "GroupBy": [
+            "run",
+            "subject"
+         ],
+         "Transformations": {
+            "Transformer": "bidspm",
+            "Instructions": [
+               {
+                  "Name": "Replace",
+                  "Input": [
+                     "trial_type"
+                  ],
+                  "Output": [
+                     "renamed"
+                  ],
+                  "Replace": [
+                     {
+                        "key": "pumps_demean",
+                        "value": "pumps"
+                     },
+                     {
+                        "key": "control_pumps_demean",
+                        "value": "control_pumps"
+                     }
+                  ],
+                  "Attribute": "value"
+               }
+            ]
+         },
+         "Model": {
+            "Type": "glm",
+            "X": [
+               "renamed.pumps",
+               "renamed.control_pumps",
+               1
+            ],
+            "HRF": {
+               "Variables": [],
+               "Model": "spm"
+            }
+         }
+      }
+   ]
+}

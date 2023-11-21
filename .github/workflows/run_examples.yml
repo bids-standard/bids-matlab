@@ -1,0 +1,43 @@
+---
+name: tests_examples
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches: ['*']
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Install MATLAB
+      uses: matlab-actions/setup-matlab@v1.2.5
+      with:
+        release: R2020a
+
+    - name: Clone bids-matlab
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 1
+
+    - name: Install bids example
+      run: |
+        cd demos/notebooks
+        make install
+
+    - name: Run commands
+      uses: matlab-actions/run-command@v1.2.2
+      with:
+        command: cd('demos/notebooks'); success = test_notebooks(); assert(success);

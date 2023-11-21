@@ -8,8 +8,8 @@ function out_path = download_ds(varargin)
   %                                 'demo', 'moae', ...
   %                                 'out_path', fullfile(bids.internal.root_dir(), 'demos'), ...
   %                                 'force', false, ...
-  %                                 'verbose', true);
-  %
+  %                                 'verbose', true, ...
+  %                                 'delete_previous', true);
   %
   % SPM::
   %
@@ -45,6 +45,7 @@ function out_path = download_ds(varargin)
   %     ftp://neuroimage.usc.edu/pub/tutorials/sample_omega.zip
   %
   %
+
   % (C) Copyright 2021 BIDS-MATLAB developers
 
   % TODO
@@ -59,67 +60,70 @@ function out_path = download_ds(varargin)
   default_out_path = '';
   default_force = false;
   default_verbose = true;
+  default_delete_previous = false;
 
-  p = inputParser;
+  args = inputParser;
 
-  addParameter(p, 'source', default_source, @ischar);
-  addParameter(p, 'demo', default_demo, @ischar);
-  addParameter(p, 'out_path', default_out_path, @ischar);
-  addParameter(p, 'force', default_force);
-  addParameter(p, 'verbose', default_verbose);
+  addParameter(args, 'source', default_source, @ischar);
+  addParameter(args, 'demo', default_demo, @ischar);
+  addParameter(args, 'out_path', default_out_path, @ischar);
+  addParameter(args, 'delete_previous', default_delete_previous, @islogical);
+  addParameter(args, 'force', default_force, @islogical);
+  addParameter(args, 'verbose', default_verbose, @islogical);
 
-  parse(p, varargin{:});
+  parse(args, varargin{:});
 
-  verbose = p.Results.verbose;
+  verbose = args.Results.verbose;
 
-  out_path = p.Results.out_path;
+  source = args.Results.source;
+
+  demo = args.Results.demo;
+
+  out_path = args.Results.out_path;
   if isempty(out_path)
     out_path = fullfile(bids.internal.root_dir, 'demos');
-    out_path = fullfile(out_path, p.Results.source, p.Results.demo);
-  elseif ~exist(out_path, 'dir')
-    bids.util.mkdir(out_path);
+    out_path = fullfile(out_path, source, demo);
   end
 
   % clean previous runs
   if isdir(out_path)
-    if p.Results.force
-      rmdir(out_path, 's');
+    if args.Results.force
+      if args.Results.delete_previous
+        rmdir(out_path, 's');
+      end
     else
       bids.internal.error_handling(mfilename(), 'dataAlreadyHere', ...
                                    ['The dataset is already present.' ...
                                     'Use "force, true" to overwrite.'], ...
                                    true, verbose);
-      return
     end
   end
+  bids.util.mkdir(out_path);
 
-  if strcmp(p.Results.source, 'spm')
-    if strcmp(p.Results.demo, 'facerep')
-      bids.internal.ds_spm_face_rep(fileparts(out_path));
-      return
-    end
-  end
-
-  [URL] = get_URL(p.Results.source, p.Results.demo, verbose);
+  [URL] = get_URL(source, demo, verbose);
   filename = bids.internal.download(URL, bids.internal.root_dir(), verbose);
 
   % Unzipping dataset
   [~, basename, ext] = fileparts(filename);
   if strcmp(ext, '.zip')
 
-    msg = sprintf('Unzipping dataset:\n %s\n\n', filename);
+    msg = sprintf('Unzipping dataset:\n %s to \n %s \n\n', ...
+                  bids.internal.format_path(filename), ...
+                  bids.internal.format_path(out_path));
     print_to_screen(msg, verbose);
 
-    unzip(filename);
+    unzip(filename, out_path);
+    if strcmpi(source, 'spm') && strcmpi(demo, 'moae')
+      bids.util.create_participants_tsv(out_path);
+    end
     delete(filename);
 
-    switch basename
-      case 'MoAEpilot.bids'
-        movefile('MoAEpilot', fullfile(out_path));
-      case 'multimodal_eeg'
-        movefile('EEG', fullfile(out_path));
+    switch demo
+      case {'moae', 'facerep'}
+      case 'eeg'
+        copyfile(fullfile(bids.internal.root_dir, 'EEG', '*'), out_path);
       otherwise
-        movefile(basename, fullfile(out_path));
+        movefile(fullfile(bids.internal.root_dir, basename), out_path);
     end
 
   end
@@ -129,13 +133,14 @@ end
 function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
 
   sources = {'spm', 'brainstorm'};
-  demos = {'moae', 'facep', 'eeg', ...
+  demos = {'moae', 'facerep', ...
            'ieeg', 'ecog', 'meg', 'meg_rest'};
 
   switch source
 
     case 'spm'
-      base_url = 'http://www.fil.ion.ucl.ac.uk/spm/download/data';
+
+      base_url = 'https://files.de-1.osf.io/v1/resources/3vufp/providers/osfstorage/';
 
     case 'brainstorm'
       ftp_server = 'neuroimage.usc.edu';
@@ -153,10 +158,13 @@ function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
 
     % spm
     case 'moae'
-      demo_path = '/MoAEpilot/MoAEpilot.bids.zip';
+      demo_path = '6239d943938b48080c97b6d4/?zip=';
 
-    case 'eeg'
-      demo_path = '/mmfaces/multimodal_eeg.zip';
+      %     case 'eeg'
+      %       demo_path = '/mmfaces/multimodal_eeg.zip';
+
+    case 'facerep'
+      demo_path = '63ecdf3ea3fade062fe7d3f7/?zip=';
 
       % brainstorm
     case 'ieeg'

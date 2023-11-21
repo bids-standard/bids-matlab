@@ -1,9 +1,34 @@
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/bids-standard/bids-matlab/master.svg)](https://results.pre-commit.ci/latest/github/bids-standard/bids-matlab/master)
+<!-- markdown-link-check-disable -->
+
+<!-- .. only:: html -->
+
+[![tests_matlab](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_matlab.yml)
+[![tests_octave](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml/badge.svg)](https://github.com/bids-standard/bids-matlab/actions/workflows/run_tests_octave.yml)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/main?urlpath=demos)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/bids-standard/bids-matlab/main.svg)](https://results.pre-commit.ci/latest/github/bids-standard/bids-matlab/main)
 [![miss hit](https://img.shields.io/badge/code%20style-miss_hit-000000.svg)](https://misshit.org/)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master)
 [![View bids-matlab on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5910584.svg)](https://doi.org/10.5281/zenodo.5910584)
 [![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributors-)
+
+<!-- markdown-link-check-enable -->
+
+- [BIDS for MATLAB / Octave](#bids-for-matlab--octave)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+    - [Get the latest features](#get-the-latest-features)
+  - [Features](#features)
+    - [What this toolbox can do](#what-this-toolbox-can-do)
+    - [What this toolbox cannot do... yet](#what-this-toolbox-cannot-do-yet)
+    - [What will this toolbox most likely never do](#what-will-this-toolbox-most-likely-never-do)
+  - [Usage](#usage)
+  - [Demos](#demos)
+  - [Requirements](#requirements-1)
+    - [Reading and writing JSON files](#reading-and-writing-json-files)
+  - [Implementation](#implementation)
+  - [Get in touch](#get-in-touch)
+  - [Other tools (MATLAB only)](#other-tools-matlab-only)
+  - [Contributing](#contributing)
 
 # BIDS for MATLAB / Octave
 
@@ -12,20 +37,21 @@ BIDS (Brain Imaging Data Structure) datasets.
 
 For more information about BIDS, visit https://bids.neuroimaging.io/.
 
-Join our chat on the
-[BIDS-MATLAB channel](https://mattermost.brainhack.org/brainhack/channels/bids-matlab)
-on the brainhack mattermost and our [google group](https://groups.google.com/g/bids-matlab).
-
 See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the
 [BIDS Starter Kit](https://github.com/bids-standard/bids-starter-kit).
+
+## Requirements
+
+For MacOS and Unix system, using `bids.copy_to_derivative` requires
+a version of gunzip >= 1.6.
 
 ## Installation
 
 Download, unzip this repository and add its content to the MATLAB/Octave path.
 
 ```Matlab
-unzip('https://github.com/bids-standard/bids-matlab/archive/master.zip');
-addpath('bids-matlab-master');
+unzip('https://github.com/bids-standard/bids-matlab/archive/main.zip');
+addpath('bids-matlab-main');
 ```
 
 Or clone it with git:
@@ -42,24 +68,29 @@ addpath('bids-matlab');
 
 ### Get the latest features
 
-The latest features of bids-matlab that are in development are in our `dev`
-branch.
+Stable versions should be fetched from a specific version tag.
 
-To access them you can either download the `dev` branch from there:
-https://github.com/bids-standard/bids-matlab/tree/dev
+A new version of BIDS matlab should be released for each new version of the BIDS specification
+to allow for a support of new BIDS datatypes or features.
+
+If you want the latest features of bids-matlab
+that are in development are in our `main` branch.
+
+To access them you can either download the `main` branch from there:
+https://github.com/bids-standard/bids-matlab/tree/main
 
 Or clone it:
 
 ```bash
-git clone --branch dev https://github.com/bids-standard/bids-matlab.git
+git clone --branch main https://github.com/bids-standard/bids-matlab.git
 ```
 
-Or you can check it out the `dev` branch after the adding this official
-bids-matlab repository as a remote.
+Or you can check it out the `main` branch
+after the adding this official bids-matlab repository as a remote.
 
 ```
 git add remote upstream https://github.com/bids-standard/bids-matlab.git
-git checkout upstream/dev
+git checkout upstream/main
 ```
 
 ## Features
@@ -86,8 +117,9 @@ git checkout upstream/dev
   anatomical MRI, functional MRI, diffusion weighted imaging, field map data
   (see `bids.report`)
 
-- create summary figures listing the number of files for each subject / session and
-  and imaging modality (see `bids.diagnostic`)
+- `bids.diagnostic` creates summary figures listing:
+  - the number of files for each subject / session and imaging modality
+  - the number of trials for each trial type in each events.tsv file for a given task
 
 - read and write JSON files (see `bids.util.jsondecode` and
   `bids.util.jsonwrite`) provided that the right
@@ -138,10 +170,9 @@ To use the `+bids/+util/jsondecode.m` function:
 content = bids.util.jsondecode('/home/data/some_json_file.json');
 ```
 
-A
-[tutorial](https://github.com/bids-standard/bids-matlab/blob/master/examples/tutorial.ipynb)
-is available as a Jupyter Notebook and can be run interactively via
-[Binder](https://mybinder.org/v2/gh/bids-standard/bids-matlab/master?filepath=examples/tutorial.ipynb).
+## Demos
+
+There are demos and tutorials showing some of the features in the `demos` folder.
 
 ## Requirements
 
@@ -156,7 +187,12 @@ this is not guaranteed.
 
 ### Reading and writing JSON files
 
-If you are using MATLAB R2016b or newer, nothing else needs to be installed.
+Make sure to be familiar with the [JSON 101](https://bids-standard.github.io/stats-models/json_101.html).
+
+Note some of the perks of working with JSON files described
+on [the BIDS starterkit](https://bids-standard.github.io/bids-starter-kit/folders_and_files/metadata.html#interoperability-issues).
+
+For BIDS-MATLAB, if you are using MATLAB R2016b or newer, nothing else needs to be installed.
 
 If you are using MATLAB R2016a or older, or using Octave, you need to install a
 supported JSON library for your MATLAB or Octave. This can be any of:
@@ -170,6 +206,16 @@ Starting point was `spm_BIDS.m` from [SPM12](https://github.com/spm/spm12)
 ([documentation](https://en.wikibooks.org/wiki/SPM/BIDS#BIDS_parser_and_queries))
 reformatted in a `+bids` package with dependencies to other SPM functions
 removed.
+
+## Get in touch
+
+To contact us:
+
+- open an [issue](https://github.com/bids-standard/bids-matlab/issues/new/choose)
+- join our chat on the
+[BIDS-MATLAB channel](https://mattermost.brainhack.org/brainhack/channels/bids-matlab)
+on the brainhack mattermost
+- join our [google group](https://groups.google.com/g/bids-matlab).
 
 ## Other tools (MATLAB only)
 
@@ -186,12 +232,18 @@ removed.
   )
 
 ## How to cite
-To credit BIDS-Matlab in your work, please cite the [Zenodo archive](https://zenodo.org/record/5910584), which points to a permanent record of all BIDS-Matlab versions (we encourage you to cite the specific version you used). Example citations (for bids-matlab 0.1.0):
+To credit BIDS-Matlab in your work, please cite the [Zenodo archive](https://zenodo.org/record/5910584),
+which points to a permanent record of all BIDS-Matlab versions
+(we encourage you to cite the specific version you used). Example citations (for bids-matlab 0.1.0):
 
-Gau, R., Flandin, G., Janke, A., Oostenveld, R., Madan, C., Niso, G., Szczepanik, M., Mutsaerts, H., Beliy, N., Norgaard, M., Pernet, C., & Phillips, C. bids-matlab (Version 0.1.0) Zenodo. doi: [10.5281/zenodo.5910585](https://doi.org/10.5281/zenodo.3363985)
+Gau, R., Flandin, G., Janke, A., Oostenveld, R., Madan, C., Niso, G., Szczepanik, M., Mutsaerts, H., Beliy, N., Norgaard, M., Pernet, C., & Phillips, C. 
+bids-matlab (Version 0.1.0) Zenodo. doi: [10.5281/zenodo.5910585](https://doi.org/10.5281/zenodo.3363985)
 
+## Contributing
 
-## Contributors ✨
+If you want to contribute make sure to check our [contributing guidelines](CONTRIBUTING.md)
+and our [code of conduct](CODE_OF_CONDUCT.md).
+
 
 Thanks goes to these wonderful people
 ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
