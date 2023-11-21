@@ -236,8 +236,16 @@ To credit BIDS-Matlab in your work, please cite the [Zenodo archive](https://zen
 which points to a permanent record of all BIDS-Matlab versions
 (we encourage you to cite the specific version you used). Example citations (for bids-matlab 0.1.0):
 
-Gau, R., Flandin, G., Janke, A., Oostenveld, R., Madan, C., Niso, G., Szczepanik, M., Mutsaerts, H., Beliy, N., Norgaard, M., Pernet, C., & Phillips, C.
-bids-matlab (Version 0.1.0) Zenodo. doi: [10.5281/zenodo.5910585](https://doi.org/10.5281/zenodo.3363985)
+```bibtex
+@software{Gau_bids-matlab,
+author = {Gau, Rémi and Flandin, Guillaume and Janke, Andrew and Duval, Tanguy and Oostenveld, Robert and Madan, Christopher and Niso, Guiomar and Szczepanik, Michał and Mutsaerts, Henk and Beliy, Nikita and Norgaard, Martin and Pernet, Cyril and Chrisophe, Phillips and Shahzad, Iqra and  Botvinik-Nezer, Rotem and Barilari, Marco and Battal, Ceren and MacLean, Michèle and Caron-Guyon, Jeanne},
+license = {MIT},
+title = {{bids-matlab}},
+url = {https://github.com/bids-standard/bids-matlab},
+doi = https://doi.org/10.5281/zenodo.3363985
+}
+```
+
 
 ## Contributing
 
