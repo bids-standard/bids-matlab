@@ -205,6 +205,7 @@ classdef File
           obj.path = args.Results.input;
         end
         f_struct = bids.internal.parse_filename(args.Results.input);
+        obj.modality = obj.get_modality(f_struct.entities);
       elseif isstruct(args.Results.input)
         f_struct = args.Results.input;
       end
@@ -919,6 +920,30 @@ classdef File
         msg = sprintf('%s contains ''sub-''', prefix);
         obj.bids_file_error('InvalidPrefix', msg);
       end
+    end
+
+    function modality = get_modality(obj, entities)
+      % Retrieves modsality out of the path by checking if
+      % 2-level up folder is same as ses or sub entities
+      modality = '';
+      path = fileparts(obj.path);
+      [path, cand, ext] = fileparts(path);
+      cand = [cand, ext];
+      [~, ent_path, ext] = fileparts(path);
+      if ~isempty(ext)
+        return
+      end
+
+      comp_path = '';
+      if isfield(entities, 'ses') && ~isempty(entities.ses)
+        comp_path = ['ses-' entities.ses];
+      elseif isfield(entities, 'sub')
+        comp_path = ['sub-' entities.sub];
+      end
+      if ~isempty(comp_path) && strcmp(ent_path, comp_path)
+          modality = cand;
+      end
+
     end
 
   end
