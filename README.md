@@ -68,7 +68,8 @@ addpath('bids-matlab');
 
 ### Get the latest features
 
-Stable versions should be fetched from a specific version tag.
+Stable versions should be fetched from a specific version tag
+or from the [Mathworkds file exchange](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab).
 
 A new version of BIDS matlab should be released for each new version of the BIDS specification
 to allow for a support of new BIDS datatypes or features.
@@ -83,14 +84,6 @@ Or clone it:
 
 ```bash
 git clone --branch main https://github.com/bids-standard/bids-matlab.git
-```
-
-Or you can check it out the `main` branch
-after the adding this official bids-matlab repository as a remote.
-
-```
-git add remote upstream https://github.com/bids-standard/bids-matlab.git
-git checkout upstream/main
 ```
 
 ## Features
@@ -233,8 +226,8 @@ on the brainhack mattermost
 
 ## How to cite
 To credit BIDS-Matlab in your work, please cite the [Zenodo archive](https://zenodo.org/record/5910584),
-which points to a permanent record of all BIDS-Matlab versions
-(we encourage you to cite the specific version you used). Example citations (for bids-matlab 0.1.0):
+which points to a permanent record of all BIDS-Matlab versions.
+We encourage you to mention the specific version you used.
 
 ```bibtex
 @software{Gau_bids-matlab,
