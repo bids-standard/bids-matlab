@@ -70,8 +70,11 @@ addpath('bids-matlab');
 
 Stable versions should be fetched from a specific version tag.
 
-The latest features of bids-matlab that are in development are in our `main`
-branch.
+A new version of BIDS matlab should be released for each new version of the BIDS specification
+to allow for a support of new BIDS datatypes or features.
+
+If you want the latest features of bids-matlab
+that are in development are in our `main` branch.
 
 To access them you can either download the `main` branch from there:
 https://github.com/bids-standard/bids-matlab/tree/main
@@ -82,8 +85,8 @@ Or clone it:
 git clone --branch main https://github.com/bids-standard/bids-matlab.git
 ```
 
-Or you can check it out the `main` branch after the adding this official
-bids-matlab repository as a remote.
+Or you can check it out the `main` branch
+after the adding this official bids-matlab repository as a remote.
 
 ```
 git add remote upstream https://github.com/bids-standard/bids-matlab.git
