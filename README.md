@@ -68,7 +68,8 @@ addpath('bids-matlab');
 
 ### Get the latest features
 
-Stable versions should be fetched from a specific version tag.
+Stable versions should be fetched from a specific version tag
+or from the [Mathworkds file exchange](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab).
 
 A new version of BIDS matlab should be released for each new version of the BIDS specification
 to allow for a support of new BIDS datatypes or features.
@@ -83,14 +84,6 @@ Or clone it:
 
 ```bash
 git clone --branch main https://github.com/bids-standard/bids-matlab.git
-```
-
-Or you can check it out the `main` branch
-after the adding this official bids-matlab repository as a remote.
-
-```
-git add remote upstream https://github.com/bids-standard/bids-matlab.git
-git checkout upstream/main
 ```
 
 ## Features
@@ -230,6 +223,22 @@ on the brainhack mattermost
   [group analysis from a MEG visual dataset](https://neuroimage.usc.edu/brainstorm/Tutorials/VisualGroup),
   [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specifications)
   )
+
+## How to cite
+To credit BIDS-Matlab in your work, please cite the [Zenodo archive](https://zenodo.org/record/5910584),
+which points to a permanent record of all BIDS-Matlab versions.
+We encourage you to mention the specific version you used.
+
+```bibtex
+@software{Gau_bids-matlab,
+author = {Gau, Rémi and Flandin, Guillaume and Janke, Andrew and Duval, Tanguy and Oostenveld, Robert and Madan, Christopher and Niso, Guiomar and Szczepanik, Michał and Mutsaerts, Henk and Beliy, Nikita and Norgaard, Martin and Pernet, Cyril and Chrisophe, Phillips and Shahzad, Iqra and  Botvinik-Nezer, Rotem and Barilari, Marco and Battal, Ceren and MacLean, Michèle and Caron-Guyon, Jeanne},
+license = {MIT},
+title = {{bids-matlab}},
+url = {https://github.com/bids-standard/bids-matlab},
+doi = https://doi.org/10.5281/zenodo.3363985
+}
+```
+
 
 ## Contributing
 
