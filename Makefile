@@ -2,7 +2,7 @@
 clean:
 	rm version.txt
 
-version.txt: CITATION.cff
+version.txt: clean CITATION.cff
 	grep -w "^version" CITATION.cff | sed "s/version: /v/g" > version.txt
 
 manual:
