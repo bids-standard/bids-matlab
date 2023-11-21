@@ -3,7 +3,7 @@
 ## Introduction
 
 These rules have been taken and adapted from those of the
-[BIDS specification](https://github.com/bids-standard/bids-specification/blob/main/DECISION-MAKING.md).
+[BIDS specification](https://github.com/bids-standard/bids-specification/blob/master/DECISION-MAKING.md).
 
 ### Maintainers Group
 
