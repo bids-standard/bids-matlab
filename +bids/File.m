@@ -941,7 +941,7 @@ classdef File
         comp_path = ['sub-' entities.sub];
       end
       if ~isempty(comp_path) && strcmp(ent_path, comp_path)
-          modality = cand;
+        modality = cand;
       end
 
     end
