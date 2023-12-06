@@ -54,7 +54,6 @@ jobs:
         commit-message: BIDS schema update
         assignees: Remi-Gau
         base: main
-        token: ${{ secrets.PR_TOKEN }}
         delete-branch: true
         title: '[BOT] update schema'
         body: done via this [GitHub Action](https://github.com/bids-standard/bids-matlab/blob/main/.github/workflows/update_schema.yml)
