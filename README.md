@@ -13,23 +13,6 @@
 
 <!-- markdown-link-check-enable -->
 
-- [BIDS for MATLAB / Octave](#bids-for-matlab--octave)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-    - [Get the latest features](#get-the-latest-features)
-  - [Features](#features)
-    - [What this toolbox can do](#what-this-toolbox-can-do)
-    - [What this toolbox cannot do... yet](#what-this-toolbox-cannot-do-yet)
-    - [What will this toolbox most likely never do](#what-will-this-toolbox-most-likely-never-do)
-  - [Usage](#usage)
-  - [Demos](#demos)
-  - [Requirements](#requirements-1)
-    - [Reading and writing JSON files](#reading-and-writing-json-files)
-  - [Implementation](#implementation)
-  - [Get in touch](#get-in-touch)
-  - [Other tools (MATLAB only)](#other-tools-matlab-only)
-  - [Contributing](#contributing)
-
 # BIDS for MATLAB / Octave
 
 This repository aims at centralising MATLAB/Octave tools to interact with
@@ -40,12 +23,23 @@ For more information about BIDS, visit https://bids.neuroimaging.io/.
 See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the
 [BIDS Starter Kit](https://github.com/bids-standard/bids-starter-kit).
 
-## Requirements
+## Installation
+
+### Requirements
+
+BIDS-MATLAB works with:
+
+- Octave 5.2.0 or newer
+- MATLAB R2014a or newer
+
+We aim for compatibility with the latest stable release of Octave at any time.
+Compatibility can sometimes also be achieved with older versions of Octave but
+this is not guaranteed.
 
 For MacOS and Unix system, using `bids.copy_to_derivative` requires
 a version of gunzip >= 1.6.
 
-## Installation
+### Download or clone
 
 Download, unzip this repository and add its content to the MATLAB/Octave path.
 
@@ -167,17 +161,6 @@ content = bids.util.jsondecode('/home/data/some_json_file.json');
 
 There are demos and tutorials showing some of the features in the `demos` folder.
 
-## Requirements
-
-BIDS-MATLAB works with:
-
-- Octave 5.2.0 or newer
-- MATLAB R2014a or newer
-
-We aim for compatibility with the latest stable release of Octave at any time.
-Compatibility can sometimes also be achieved with older versions of Octave but
-this is not guaranteed.
-
 ### Reading and writing JSON files
 
 Make sure to be familiar with the [JSON 101](https://bids-standard.github.io/stats-models/json_101.html).
@@ -193,13 +176,6 @@ supported JSON library for your MATLAB or Octave. This can be any of:
 - [JSONio](https://github.com/gllmflndn/JSONio) for MATLAB or Octave
 - [SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/)
 
-## Implementation
-
-Starting point was `spm_BIDS.m` from [SPM12](https://github.com/spm/spm12)
-([documentation](https://en.wikibooks.org/wiki/SPM/BIDS#BIDS_parser_and_queries))
-reformatted in a `+bids` package with dependencies to other SPM functions
-removed.
-
 ## Get in touch
 
 To contact us:
@@ -212,17 +188,14 @@ on the brainhack mattermost
 
 ## Other tools (MATLAB only)
 
-- [dicm2nii](https://github.com/xiangruili/dicm2nii): A DICOM to BIDS
-  converter
-- [imtool3D_BIDS](https://github.com/tanguyduval/imtool3D_td): A 3D viewer for
-  BIDS directory
-- [Brainstorm](https://github.com/brainstorm-tools/brainstorm3): Comprehensive
-  brain analysis toolbox (includes BIDS
-  [import and export](https://neuroimage.usc.edu/brainstorm/ExportBids) and
-  different examples dealing with BIDS datasets (e.g.
-  [group analysis from a MEG visual dataset](https://neuroimage.usc.edu/brainstorm/Tutorials/VisualGroup),
-  [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specifications)
-  )
+- [dicm2nii](https://github.com/xiangruili/dicm2nii): A DICOM to BIDS converter
+- [imtool3D_BIDS](https://github.com/tanguyduval/imtool3D_td): A 3D viewer for BIDS directory
+- [Brainstorm](https://github.com/brainstorm-tools/brainstorm3):
+  Comprehensive brain analysis toolbox
+  (includes BIDS [import and export](https://neuroimage.usc.edu/brainstorm/ExportBids) and
+  different examples dealing with BIDS datasets
+  (e.g. [group analysis from a MEG visual dataset](https://neuroimage.usc.edu/brainstorm/Tutorials/VisualGroup),
+  [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specifications))
 
 ## How to cite
 To credit BIDS-Matlab in your work, please cite the [Zenodo archive](https://zenodo.org/record/5910584),
@@ -238,7 +211,6 @@ url = {https://github.com/bids-standard/bids-matlab},
 doi = https://doi.org/10.5281/zenodo.3363985
 }
 ```
-
 
 ## Contributing
 
