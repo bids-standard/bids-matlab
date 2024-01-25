@@ -6,6 +6,29 @@ function test_suite = test_layout %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_warning_missing_participants_tsv()
+
+  bids_dir = fullfile(get_test_data_dir(), 'qmri_tb1tfl');
+  assertWarning(@()bids.layout(bids_dir, ...
+                               'verbose', true), ...
+                'layout:tsvMissing');
+
+end
+
+function test_no_warning_missing_participants_tsv_derivatives()
+
+  bids_dir = fullfile(get_test_data_dir(), 'ds000001-fmriprep');
+  try
+    assertWarning(@()bids.layout(bids_dir, ...
+                                 'verbose', true, ...
+                                 'use_schema', false), ...
+                  'layout:tsvMissing');
+  catch ME
+    assert(strcmp(ME.identifier, 'moxunit:warningNotRaised'));
+  end
+
+end
+
 function test_layout_do_not_include_empty_subject()
 
   if ispc
