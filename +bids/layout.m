@@ -138,9 +138,6 @@ function BIDS = layout(varargin)
   % [sourcedata/] - ignore
   % [phenotype/]
 
-  BIDS.participants = [];
-  BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, 'participants.tsv', verbose);
-
   BIDS = index_phenotype(BIDS);
 
   BIDS = index_root_directory(BIDS);
@@ -220,10 +217,7 @@ function BIDS = layout(varargin)
 
   BIDS = index_derivatives_dir(BIDS, index_derivatives, verbose);
 
-  if ismember('micr', bids.query(BIDS, 'modalities'))
-    BIDS.samples = [];
-    BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, 'samples.tsv', verbose);
-  end
+  BIDS = index_participants_and_sample(BIDS, verbose);
 
 end
 
@@ -256,6 +250,24 @@ function BIDS = index_phenotype(BIDS)
     if exist(sidecar, 'file') == 2
       BIDS.phenotype(i).metafile = sidecar;
     end
+  end
+end
+
+function BIDS = index_participants_and_sample(BIDS, verbose)
+  warn_for_missing_tsv = verbose;
+  if isfield(BIDS.description, 'DatasetType') && ...
+          strcmp(BIDS.description.DatasetType, 'derivative')
+    warn_for_missing_tsv = false;
+  end
+
+  BIDS.participants = [];
+  BIDS.participants = manage_tsv(BIDS.participants, BIDS.pth, ...
+                                 'participants.tsv', warn_for_missing_tsv);
+
+  if ismember('micr', bids.query(BIDS, 'modalities'))
+    BIDS.samples = [];
+    BIDS.samples = manage_tsv(BIDS.samples, BIDS.pth, ...
+                              'samples.tsv', warn_for_missing_tsv);
   end
 end
 
