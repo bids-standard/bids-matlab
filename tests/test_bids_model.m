@@ -180,9 +180,7 @@ end
 
 function test_model_validate()
 
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   bm = bids.Model();
   bm.Nodes{1} = rmfield(bm.Nodes{1}, 'Name');

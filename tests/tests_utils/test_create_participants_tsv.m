@@ -22,9 +22,7 @@ end
 
 function test_create_participants_tsv_already_exist()
 
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   bids_path = fullfile(get_test_data_dir(), 'ds210');
 

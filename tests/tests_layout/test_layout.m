@@ -8,6 +8,8 @@ end
 
 function test_warning_missing_participants_tsv()
 
+  skip_if_octave('mixed-string-concat warning thrown');
+
   bids_dir = fullfile(get_test_data_dir(), 'qmri_tb1tfl');
   assertWarning(@()bids.layout(bids_dir, ...
                                'verbose', true), ...
@@ -16,6 +18,8 @@ function test_warning_missing_participants_tsv()
 end
 
 function test_no_warning_missing_participants_tsv_derivatives()
+
+  skip_if_octave('mixed-string-concat warning thrown');
 
   bids_dir = fullfile(get_test_data_dir(), 'ds000001-fmriprep');
   try
@@ -56,9 +60,7 @@ end
 
 function test_layout_do_not_include_empty_subject_warning()
 
-  if bids.internal.is_octave() || ispc
-    moxunit_throw_test_skipped_exception('Octave mixed-string-concat or fail on windows');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   bids_dir = fullfile(get_test_data_dir(), 'qmri_tb1tfl');
   empty_sub = fullfile(bids_dir, 'sub-02');
