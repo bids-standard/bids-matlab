@@ -73,7 +73,16 @@ function trial_type_list = list_all_trial_types(varargin)
 
   no_trial_type_column = true;
   for i = 1:size(event_files, 1)
-    content = bids.util.tsvread(event_files{i, 1});
+    try
+      content = bids.util.tsvread(event_files{i, 1});
+    catch ME
+      if bids.internal.starts_with(ME.message, 'Invalid DSV file')
+        continue
+      else
+        rethrow ME;
+      end
+
+    end
     if isfield(content, trial_type_col)
       trial_type = content.(trial_type_col);
       no_trial_type_column = false;
