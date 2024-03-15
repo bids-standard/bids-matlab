@@ -948,8 +948,9 @@ classdef File
     end
 
     function modality = get_modality(obj, entities)
-      % Retrieves modality out of the path by checking if
-      % 2-level up folder is same as ses or sub entities
+      % Retrieves modality out of the path
+      %
+      % Only works if ses and sub entities match those found in the path
       modality = '';
 
       if isempty(obj.path) || isempty(fileparts(obj.path))
@@ -961,7 +962,7 @@ classdef File
       end
 
       path = fileparts(obj.path);
-      [path, cand] = fileparts(path);
+      [path, candidate] = fileparts(path);
 
       has_ses = isfield(entities, 'ses') && ~isempty(entities.ses);
       ses_ok = true;
@@ -974,7 +975,7 @@ classdef File
       sub_ok = strcmp(sub, ['sub-' entities.sub]);
 
       if all([sub_ok, ses_ok])
-        modality = cand;
+        modality = candidate;
       end
 
     end
