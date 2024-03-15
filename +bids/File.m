@@ -498,6 +498,8 @@ classdef File
       %   file = file.rename('spec', spec, 'dry_run', true, 'verbose', [], 'force', false);
       %
       % :param spec: structure specifying what entities, suffix, extension... to apply
+      %              If one of the entities in the ``spec`` contains a `'.'`
+      %              it will be replaced by `pt`.
       % :type  spec: structure
       %
       % :param dry_run: If ``true`` no file is actually renamed.
@@ -575,11 +577,13 @@ classdef File
           obj.extension = spec.ext;
         end
         if isfield(spec, 'entities')
+          spec.entities = obj.normalize_entities(spec.entities);
           entities = fieldnames(spec.entities); %#ok<*PROPLC>
           for i = 1:numel(entities)
             obj = obj.set_entity(entities{i}, ...
                                  bids.internal.camel_case(spec.entities.(entities{i})));
           end
+
         end
         if isfield(spec, 'entity_order')
           obj = obj.reorder_entities(spec.entity_order);
@@ -613,6 +617,31 @@ classdef File
         end
       end
 
+    end
+
+    function entities = normalize_entities(~, entities, replace)
+      % Clean up entities
+      %
+      % Replaces "." in entity label with "pt".
+      %
+      %
+      % USAGE::
+      %
+      %   entities = file.normalize_entities(entities);
+      %
+      REPLACE(1) = struct('in', '.', 'out', 'pt');
+      if nargin < 3
+        replace = REPLACE;
+      end
+
+      entities_names = fieldnames(entities); %#ok<*PROPLC>
+      for j = 1:numel(replace)
+        for i = 1:numel(entities_names)
+          entities.(entities_names{i}) = strrep(entities.(entities_names{i}), ...
+                                                REPLACE(j).in, ...
+                                                REPLACE(j).out);
+        end
+      end
     end
 
     %% schema related methods
@@ -885,7 +914,7 @@ classdef File
     function validate_string(obj, str, type, pattern)
 
       if ~ischar(str)
-        obj.bids_file_error(['Invalid' type], 'not chararray');
+        obj.bids_file_error(['Invalid' type], sprintf('"%s" is not char array', str));
       end
 
       if size(str, 1) > 1
