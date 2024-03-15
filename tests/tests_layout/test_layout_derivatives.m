@@ -6,6 +6,48 @@ function test_suite = test_layout_derivatives %#ok<*STOUT>
   initTestSuite;
 end
 
+function test_layout_modality_same_level_sessions()
+
+  pth_bids_example = fullfile(get_test_data_dir(), ...
+                              'synthetic', ...
+                              'derivatives', ...
+                              'fmriprep');
+  tear_down(pth_bids_example);
+
+  BIDS_flat = bids.layout(pth_bids_example, ...
+                          'use_schema', false, ...
+                          'filter', struct('sub', {{'01', '02', '03'}}), ...
+                          'index_dependencies', true);
+  for i = 1:3
+    copyfile(fullfile(pth_bids_example, sprintf('sub-%02.0f', i), 'ses-01', 'func'), ...
+             fullfile(pth_bids_example, sprintf('sub-%02.0f', i), 'func'));
+  end
+
+  BIDS_nested = bids.layout(pth_bids_example, ...
+                            'use_schema', false, ...
+                            'filter', struct('sub', {{'01', '02', '03'}}), ...
+                            'index_dependencies', true);
+
+  assert(numel(bids.query(BIDS_flat, 'data')) < numel(bids.query(BIDS_nested, 'data')));
+  assertEqual(numel(bids.query(BIDS_flat, 'data', 'modality', 'anat')), ...
+              numel(bids.query(BIDS_nested, 'data', 'modality', 'anat')));
+  assertEqual(numel(bids.query(BIDS_flat, 'sessions')), ...
+              numel(bids.query(BIDS_nested, 'sessions')));
+  assertEqual(numel(bids.query(BIDS_flat, 'subjects')), ...
+              numel(bids.query(BIDS_nested, 'subjects')));
+
+  tear_down(pth_bids_example);
+
+  function tear_down(pth_bids_example)
+    for j = 1:3
+      if exist(fullfile(pth_bids_example, sprintf('sub-%02.0f', j), 'func'), 'dir')
+        rmdir(fullfile(pth_bids_example, sprintf('sub-%02.0f', j), 'func'), 's');
+      end
+    end
+  end
+
+end
+
 function test_layout_nested()
 
   pth_bids_example = get_test_data_dir();
