@@ -30,6 +30,8 @@ function test_participants
 
   bf = bids.File(file);
 
+  assertEqual(bf.modality, '');
+
 end
 
 function test_get_metadata_suffixes_basic()
@@ -297,36 +299,69 @@ end
 function test_parsing()
 
   filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
-  file = bids.File(filename, 'use_schema', false);
+  bf = bids.File(filename, 'use_schema', false);
 
   entities = struct('sub', '01', 'ses', 'test', ...
                     'task', 'faceRecognition', 'run', '02');
 
-  assertEqual(file.prefix, 'wua');
-  assertEqual(file.suffix, 'bold');
-  assertEqual(file.extension, '.nii');
-  assertEqual(file.entities, entities);
-  assertEqual(file.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
-  assertEqual(file.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
-  assertEqual(file.bids_path, fullfile('sub-01', 'ses-test'));
+  assertEqual(bf.modality, '');
+  assertEqual(bf.prefix, 'wua');
+  assertEqual(bf.suffix, 'bold');
+  assertEqual(bf.extension, '.nii');
+  assertEqual(bf.entities, entities);
+  assertEqual(bf.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
+  assertEqual(bf.json_filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.json');
+  assertEqual(bf.bids_path, fullfile('sub-01', 'ses-test'));
 
   filename = [];
   filename.prefix = 'wua';
   filename.suffix = 'bold';
   filename.ext = '.nii';
   filename.entities = entities;
-  file = bids.File(filename, 'use_schema', false);
-  assertEqual(file.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
+  bf = bids.File(filename, 'use_schema', false);
+  assertEqual(bf.filename, 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii');
 
-  % testing empty file name
-  file = bids.File('');
-  file.suffix = 'bold';
-  file.extension = '.nii';
-  assertEqual(file.filename, 'bold.nii');
+end
 
-  file = file.set_entity('sub', 'abc');
-  file.suffix = '';
-  assertEqual(file.filename, 'sub-abc.nii');
+function test_modality_parsing()
+
+  bf = bids.File(struct('modality', 'anat'), 'use_schema', false);
+  assertEqual(bf.modality, 'anat');
+
+  filename_expected = { ...
+                       '', ''; ...
+                       'sub-01_task-faceRecognition_bold.nii', ''; ...
+                       fullfile('foo', 'participants.tsv'), ''; ...
+                       fullfile('sub-01', 'sub-01_scans.tsv'), ...
+                       ''; ... % no modality folder
+                       fullfile('sub-01', 'anat', 'sub-01_t1w.nii'), 'anat'; ...
+                       fullfile('anat', 'sub-01_t1w.nii'), ...
+                       ''; ... % no sub folder
+                       fullfile('sub-01', 'ses-01', 'anat', 'sub-01_ses-01_t1w.nii'), 'anat'; ...
+                       fullfile('ses-01', 'anat', 'sub-01_ses-01_t1w.nii'), ''; ... % no sub folder
+                       fullfile('sub-01', 'ses-01', 'anat', 'sub-01_t1w.nii'), ...
+                       ''; ... % no ses in filename
+                       fullfile('sub-01', 'anat', 'sub-01_ses-01_t1w.nii'), '' ... % no ses folder
+                      };
+
+  for i = 1:size(filename_expected)
+    bf = bids.File(filename_expected{i, 1}, 'use_schema', false);
+    assertEqual(bf.modality, filename_expected{i, 2});
+  end
+
+end
+
+function test_parsing_empty_filename()
+
+  bf = bids.File('');
+
+  bf.suffix = 'bold';
+  bf.extension = '.nii';
+  assertEqual(bf.filename, 'bold.nii');
+
+  bf = bf.set_entity('sub', 'abc');
+  bf.suffix = '';
+  assertEqual(bf.filename, 'sub-abc.nii');
 
 end
 
