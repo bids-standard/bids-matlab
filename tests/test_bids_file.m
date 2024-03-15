@@ -197,6 +197,25 @@ function test_rename_with_spec()
 
 end
 
+function test_rename_spec_with_pt()
+
+  input_filename = 'wuasub-01_task-faceRecognition_bold.nii';
+  output_filename = 'sub-01_task-faceRecognition_label-GM_res-1pt5_desc-bold_dseg.json';
+  file = bids.File(input_filename, 'use_schema', false);
+
+  spec.prefix = '';
+  spec.entities.desc = 'bold';
+  spec.entities.res = '1.5';
+  spec.entities.label = 'GM';
+  spec.suffix = 'dseg';
+  spec.ext = '.json';
+  spec.entity_order = {'sub', 'task', 'label', 'res', 'desc'};
+
+  file = file.rename('spec', spec);
+  assertEqual(file.filename, output_filename);
+
+end
+
 function test_rename_force()
 
   input_filename = 'wuasub-01_ses-test_task-faceRecognition_run-02_bold.nii';
