@@ -100,6 +100,10 @@ function p = parse_filename(filename, fields, tolerant, verbose)
 
   p = parse_entity_label_pairs(p, basename, tolerant, verbose);
 
+  if ~isempty(p)
+    p.modality = '';
+  end
+
   % Extra fields can be added to the structure and ordered specifically.
   if ~isempty(fields)
     for i = 1:numel(fields)
@@ -114,6 +118,7 @@ function p = parse_filename(filename, fields, tolerant, verbose)
       p = struct([]);
     end
   end
+
 end
 
 function p = parse_entity_label_pairs(p, basename, tolerant, verbose)

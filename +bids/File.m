@@ -228,10 +228,6 @@ classdef File
         obj.entities = f_struct.entities;
       end
 
-      if isfield(f_struct, 'modality')
-        obj.modality = f_struct.modality;
-      end
-
       if args.Results.use_schema
         obj = obj.use_schema();
       end
@@ -952,24 +948,32 @@ classdef File
     end
 
     function modality = get_modality(obj, entities)
-      % Retrieves modsality out of the path by checking if
+      % Retrieves modality out of the path by checking if
       % 2-level up folder is same as ses or sub entities
       modality = '';
-      path = fileparts(obj.path);
-      [path, cand, ext] = fileparts(path);
-      cand = [cand, ext];
-      [~, ent_path, ext] = fileparts(path);
-      if ~isempty(ext)
+
+      if isempty(obj.path) || isempty(fileparts(obj.path))
         return
       end
 
-      comp_path = '';
-      if isfield(entities, 'ses') && ~isempty(entities.ses)
-        comp_path = ['ses-' entities.ses];
-      elseif isfield(entities, 'sub')
-        comp_path = ['sub-' entities.sub];
+      if ~isfield(entities, 'sub')
+        return
       end
-      if ~isempty(comp_path) && strcmp(ent_path, comp_path)
+
+      path = fileparts(obj.path);
+      [path, cand] = fileparts(path);
+
+      has_ses = isfield(entities, 'ses') && ~isempty(entities.ses);
+      ses_ok = true;
+      if has_ses
+        [path, ses] = fileparts(path);
+        ses_ok = strcmp(ses, ['ses-' entities.ses]);
+      end
+
+      [~, sub] = fileparts(path);
+      sub_ok = strcmp(sub, ['sub-' entities.sub]);
+
+      if all([sub_ok, ses_ok])
         modality = cand;
       end
 
