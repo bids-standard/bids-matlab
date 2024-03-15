@@ -205,6 +205,7 @@ classdef File
           obj.path = args.Results.input;
         end
         f_struct = bids.internal.parse_filename(args.Results.input);
+        obj.modality = obj.get_modality(f_struct.entities);
       elseif isstruct(args.Results.input)
         f_struct = args.Results.input;
       end
@@ -223,12 +224,12 @@ classdef File
         obj.bids_file_error('emptySuffix', 'no suffix specified');
       end
 
-      if isfield(f_struct, 'entities')
-        obj.entities = f_struct.entities;
-      end
-
       if isfield(f_struct, 'modality')
         obj.modality = f_struct.modality;
+      end
+
+      if isfield(f_struct, 'entities')
+        obj.entities = f_struct.entities;
       end
 
       if args.Results.use_schema
@@ -948,6 +949,39 @@ classdef File
         msg = sprintf('%s contains ''sub-''', prefix);
         obj.bids_file_error('InvalidPrefix', msg);
       end
+    end
+
+    function modality = get_modality(obj, entities)
+      % Retrieves modality out of the path
+      %
+      % Only works if ses and sub entities match those found in the path
+      modality = '';
+
+      if isempty(obj.path) || isempty(fileparts(obj.path))
+        return
+      end
+
+      if ~isfield(entities, 'sub')
+        return
+      end
+
+      path = fileparts(obj.path);
+      [path, candidate] = fileparts(path);
+
+      has_ses = isfield(entities, 'ses') && ~isempty(entities.ses);
+      ses_ok = true;
+      if has_ses
+        [path, ses] = fileparts(path);
+        ses_ok = strcmp(ses, ['ses-' entities.ses]);
+      end
+
+      [~, sub] = fileparts(path);
+      sub_ok = strcmp(sub, ['sub-' entities.sub]);
+
+      if all([sub_ok, ses_ok])
+        modality = candidate;
+      end
+
     end
 
   end
