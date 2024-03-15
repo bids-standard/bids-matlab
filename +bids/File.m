@@ -224,6 +224,10 @@ classdef File
         obj.bids_file_error('emptySuffix', 'no suffix specified');
       end
 
+      if isfield(f_struct, 'modality')
+        obj.modality = f_struct.modality;
+      end
+
       if isfield(f_struct, 'entities')
         obj.entities = f_struct.entities;
       end

@@ -325,6 +325,9 @@ end
 
 function test_modality_parsing()
 
+  bf = bids.File(struct('modality', 'anat'), 'use_schema', false);
+  assertEqual(bf.modality, 'anat');
+
   filename_expected = { ...
                        '', ''; ...
                        'sub-01_task-faceRecognition_bold.nii', ''; ...
