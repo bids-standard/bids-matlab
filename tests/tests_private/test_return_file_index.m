@@ -29,9 +29,7 @@ end
 
 function test_return_file_index_warning()
 
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   pth_bids_example = get_test_data_dir();
 

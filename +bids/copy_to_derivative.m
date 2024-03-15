@@ -159,8 +159,6 @@ function copy_to_derivative(varargin)
 
   ds_desc.write(derivatives_folder);
 
-  copy_participants_tsv(BIDS, derivatives_folder, args);
-
   % looping over selected files
   for iFile = 1:numel(data_list)
     copy_file(BIDS, derivatives_folder, data_list{iFile}, ...
@@ -176,23 +174,6 @@ function copy_to_derivative(varargin)
 
   copy_session_scan_tsv(BIDS, derivatives_folder, args);
 
-end
-
-function copy_participants_tsv(BIDS, derivatives_folder, args)
-  %
-  % Very "brutal" approach where we copy the whole file
-  %
-  % TODO: if only certain subjects are copied only copy those entries from the TSV
-  %
-
-  if ~isempty(BIDS.participants)
-
-    src = fullfile(BIDS.pth, 'participants.tsv');
-    target = fullfile(derivatives_folder, 'participants.tsv');
-
-    copy_tsv(src, target, args);
-
-  end
 end
 
 function copy_tsv(src, target, args)

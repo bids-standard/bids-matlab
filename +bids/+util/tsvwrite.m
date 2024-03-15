@@ -4,7 +4,7 @@ function tsvwrite(filename, var)
   %
   % USAGE::
   %
-  %   tsvwrite(f, var)
+  %   tsvwrite(filename, var)
   %
   % :param filename:
   % :type  filename: string

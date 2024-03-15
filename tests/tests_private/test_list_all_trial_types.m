@@ -32,9 +32,9 @@ function test_list_all_trial_types_warning()
   trial_type_list = bids.internal.list_all_trial_types(BIDS, {'not', 'a', 'task'}, ...
                                                        'verbose', false);
   assertEqual(trial_type_list, {});
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+
+  skip_if_octave('mixed-string-concat warning thrown');
+
   assertWarning(@() bids.internal.list_all_trial_types(BIDS, {'not', 'a', 'task'}, ...
                                                        'verbose', true), ...
                 'list_all_trial_types:noEventsFile');

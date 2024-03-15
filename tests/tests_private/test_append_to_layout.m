@@ -13,9 +13,7 @@ function test_layout_missing_subgroup()
   synthetic_derivatives = fullfile(get_test_data_dir(), '..', ...
                                    'data', 'synthetic', 'derivatives', 'manual');
 
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   assertWarning(@()bids.layout(synthetic_derivatives, 'verbose', true), ...
                 'append_to_layout:unknownSuffix');
@@ -24,9 +22,7 @@ end
 
 function test_append_to_layout_schema_unknown_entity()
 
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   [subject, modality, schema, previous] = set_up('meg');
 
@@ -39,9 +35,7 @@ end
 
 function test_append_to_layout_schema_unknown_extension()
 
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   [subject, modality, schema, previous] = set_up('meg');
 
@@ -91,9 +85,7 @@ end
 
 function test_append_to_layout_schema_missing_required_entity()
 
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   [subject, modality, schema, previous] = set_up('func');
 

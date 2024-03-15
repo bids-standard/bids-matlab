@@ -8,9 +8,7 @@ end
 
 function test_parse_filename_warnings()
 
-  if bids.internal.is_octave()
-    moxunit_throw_test_skipped_exception('Octave:mixed-string-concat warning thrown');
-  end
+  skip_if_octave('mixed-string-concat warning thrown');
 
   fields = {};
   tolerant = true;
