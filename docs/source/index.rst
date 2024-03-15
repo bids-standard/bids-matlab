@@ -26,6 +26,7 @@ To see how to install BIDS-Matlab, please check
    schema
    performance
    dev_doc
+   changelog
 
 
 Indices and tables

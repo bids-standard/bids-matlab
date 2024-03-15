@@ -23,7 +23,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* [ENH] allow to copy anat only on raw datasets #1181 by @Remi-Gau
+* [ENH] Add zero padding when numbers are passed for indices to `bids.File` or `bids.File.rename` #680 by @Remi-Gau
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [v0.2.0]
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [v0.1.0]
 
 ### Changed
 

@@ -4,5 +4,6 @@
         "fileMatch": ["model-*_smdl.json"],
         "url": "https://raw.githubusercontent.com/bids-standard/stats-models/gh-pages/BIDSStatsModel.json"
         }
-    ]
+    ],
+    "esbonio.sphinx.confDir": ""
 }
