@@ -79,7 +79,7 @@ function p = parse_filename(filename, fields, tolerant, verbose)
     return
   end
 
-  fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix', 'modality'};
+  fields_order = {'filename', 'ext', 'suffix', 'entities', 'prefix'};
 
   filename = bids.internal.file_utils(filename, 'filename');
   p.filename = filename;
@@ -99,10 +99,6 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   [basename, p.ext] = strtok(basename, '.');
 
   p = parse_entity_label_pairs(p, basename, tolerant, verbose);
-
-  if ~isempty(p)
-    p.modality = '';
-  end
 
   % Extra fields can be added to the structure and ordered specifically.
   if ~isempty(fields)
