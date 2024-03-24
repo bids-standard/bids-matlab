@@ -172,6 +172,8 @@ classdef File
 
     verbose = false
 
+    padding = 2
+
   end
 
   properties (SetAccess = private)
@@ -188,11 +190,13 @@ classdef File
       args.addParameter('use_schema', false, @islogical);
       args.addParameter('tolerant', obj.tolerant, @islogical);
       args.addParameter('verbose', obj.verbose, @islogical);
+      args.addParameter('padding', obj.padding, @isnumeric);
 
       args.parse(varargin{:});
 
       obj.tolerant = args.Results.tolerant;
       obj.verbose = args.Results.verbose;
+      obj.padding = args.Results.padding;
 
       if args.Results.use_schema
         obj.schema = bids.Schema();
@@ -224,6 +228,11 @@ classdef File
         obj.bids_file_error('emptySuffix', 'no suffix specified');
       end
 
+      if isfield(f_struct, 'entities')
+        f_struct.entities = obj.pad_indices(f_struct.entities);
+        obj.entities = f_struct.entities;
+      end
+
       if isfield(f_struct, 'modality')
         obj.modality = f_struct.modality;
       end
@@ -239,6 +248,21 @@ classdef File
       obj = obj.set_metadata();
 
       obj = obj.update();
+    end
+
+    function structure = pad_indices(obj, structure)
+      fields = fieldnames(structure);
+      pattern = ['%0', num2str(obj.padding), '.0f'];
+      if obj.padding <= 0
+        pattern = '%0.0f';
+      end
+      for i = 1:numel(fields)
+        if isnumeric(structure.(fields{i}))
+          structure.(fields{i}) = sprintf(pattern, ...
+                                          structure.(fields{i}));
+        end
+      end
+
     end
 
     %% Getters
@@ -577,6 +601,7 @@ classdef File
           obj.extension = spec.ext;
         end
         if isfield(spec, 'entities')
+          spec.entities = obj.pad_indices(spec.entities);
           spec.entities = obj.normalize_entities(spec.entities);
           entities = fieldnames(spec.entities); %#ok<*PROPLC>
           for i = 1:numel(entities)

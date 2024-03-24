@@ -17,6 +17,8 @@ end
 
 function test_no_entity_warning
 
+  skip_if_octave('mixed-string-concat warning thrown');
+
   assertWarning(@()bids.File('TStatistic.nii', 'verbose', true), ...
                 'File:noEntity');
 
@@ -388,6 +390,40 @@ function test_change()
   file = file.set_entity('task', 'faceRecognition');
   file = file.set_entity('run', '01');
   assertEqual(file.filename, 'sub-02_task-faceRecognition_acq-abc_run-01_test.a');
+
+end
+
+function test_zero_padding
+
+  entities = struct('sub', 1, ...
+                    'task', 'faceRecognition', ...
+                    'ses', 3, ...
+                    'run', 2);
+  filename.suffix = 'bold';
+  filename.ext = '.nii';
+  filename.entities = entities;
+  file = bids.File(filename, 'use_schema', true);
+  assertEqual(file.filename, 'sub-01_ses-03_task-faceRecognition_run-02_bold.nii');
+
+  file = bids.File(filename, 'use_schema', true, 'padding', 3);
+  assertEqual(file.filename, 'sub-001_ses-003_task-faceRecognition_run-002_bold.nii');
+
+  file = bids.File(filename, 'use_schema', true, 'padding', 0);
+  assertEqual(file.filename, 'sub-1_ses-3_task-faceRecognition_run-2_bold.nii');
+
+end
+
+function test_zero_padding_spec
+
+  input_filename = 'sub-01_task-faceRecognition_bold.nii';
+  file = bids.File(input_filename, 'use_schema', false);
+
+  spec.entities.res = 2;
+
+  file = file.rename('spec', spec);
+
+  output_filename = 'sub-01_task-faceRecognition_res-02_bold.nii';
+  assertEqual(file.filename, output_filename);
 
 end
 
