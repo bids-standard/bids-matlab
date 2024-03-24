@@ -18,6 +18,9 @@ function test_layout_modality_same_level_sessions()
                           'use_schema', false, ...
                           'filter', struct('sub', {{'01', '02', '03'}}), ...
                           'index_dependencies', true);
+
+  % the name won't be accurate
+  % because the filenames will still contain the ses entity
   for i = 1:3
     copyfile(fullfile(pth_bids_example, sprintf('sub-%02.0f', i), 'ses-01', 'func'), ...
              fullfile(pth_bids_example, sprintf('sub-%02.0f', i), 'func'));
