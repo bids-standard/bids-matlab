@@ -17,6 +17,8 @@ end
 
 function test_no_entity_warning
 
+  skip_if_octave('mixed-string-concat warning thrown');
+
   assertWarning(@()bids.File('TStatistic.nii', 'verbose', true), ...
                 'File:noEntity');
 
