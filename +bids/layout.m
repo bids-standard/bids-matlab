@@ -207,6 +207,15 @@ function BIDS = layout(varargin)
 
     end
 
+    if numel(sessions) > 1
+      new_subject = parse_subject(BIDS.pth, subjects{iSub}, '', ...
+                                  schema, filter, tolerant, verbose);
+      [BIDS.subjects, new_subject] = bids.internal.match_structure_fields(BIDS.subjects, ...
+                                                                          new_subject);
+      % TODO: this can be added to "match_structure_fields"
+      BIDS.subjects(end + 1) = new_subject;
+    end
+
     if verbose
       fprintf(1, ']\n');
     end
