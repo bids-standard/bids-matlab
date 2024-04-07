@@ -255,6 +255,7 @@ Thanks goes to these wonderful people
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/avanaudenhaege"><img src="https://avatars.githubusercontent.com/u/75271651?v=4?s=100" width="100px;" alt="avanaudenhaege"/><br /><sub><b>avanaudenhaege</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/issues?q=author%3Aavanaudenhaege" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/coxroy"><img src="https://avatars.githubusercontent.com/u/26691793?v=4?s=100" width="100px;" alt="coxroy"/><br /><sub><b>coxroy</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/issues?q=author%3Acoxroy" title="Bug reports">🐛</a> <a href="#ideas-coxroy" title="Ideas, Planning, & Feedback">🤔</a> <a href="#userTesting-coxroy" title="User Testing">📓</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/achilleasNP"><img src="https://avatars.githubusercontent.com/u/4734123?v=4?s=100" width="100px;" alt="achilleasNP"/><br /><sub><b>achilleasNP</b></sub></a><br /><a href="https://github.com/bids-standard/bids-matlab/issues?q=author%3AachilleasNP" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

@@ -247,6 +247,15 @@
         "ideas",
         "userTesting"
       ]
+    },
+    {
+      "login": "achilleasNP",
+      "name": "achilleasNP",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4734123?v=4",
+      "profile": "https://github.com/achilleasNP",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
