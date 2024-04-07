@@ -8,7 +8,9 @@ end
 
 function test_create_sessions_tsv_no_session()
 
-  bids_path = fullfile(get_test_data_dir(), 'ds210');
+  bids_path = temp_dir();
+
+  copyfile(fullfile(get_test_data_dir(), 'ds210'), bids_path);
 
   validate_dataset(bids_path);
 
@@ -27,7 +29,9 @@ end
 
 function test_create_sessions_tsv_basic()
 
-  bids_path = fullfile(get_test_data_dir(), 'ieeg_epilepsy');
+  bids_path = temp_dir();
+
+  copyfile(fullfile(get_test_data_dir(), 'ieeg_epilepsy'), bids_path);
 
   validate_dataset(bids_path);
 
@@ -41,12 +45,4 @@ function test_create_sessions_tsv_basic()
 
   validate_dataset(bids_path);
 
-  teardown(bids_path, output_filenames);
-
-end
-
-function teardown(pth, filelist)
-  for i = 1:numel(filelist)
-    delete(fullfile(pth, filelist{i}));
-  end
 end

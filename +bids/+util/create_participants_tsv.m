@@ -64,11 +64,11 @@ function output_filename = create_participants_tsv(varargin)
   % in case the query returns empty in case no file was indexed
   if isempty(subjects_list) && ~use_schema
     subjects_list = cellstr(bids.internal.file_utils('List', layout.pth, 'dir', '^sub-.*$'));
+    output_structure = struct('participant_id', {subjects_list});
+  else
+    subjects_list = [repmat('sub-', numel(subjects_list), 1), char(subjects_list')];
+    output_structure = struct('participant_id', subjects_list);
   end
-
-  subjects_list = [repmat('sub-', numel(subjects_list), 1), char(subjects_list')];
-
-  output_structure = struct('participant_id', subjects_list);
 
   output_filename = fullfile(layout.pth, 'participants.tsv');
 

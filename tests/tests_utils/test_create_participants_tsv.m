@@ -8,11 +8,16 @@ end
 
 function test_create_participants_tsv_basic()
 
-  bids_path = fullfile(get_test_data_dir(), 'asl001');
+  bids_path = temp_dir();
+
+  copyfile(fullfile(get_test_data_dir(), 'asl001'), bids_path);
 
   validate_dataset(bids_path);
 
   output_filename = bids.util.create_participants_tsv(bids_path, 'verbose', false);
+
+  participants = bids.util.tsvread(output_filename);
+  assertEqual(participants.participant_id, {'sub-Sub103'});
 
   validate_dataset(bids_path);
 
@@ -24,7 +29,9 @@ function test_create_participants_tsv_already_exist()
 
   skip_if_octave('mixed-string-concat warning thrown');
 
-  bids_path = fullfile(get_test_data_dir(), 'ds210');
+  bids_path = temp_dir();
+
+  copyfile(fullfile(get_test_data_dir(), 'ds210'), bids_path);
 
   output_filename = bids.util.create_participants_tsv(bids_path);
 
