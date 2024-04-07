@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* [FIX] Create valid participants and sessions tsv during dataset init #688 by @Remi-Gau
+
 ### Security
 
 
