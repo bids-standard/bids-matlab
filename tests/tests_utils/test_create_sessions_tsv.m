@@ -12,6 +12,10 @@ function test_create_sessions_tsv_no_session()
 
   copyfile(fullfile(get_test_data_dir(), 'ds210'), bids_path);
 
+  if bids.internal.is_octave
+    bids_path = fullfile(bids_path, 'ds210');
+  end
+
   validate_dataset(bids_path);
 
   output_filenames = bids.util.create_sessions_tsv(bids_path, 'verbose', false);
@@ -32,6 +36,10 @@ function test_create_sessions_tsv_basic()
   bids_path = temp_dir();
 
   copyfile(fullfile(get_test_data_dir(), 'ieeg_epilepsy'), bids_path);
+
+  if bids.internal.is_octave
+    bids_path = fullfile(bids_path, 'ieeg_epilepsy');
+  end
 
   validate_dataset(bids_path);
 
