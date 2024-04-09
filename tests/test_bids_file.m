@@ -24,6 +24,12 @@ function test_no_entity_warning
 
 end
 
+function test_no_entity
+
+  bf = bids.File(fullfile(pwd, 'con_0001.niii'));
+
+end
+
 function test_participants
 
   pth_bids_example = get_test_data_dir();

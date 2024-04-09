@@ -209,7 +209,11 @@ classdef File
           obj.path = args.Results.input;
         end
         f_struct = bids.internal.parse_filename(args.Results.input);
-        obj.modality = obj.get_modality(f_struct.entities);
+
+        obj.modality = '';
+        if isfield(f_struct, 'entities')
+          obj.modality = obj.get_modality(f_struct.entities);
+        end
       elseif isstruct(args.Results.input)
         f_struct = args.Results.input;
       end
