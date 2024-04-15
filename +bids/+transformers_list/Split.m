@@ -2,21 +2,6 @@ function data = Split(transformer, data)
   %
   % Split a variable into N variables as defined by the levels of one or more other variables.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %     {
-  %       "Name": "Split",
-  %       "Input": [
-  %           "sex",
-  %       ],
-  %       "By": [
-  %           "sex_m",
-  %           "age_gt_twenty"
-  %       ]
-  %     }
   %
   % Arguments:
   %
@@ -30,25 +15,6 @@ function data = Split(transformer, data)
   % that we wish to split on two categorical columns A and B,
   % where a given row has values A=a and B=1,
   % the generated name will be ``Condition_BY_A_a_BY_B_1``.
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Split', ...
-  %                         'Input', 'sex', ...
-  %                         'By', {{'sex_m', 'age_gt_twenty'}});
-  %
-  %   data.sex = TODO;
-  %   data.sex_m = TODO;
-  %   data.age_gt_twenty = TODO
-  %
-  %   data = bids.transformers_list.split(transformer, data);
-  %
-  %   data.sex_BY % TODO
-  %
-  %   ans = TODO
   %
   %
 

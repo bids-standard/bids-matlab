@@ -8,18 +8,6 @@ function data = Select(transformer, data)
   % columns (from ``*_events.tsv`` files) in this case the onset and duration column
   % are also automatically selected.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %     {
-  %       "Name": "Select",
-  %       "Input": [
-  %           "valid_trials",
-  %           "reaction_time"
-  %       ]
-  %     }
   %
   % Arguments:
   %
@@ -34,25 +22,6 @@ function data = Select(transformer, data)
   %   one can think of select as the inverse the ``Delete`` transformation
   %   that removes all named columns from further analysis.
   %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Select', ...
-  %                         'Input',  {{'valid_trials', 'reaction_time'}});
-  %
-  %   data.valid_trials = TODO
-  %   data.invalid_trials = TODO
-  %   data.reaction_time = TODO
-  %   data.onset = TODO
-  %   data.duration = TODO
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data = TODO
-  %
-  %   ans = TODO
   %
 
   % (C) Copyright 2022 BIDS-MATLAB developers

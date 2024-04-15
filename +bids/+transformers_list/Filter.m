@@ -2,16 +2,6 @@ function data = Filter(transformer, data)
   %
   % Subsets rows using a logical expression.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %     {
-  %       "Name": "Filter",
-  %       "Input": "sex",
-  %       "Query": "age > 20"
-  %     }
   %
   % Arguments:
   %
@@ -34,31 +24,6 @@ function data = Filter(transformer, data)
   % By default, computation is done in-place (i.e., input columnise overwritten).
   % If provided, the number of values must exactly match the number of input values,
   % and the order will be mapped 1-to-1.
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Filter', ...
-  %                         'Input', 'sex', ...
-  %                         'Query', 'age > 20');
-  %
-  %   data.sex = {'M', 'F', 'F', 'M'};
-  %   data.age = [10, 21, 15, 26];
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data.sex
-  %
-  %     ans =
-  %
-  %     4X1 cell array
-  %
-  %         [NaN]
-  %         'F'
-  %         [NaN]
-  %         'M'
   %
   %
 

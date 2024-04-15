@@ -4,22 +4,6 @@ function data = Copy(transformer, data)
   % and a different name. Useful as a basis for subsequent transformations that need
   % to modify their input in-place.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %     {
-  %       "Name": "Copy",
-  %       "Input": [
-  %           "sex_m",
-  %           "age_gt_twenty"
-  %       ],
-  %       "Output": [
-  %           "tmp_sex_m",
-  %           "tmp_age_gt_twenty"
-  %       ]
-  %     }
   %
   % Arguments:
   %
@@ -30,23 +14,6 @@ function data = Copy(transformer, data)
   %                          Must be same length as input, and columns are mapped one-to-one
   %                          from the input array to the output array.
   % :type Output: char or array
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Copy', ...
-  %                         'Input', 'onset', ...
-  %                         'Ouput', 'onset_copy');
-  %
-  %   data.onset = [1,2,3];
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data.onset_copy
-  %
-  %   ans = [1,2,3]
   %
   %
 

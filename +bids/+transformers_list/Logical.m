@@ -11,16 +11,6 @@ function data = Logical(transformer, data)
   %
   % - returning a single column as output.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %     {
-  %       "Name":  "And",
-  %       "Input": ["sex_m", "age_gt_twenty"],
-  %       "Output": "men_older_twenty"
-  %     }
   %
   % If non-logical input are passed, it is expected that:
   %
@@ -40,28 +30,6 @@ function data = Logical(transformer, data)
   % :param Output: Optional. The name of the output column.
   % :type  Output: char or array
   %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %     transformers = struct('Name', 'And', ...
-  %                           'Input', {{'sex_m', 'age_gt_twenty'}}, ...
-  %                           'Output', 'men_gt_twenty');
-  %
-  %     data.age_gt_twenty = [nan; 25; 51; 12];
-  %     data.sex_m = {'M'; 'M'; nan; 'M'};
-  %
-  %     data = bids.transformers(transformer, data);
-  %
-  %     ans =
-  %
-  %       4x1 logical array
-  %
-  %        0
-  %        1
-  %        0
-  %        1
   %
 
   % (C) Copyright 2022 BIDS-MATLAB developers

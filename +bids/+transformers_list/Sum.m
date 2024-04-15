@@ -2,18 +2,6 @@ function data = Sum(transformer, data)
   %
   % Computes the (optionally weighted) row-wise sums of two or more columns.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %       {
-  %         "Name":  "Sum",
-  %         "Input": ["duration", "reaction_time"],
-  %         "Output": "duration_X_reaction_time",
-  %         "Weights": [1, 0.5],
-  %         "OmitNan": false,
-  %       }
   %
   % Arguments:
   %
@@ -34,26 +22,6 @@ function data = Sum(transformer, data)
   %                           If no weights are provided,
   %                           defaults to unit weights (i.e., simple sum).
   % :type  Weights: array
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Sum', ...
-  %                         'Input',  {{'duration', 'reaction_time'}}, ...
-  %                         'OmitNan', false, ...
-  %                         'Weights': [1, 0.5], ...
-  %                         'Ouput', 'duration_plus_reaction_time');
-  %
-  %   data.duration = TODO
-  %   data.reaction_time = TODO
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data.duration_plus_reaction_time = TODO
-  %
-  %   ans = TODO
   %
   %
 

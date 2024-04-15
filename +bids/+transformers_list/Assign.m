@@ -3,18 +3,6 @@ function data = Assign(transformer, data)
   % The Assign transformation assigns one or more variables or columns (specified as the input)
   % to one or more other columns (specified by target and/or output as described below).
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %   {
-  %     "Name": "Assign",
-  %     "Input": ["response_time"],
-  %     "Target": ["face"],
-  %     "TargetAttr": "duration",
-  %     "Output": ["face_modulated_by_RT"]
-  %   }
   %
   % Arguments:
   %
@@ -76,27 +64,6 @@ function data = Assign(transformer, data)
   % (as one might do in order to, e.g., model trial-by-trial reaction time differences
   % for a given condition using a varying-epoch approach),
   % and write it out as a new ``face_modulated_by_RT`` column.
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Assign', ...
-  %                         'Input', 'response_time', ...
-  %                         'Target', 'face', ...
-  %                         'TargetAttr', 'duration', ...
-  %                         'Ouput', 'face_modulated_by_RT');
-  %
-  %   data.response_time = ;
-  %   data.face = ;
-  %   data.duration = ;
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data.face_modulated_by_RT
-  %
-  %   ans =
   %
   %
 

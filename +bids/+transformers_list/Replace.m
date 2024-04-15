@@ -2,23 +2,6 @@ function data = Replace(transformer, data)
   %
   % Replaces values in one or more input columns.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %     {
-  %       "Name": "Replace",
-  %       "Input": [
-  %           "fruits",
-  %       ],
-  %       "Replace": [
-  %               {"key": "apple",   "value": "bee"},
-  %               {"key": "elusive", "value": 5},
-  %               {"key": -1, "value": 0}]
-  %        ],
-  %        "Attribute": "all"
-  %     }
   %
   % Arguments:
   %
@@ -58,49 +41,6 @@ function data = Replace(transformer, data)
   %                          to all the inputs.
   % :type  Output: char or array
   %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %       data.fruits = {'apple'; 'banana'; 'elusive'};
-  %       data.onset = {1; 2; 3};
-  %       data.duration = {-1; 1; 3};
-  %
-  %       replace = struct('key', {'apple'; 'elusive'}, 'value', -1);
-  %       replace(end+1).key = -1;
-  %       replace(end).value = 0;
-  %
-  %       transformer = struct('Name', 'Replace', ...
-  %                            'Input', 'fruits', ...
-  %                            'Attribute', 'all', ...
-  %                            'Replace', replace);
-  %
-  %       data = bids.transformers(transformer, data);
-  %
-  %       data.fruits
-  %
-  %         ans =
-  %           3X1 cell array
-  %             [     0]
-  %             'banana'
-  %             [     0]
-  %
-  %       data.onset
-  %
-  %         ans =
-  %           3x1 cell array
-  %             [1]
-  %             [2]
-  %             [3]
-  %
-  %       data.duration
-  %
-  %         ans =
-  %           3X1 cell array
-  %             [-1]
-  %             [ 1]
-  %             [ 3]
   %
 
   % (C) Copyright 2022 BIDS-MATLAB developers

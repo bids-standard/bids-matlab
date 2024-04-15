@@ -2,17 +2,6 @@ function data = Product(transformer, data)
   %
   % Computes the row-wise product of two or more columns.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %       {
-  %         "Name":  "Product",
-  %         "Input": ["duration", "reaction_time"],
-  %         "Output": "duration_X_reaction_time",
-  %         "OmitNan": false,
-  %       }
   %
   % Arguments:
   %
@@ -25,20 +14,6 @@ function data = Product(transformer, data)
   % :param OmitNan: Optional. If ``false`` any column with nan values will return a nan value.
   %                           If ``true`` nan values are skipped. Defaults to ``false``.
   % :type  OmitNan: logical
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Product', ...
-  %                         'Input', {'duration', 'reaction_time'}, ...
-  %                         'OmitNan', false, ...
-  %                         'Ouput', 'duration_X_reaction_time');
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   ans = TODO
   %
   %
 
