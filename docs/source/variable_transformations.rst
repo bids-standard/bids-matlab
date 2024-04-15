@@ -9,7 +9,7 @@ described in BIDS stats models
 but can also be used to manipulate TSV files in batches.
 
 More information on how they function can be found
-in the `variable-transform repository<https://github.com/bids-standard/variable-transform>`_.
+in the `variable-transform repository <https://github.com/bids-standard/variable-transform>`_.
 
 The behavior and their "call" in JSON should (hopefully) be fairly close to the
 `pybids-transformers <https://docs.google.com/document/d/1uxN6vPWbC7ciAx2XWtT5Y-lBrdckZKpPdNUNpwRxHoU/>`_.
