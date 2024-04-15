@@ -1,5 +1,5 @@
-Variablle transformations
-*************************
+Variable transformations
+************************
 
 Those transformers are meant to be used to manipulate the content of TSV files
 once loaded as structure with ``bids.util.tsvread``.
