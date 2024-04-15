@@ -22,7 +22,7 @@ To see how to install BIDS-Matlab, please check
    function_description
    utility_functions
    stats_model
-   transformers
+   variable_transformations
    schema
    performance
    dev_doc

@@ -1,16 +1,15 @@
-Transformers
-************
+Variable transformations
+************************
 
-Those transformers are meant to be used to manipulate the content of TSV files once
-loaded as structure with ``bids.util.tsvread``.
+Those transformers are meant to be used to manipulate the content of TSV files
+once loaded as structure with ``bids.util.tsvread``.
 
-They are mostly meant to be used to implement the transformations described in BIDS
-stats models but can also be used to manipulate TSV files in batches.
+They are mostly meant to be used to implement the transformations
+described in BIDS stats models
+but can also be used to manipulate TSV files in batches.
 
-For each type of transformer, we describe first how they are meant to be "called"
-in the JSON file of the BIDS stats model.
-
-There is also an code example to show how to use them.
+More information on how they function can be found
+in the `variable-transform repository <https://github.com/bids-standard/variable-transform>`_.
 
 The behavior and their "call" in JSON should (hopefully) be fairly close to the
 `pybids-transformers <https://docs.google.com/document/d/1uxN6vPWbC7ciAx2XWtT5Y-lBrdckZKpPdNUNpwRxHoU/>`_.

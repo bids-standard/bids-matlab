@@ -2,20 +2,6 @@ function data = Drop_na(transformer, data)
   %
   % Drops all rows with "n/a".
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %     {
-  %       "Name": "DropNA",
-  %       "Input": [
-  %           "age_gt_twenty"
-  %       ],
-  %       "Output": [
-  %           "age_gt_twenty_clean"
-  %       ]
-  %     }
   %
   % Arguments:
   %
@@ -26,23 +12,6 @@ function data = Drop_na(transformer, data)
   %                          By default, computation is done in-place
   %                          meaning that input columnise overwritten).
   % :type  Output: char or array
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'DropNA', ...
-  %                         'Input', 'age_gt_twenty', ...
-  %                         'Ouput', 'age_gt_twenty_clean');
-  %
-  %   data.age_gt_twenty = TODO;
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data.
-  %
-  %   ans = TODO
   %
   %
 

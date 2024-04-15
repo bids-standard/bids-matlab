@@ -7,19 +7,6 @@ function data = Scale(transformer, data)
   % with the default being to apply both
   % (i.e., standardizing each value so that it has zero mean and unit SD).
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %       {
-  %         "Name":  "Scale",
-  %         "Input": "reaction_time",
-  %         "Demean": true,
-  %         "Rescale": true,
-  %         "ReplaceNa": true,
-  %         "Output": "scaled_reaction_time"
-  %       }
   %
   % Arguments:
   %
@@ -46,26 +33,6 @@ function data = Scale(transformer, data)
   %                          If no output values are provided,
   %                          the scaling transformation is applied in-place to all the input.
   % :type  Output: char or array
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Scale', ...
-  %                        'Input', 'reaction_time',
-  %                        'Demean', true,
-  %                        'Rescale', true,
-  %                        'ReplaceNa', true,
-  %                        'Output', 'scaled_reaction_time');
-  %
-  %   data.reaction_time = TODO
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data.scaled_reaction_time = TODO
-  %
-  %   ans = TODO
   %
   %
 

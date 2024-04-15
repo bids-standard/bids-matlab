@@ -2,17 +2,6 @@ function data = Std(transformer, data)
   %
   % Compute the sample standard deviation.
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %       {
-  %         "Name":  "Std",
-  %         "Input": "reaction_time",
-  %         "OmitNan": false,
-  %         "Output": "std_RT"
-  %       }
   %
   % Arguments:
   %
@@ -26,24 +15,6 @@ function data = Std(transformer, data)
   % :param Output: Optional. The optional column names to write out to.
   %                    By default, computation is done in-place (i.e., input columnise overwritten).
   % :type  Output: char or array
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Std', ...
-  %                         'Input', 'reaction_time', ...
-  %                         'OmitNan', false, ...
-  %                         'Ouput', 'std_RT');
-  %
-  %   data.reaction_time = TODO
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data.std_RT = TODO
-  %
-  %   ans = TODO
   %
   %
 

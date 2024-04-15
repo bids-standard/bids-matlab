@@ -2,18 +2,6 @@ function data = Basic(transformer, data)
   %
   % Performs a basic operation with a ``Value`` on the ``Input``
   %
-  % JSON EXAMPLE
-  % ------------
-  %
-  % .. code-block:: json
-  %
-  %       {
-  %         "Name":  "Add",
-  %         "Input": "onset",
-  %         "Value": 0.5,
-  %         "Output": "delayed_onset"
-  %         "Query": "familiarity == Famous face"
-  %       }
   %
   % Each of these transformations takes one or more columns,
   % and performs a mathematical operation on the input column and a provided operand.
@@ -41,29 +29,6 @@ function data = Basic(transformer, data)
   % (meaning that input columns are overwritten).
   % If provided, the number of values must exactly match the number of input values,
   % and the order will be mapped 1-to-1.
-  %
-  % CODE EXAMPLE
-  % ------------
-  %
-  % .. code-block:: matlab
-  %
-  %   transformer = struct('Name', 'Subtract', ...
-  %                         'Input', 'onset', ...
-  %                         'Value', 3, ...
-  %                         'Ouput', 'onset_minus_3');
-  %
-  %   data.onset = [1; 2; 5; 6];
-  %
-  %   data = bids.transformers(transformer, data);
-  %
-  %   data.onset_minus_3
-  %
-  %   ans =
-  %
-  %         -2
-  %         -1
-  %          2
-  %          3
   %
   %
 
