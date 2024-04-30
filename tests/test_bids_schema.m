@@ -26,6 +26,7 @@ function test_get_datatypes()
                                                  'pet'})');
 
   assertEqual(fieldnames(datatypes.func), {'func'
+                                           'norf'
                                            'phase'
                                            'events__mri'
                                            'timeseries__func'});
@@ -39,6 +40,7 @@ function test_return_suffixes()
               {'bold'; ...
                'cbv'; ...
                'sbref'; ...
+               'noRF'; ...
                'phase'; ...
                'events'; ...
                'physio'; ...
@@ -120,7 +122,7 @@ function test_return_entities_with_only_datatype_as_argument()
   entities = schema.return_entities('datatype', 'func', ...
                                     'required_only', false);
   expected_entities = {'sub', 'ses', 'task', 'acq', 'ce', 'rec', ...
-                       'dir', 'run', 'echo', 'part', 'recording', 'chunk'};
+                       'dir', 'run', 'mod', 'echo', 'part', 'recording', 'chunk'};
   assertEqual(entities, expected_entities);
 
 end
@@ -209,6 +211,7 @@ function test_return_suffix_groups_for_datatype()
 
   suffix_groups = schema.return_suffix_groups_for_datatype('func');
   assertEqual(suffix_groups, {'func'
+                              'norf'
                               'phase'
                               'events__mri'
                               'timeseries__func'});
