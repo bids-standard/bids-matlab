@@ -31,7 +31,7 @@ function data = Replace(transformer, data)
   %     The rows of the ``attributes`` columns matching the ``key`` from the
   %     ``input`` will be replaced by ``value``.
   %
-  %     All replacemenets are done in sequentially.
+  %     All replacements are done in sequentially.
   %
   % :param Output: Optional. Optional names of columns to output.
   %                          Must match length of input column(s) if provided,
