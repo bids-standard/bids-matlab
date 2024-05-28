@@ -615,7 +615,7 @@ function file_list = return_file_list(modality, subject, schema)
   %  - anything but json files
   %  - requesting start with sub-<subId>_ses-<sesId>_
   %  - requesting a set of entities of form <key>-<value>_
-  %  - requestin exactly one suffix
+  %  - requesting exactly one suffix
   %
   %  When not using the schema, listed files
   %  - can include a prefix
