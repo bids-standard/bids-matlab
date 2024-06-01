@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - name: Install MATLAB
-      uses: matlab-actions/setup-matlab@v2.1.2
+      uses: matlab-actions/setup-matlab@v2.2.0
       with:
         release: R2023a
 
