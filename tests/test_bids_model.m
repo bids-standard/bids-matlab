@@ -169,7 +169,7 @@ end
 function test_model_default_model_with_nan_trial_type()
 
   bids_tmp = temp_dir();
-  copyfile(fullfile(get_test_data_dir(), 'ds003'), bids_tmp)
+  copyfile(fullfile(get_test_data_dir(), 'ds003'), bids_tmp);
 
   BIDS = bids.layout(bids_tmp);
   tsv_files = bids.query(BIDS, 'data', 'suffix', 'events');
@@ -178,15 +178,15 @@ function test_model_default_model_with_nan_trial_type()
   bids.util.tsvwrite(tsv_files{1}, content);
 
   BIDS = bids.layout(bids_tmp);
-  
+
   bm = bids.Model();
   bm = bm.default(BIDS);
 
-    %   design matrix should not include n/a
-   assertEqual(bm.Nodes{1}.Model.X, ...
-       {'trial_type.pseudoword';
-        'trial_type.word'      ;
-        '1'                    })
+  %   design matrix should not include n/a
+  assertEqual(bm.Nodes{1}.Model.X, ...
+              {'trial_type.pseudoword'
+              'trial_type.word'
+              '1'                    });
 
 end
 

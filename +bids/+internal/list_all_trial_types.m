@@ -110,8 +110,8 @@ function trial_type_list = list_all_trial_types(varargin)
   if any(idx)
     trial_type_list{idx} = [];
   end
-  
-  % n/a not included as trial type  
+
+  % n/a not included as trial type
   idx = ismember(trial_type_list, 'n/a');
   if any(idx)
     trial_type_list(idx) = [];
