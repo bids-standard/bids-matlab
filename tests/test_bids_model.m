@@ -152,8 +152,7 @@ end
 
 function test_model_default_model()
 
-  pth_bids_example = get_test_data_dir();
-  BIDS = bids.layout(fullfile(pth_bids_example, 'ds003'));
+  BIDS = bids.layout(fullfile(get_test_data_dir(), 'ds003'));
 
   bm = bids.Model();
   bm = bm.default(BIDS);
@@ -164,6 +163,30 @@ function test_model_default_model()
   assertEqual(bids.util.jsondecode(filename), ...
               bids.util.jsondecode(model_file('rhymejudgement')));
   delete(filename);
+
+end
+
+function test_model_default_model_with_nan_trial_type()
+
+  bids_tmp = temp_dir();
+  copyfile(fullfile(get_test_data_dir(), 'ds003'), bids_tmp)
+
+  BIDS = bids.layout(bids_tmp);
+  tsv_files = bids.query(BIDS, 'data', 'suffix', 'events');
+  content = bids.util.tsvread(tsv_files{1});
+  content.trial_type{1} = 'n/a';
+  bids.util.tsvwrite(tsv_files{1}, content);
+
+  BIDS = bids.layout(bids_tmp);
+  
+  bm = bids.Model();
+  bm = bm.default(BIDS);
+
+    %   design matrix should not include n/a
+   assertEqual(bm.Nodes{1}.Model.X, ...
+       {'trial_type.pseudoword';
+        'trial_type.word'      ;
+        '1'                    })
 
 end
 
