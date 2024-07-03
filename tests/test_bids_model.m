@@ -185,8 +185,8 @@ function test_model_default_model_with_nan_trial_type()
   %   design matrix should not include n/a
   assertEqual(bm.Nodes{1}.Model.X, ...
               {'trial_type.pseudoword'
-              'trial_type.word'
-              '1'                    });
+               'trial_type.word'
+               '1'                    });
 
 end
 
