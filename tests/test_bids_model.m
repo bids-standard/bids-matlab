@@ -170,6 +170,9 @@ function test_model_default_model_with_nan_trial_type()
 
   bids_tmp = temp_dir();
   copyfile(fullfile(get_test_data_dir(), 'ds003'), bids_tmp);
+  if bids.internal.is_octave
+    bids_tmp = fullfile(bids_tmp,  'ds003');
+  end
 
   BIDS = bids.layout(bids_tmp);
   tsv_files = bids.query(BIDS, 'data', 'suffix', 'events');
