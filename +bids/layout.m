@@ -239,7 +239,7 @@ function handle_invalid_input(ME, root)
     bids.internal.is_octave
     if ischar(root)
       msg = sprintf(['First input argument must be an existing directory.'...
-                     '\nGot: ''%s.'''], root);
+                     '\nGot: "%s".'], root);
       bids.internal.error_handling(mfilename(), 'InvalidInput', ...
                                    msg, false);
     end
@@ -394,6 +394,12 @@ function subject = parse_subject(pth, subjname, sesname, schema, filter, toleran
     % if we go schema-less, we pass an empty schema.content to all the parsing functions
     % so the parsing is unconstrained
     for iModality = 1:numel(modalities)
+
+      % when we go schemaless session level folder
+      % may get indexed as modality
+      if bids.internal.starts_with(modalities{iModality}, 'ses-')
+        continue
+      end
 
       if isfield(filter, 'modality') && ...
           ~ismember(modalities{iModality}, filter.modality)
