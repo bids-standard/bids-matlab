@@ -926,6 +926,45 @@ classdef Model
 
     end
 
+    function validate_constrasts(obj, node)
+
+      if ~isfield(node, 'Contrasts')
+        return
+      end
+
+      for iCon = 1:numel(node.Contrasts)
+
+        if ~isfield(node.Contrasts{iCon}, 'Weights')
+          msg = sprintf('No weights specified for Contrast %s of Node %s', ...
+                        node.Contrasts{iCon}.Name, node.Name);
+          bids.internal.error_handling(mfilename(), ...
+                                       'weightsRequired', ...
+                                       msg, ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
+        end
+
+        switch node.Contrasts{iCon}.Test
+          case 't'
+            nb_weights = numel(node.Contrasts{iCon}.Weights);
+          case 'F'
+            nb_weights = size(node.Contrasts{iCon}.Weights, 2);
+        end
+
+        if nb_weights ~= numel(node.Contrasts{iCon}.ConditionList)
+          msg = sprintf('Number of Weights and Conditions unequal for Contrast %s of Node %s', ...
+                        node.Contrasts{iCon}.Name, node.Name);
+          bids.internal.error_handling(mfilename(), ...
+                                       'numelWeightsConditionMismatch', ...
+                                       msg, ...
+                                       obj.tolerant, ...
+                                       obj.verbose);
+        end
+
+      end
+
+    end
+
   end
 
   methods (Static)
@@ -994,39 +1033,6 @@ classdef Model
       elseif isstruct(cell_or_struct)
         values = fieldnames(cell_or_struct);
       end
-    end
-
-    % could be made static
-    function validate_constrasts(node)
-
-      if ~isfield(node, 'Contrasts')
-        return
-      end
-
-      for iCon = 1:numel(node.Contrasts)
-
-        if ~isfield(node.Contrasts{iCon}, 'Weights')
-          msg = sprintf('No weights specified for Contrast %s of Node %s', ...
-                        node.Contrasts{iCon}.Name, node.Name);
-          bids.internal.error_handling(mfilename(), ...
-                                       'weightsRequired', ...
-                                       msg, ...
-                                       obj.tolerant, ...
-                                       obj.verbose);
-        end
-
-        if numel(node.Contrasts{iCon}.Weights) ~= numel(node.Contrasts{iCon}.ConditionList)
-          msg = sprintf('Number of Weights and Conditions unequal for Contrast %s of Node %s', ...
-                        node.Contrasts{iCon}.Name, node.Name);
-          bids.internal.error_handling(mfilename(), ...
-                                       'numelWeightsConditionMismatch', ...
-                                       msg, ...
-                                       obj.tolerant, ...
-                                       obj.verbose);
-        end
-
-      end
-
     end
 
   end
