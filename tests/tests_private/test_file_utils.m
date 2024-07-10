@@ -61,11 +61,11 @@ function test_file_utils_basic()
   %% test to list files
 
   file = bids.internal.file_utils('List', ...
-                                  fullfile(fileparts(mfilename('fullpath'))), ...
+                                  fileparts(mfilename('fullpath')), ...
                                   '^test_file_utils.m$');
   assertEqual(file, 'test_file_utils.m');
 
-  this_dir = fullfile(fileparts(mfilename('fullpath')));
+  this_dir = fileparts(mfilename('fullpath'));
   parent_dir = fullfile(this_dir, '..');
 
   file = bids.internal.file_utils('List', ...
