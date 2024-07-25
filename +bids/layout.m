@@ -842,6 +842,9 @@ function BIDS = manage_dependencies(BIDS, index_dependencies, verbose)
     % other is present to help with analysis.
     intended = {};
     if isfield(metadata, 'IntendedFor')
+      if isempty(metadata.IntendedFor)
+        continue
+      end
       intended = cellstr(metadata.IntendedFor);
     end
 
