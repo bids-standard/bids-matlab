@@ -485,6 +485,8 @@ function test_reorder_schemaless()
                                   'task'
                                   'tracksys'
                                   'acq'
+                                  'nuc'
+                                  'voi'
                                   'ce'
                                   'trc'
                                   'stain'
