@@ -9,6 +9,6 @@ manual:
 	cd docs && sh create_manual.sh
 
 update_schema:
-	wget https://bids-specification--1377.org.readthedocs.build/en/1377/schema.json -O schema.json
-# wget https://bids-specification.readthedocs.io/en/latest/schema.json -O schema.json
+	wget https://bids-specification.readthedocs.io/en/latest/schema.json -O schema.json
 # get schema from a PR on the spec
+# wget https://bids-specification--1377.org.readthedocs.build/en/1377/schema.json -O schema.json
