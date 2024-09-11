@@ -8,19 +8,20 @@ end
 
 function test_create_readme_basic()
 
-  bids_path = fullfile(get_test_data_dir(), 'ds210');
-
-  validate_dataset(bids_path);
+  source_ds = fullfile(get_test_data_dir(), 'ds210');
+  tmp_path = temp_dir();
+  copyfile(source_ds, tmp_path);
+  if bids.internal.is_octave()
+    bids_path = fullfile(tmp_path, 'ds210');
+  else
+    bids_path = tmp_path;
+  end
 
   bids.util.create_readme(bids_path, false, ...
                           'tolerant', true, ...
                           'verbose', false);
 
   assertEqual(exist(fullfile(bids_path, 'README.md'), 'file'), 2);
-
-  validate_dataset(bids_path);
-
-  delete(fullfile(bids_path, 'README.md'));
 
 end
 
