@@ -205,7 +205,6 @@ Note some changes are missing from these release notes, but should be listed in 
 * by [gllmflndn](https://github.com/gllmflndn) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/72
 * by [cMadan](https://github.com/cMadan) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/62
 * by [mslw](https://github.com/mslw) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/42
-* by [github-actions](https://github.com/github-actions) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/110
 * by [HenkMutsaerts](https://github.com/HenkMutsaerts) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/127
 * by [nbeliy](https://github.com/nbeliy) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/166
 * by [CPernet](https://github.com/CPernet) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/249
