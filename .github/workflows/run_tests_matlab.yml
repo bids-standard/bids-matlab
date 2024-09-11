@@ -46,9 +46,12 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install unzip wget
 
+    - name: Install Deno
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
     - name: Install bids validator
-      run: npm install -g bids-validator
-
+      run: deno install -Agf -n bids-validator jsr:@bids/validator
 
     - name: Install bids example
       run: |

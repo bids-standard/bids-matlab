@@ -44,8 +44,12 @@ developer documentation
 .. autofunction:: +bids.+internal.keep_file_for_query
 .. _list_all_trial_types:
 .. autofunction:: +bids.+internal.list_all_trial_types
+.. _list_events:
+.. autofunction:: +bids.+internal.list_events
 .. _match_structure_fields:
 .. autofunction:: +bids.+internal.match_structure_fields
+.. _nansum:
+.. autofunction:: +bids.+internal.nansum
 .. _parse_filename:
 .. autofunction:: +bids.+internal.parse_filename
 .. _plot_diagnostic_table:
@@ -54,6 +58,8 @@ developer documentation
 .. autofunction:: +bids.+internal.regexify
 .. _replace_placeholders:
 .. autofunction:: +bids.+internal.replace_placeholders
+.. _resolve_bids_uri:
+.. autofunction:: +bids.+internal.resolve_bids_uri
 .. _return_file_index:
 .. autofunction:: +bids.+internal.return_file_index
 .. _return_file_info:
