@@ -214,8 +214,7 @@ doi = https://doi.org/10.5281/zenodo.3363985
 
 ## Contributing
 
-If you want to contribute make sure to check our [contributing guidelines](CONTRIBUTING.md)
-and our [code of conduct](CODE_OF_CONDUCT.md).
+If you want to contribute make sure to check our [contributing guidelines](CONTRIBUTING.md).
 
 Thanks goes to these wonderful people
 ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
