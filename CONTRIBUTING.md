@@ -4,8 +4,19 @@
 
 _We're so excited you're here and want to contribute._
 
-If you have any questions that aren't discussed below, please let us know by
-[opening an issue](#understanding-issues).
+**Welcome to the BIDS Specification repository!**
+
+_We're so excited you're here and want to contribute._
+
+We hope that these guidelines are designed to make it as easy as possible to get involved.
+If you have any questions that aren't discussed below, please let us know
+by [opening an issue](https://github.com/bids-standard/bids-matlab/issues/new).
+
+If you are not familiar with Git ansd GitHub,
+check our [generic contributing guidelines](https://bids-website.readthedocs.io/en/latest/collaboration/bids_github/CONTRIBUTING.html).
+
+If you want to contribute to the BIDS matlab codebase,
+make sure you also read the instructions below.
 
 ## Style guide
 
