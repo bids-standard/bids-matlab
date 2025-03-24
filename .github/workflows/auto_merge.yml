@@ -11,9 +11,11 @@ permissions:
 jobs:
   dependabot:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }} && github.repository == 'bids-standard/bids-matlab'
     steps:
+    - name: View PR author
+      run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
     - name: Approve a PR
+      if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }} && github.repository == 'bids-standard/bids-matlab'
       run: gh pr review --approve "$PR_URL"
       env:
         PR_URL: ${{github.event.pull_request.html_url}}
