@@ -268,8 +268,9 @@ function test_query_metadata()
                   'sub', '01', ...
                   'acq', 'anat', ...
                   'suffix', 'TB1TFL');
-  assert(isstruct(md) & isfield(md, 'RepetitionTime') & isfield(md, 'SequenceName'));
-  assert(strcmp(md.RepetitionTime, '6.8'));
+
+  assert(isstruct(md) & isfield(md, 'RepetitionTimeExcitation') & isfield(md, 'SequenceName'));
+  assert(strcmp(md.RepetitionTimeExcitation, '6.8'));
   assert(strcmp(md.SequenceName, 'tfl_b1_map'));
 
 end
