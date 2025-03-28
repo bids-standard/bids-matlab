@@ -208,7 +208,7 @@ author = {Gau, Rémi and Flandin, Guillaume and Janke, Andrew and Duval, Tanguy 
 license = {MIT},
 title = {{bids-matlab}},
 url = {https://github.com/bids-standard/bids-matlab},
-doi = https://doi.org/10.5281/zenodo.3363985
+doi = https://doi.org/10.5281/zenodo.5910584
 }
 ```
 
