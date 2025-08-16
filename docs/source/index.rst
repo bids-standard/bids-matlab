@@ -13,21 +13,20 @@ To see how to install BIDS-Matlab, please check
 `the github repository <https://github.com/bids-standard/bids-matlab>`_.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Content
 
    general_information
    layout_query
    file
-   function_description
-   utility_functions
    stats_model
    variable_transformations
    schema
    performance
-   dev_doc
+   api/index
+   contributing
    changelog
-
+   developper_doc/index
 
 Indices and tables
 ==================

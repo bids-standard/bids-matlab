@@ -47,9 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Full Changelog**: https://github.com/bids-standard/bids-matlab/compare/v0.2.0...v0.3.0
 
-## [v0.2.0]
+## [v0.2.0] - 2023-11-21
 
-## What's Changed
+### What's Changed
 
 Note some changes are missing from these release notes, but should be listed in the pull request that merged the [`dev` branch in the `main` branch](https://github.com/bids-standard/bids-matlab/pull/647).
 
@@ -76,7 +76,7 @@ Note some changes are missing from these release notes, but should be listed in 
 
 **Full Changelog**: https://github.com/bids-standard/bids-matlab/compare/v0.1.0...v0.2.0
 
-## [v0.1.0]
+## [v0.1.0] - 2022-01-27
 
 * Bids report by [Remi-Gau](https://github.com/Remi-Gau) in https://github.com/bids-standard/bids-matlab/pull/1
 * small fix in a filter that skipped json files when they were in the root folder by [Remi-Gau](https://github.com/Remi-Gau) in https://github.com/bids-standard/bids-matlab/pull/8
@@ -198,7 +198,7 @@ Note some changes are missing from these release notes, but should be listed in 
 * [ENH] add support for microscoy by [Remi-Gau](https://github.com/Remi-Gau) in https://github.com/bids-standard/bids-matlab/pull/315
 * [REL] rc0.1.0 by [Remi-Gau](https://github.com/Remi-Gau) in https://github.com/bids-standard/bids-matlab/pull/287
 
-## New Contributors
+### New Contributors
 * by [tanguyduval](https://github.com/tanguyduval) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/13
 * by [robertoostenveld](https://github.com/robertoostenveld) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/14
 * by [apjanke](https://github.com/apjanke) made their first contribution in https://github.com/bids-standard/bids-matlab/pull/30

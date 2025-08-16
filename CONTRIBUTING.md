@@ -1,4 +1,4 @@
-# Contributing to BIDS-MATLAB
+# Contributing
 
 **Welcome to the BIDS-MATLAB repository!**
 
@@ -48,7 +48,7 @@ pip3 install -r requirements.txt
 
 If you do not have Python on your computer, we warmly recommend the install
 instruction from the
-[datalad handbook](http://handbook.datalad.org/en/latest/intro/installation.html#python-3-all-operating-systems).
+[datalad handbook](http://handbook.datalad.org/en/latest/intro/installation.html).
 
 </details>
 
@@ -86,15 +86,200 @@ The code style and quality is also checked during the continuous integration.
 For more information about MISS_HIT see its
 [documentation](https://florianschanda.github.io/miss_hit/).
 
-### Running tests on the code
+## Running tests on the code
 
+We use a series of unit and integration tests to make sure the code behaves as
+expected and to also help in development.
 The unit and integration tests we have are in the [`tests` folder]'(./tests/)
-and should be run with MoxUnit. For more information on the set up for the test,
-see the [README in the tests folder](./tests/README.md).
+and should be run with [MoxUnit](https://moxunit.github.io/MOxUnit/).
 
 If you are not sure what unit and integration tests are, check the chapter about
 that in the
 [Turing way](https://the-turing-way.netlify.app/reproducible-research/testing.html).
+
+### Install MoxUnit
+
+You need to install
+[MOxUnit for matlab and octave](https://github.com/MOxUnit/MOxUnit) to run the
+tests.
+
+Note the install procedure will require you to have
+[git](https://git-scm.com/downloads) installed on your computer.
+If you don't,
+you can always download the MoxUnit code with this
+[link](https://github.com/MOxUnit/MOxUnit/archive/master.zip).
+
+Run the following from a terminal in the folder where you want to install MOxUnit.
+The `make install` command will find Matlab / Octave on your system and
+make sure it plays nice with MoxUnit.
+
+NOTE: only type in the terminal what is after the `$` sign:
+
+```bash
+# get the code for MOxUnit with git
+git clone https://github.com/MOxUnit/MOxUnit.git
+# enter the newly created folder and set up MoxUnit
+cd MOxUnit
+make install
+```
+
+If you want to check the code coverage on your computer, you can also install
+[MOcov for matlab and octave](https://github.com/MOcov/MOcov).
+Note that this is
+also part of the continuous integration of the bids-matlab, so you don't need to
+do this.
+
+### Install the test data
+
+To run the tests we used the examples data sets from the
+[bids-examples repository](https://github.com/bids-standard/bids-examples)
+and also create some dummy datasets.
+
+```bash
+cd tests
+make data
+```
+
+### Add helper functions to the path
+
+There are a some help functions you need
+to add to the Matlab / Octave path to run the tests:
+
+```matlab
+addpath(fullfile('tests', 'utils'))
+```
+
+### Run the tests
+
+From the root folder of the bids-matlab folder, you can run the test with one
+the following commands.
+
+```bash
+moxunit_runtests tests
+
+# Or if you want more feedback
+moxunit_runtests tests -verbose
+```
+
+### Adding more tests
+
+You can use the following function template to write more tests.
+
+```matlab
+function test_suite = test_functionToTest()
+    % This top function is necessary for mox unit to run tests.
+    % DO NOT CHANGE IT except to adapt the name of the function.
+    try % assignment of 'localfunctions' is necessary in Matlab >= 2016
+        test_functions = localfunctions(); %#ok<*NASGU>
+    catch % no problem; early Matlab versions can use initTestSuite fine
+    end
+    initTestSuite;
+end
+
+function test_function_to_test_basic()
+
+    %% set up
+
+
+    %% data to test against
+
+
+    %% test
+    % assertTrue( );
+    % assertFalse( );
+    % assertEqual( );
+
+end
+
+
+function test_function_to_test_other_usecase()
+
+    %% set up
+
+
+    %% data to test against
+
+
+    %% test
+    % assertTrue( );
+    % assertFalse( );
+    % assertEqual( );
+
+end
+
+```
+
+### Timing
+
+If you need to load a dummy datasets check the `layout_timing` function as it as
+a list of all the bids-matlab datasets and how loing it takes (more or less) to
+run layout on each.
+
+
+## Building the documentation
+
+The documentation is generated with the `Sphinx` python package
+and the help section of all the functions and classes
+is used to create the code documentation
+thanks to the `sphinxcontrib-matlabdomain` sphinx extension.
+
+### Install the dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Build the documentation locally
+
+From the `docs` directory run:
+
+```bash
+make html
+```
+
+or if you do not have make:
+
+```bash
+sphinx-build -b html source build
+```
+
+This will build an html version of the doc in the `build` folder.
+
+### reStructured text markup
+
+reStructured text mark up primers:
+
+-   on the [sphinx site](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)
+
+-   more
+    [python oriented](https://pythonhosted.org/an_example_pypi_project/sphinx.html)
+
+-   typical doc strings templates
+    -   [google way](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html)
+    -   [numpy](https://www.sphinx-doc.org/en/master/usage/extensions/example_numpy.html#example-numpy)
+
+### "Templates"
+
+If you need to create a new page in the doc to automatically
+document your code, here is a 'template' to help you get started.
+
+```rst
+
+.. automodule:: +bids.folder_name .. <-- This is necessary for auto-documenting the rest
+
+.. autofunction:: function to document
+
+```
+
+To get the filenames of all the functions in a folder to add them to a file:
+
+``` bash
+ls -l +bids/*.m | cut -c42- | rev | cut -c 3- | rev | sed s/+bids/".. autofunction::"/g
+```
+
+Increase the `42` to crop more characters at the beginning.
+
+Change the `3` to crop more characters at the end.
 
 ## How the decision to merge a pull request is made?
 
@@ -113,42 +298,3 @@ Also make sure you add your information to the [CITATION.cff file](./CITATION.cf
 
 If you have made any type of contributions to BIDS-MATLAB, our team will add you
 as a contributor (or ask to be added if we forgot).
-
-## Updating the bids-schema
-
-The schema of the BIDS specification is available as a
-[set of yaml files in the bids-standards repository](https://github.com/bids-standard/bids-specification/blob/master/CONTRIBUTING.md#updating-the-schema).
-
-A JSON version is also available here: https://bids-specification.readthedocs.io/en/latest/schema.json
-
-The latest version can be obtained by running the following command:
-
-```bash
-make update_schema
-```
-
-A new version of the schema is fetched automatically regularly via continuous integration
-(see the [github action](.github/workflows/update_schema.yml)) when pushing to the repo
-or opening a pull-request.
-
-## release protocol
-
-- [ ] create a dedicated branch for the release candidate
-- [ ] update version in `citation.cff`
-- [ ] documentation related
-  - [ ] ensure the documentation is up to date
-  - [ ] make sure the doc builds correctly and fix any error
-- [ ] update jupyter books
-- [ ] update binder
-- [ ] update changelog
-  - [ ] change from `[unreleased]` to the version number
-  - [ ] remove unused sections (like `security`)
-- [ ] run `make release`
-- [ ] open a pull request (PR) from this release candidate branch targeting the default branch
-- [ ] fix any remaining failing continuous integration (test, markdown and code linting...)
-- [ ] merge to default branch
-- [ ] create a github tagged release
-- [ ] after release
-  - [ ] set version in `citation.cff` to dev
-  - [ ] update changelog
-    - [ ] add an `[unreleased]` section

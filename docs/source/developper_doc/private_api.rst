@@ -1,9 +1,9 @@
 .. AUTOMATICALLY GENERATED
 
-.. _dev_doc:
+.. _private_api:
 
-developer documentation
-***********************
+Private API
+***********
 
 
 .. _+internal:

@@ -56,7 +56,7 @@ pygments_style = "sphinx"
 master_doc = "index"
 
 # source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = {'.rst': 'restructuredtext'}
 
 autodoc_member_order = "bysource"
 
@@ -72,20 +72,6 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
-
-# html_logo = '_static/cpp_lab_logo.png'
-
-# html_theme_options = {
-#     'github_user': 'cpp-lln-lab',
-#     'github_repo': 'CPP_BIDS_SPM_pipeline',
-#     'github_button': True,
-#     'github_banner': True
-# }
-# html_theme_options = {
-#     'collapse_navigation': False,
-#     'display_version': False,
-#     'navigation_depth': 4,
-# }
 
 html_sidebars = {
     "**": [

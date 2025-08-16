@@ -21,7 +21,7 @@ BIDS (Brain Imaging Data Structure) datasets.
 For more information about BIDS, visit https://bids.neuroimaging.io/.
 
 See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the
-[BIDS Starter Kit](https://github.com/bids-standard/bids-starter-kit).
+[BIDS Starter Kit](https://bids.neuroimaging.io/getting_started/index.html).
 
 ## Installation
 
@@ -122,7 +122,7 @@ The behavior of this toolbox assumes that it is interacting with a valid BIDS
 dataset that should have been validated using
 [BIDS-validator](https://bids-standard.github.io/bids-validator/). If the
 Node.js version of the validator is
-[installed on your computer](https://github.com/bids-standard/bids-validator#quickstart),
+[installed on your computer](https://bids-validator.readthedocs.io/en/stable/),
 you can call it from the matlab prompt using `bids.validate`. Just be aware that
 any unvalidated components may produce undefined behavior. Although, if you're
 BIDS-y enough, the behavior may be predictable.
@@ -166,7 +166,7 @@ There are demos and tutorials showing some of the features in the `demos` folder
 Make sure to be familiar with the [JSON 101](https://bids-standard.github.io/stats-models/json_101.html).
 
 Note some of the perks of working with JSON files described
-on [the BIDS starterkit](https://bids-standard.github.io/bids-starter-kit/folders_and_files/metadata.html#interoperability-issues).
+on [the BIDS starterkit](https://bids.neuroimaging.io/getting_started/folders_and_files/metadata/json.html#interoperability-issues).
 
 For BIDS-MATLAB, if you are using MATLAB R2016b or newer, nothing else needs to be installed.
 
@@ -192,10 +192,10 @@ on the brainhack mattermost
 - [imtool3D_BIDS](https://github.com/tanguyduval/imtool3D_td): A 3D viewer for BIDS directory
 - [Brainstorm](https://github.com/brainstorm-tools/brainstorm3):
   Comprehensive brain analysis toolbox
-  (includes BIDS [import and export](https://neuroimage.usc.edu/brainstorm/ExportBids) and
+  (includes BIDS [import and export](https://neuroimage.usc.edu/brainstorm/ExportBids)) and
   different examples dealing with BIDS datasets
   (e.g. [group analysis from a MEG visual dataset](https://neuroimage.usc.edu/brainstorm/Tutorials/VisualGroup),
-  [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specifications))
+  [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specification))
 
 ## How to cite
 To credit BIDS-Matlab in your work, please cite the [Zenodo archive](https://zenodo.org/record/5910584),

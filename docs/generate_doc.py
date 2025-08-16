@@ -1,14 +1,14 @@
-from __future__ import annotations
+"""Auto-generate the private API page."""
 
 from pathlib import Path
 
 from rich import print
 
-code_src = Path(__file__).parent.parent.joinpath("+bids")
+code_src = Path(__file__).parent.parent / "+bids"
 
-doc_src = Path(__file__).parent.joinpath("source")
+doc_src = Path(__file__).parent / "source"
 
-bidspm_file = doc_src.joinpath("dev_doc.rst")
+bidspm_file = doc_src / "developper_doc" / "private_api.rst"
 
 dir_ignore_list = ("+util", "+transformers_list")
 
@@ -68,10 +68,10 @@ def main():
 
         content = """.. AUTOMATICALLY GENERATED
 
-.. _dev_doc:
+.. _private_api:
 
-developer documentation
-***********************
+Private API
+***********
 """
 
         subfolders = sorted(list(code_src.iterdir()))

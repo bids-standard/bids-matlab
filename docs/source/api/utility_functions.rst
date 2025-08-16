@@ -15,7 +15,7 @@ Utility functions
 .. autofunction:: plot_events
 
 .. _fig_diagsnotic:
-.. figure::  images/plot_events_ds001.png
+.. figure::  ../images/plot_events_ds001.png
    :align:   center
 
    output of ``plot_events``

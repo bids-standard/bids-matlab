@@ -1,4 +1,5 @@
-# replace PR numbers and github usernames with links
+"""replace PR numbers and github usernames with links"""
+
 from __future__ import annotations
 
 import re

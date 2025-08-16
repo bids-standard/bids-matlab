@@ -1,7 +1,0 @@
-{
-    "ignorePatterns": [
-        {
-            "pattern": "fil.ion.ucl.ac.uk|mybinder.org|bids-matlab"
-        }
-    ]
-}
