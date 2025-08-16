@@ -25,7 +25,7 @@ jobs:
       matrix:
         test: [slow, fast]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
 
