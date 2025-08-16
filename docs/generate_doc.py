@@ -1,3 +1,5 @@
+"""Auto-generate the private API page."""
+
 from pathlib import Path
 
 from rich import print
