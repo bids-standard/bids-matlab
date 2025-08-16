@@ -14,6 +14,9 @@ on:
   pull_request:
     branches: ['*']
 
+  pull_request_target:
+    types: [opened, synchronize]
+
 env:
   OCTFLAGS: --no-gui --no-window-system --silent
 
@@ -25,7 +28,7 @@ jobs:
       matrix:
         test: [slow, fast]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
 
@@ -62,7 +65,7 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install \
           octave \
-          liboctave-dev\
+          octave-dev\
           octave-common \
           octave-io \
           octave-image \

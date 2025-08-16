@@ -82,3 +82,14 @@ html_sidebars = {
         "donate.html",
     ]
 }
+
+linkcheck_ignore = [
+    "https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab",
+    "https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg",
+    "https://allcontributors.org/docs/en/emoji-key",
+    "https://mybinder.org/badge_logo.svg"
+]
+
+linkcheck_exclude_documents = [r".*/sg_execution_times.rst"]
+
+linkcheck_allow_unauthorized = True
