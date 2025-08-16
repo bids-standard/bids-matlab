@@ -48,7 +48,7 @@ pip3 install -r requirements.txt
 
 If you do not have Python on your computer, we warmly recommend the install
 instruction from the
-[datalad handbook](http://handbook.datalad.org/en/latest/intro/installation.html#python-3-all-operating-systems).
+[datalad handbook](http://handbook.datalad.org/en/latest/intro/installation.html).
 
 </details>
 

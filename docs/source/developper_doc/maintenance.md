@@ -3,10 +3,7 @@
 
 ## Updating the bids-schema
 
-The schema of the BIDS specification is available as a
-[set of yaml files in the bids-standards repository](https://github.com/bids-standard/bids-specification/blob/master/CONTRIBUTING.md#updating-the-schema).
-
-A JSON version is also available here: https://bids-specification.readthedocs.io/en/latest/schema.json
+The [schema of the BIDS specification](https://bids.neuroimaging.io/standards/schema/index.html) is available as a JSON file here: https://bids-specification.readthedocs.io/en/latest/schema.json
 
 The latest version can be obtained by running the following command:
 

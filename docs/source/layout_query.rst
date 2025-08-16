@@ -7,7 +7,7 @@ and then query the content of that dataset with :func:`bids.query`.
 The general API of these functions is detailed below.
 
 For an example on how to use them, check out
-`this jupyter notebook <https://github.com/bids-standard/bids-matlab/blob/main/examples/BIDS-Matlab_basics.ipynb>`_.
+`this jupyter notebook <https://github.com/bids-standard/bids-matlab/blob/main/demos/notebooks/BIDS-Matlab_01_basics.ipynb>`_.
 
 .. automodule:: +bids
 

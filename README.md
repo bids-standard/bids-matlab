@@ -122,7 +122,7 @@ The behavior of this toolbox assumes that it is interacting with a valid BIDS
 dataset that should have been validated using
 [BIDS-validator](https://bids-standard.github.io/bids-validator/). If the
 Node.js version of the validator is
-[installed on your computer](https://github.com/bids-standard/bids-validator#quickstart),
+[installed on your computer](https://bids-validator.readthedocs.io/en/stable/),
 you can call it from the matlab prompt using `bids.validate`. Just be aware that
 any unvalidated components may produce undefined behavior. Although, if you're
 BIDS-y enough, the behavior may be predictable.
@@ -195,7 +195,7 @@ on the brainhack mattermost
   (includes BIDS [import and export](https://neuroimage.usc.edu/brainstorm/ExportBids)) and
   different examples dealing with BIDS datasets
   (e.g. [group analysis from a MEG visual dataset](https://neuroimage.usc.edu/brainstorm/Tutorials/VisualGroup),
-  [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specifications))
+  [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specification))
 
 ## How to cite
 To credit BIDS-Matlab in your work, please cite the [Zenodo archive](https://zenodo.org/record/5910584),
