@@ -192,7 +192,7 @@ on the brainhack mattermost
 - [imtool3D_BIDS](https://github.com/tanguyduval/imtool3D_td): A 3D viewer for BIDS directory
 - [Brainstorm](https://github.com/brainstorm-tools/brainstorm3):
   Comprehensive brain analysis toolbox
-  (includes BIDS [import and export](https://neuroimage.usc.edu/brainstorm/ExportBids) and
+  (includes BIDS [import and export](https://neuroimage.usc.edu/brainstorm/ExportBids)) and
   different examples dealing with BIDS datasets
   (e.g. [group analysis from a MEG visual dataset](https://neuroimage.usc.edu/brainstorm/Tutorials/VisualGroup),
   [resting state analysis from OMEGA datasets](https://neuroimage.usc.edu/brainstorm/Tutorials/RestingOmega#BIDS_specifications))

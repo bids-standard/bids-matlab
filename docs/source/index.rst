@@ -19,17 +19,14 @@ To see how to install BIDS-Matlab, please check
    general_information
    layout_query
    file
-   function_description
-   utility_functions
    stats_model
    variable_transformations
    schema
    performance
+   api/index
    contributing
    changelog
    developper_doc/index
-
-
 
 Indices and tables
 ==================

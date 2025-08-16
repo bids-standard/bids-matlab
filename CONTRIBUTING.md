@@ -96,6 +96,71 @@ If you are not sure what unit and integration tests are, check the chapter about
 that in the
 [Turing way](https://the-turing-way.netlify.app/reproducible-research/testing.html).
 
+## Building the documentation
+
+The documentation is generated with the `Sphinx` python package
+and the help section of all the functions and classes
+is used to create the code documentation
+thanks to the `sphinxcontrib-matlabdomain` sphinx extension.
+
+### Install the dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Build the documentation locally
+
+From the `docs` directory run:
+
+```bash
+make html
+```
+
+or if you do not have make:
+
+```bash
+sphinx-build -b html source build
+```
+
+This will build an html version of the doc in the `build` folder.
+
+### reStructured text markup
+
+reStructured text mark up primers:
+
+-   on the [sphinx site](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)
+
+-   more
+    [python oriented](https://pythonhosted.org/an_example_pypi_project/sphinx.html)
+
+-   typical doc strings templates
+    -   [google way](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html)
+    -   [numpy](https://www.sphinx-doc.org/en/master/usage/extensions/example_numpy.html#example-numpy)
+
+### "Templates"
+
+If you need to create a new page in the doc to automatically
+document your code, here is a 'template' to help you get started.
+
+```rst
+
+.. automodule:: +bids.folder_name .. <-- This is necessary for auto-documenting the rest
+
+.. autofunction:: function to document
+
+```
+
+To get the filenames of all the functions in a folder to add them to a file:
+
+``` bash
+ls -l +bids/*.m | cut -c42- | rev | cut -c 3- | rev | sed s/+bids/".. autofunction::"/g
+```
+
+Increase the `42` to crop more characters at the beginning.
+
+Change the `3` to crop more characters at the end.
+
 ## How the decision to merge a pull request is made?
 
 The decision-making rules are outlined in
@@ -113,42 +178,3 @@ Also make sure you add your information to the [CITATION.cff file](./CITATION.cf
 
 If you have made any type of contributions to BIDS-MATLAB, our team will add you
 as a contributor (or ask to be added if we forgot).
-
-## Updating the bids-schema
-
-The schema of the BIDS specification is available as a
-[set of yaml files in the bids-standards repository](https://github.com/bids-standard/bids-specification/blob/master/CONTRIBUTING.md#updating-the-schema).
-
-A JSON version is also available here: https://bids-specification.readthedocs.io/en/latest/schema.json
-
-The latest version can be obtained by running the following command:
-
-```bash
-make update_schema
-```
-
-A new version of the schema is fetched automatically regularly via continuous integration
-(see the [github action](.github/workflows/update_schema.yml)) when pushing to the repo
-or opening a pull-request.
-
-## release protocol
-
-- [ ] create a dedicated branch for the release candidate
-- [ ] update version in `citation.cff`
-- [ ] documentation related
-  - [ ] ensure the documentation is up to date
-  - [ ] make sure the doc builds correctly and fix any error
-- [ ] update jupyter books
-- [ ] update binder
-- [ ] update changelog
-  - [ ] change from `[unreleased]` to the version number
-  - [ ] remove unused sections (like `security`)
-- [ ] run `make release`
-- [ ] open a pull request (PR) from this release candidate branch targeting the default branch
-- [ ] fix any remaining failing continuous integration (test, markdown and code linting...)
-- [ ] merge to default branch
-- [ ] create a github tagged release
-- [ ] after release
-  - [ ] set version in `citation.cff` to dev
-  - [ ] update changelog
-    - [ ] add an `[unreleased]` section
