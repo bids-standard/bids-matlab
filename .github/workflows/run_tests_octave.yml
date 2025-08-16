@@ -62,7 +62,7 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install \
           octave \
-          liboctave-dev\
+          octave-dev\
           octave-common \
           octave-io \
           octave-image \
