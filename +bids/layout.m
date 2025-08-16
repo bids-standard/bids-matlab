@@ -419,6 +419,7 @@ function subject = parse_subject(pth, subjname, sesname, schema, filter, toleran
               'dwi', ...
               'perf', ...
               'micr', ...
+              'mrs', ...
               'nirs'}
 
           subject = parse_using_schema(subject, modalities{iModality}, schema, verbose);
@@ -517,7 +518,7 @@ function subject = parse_using_schema(subject, modality, schema, verbose)
             subject.(modality)(end) = manage_M0(subject.perf(end), pth, verbose);
 
           case {'eeg', 'ieeg', 'nirs'}
-            subject = appent_electrodes(subject, modality, electrode_tsv);
+            subject = append_electrodes(subject, modality, electrode_tsv);
 
         end
 
@@ -551,7 +552,7 @@ function electrode_tsv = list_electrodes(modality, file_list)
 
 end
 
-function subject = appent_electrodes(subject, modality, electrode_tsv)
+function subject = append_electrodes(subject, modality, electrode_tsv)
   for i = 1:numel(electrode_tsv)
     pth = fullfile(subject.path, modality);
     fullpath_filename = fullfile(pth, electrode_tsv{i});

@@ -1,4 +1,4 @@
-# Contributing to BIDS-MATLAB
+# Contributing
 
 **Welcome to the BIDS-MATLAB repository!**
 

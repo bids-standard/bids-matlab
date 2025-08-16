@@ -33,3 +33,7 @@ help:
 
 view:
 	$(BROWSER) build/html/index.html
+
+
+clean:
+	rm -fr build/
