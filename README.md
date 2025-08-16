@@ -21,7 +21,7 @@ BIDS (Brain Imaging Data Structure) datasets.
 For more information about BIDS, visit https://bids.neuroimaging.io/.
 
 See also [PyBIDS](https://github.com/bids-standard/pybids) for Python and the
-[BIDS Starter Kit](https://github.com/bids-standard/bids-starter-kit).
+[BIDS Starter Kit](https://bids.neuroimaging.io/getting_started/index.html).
 
 ## Installation
 
@@ -166,7 +166,7 @@ There are demos and tutorials showing some of the features in the `demos` folder
 Make sure to be familiar with the [JSON 101](https://bids-standard.github.io/stats-models/json_101.html).
 
 Note some of the perks of working with JSON files described
-on [the BIDS starterkit](https://bids-standard.github.io/bids-starter-kit/folders_and_files/metadata.html#interoperability-issues).
+on [the BIDS starterkit](https://bids.neuroimaging.io/getting_started/folders_and_files/metadata/json.html#interoperability-issues).
 
 For BIDS-MATLAB, if you are using MATLAB R2016b or newer, nothing else needs to be installed.
 

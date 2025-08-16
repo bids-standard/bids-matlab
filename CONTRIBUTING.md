@@ -86,7 +86,7 @@ The code style and quality is also checked during the continuous integration.
 For more information about MISS_HIT see its
 [documentation](https://florianschanda.github.io/miss_hit/).
 
-### Running tests on the code
+## Running tests on the code
 
 The unit and integration tests we have are in the [`tests` folder]'(./tests/)
 and should be run with MoxUnit. For more information on the set up for the test,
