@@ -14,6 +14,9 @@ on:
   pull_request:
     branches: ['*']
 
+  pull_request_target:
+    types: [opened, synchronize]
+
 env:
   OCTFLAGS: --no-gui --no-window-system --silent
 
