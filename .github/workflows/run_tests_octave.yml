@@ -47,6 +47,11 @@ jobs:
     - name: Install bids validator
       run: deno install -Agf -n bids-validator jsr:@bids/validator
 
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
     - name: Install bids-example
       run: |
         cd tests
