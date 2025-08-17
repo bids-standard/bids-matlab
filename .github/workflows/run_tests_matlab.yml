@@ -9,12 +9,14 @@ on:
   push:
     branches:
     - main
+    paths:
+    - '**.m'
   pull_request:
     branches: ['*']
 
   # to run on PR opened by other workflows (to update schema)
   pull_request_target:
-  types: [opened, synchronize]
+    types: [opened, synchronize]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
