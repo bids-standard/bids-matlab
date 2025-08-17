@@ -143,4 +143,4 @@ disp(json.content);
 json = bids.derivatives_json('sub-01_ses-test_task-faceRecognition_res-r2pt0_space-IXI549Space_desc-brain_mask.nii');
 disp(json.filename);
 disp(json.content);
-disp(json.content.Resolution{1}{1});
+disp(json.content.Resolution);
