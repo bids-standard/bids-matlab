@@ -109,7 +109,11 @@ spec = struct('ext', '.eeg', ...
 bids.File(spec, 'use_schema', true, 'verbose', true);
 
 % using the tolerant flag will throw an error
-bids.File(spec, 'use_schema', true, 'tolerant', false);
+try
+  bids.File(spec, 'use_schema', true, 'tolerant', false);
+catch ME
+  disp(ME.message);
+end
 
 % ## Renaming existing files
 

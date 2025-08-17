@@ -73,8 +73,12 @@ input.entities = struct('sub', '01', ...
                         'ses', 'test', ...
                         'run', '02');
 
-% uncomment the line below to see the error
-% file = bids.File(input, 'use_schema', true, 'tolerant', false);
+% to see the error
+try
+  file = bids.File(input, 'use_schema', true, 'tolerant', false);
+catch ME
+  disp(ME.message);
+end
 
 % Or you can specify the order of the entities manually.
 
