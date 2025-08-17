@@ -23,6 +23,7 @@ jobs:
       id: check-author
       run: |
         echo "auto merge allowed"
+        echo ${{ contains(fromJSON('["dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login) }} && github.repository == 'bids-standard/bids-matlab'
         echo "skip=false" >> $GITHUB_OUTPUT
 
     - name: Approve and enable auto-merge for bots
