@@ -19,15 +19,18 @@ jobs:
       run: echo "This PR is opened by '${{ github.event.pull_request.user.login }}'."
 
     - name: Check if we skip auto-merging
-      if: ${{ contains(fromJSON('["dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login) }} && github.repository == 'bids-standard/bids-matlab'
-      id: check-author
+      id: check-skip
       run: |
-        echo "auto merge allowed"
-        echo ${{ contains(fromJSON('["dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login) }} && ${{ github.repository == 'bids-standard/bids-matlab' }}
-        echo "skip=false" >> $GITHUB_OUTPUT
+        allow=${{ contains(fromJSON('["dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login) }} && ${{ github.repository == 'bids-standard/bids-matlab' }}
+        if [ ${allow} == "true" ]; then
+          echo "auto merge allowed"
+        else
+          echo "auto merge not allowed"
+        fi;
+        echo "allow=${skip}" >> $GITHUB_OUTPUT
 
     - name: Approve and enable auto-merge for bots
-      if: steps.check-author.outputs.skip == 'false'
+      if: steps.check-skip.outputs.allow == 'true'
       run: |
         gh pr review --body "$PR_URL" "auto-approved"
         gh pr review --approve "$PR_URL"
