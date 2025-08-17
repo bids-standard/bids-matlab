@@ -12,6 +12,8 @@ on:
     - main
   pull_request:
     branches: ['*']
+
+  # to run on PR opened by other workflows (to update schema)
   pull_request_target:
     types: [opened, synchronize]
 
