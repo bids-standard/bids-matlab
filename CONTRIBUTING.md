@@ -135,9 +135,21 @@ To run the tests we used the examples data sets from the
 [bids-examples repository](https://github.com/bids-standard/bids-examples)
 and also create some dummy datasets.
 
+This requires python to be installed as a python script is used
+to generate the dummy datasets.
+
 ```bash
 cd tests
 make data
+```
+
+or
+
+```bash
+cd tests
+pip install pandas
+python create_dummy_data_set.py
+git clone https://github.com/bids-standard/bids-examples.git --depth 1
 ```
 
 ### Add helper functions to the path
