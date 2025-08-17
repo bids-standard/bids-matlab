@@ -112,4 +112,4 @@ bids.copy_to_derivative(dataset, ...
 %%
 
 BIDS = bids.layout(fullfile(output_path, 'SPM12'));
-BIDS.description.GeneratedBy;
+disp(BIDS.description.GeneratedBy);

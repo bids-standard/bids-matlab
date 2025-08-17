@@ -53,7 +53,7 @@ input.entities = struct('sub', '01', ...
 
 file = bids.File(input);
 
-file.filename;
+disp(file.filename);
 
 % You can rely on the BIDS schema to know in which order the entities must go for a certain `suffix` type.
 
@@ -61,7 +61,7 @@ file.filename;
 
 file = bids.File(input, 'use_schema', true);
 
-file.filename;
+disp(file.filename);
 
 % This can also tell you if you are missing a required entity if you set `tolerant` to `false`.
 
@@ -91,7 +91,7 @@ file = bids.File(input);
 entity_order = {'run', 'sub', 'ses'};
 
 file = file.reorder_entities(entity_order);
-file.filename;
+disp(file.filename);
 
 % ## Modifying filenames
 
@@ -110,7 +110,7 @@ file.suffix = 'mask';
 file.entities.ses = '';
 file.entities.desc = 'brain';
 
-file.filename;
+disp(file.filename);
 
 % ## Generating file names for derivatives
 
@@ -125,7 +125,7 @@ file.prefix = '';
 file.entities.space = 'IXI549Space';
 file.entities.desc = 'preproc';
 
-file.filename;
+disp(file.filename);
 
 % This can prove useful to get a dummy json that should accompany any derivatives files.
 
@@ -133,14 +133,14 @@ file.filename;
 
 json = bids.derivatives_json(file.filename);
 
-json.filename;
-json.content;
+disp(json.filename);
+disp(json.content);
 
 % The content of the JSON should adapt depending on the entities or suffix present in the output filename.
 
 %%
 
 json = bids.derivatives_json('sub-01_ses-test_task-faceRecognition_res-r2pt0_space-IXI549Space_desc-brain_mask.nii');
-json.filename;
-json.content;
-json.content.Resolution;
+disp(json.filename);
+disp(json.content);
+disp(json.content.Resolution{1}{1});

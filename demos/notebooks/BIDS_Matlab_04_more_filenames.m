@@ -1,11 +1,9 @@
-% (C) Copyright 2021 Remi Gau
-
-% TODO turn into a notebook
-
-% demos to show how to use bids-matlab
-% to create and edit file BIDS filenames
+% # Working with filenames
 %
-% bids.File is a class that helps you work with BIDS files
+% This demo shows how to use bids-matlab
+% to create and edit file BIDS filenames.
+%
+% `bids.File` is a class that helps you work with BIDS files:
 %
 % - generate valid BIDS or BIDS-like filenames
 % - parse existing filenames
@@ -13,29 +11,47 @@
 % - rename files
 % - access that file metadata
 %
+% (C) Copyright 2021 BIDS-MATLAB developers
 
-%% Parsing filenames
+%%
+
+add_bids_matlab_to_path();
+
+% ## Parsing filenames
+
+%%
+
 bf = bids.File('sub-01_ses-02_task-face_run-01_bold.nii.gz');
 
 disp(bf.suffix);
 disp(bf.entities);
 disp(bf.extension);
 
-%% Changing parts of the filename
+% ## Changing parts of the filename
+
+%%
 
 bf = bids.File('sub-01_ses-02_task-face_run-01_bold.nii.gz');
 bf.entities.sub = '02';
 
 disp(bf.filename);
 
-%% Removing part of the name
+% ## Removing part of the name
+
+%%
 
 bf = bids.File('sub-01_ses-02_task-face_run-01_bold.nii.gz');
 bf.entities.ses = '';
 
 disp(bf.filename);
 
-%% Adding things to the name
+% ## Adding things to the name
+%
+% Adding a new entity in a file name can be annoying as entities
+% are supposed to follow a very specific order.
+% Luckily can always reorder things for you.
+
+%%
 
 bf = bids.File('sub-01_task-face_run-01_bold.nii.gz');
 bf.entities.ses = '02';
@@ -58,7 +74,9 @@ bf = bf.reorder_entities();
 
 disp(bf.filename);
 
-%% Generating a filename from scratch
+% ## Generating a filename from scratch
+
+%%
 
 % define the specification of the name to create
 spec = struct('ext', '.eeg', ...
@@ -77,7 +95,9 @@ disp(bf.filename);
 bf = bids.File(spec, 'use_schema', true);
 disp(bf.filename);
 
-%% Checking for valid BIDS filename
+% ## Checking for valid BIDS filename
+
+%%
 
 % if we forget the required entity "task" for this eeg file
 spec = struct('ext', '.eeg', ...
@@ -91,7 +111,9 @@ bids.File(spec, 'use_schema', true, 'verbose', true);
 % using the tolerant flag will throw an error
 bids.File(spec, 'use_schema', true, 'tolerant', false);
 
-%% Renaming existing files
+% ## Renaming existing files
+
+%%
 
 % let's create a dummy file to work with
 % by calling the linux "touch" command
@@ -126,7 +148,9 @@ assert(exist(expected_file, 'file') == 2);
 % we clean up the mess we did
 delete(expected_file);
 
-%% Renaming existing files with specification
+% ## Renaming existing files with specification
+
+%%
 
 % same as above but allows you to specify all the changes to apply
 % in a single "spec" structure
@@ -149,10 +173,14 @@ assert(exist(expected_file, 'file') == 2);
 
 delete('*.nii.gz');
 
-%% Accessing metadata
+% ## Accessing metadata
+
+%%
 
 % creating dummy data
+% the 'touch' command will only work on linux and macos
 system('touch sub-01_ses-02_task-face_run-01_bold.nii.gz');
+
 % creating dummy metadata
 bids.util.jsonencode('sub-01_ses-02_task-face_run-01_bold.json', ...
                      struct('TaskName', 'face', ...
