@@ -16,15 +16,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: View PR author
-      run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
-    - name: Approve a PR
+      run: echo "This PR is opened by '${{ github.event.pull_request.user.login }}'."
+
+    - name: Check if we skip auto-merging
       if: ${{ contains(fromJSON('["dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login) }} && github.repository == 'bids-standard/bids-matlab'
-      run: gh pr review --approve "$PR_URL"
-      env:
-        PR_URL: ${{github.event.pull_request.html_url}}
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    - name: Enable auto-merge for bots
-      run: gh pr merge --auto --squash "$PR_URL"
+      id: check-author
+      run: |
+        echo "auto merge allowed"
+        echo "skip=false" >> $GITHUB_OUTPUT
+
+    - name: Approve and enable auto-merge for bots
+      if: steps.check-author.outputs.skip == 'false'
+      run: |
+        gh pr review --body "$PR_URL" "auto-approved"
+        gh pr review --approve "$PR_URL"
+        gh pr merge --auto --squash "$PR_URL"
       env:
         PR_URL: ${{github.event.pull_request.html_url}}
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
