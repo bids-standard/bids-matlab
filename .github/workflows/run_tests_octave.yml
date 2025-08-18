@@ -14,6 +14,10 @@ on:
   pull_request:
     branches: ['*']
 
+  # to run on PR opened by other workflows (to update schema)
+  pull_request_target:
+    branches: [main]
+
 env:
   OCTFLAGS: --no-gui --no-window-system --silent
 
@@ -25,13 +29,14 @@ jobs:
       matrix:
         test: [slow, fast]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
 
     - name: Clone bids-matlab
       uses: actions/checkout@v4
       with:
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
         submodules: true
         fetch-depth: 1
 
@@ -46,6 +51,11 @@ jobs:
         deno-version: v1.x
     - name: Install bids validator
       run: deno install -Agf -n bids-validator jsr:@bids/validator
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
 
     - name: Install bids-example
       run: |
@@ -62,7 +72,7 @@ jobs:
         sudo apt-get -y -qq update
         sudo apt-get -y install \
           octave \
-          liboctave-dev\
+          octave-dev\
           octave-common \
           octave-io \
           octave-image \

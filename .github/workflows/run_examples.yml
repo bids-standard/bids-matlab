@@ -13,12 +13,17 @@ on:
   pull_request:
     branches: ['*']
 
+  # to run on PR opened by other workflows (to update schema)
+  pull_request_target:
+    branches: [main]
+
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Install MATLAB
@@ -29,6 +34,7 @@ jobs:
     - name: Clone bids-matlab
       uses: actions/checkout@v4
       with:
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
         submodules: true
         fetch-depth: 1
 

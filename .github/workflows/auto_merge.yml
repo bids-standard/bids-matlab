@@ -2,7 +2,10 @@
 name: Auto-merge Dependabot PRs
 # adapted from https://jhale.dev/posts/auto-merging-prs/
 
-on: pull_request
+on:
+  pull_request:
+  pull_request_target:
+    branches: [main]
 
 permissions:
   contents: write
@@ -13,15 +16,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: View PR author
-      run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
-    - name: Approve a PR
-      if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }} && github.repository == 'bids-standard/bids-matlab'
-      run: gh pr review --approve "$PR_URL"
-      env:
-        PR_URL: ${{github.event.pull_request.html_url}}
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    - name: Enable auto-merge for Dependabot PRs
-      run: gh pr merge --auto --squash "$PR_URL"
+      run: echo "This PR is opened by '${{ github.event.pull_request.user.login }}'."
+
+    - name: Check if we skip auto-merging
+      id: check-skip
+      run: |
+        allow=${{ contains(fromJSON('["github-actions[bot]", "dependabot[bot]", "pre-commit-ci[bot]"]'), github.event.pull_request.user.login) }} && ${{ github.repository == 'bids-standard/bids-matlab' }}
+        if [ ${allow} == "true" ]; then
+          echo "auto merge allowed"
+        else
+          echo "auto merge not allowed"
+        fi;
+        echo "allow=${allow}" >> $GITHUB_OUTPUT
+
+    - name: Approve and enable auto-merge for bots
+      if: steps.check-skip.outputs.allow == 'true'
+      run: |
+        gh pr review --body "$PR_URL" "auto-approved"
+        gh pr review --approve "$PR_URL"
+        gh pr merge --auto --squash "$PR_URL"
       env:
         PR_URL: ${{github.event.pull_request.html_url}}
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
