@@ -16,7 +16,7 @@ on:
 
   # to run on PR opened by other workflows (to update schema)
   pull_request_target:
-    types: [opened, synchronize]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -43,6 +43,7 @@ jobs:
     - name: Clone bids-matlab
       uses: actions/checkout@v4
       with:
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
         submodules: true
         fetch-depth: 1
 
@@ -58,6 +59,11 @@ jobs:
         deno-version: v1.x
     - name: Install bids validator
       run: deno install -Agf -n bids-validator jsr:@bids/validator
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
 
     - name: Install bids example
       run: |
