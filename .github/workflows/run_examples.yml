@@ -17,19 +17,26 @@ on:
   pull_request_target:
     branches: [main]
 
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
   test:
+
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && !contains(fromJSON('["github-actions[bot]","dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login)) ||
+      (github.event_name == 'pull_request_target' && contains(fromJSON('["github-actions[bot]","dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login))
+
+
     runs-on: ubuntu-latest
 
     steps:
     - name: Install MATLAB
       uses: matlab-actions/setup-matlab@v2.5.0
       with:
-        release: R2023a
+        release: R2024a
 
     - name: Clone bids-matlab
       uses: actions/checkout@v4
