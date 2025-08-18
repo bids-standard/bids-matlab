@@ -3,4 +3,5 @@ pre-commit
 jupyterlab
 octave_kernel
 jinja2
+pandas
 -r docs/requirements.txt
