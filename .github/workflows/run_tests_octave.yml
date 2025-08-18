@@ -20,14 +20,13 @@ on:
 
 env:
   OCTFLAGS: --no-gui --no-window-system --silent
-  ALLOWED_BOTS: '["github-actions[bot]","dependabot[bot]","pre-commit-ci[bot]"]'
 
 jobs:
   test:
 
     if: |
-      (github.event_name == 'pull_request' && !contains(fromJSON(env.ALLOWED_BOTS)), github.event.pull_request.user.login)) ||
-      (github.event_name == 'pull_request_target' && contains(fromJSON(env.ALLOWED_BOTS), github.event.pull_request.user.login))
+      (github.event_name == 'pull_request' && !contains(fromJSON('["github-actions[bot]","dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login)) ||
+      (github.event_name == 'pull_request_target' && contains(fromJSON('["github-actions[bot]","dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login))
 
     strategy:
       fail-fast: false

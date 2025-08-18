@@ -20,15 +20,12 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-env:
-  ALLOWED_BOTS: '["github-actions[bot]","dependabot[bot]","pre-commit-ci[bot]"]'
-
 jobs:
   test:
 
     if: |
-      (github.event_name == 'pull_request' && !contains(fromJSON(env.ALLOWED_BOTS)), github.event.pull_request.user.login)) ||
-      (github.event_name == 'pull_request_target' && contains(fromJSON(env.ALLOWED_BOTS), github.event.pull_request.user.login))
+      (github.event_name == 'pull_request' && !contains(fromJSON('["github-actions[bot]","dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login)) ||
+      (github.event_name == 'pull_request_target' && contains(fromJSON('["github-actions[bot]","dependabot[bot]","pre-commit-ci[bot]"]'), github.event.pull_request.user.login))
 
 
     runs-on: ubuntu-latest
