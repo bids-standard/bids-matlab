@@ -1,10 +1,9 @@
 ---
 name: update schema
 
-# This action fetches the latest version of the BIDS specification and converts
-# the YAML based schema into a JSON format. If there are any changes compared to
-# the version currently in the repo, it will open a pull request to submit
-# the changes.
+# This action fetches the latest version of the BIDS specification in JSON format.
+# If there are any changes compared to the version currently in the repo,
+# it will open a pull request to submit the changes.
 
 
 # Uses the cron schedule for github actions
