@@ -1,0 +1,62 @@
+---
+title: ''
+tags:
+- MATLAB
+- Octave
+- brain imaging data structure
+- MRI
+- MEG
+- EEG
+- iEEG
+- PET
+- microscopy
+
+authors:
+- name: Rémi Gau
+  orcid: 0000-0002-1535-9767
+  affiliation: 1
+- name: Marco Barilari
+  orcid: 0000-0002-3313-3120
+  affiliation: 1
+- name: Ceren Battal
+  orcid: 0000-0002-9844-7630
+  affiliation: 1
+- name: Nikita Beliy
+- name: Rotem  Botvinik-Nezer
+- name: Jeanne Caron-Guyon
+  orcid: 0000-0001-8681-5267
+  affiliation: 1
+- name: Phillips Chrisophe
+  orcid: 0000-0002-4990-425X
+- name: Tanguy Duval
+  orcid: 0000-0002-1228-5192
+- name: Guillaume Flandin
+  orcid: 0000-0003-0077-7859
+- name: Andrew Janke
+- name: Michèle MacLean
+  orcid: 0000-0002-0174-9326
+  affiliation: 2
+- name: Christopher Madan
+  orcid: 0000-0003-3228-6501
+- name: Henk Mutsaerts
+  orcid: 0000-0003-0894-0307
+- name: Guiomar Niso
+  orcid: 0000-0001-5872-8924
+- name: Martin Norgaard
+  orcid: 0000-0003-2131-5688
+- name: Robert Oostenveld
+  orcid: 0000-0002-1974-1293
+- name: Cyril Pernet
+  orcid: 0000-0003-4010-4632
+- name: Iqra Shahzad
+  orcid: 0000-0002-8724-7668
+  affiliation: 1
+- name: Michał Szczepanik
+  orcid: 0000-0002-4028-2087
+affiliations:
+- name: Université catholique de Louvain
+  index: 1
+- name: Université de Montréal
+  index: 2
+date: '2022-10-21'
+bibliography: paper.bib
