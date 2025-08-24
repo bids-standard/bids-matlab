@@ -1,12 +1,8 @@
 # Contributing
 
-**Welcome to the BIDS-MATLAB repository!**
+**Welcome to the bids-matlab repository!**
 
-_We're so excited you're here and want to contribute._
-
-**Welcome to the BIDS Specification repository!**
-
-_We're so excited you're here and want to contribute._
+We're so excited you're here and want to contribute.
 
 We hope that these guidelines are designed to make it as easy as possible to get involved.
 If you have any questions that aren't discussed below, please let us know
@@ -32,7 +28,7 @@ Some editors can automatically enforce hard-line wrapping with some linter like
 an example with visual-studio code
 [here](https://glebbahmutov.com/blog/configure-prettier-in-vscode/#saving-without-formatting).
 
-### Matlab code style guide and quality
+### MATLAB code style guide and quality
 
 We use the [MISS_HIT linter](https://github.com/florianschanda/miss_hit/) to
 automatically enforce / fix some code style issues and check for
@@ -91,7 +87,7 @@ For more information about MISS_HIT see its
 We use a series of unit and integration tests to make sure the code behaves as
 expected and to also help in development.
 The unit and integration tests we have are in the [`tests` folder]'(./tests/)
-and should be run with [MoxUnit](https://moxunit.github.io/MOxUnit/).
+and should be run with [MOxUnit](https://moxunit.github.io/MOxUnit/).
 
 If you are not sure what unit and integration tests are, check the chapter about
 that in the
@@ -100,17 +96,17 @@ that in the
 ### Install MoxUnit
 
 You need to install
-[MOxUnit for matlab and octave](https://github.com/MOxUnit/MOxUnit) to run the
+[MOxUnit for MATLAB and Octave](https://github.com/MOxUnit/MOxUnit) to run the
 tests.
 
 Note the install procedure will require you to have
 [git](https://git-scm.com/downloads) installed on your computer.
 If you don't,
-you can always download the MoxUnit code with this
+you can always download the MOxUnit code with this
 [link](https://github.com/MOxUnit/MOxUnit/archive/master.zip).
 
 Run the following from a terminal in the folder where you want to install MOxUnit.
-The `make install` command will find Matlab / Octave on your system and
+The `make install` command will find MATLAB / Octave on your system and
 make sure it plays nice with MoxUnit.
 
 NOTE: only type in the terminal what is after the `$` sign:
@@ -155,7 +151,7 @@ git clone https://github.com/bids-standard/bids-examples.git --depth 1
 ### Add helper functions to the path
 
 There are a some help functions you need
-to add to the Matlab / Octave path to run the tests:
+to add to the MATLAB / Octave path to run the tests:
 
 ```matlab
 addpath(fullfile('tests', 'utils'))
@@ -179,7 +175,7 @@ You can use the following function template to write more tests.
 
 ```matlab
 function test_suite = test_functionToTest()
-    % This top function is necessary for mox unit to run tests.
+    % This top function is necessary for MOxUnit to run tests.
     % DO NOT CHANGE IT except to adapt the name of the function.
     try % assignment of 'localfunctions' is necessary in Matlab >= 2016
         test_functions = localfunctions(); %#ok<*NASGU>
@@ -300,7 +296,7 @@ The decision-making rules are outlined in
 
 ## Recognizing contributions
 
-BIDS-MATLAB follows the
+bids-matlab follows the
 [all-contributors](https://github.com/kentcdodds/all-contributors)
 specification, so we welcome and recognize all contributions from documentation
 to testing to code development. You can see a list of current contributors in
@@ -308,5 +304,5 @@ the [README](./README.md).
 
 Also make sure you add your information to the [CITATION.cff file](./CITATION.cff).
 
-If you have made any type of contributions to BIDS-MATLAB, our team will add you
+If you have made any type of contributions to bids-matlab, our team will add you
 as a contributor (or ask to be added if we forgot).
