@@ -98,11 +98,17 @@ authors:
     orcid: "https://orcid.org/0000-0001-8681-5267"
     affiliation: "Université catholique de Louvain"
 
+  - family-names: "Mikkelsen"
+    given-names: "Mark"
+    orcid: "https://orcid.org/0000-0002-0349-3782"
+    affiliation: "Weill Cornell Medicine"
+
 keywords:
   - MATLAB
   - Octave
   - brain imaging data structure
   - MRI
+  - MRS
   - MEG
   - EEG
   - iEEG

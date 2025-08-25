@@ -1,4 +1,4 @@
 [codespell]
 skip = *.js,*.svg,*.eps,.git,env,*build,bids-examples,coverage_html,schema.json
-ignore-words-list = te,ans,nin
+ignore-words-list = te,ans,nin,Weill
 builtin = clear,rare
