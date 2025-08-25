@@ -352,7 +352,7 @@ function test_modality_parsing()
                        fullfile('sub-01', 'anat', 'sub-01_ses-01_t1w.nii'), '' ... % no ses folder
                       };
 
-  for i = 1:size(filename_expected)
+  for i = 1:size(filename_expected, 1)
     bf = bids.File(filename_expected{i, 1}, 'use_schema', false);
     assertEqual(bf.modality, filename_expected{i, 2});
   end
