@@ -93,7 +93,7 @@ If you are not sure what unit and integration tests are, check the chapter about
 that in the
 [Turing way](https://the-turing-way.netlify.app/reproducible-research/testing.html).
 
-### Install MoxUnit
+### Install MOxUnit
 
 You need to install
 [MOxUnit for MATLAB and Octave](https://github.com/MOxUnit/MOxUnit) to run the
@@ -107,14 +107,14 @@ you can always download the MOxUnit code with this
 
 Run the following from a terminal in the folder where you want to install MOxUnit.
 The `make install` command will find MATLAB / Octave on your system and
-make sure it plays nice with MoxUnit.
+make sure it plays nice with MOxUnit.
 
 NOTE: only type in the terminal what is after the `$` sign:
 
 ```bash
 # get the code for MOxUnit with git
 git clone https://github.com/MOxUnit/MOxUnit.git
-# enter the newly created folder and set up MoxUnit
+# enter the newly created folder and set up MOxUnit
 cd MOxUnit
 make install
 ```
@@ -306,3 +306,21 @@ Also make sure you add your information to the [CITATION.cff file](./CITATION.cf
 
 If you have made any type of contributions to bids-matlab, our team will add you
 as a contributor (or ask to be added if we forgot).
+
+You can also add yourself as a contributor as follows:
+
+Make sure you have Node.js and npm installed on your computer, then install the
+all-contributors-cli tool with:
+
+```bash
+npm install -g all-contributors-cli
+```
+
+Add yourself to [.all-contributorsrc](./.all-contributorsrc) and then run:
+
+```bash
+npx all-contributors generate
+```
+
+Make a pull request with the changes to the .all-contributorsrc, README.md, and
+CITATION.cff files.
