@@ -80,3 +80,7 @@ yarn.lock
 
 # tests
 dummy_ds/
+
+# node/npm
+package.json
+package-lock.json
