@@ -77,3 +77,9 @@ octave-workspace
 # javascript
 node_modules/*
 yarn.lock
+
+# tests
+dummy_ds/
+
+# node/npm
+package-lock.json

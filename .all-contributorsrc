@@ -41,6 +41,19 @@
       ]
     },
     {
+      "login": "markmikkelsen",
+      "name": "Mark Mikkelsen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6051303?v=4",
+      "profile": "https://github.com/markmikkelsen/",
+      "contributions": [
+        "code",
+        "design",
+        "doc",
+        "maintenance",
+        "review"
+      ]
+    },
+    {
       "login": "apjanke",
       "name": "Andrew Janke",
       "avatar_url": "https://avatars2.githubusercontent.com/u/2618447?v=4",

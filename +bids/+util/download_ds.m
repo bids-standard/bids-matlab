@@ -86,7 +86,7 @@ function out_path = download_ds(varargin)
   end
 
   % clean previous runs
-  if isdir(out_path)
+  if isfolder(out_path)
     if args.Results.force
       if args.Results.delete_previous
         rmdir(out_path, 's');
@@ -111,6 +111,11 @@ function out_path = download_ds(varargin)
                   bids.internal.format_path(filename), ...
                   bids.internal.format_path(out_path));
     print_to_screen(msg, verbose);
+
+    if ~is_valid_zip(filename)
+      error(['Invalid ZIP file "%s". The download may have failed or ' ...
+             'the file is corrupted.'], filename);
+    end
 
     unzip(filename, out_path);
     if strcmpi(source, 'spm') && strcmpi(demo, 'moae')
@@ -169,11 +174,11 @@ function [URL, ftp_server, demo_path] = get_URL(source, demo, verbose)
       % brainstorm
     case 'ieeg'
       demo_path = '/pub/tutorials/tutorial_epimap_bids.zip';
-      ds_size = '190 Mb';
+      % ds_size = '190 Mb';
 
     case 'meg'
       demo_path = '/pub/tutorials/sample_fem.zip';
-      ds_size = '210 Mb';
+      % ds_size = '210 Mb';
 
     case 'ecog'
       demo_path = '/pub/tutorials/sample_ecog.zip';
@@ -197,5 +202,14 @@ end
 function print_to_screen(msg, verbose)
   if verbose
     fprintf(1, msg);
+  end
+end
+
+function valid = is_valid_zip(zipfile)
+  try
+    unzip(zipfile, tempname);
+    valid = true;
+  catch
+    valid = false;
   end
 end
