@@ -48,7 +48,9 @@
       "contributions": [
         "code",
         "design",
-        "maintenance"
+        "doc",
+        "maintenance",
+        "review"
       ]
     },
     {
