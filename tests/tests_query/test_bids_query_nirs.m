@@ -32,7 +32,13 @@ function test_bids_query_nirs_basic()
                             'suffix', 'nirs', ...
                             'extension', '.snirf');
 
-  assertEqual(numel(dependencies.group), 3);
+  base_path = fullfile(get_test_data_dir(), 'fnirs_tapping', 'sub-01', 'nirs');
+
+  assertEqual(dependencies.group, ...
+              {fullfile(base_path, 'sub-01_task-tapping_channels.tsv')
+               fullfile(base_path, 'sub-01_task-tapping_events.tsv')
+               fullfile(base_path, 'sub-01_optodes.tsv')} ...
+             );
 
   % TODO: cannot query coordsystem file
   coordsystem_files = bids.query(BIDS, 'metadata', ...

@@ -7,6 +7,9 @@ function test_suite = test_bids_schema %#ok<*STOUT>
 end
 
 function test_get_datatypes()
+  % Check all known datatypes in schema.
+  %
+  % Also check content of datatype for fmri
 
   schema = bids.Schema();
   datatypes = schema.get_datatypes();
@@ -29,8 +32,8 @@ function test_get_datatypes()
   assertEqual(fieldnames(datatypes.func), {'func'
                                            'norf'
                                            'phase'
-                                           'events__mri'
-                                           'timeseries__func'});
+                                           'timeseries__func'
+                                           'events__mri'});
 
 end
 
@@ -43,9 +46,9 @@ function test_return_suffixes()
                'sbref'; ...
                'noRF'; ...
                'phase'; ...
-               'events'; ...
                'physio'; ...
-               'stim'});
+               'stim'; ...
+               'events'});
 end
 
 function test_return_entity_key()
@@ -214,8 +217,8 @@ function test_return_suffix_groups_for_datatype()
   assertEqual(suffix_groups, {'func'
                               'norf'
                               'phase'
-                              'events__mri'
-                              'timeseries__func'});
+                              'timeseries__func'
+                              'events__mri'});
 
 end
 
