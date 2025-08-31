@@ -32,7 +32,7 @@ jobs:
     - name: Approve and enable auto-merge for bots
       if: steps.check-skip.outputs.allow == 'true'
       run: |
-        gh pr review --approve --body "$PR_URL" "auto-approved"
+        gh pr review --approve --body "auto-approved" "$PR_URL"
         gh pr merge --auto --squash "$PR_URL"
       env:
         PR_URL: ${{github.event.pull_request.html_url}}
