@@ -19,11 +19,11 @@ function str = camel_case(str)
   % (C) Copyright 2018 BIDS-MATLAB developers
 
   % camel case: upper case for first letter for all words but the first one
-  spaceIdx = regexp(str, '[a-zA-Z0-9]*', 'start');
+  spaceIdx = regexp(str, '[a-zA-Z0-9+]*', 'start');
   str(spaceIdx(2:end)) = upper(str(spaceIdx(2:end)));
 
   % remove invalid characters
-  [unvalidCharacters] = regexp(str, '[^a-zA-Z0-9]');
+  [unvalidCharacters] = regexp(str, '[^a-zA-Z0-9+]');
   str(unvalidCharacters) = [];
 
 end

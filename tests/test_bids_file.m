@@ -615,6 +615,24 @@ function test_bids_file_derivatives()
 
 end
 
+function test_with_plus_in_label()
+
+  filename = 'sub-01_task-faceRecognition_acq-foo+bar_bold.nii';
+
+  bf = bids.File(filename, 'use_schema', true);
+  assertEqual(bf.entities.acq, 'foo+bar');
+  assertEqual(bf.filename, filename);
+
+  bf = bids.File(filename, 'use_schema', false);
+  assertEqual(bf.entities.acq, 'foo+bar');
+  assertEqual(bf.filename, filename);
+
+  bf.entities.desc = 'brain+cerebellum';
+  assertEqual(bf.filename, ...
+              'sub-01_task-faceRecognition_acq-foo+bar_desc-brain+cerebellum_bold.nii');
+
+end
+
 %% SCHEMA
 
 function test_bids_file_parsing_filename_schema_based()

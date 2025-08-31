@@ -157,12 +157,16 @@ function p = parse_entity_label_pairs(p, basename, tolerant, verbose)
             error('entity label is empty');
           end
 
-          for j = 1:2
-            m = regexp(d{j}, '[^a-zA-Z0-9]', 'match');
-            if ~isempty(m)
-              error_id = 'invalidChar';
-              error('entity and label must be alphanumeric');
-            end
+          m = regexp(d{1}, '[^a-zA-Z0-9]', 'match');
+          if ~isempty(m)
+            error_id = 'invalidChar';
+            error('entity must be alphanumeric');
+          end
+
+          m = regexp(d{2}, '[^a-zA-Z0-9+]', 'match');
+          if ~isempty(m)
+            error_id = 'invalidChar';
+            error('label contains alphanumeric or "+" characters.');
           end
 
           p.entities.(d{1}) = d{2};
