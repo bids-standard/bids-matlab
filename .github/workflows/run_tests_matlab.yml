@@ -9,8 +9,6 @@ on:
   push:
     branches:
     - main
-    paths:
-    - '**.m'
   pull_request:
     branches: ['*']
 
