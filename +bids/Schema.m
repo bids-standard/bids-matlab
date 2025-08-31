@@ -423,7 +423,8 @@ classdef Schema
       raw = obj.content.rules.files.raw;
       suffix_groups = raw.(datatype);
 
-      extra_datatypes = {'channels', 'photo', 'task'};
+      % some of the suffixes are not kept in the same place as the others
+      extra_datatypes = {'channels', 'photo', 'task', 'events'};
       for i = 1:numel(extra_datatypes)
         groups = fieldnames(raw.(extra_datatypes{i}));
         for j = 1:numel(groups)
