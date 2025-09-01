@@ -39,7 +39,7 @@ jobs:
         release: R2024a
 
     - name: Clone bids-matlab
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
         submodules: true
