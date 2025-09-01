@@ -69,7 +69,7 @@ function pth = resolve_bids_uri(uri, layout)
 
   end
 
-  if numel(pth) == 1
+  if isscalar(pth)
     pth = pth{1};
   end
 

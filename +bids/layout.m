@@ -71,7 +71,7 @@ function BIDS = layout(varargin)
   default_use_schema = true;
   default_verbose = false;
 
-  is_dir_or_struct = @(x) (isstruct(x) || isdir(x));
+  is_dir_or_struct = @(x) (isstruct(x) || isfolder(x));
 
   args = inputParser();
 
@@ -153,7 +153,7 @@ function BIDS = layout(varargin)
   end
 
   BIDS.is_datalad_ds = false;
-  if isdir(fullfile(BIDS.pth, '.datalad')) && isdir(fullfile(BIDS.pth, '.git'))
+  if isfolder(fullfile(BIDS.pth, '.datalad')) && isfolder(fullfile(BIDS.pth, '.git'))
     BIDS.is_datalad_ds = true;
   end
 
@@ -287,7 +287,7 @@ function value = exclude(filter, entity, label)
     return
   end
   % use regex when filter is a cell of numel 1
-  if numel(filter.(entity)) == 1
+  if isscalar(filter.(entity))
     if cellfun('isempty', regexp(label, filter.(entity)))
       value = true;
     end

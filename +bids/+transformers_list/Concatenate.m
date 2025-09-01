@@ -26,7 +26,7 @@ function data = Concatenate(transformer, data)
     nb_rows(i) = size(data.(input{i}), 1); %#ok<AGROW>
   end
   nb_rows = unique(nb_rows);
-  assert(length(nb_rows) == 1);
+  assert(isscalar(nb_rows));
 
   for row = 1:nb_rows
 

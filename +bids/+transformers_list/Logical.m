@@ -41,7 +41,7 @@ function data = Logical(transformer, data)
   input = bids.transformers_list.get_input(transformer, data);
 
   output = bids.transformers_list.get_output(transformer, data);
-  assert(numel(output) == 1);
+  assert(isscalar(output));
 
   % try coerce all input to logical
   for i = 1:numel(input)

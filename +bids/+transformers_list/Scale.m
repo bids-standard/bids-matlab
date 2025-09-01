@@ -70,7 +70,7 @@ function data = Scale(transformer, data)
 
     nan_values = isnan(this_input);
 
-    if numel(unique(this_input)) == 1 && ismember(replace_na, {'off', 'before'})
+    if isscalar(unique(this_input)) && ismember(replace_na, {'off', 'before'})
       error(['Cannot scale a column with constant value %s\n', ...
              'If you want a constant column of 0 returned,\n'
              'set "replace_na" to "after"'], unique(this_input));

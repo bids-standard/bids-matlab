@@ -33,7 +33,7 @@ function trial_type_list = list_all_trial_types(varargin)
   default_tolerant = true;
   default_verbose = false;
 
-  is_dir_or_struct = @(x) (isstruct(x) || isdir(x));
+  is_dir_or_struct = @(x) (isstruct(x) || isfolder(x));
 
   args = inputParser();
   addRequired(args, 'BIDS', is_dir_or_struct);

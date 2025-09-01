@@ -32,7 +32,7 @@ function [data, headers, y_labels] = list_events(varargin)
 
   % (C) Copyright 2022 Remi Gau
 
-  is_dir_or_struct = @(x) (isstruct(x) || isdir(x));
+  is_dir_or_struct = @(x) (isstruct(x) || isfolder(x));
 
   args = inputParser();
   addRequired(args, 'BIDS', is_dir_or_struct);

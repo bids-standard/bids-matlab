@@ -134,7 +134,7 @@ classdef Description
         value = varargin{2};
         obj.content(1).(key) = value;
 
-      elseif numel(varargin) == 1 && isstruct(varargin{1})
+      elseif isscalar(varargin) && isstruct(varargin{1})
         fields = fieldnames(varargin{1});
         for iField = 1:numel(fields)
           key = fields{iField};

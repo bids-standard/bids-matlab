@@ -5,7 +5,7 @@ function input = get_input(transformer, data)
   % (C) Copyright 2022 BIDS-MATLAB developers
 
   assert(isstruct(transformer));
-  assert(numel(transformer) == 1);
+  assert(isscalar(transformer));
 
   verbose = true;
   if isfield(transformer, 'verbose')

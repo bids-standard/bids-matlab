@@ -126,7 +126,7 @@ function file_content = return_subset(file_content, field_to_return)
 
     if isempty(field_to_return)
       fieldsList = fieldnames(file_content);
-      if numel(fieldsList) == 1 && isnumeric(file_content.(fieldsList{1}))
+      if isscalar(fieldsList) && isnumeric(file_content.(fieldsList{1}))
         file_content = file_content.(fieldsList{1});
       end
 

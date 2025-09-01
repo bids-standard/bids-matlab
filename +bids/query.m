@@ -219,7 +219,7 @@ function result = query(BIDS, query, varargin)
       result = result';
 
     case {'metadata', 'dependencies'}
-      if numel(result) == 1
+      if isscalar(result)
         result = result{1};
       else
         result = result';
@@ -302,7 +302,7 @@ end
 
 function options = parse_query(options)
 
-  if numel(options) == 1
+  if isscalar(options)
 
     if isstruct(options{1})
       options = [fieldnames(options{1}), struct2cell(options{1})];
@@ -642,7 +642,7 @@ end
 % and not for every call to keep_file
 
 function status = check_label_with_regex(label, option)
-  if numel(option) == 1
+  if isscalar(option)
     option = prepare_regex(option);
     keep = regexp(label, option, 'match');
     status = isempty(keep) || isempty(keep{1});
