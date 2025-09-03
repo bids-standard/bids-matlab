@@ -51,7 +51,7 @@ function varargout = file_utils(str, varargin)
 
   str = cellstr(str);
 
-  if numel(options) == 1
+  if isscalar(options)
     [str, options] = get_item(str, options);
   end
 
@@ -282,7 +282,7 @@ function [files, dirs] = listfiles(action, directory, varargin)
 
     t = regexp(dirs, expr);
 
-    if numel(dirs) == 1 && ~iscell(t)
+    if isscalar(dirs) && ~iscell(t)
       t = {t};
     end
     dirs = dirs(~cellfun(@isempty, t));
@@ -291,7 +291,7 @@ function [files, dirs] = listfiles(action, directory, varargin)
   else
     t = regexp(files, expr);
 
-    if numel(files) == 1 && ~iscell(t)
+    if isscalar(files) && ~iscell(t)
       t = {t};
     end
     files = files(~cellfun(@isempty, t));

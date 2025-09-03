@@ -26,7 +26,7 @@ function data = Product(transformer, data)
 
   output = bids.transformers_list.get_output(transformer, data);
 
-  assert(numel(output) == 1);
+  assert(isscalar(output));
 
   output = output{1};
 

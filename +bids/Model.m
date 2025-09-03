@@ -363,7 +363,7 @@ classdef Model
       function value = format_output(value, idx)
         if ~iscell(value) && numel(idx) > 1
           value = {value};
-        elseif iscell(value) && numel(value) == 1
+        elseif iscell(value) && isscalar(value)
           value = value{1};
         end
       end
@@ -479,7 +479,7 @@ classdef Model
                                      obj.verbose);
       end
 
-      if numel(edge) == 1
+      if isscalar(edge)
         edge = edge{1};
       end
 
@@ -694,7 +694,7 @@ classdef Model
       %
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
-      assert(numel(node) == 1);
+      assert(isscalar(node));
       if isfield(node, 'Transformations')
         value = node.Transformations;
       end
@@ -711,7 +711,7 @@ classdef Model
       %
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
-      assert(numel(node) == 1);
+      assert(isscalar(node));
       if isfield(node, 'DummyContrasts')
         value = node.DummyContrasts;
       end
@@ -728,7 +728,7 @@ classdef Model
       %
       value = [];
       [node, idx] = get_nodes(obj, varargin{:});
-      assert(numel(node) == 1);
+      assert(isscalar(node));
       if isfield(node, 'Contrasts')
         value = node.Contrasts;
       end
@@ -744,7 +744,7 @@ classdef Model
       % :type Name: char
       %
       [node, idx] = get_nodes(obj, varargin{:});
-      assert(numel(node) == 1);
+      assert(isscalar(node));
       value = node.Model;
     end
 
@@ -789,7 +789,7 @@ classdef Model
       %   bm.write(filename);
       %
 
-      is_dir_or_struct = @(x) isstruct(x) || isdir(x);  %#ok<*ISDIR>
+      is_dir_or_struct = @(x) isstruct(x) || isfolder(x);
       is_char_or_cellstr = @(x) ischar(x) || iscellstr(x); %#ok<*ISCLSTR>
 
       args = inputParser;
@@ -876,7 +876,7 @@ classdef Model
 
         this_node = obj.content.Nodes{i};
 
-        if isnumeric(this_node.Model.X) && numel(this_node.Model.X) == 1
+        if isnumeric(this_node.Model.X) && isscalar(this_node.Model.X)
           this_node.Model.X = {this_node.Model.X};
         end
 
@@ -887,12 +887,12 @@ classdef Model
 
             if ~isempty(this_contrast.Weights) && ...
                 ~iscell(this_contrast.Weights) && ...
-                numel(this_contrast.Weights) == 1
+                isscalar(this_contrast.Weights)
               this_contrast.Weights = {this_contrast.Weights};
             end
 
             if isnumeric(this_contrast.ConditionList) && ...
-                numel(this_contrast.ConditionList) == 1
+                isscalar(this_contrast.ConditionList)
               this_contrast.ConditionList = {this_contrast.ConditionList};
             end
 

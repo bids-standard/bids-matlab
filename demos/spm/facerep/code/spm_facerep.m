@@ -21,7 +21,7 @@ subject_label = '01';
 %% Download
 
 % clean previously failed download
-if isdir(fullfile(pwd, '..', 'face_rep'))
+if isfolder(fullfile(pwd, '..', 'face_rep'))
   rmdir(fullfile(pwd, '..', 'face_rep'), 's');
 end
 

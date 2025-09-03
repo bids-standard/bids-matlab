@@ -332,7 +332,7 @@ function [BIDS, out_path, filter, cfg] = fixture(dataset)
 
       BIDS = moae_dir();
 
-      if ~isdir(fullfile(BIDS, 'sub-01'))
+      if ~isfolder(fullfile(BIDS, 'sub-01'))
 
         bids.util.download_ds('source', 'spm', ...
                               'demo', 'moae', ...

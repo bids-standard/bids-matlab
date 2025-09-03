@@ -78,7 +78,7 @@ classdef BaseTransformer
       end
 
       assert(isstruct(transformer));
-      assert(numel(transformer) == 1);
+      assert(isscalar(transformer));
 
       if isfield(transformer, 'Input')
 
@@ -102,7 +102,7 @@ classdef BaseTransformer
       end
 
       assert(isstruct(transformer));
-      assert(numel(transformer) == 1);
+      assert(isscalar(transformer));
 
       if isfield(transformer, 'Output')
 

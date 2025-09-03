@@ -76,7 +76,7 @@ function varargout = jsonwrite(varargin)
       opt      = varargin(2:end);
     end
   end
-  if numel(opt) == 1 && isstruct(opt{1})
+  if isscalar(opt) && isstruct(opt{1})
     opt = opt{1};
   elseif mod(numel(opt), 2) == 0
     opt = cell2struct(opt(2:2:end), opt(1:2:end), 2);
@@ -133,7 +133,7 @@ function S = jsonwrite_var(json, tab)
   elseif isnumeric(json) || islogical(json)
     S = jsonwrite_numeric(json);
   elseif isa(json, 'string')
-    if numel(json) == 1
+    if isscalar(json)
       if ismissing(json)
         S = 'null';
       else
@@ -143,7 +143,7 @@ function S = jsonwrite_var(json, tab)
       json = arrayfun(@(x)x, json, 'UniformOutput', false);
       json(cellfun(@(x) ismissing(x), json)) = {'null'};
       idx = find(size(json) ~= 1);
-      if numel(idx) == 1 % vector
+      if isscalar(idx) % vector
         S = jsonwrite_cell(json, tab);
       else % array
         S = jsonwrite_cell( ...
@@ -186,7 +186,7 @@ function S = jsonwrite_var(json, tab)
 
   % ==========================================================================
 function S = jsonwrite_struct(json, tab)
-  if numel(json) == 1
+  if isscalar(json)
     if isstruct(json)
       fn = fieldnames(json);
     else
@@ -221,7 +221,7 @@ function S = jsonwrite_struct(json, tab)
   % ==========================================================================
 function S = jsonwrite_cell(json, tab)
   if numel(json) == 0 || ...
-          (numel(json) == 1 && iscellstr(json)) || ...
+          (isscalar(json) && iscellstr(json)) || ...
           all(all(cellfun(@isnumeric, json))) || ...
           all(all(cellfun(@islogical, json)))
     tab = '';
@@ -260,7 +260,7 @@ function S = jsonwrite_numeric(json)
     return
   elseif numel(json) > 1
     idx = find(size(json) ~= 1);
-    if numel(idx) == 1 % vector
+    if isscalar(idx) % vector
       if any(islogical(json)) || any(~isfinite(json))
         S = jsonwrite_cell(num2cell(json), '');
       else

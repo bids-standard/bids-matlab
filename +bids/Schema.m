@@ -335,7 +335,7 @@ classdef Schema
       idx = ismember(keys, entity_key);
       entity_name = all_names(idx);
 
-      if numel(entity_name) == 1
+      if isscalar(entity_name)
         entity_name = entity_name{1};
       end
 
@@ -376,7 +376,7 @@ classdef Schema
         keys{i} = obj.content.objects.entities.(entity).name;
       end
 
-      if numel(keys) == 1
+      if isscalar(keys)
         keys = keys{1};
       end
 

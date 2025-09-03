@@ -70,7 +70,7 @@ function  status = check(status, file_struct, key, values)
 
   has_key = ismember(key, fields);
   % do we want to exclude the file (by passing an empty option) bassed on that key ?
-  exclude = numel(values) == 1 && isempty(values{1});
+  exclude = isscalar(values) && isempty(values{1});
 
   if ~has_key && ~exclude
     status = false;
@@ -135,7 +135,7 @@ end
 % and not for every call to keep_file
 
 function status = check_label_with_regex(value, option)
-  if numel(option) == 1
+  if isscalar(option)
     option = prepare_regex(option);
     keep = regexp(value, option, 'match');
     status = isempty(keep) || isempty(keep{1});
