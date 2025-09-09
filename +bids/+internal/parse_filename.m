@@ -166,7 +166,7 @@ function p = parse_entity_label_pairs(p, basename, tolerant, verbose)
           m = regexp(d{2}, '[^a-zA-Z0-9+]', 'match');
           if ~isempty(m)
             error_id = 'invalidChar';
-            error('label contains alphanumeric or "+" characters.');
+            error('label contains invalid characters (only alphanumeric and "+" are allowed).');
           end
 
           p.entities.(d{1}) = d{2};
