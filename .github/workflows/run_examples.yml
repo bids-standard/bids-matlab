@@ -51,6 +51,6 @@ jobs:
         make install
 
     - name: Run commands
-      uses: matlab-actions/run-command@v2.2.2
+      uses: matlab-actions/run-command@v2.3.0
       with:
         command: cd('demos/notebooks'); success = test_notebooks(); assert(success);
