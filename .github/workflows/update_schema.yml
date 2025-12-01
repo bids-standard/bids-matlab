@@ -42,7 +42,7 @@ jobs:
     steps:
 
     - name: Clone bids-matlab
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Get BIDS schema
       run: make update_schema
