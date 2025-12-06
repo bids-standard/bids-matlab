@@ -5,4 +5,4 @@ sphinx_rtd_theme
 sphinx-copybutton
 myst-parser
 rich
-urllib3==2.5.0
+urllib3==2.6.0
