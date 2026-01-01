@@ -80,14 +80,14 @@ jobs:
 
     - name: Run slow tests
       if: matrix.test == 'slow'
-      uses: matlab-actions/run-command@v2.3.0
+      uses: matlab-actions/run-command@v2.4.0
       with:
         command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); global SLOW; SLOW=true; addpath(getenv('GITHUB_WORKSPACE'));
           success = run_tests(); assert(success);
 
     - name: Run fast tests
       if: matrix.test == 'fast'
-      uses: matlab-actions/run-command@v2.3.0
+      uses: matlab-actions/run-command@v2.4.0
       with:
         command: run MOxUnit/MOxUnit/moxunit_set_path(); addpath(fullfile(pwd, 'MOcov', 'MOcov')); addpath(getenv('GITHUB_WORKSPACE')); success = run_tests();
           assert(success);
