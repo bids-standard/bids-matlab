@@ -152,7 +152,7 @@ function copy_to_derivative(varargin)
       ds_desc = ds_desc.append('GeneratedBy', struct('Name', args.Results.pipeline_name));
     end
   end
-  
+
   ds_desc.write(derivatives_folder);
 
   % looping over selected files
