@@ -175,7 +175,6 @@ classdef Schema
       end
 
       entities = unique(values);
-
       entities = obj.entity_order(entities, 'use_short_form', true);
 
     end
@@ -291,7 +290,9 @@ classdef Schema
       end
 
       order = obj.content.rules.entities;
+
       is_in_schema = ismember(order, entity_list);
+
       is_not_in_schema = ~ismember(entity_list, order);
       order = order(is_in_schema);
       order = cat(1, order, sort(entity_list(is_not_in_schema)));
@@ -487,6 +488,8 @@ classdef Schema
         entities{1, i} = obj.content.objects.entities.(entity_names{i}).name; %#ok<*AGROW>
       end
 
+      entities = obj.entity_order(entities, 'use_short_form', true);
+
     end
 
     function required_entities = required_entities_for_suffix_group(obj, this_suffix_group)
@@ -510,9 +513,11 @@ classdef Schema
       end
 
       entities_long_name = fieldnames(this_suffix_group.entities);
+      entities_long_name = obj.entity_order(entities_long_name);
       nb_entities = numel(entities_long_name);
 
       entities = obj.return_entities_for_suffix_group(this_suffix_group);
+      entities = obj.entity_order(entities, 'use_short_form', true);
 
       is_required = false(1, nb_entities);
 
@@ -714,6 +719,9 @@ classdef Schema
       if ~isempty(suffix_group)
         required = obj.required_entities_for_suffix_group(this_suffix_group);
         entities = obj.return_entities_for_suffix_group(this_suffix_group);
+
+        required = obj.entity_order(required, 'use_short_form', true);
+        entities = obj.entity_order(entities, 'use_short_form', true);
       end
     end
 
