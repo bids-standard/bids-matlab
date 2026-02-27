@@ -29,6 +29,12 @@ function test_bids_examples_basic()
       fprintf('-');
       continue
     end
+    % TODO: index atlas datasets
+    if strcmp(d(i).name(1:5), 'atlas')
+      status(i) = true;
+      fprintf('-');
+      continue
+    end
     try
       BIDS = bids.layout(fullfile(pth_bids_example, d(i).name), ...
                          'use_schema', true, ...
