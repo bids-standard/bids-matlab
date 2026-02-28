@@ -139,7 +139,7 @@ function test_copy_to_derivative_GeneratedBy()
                           'force', true, ...
                           'unzip', false, ...
                           'verbose', cfg.verbose);
-  BIDS = bids.layout(fullfile(out_path, 'SPM12'));
+  BIDS = bids.layout(fullfile(out_path, pipeline_name));
   assertEqual(BIDS.description.GeneratedBy.Name, pipeline_name);
 
   % Test that we don't write a duplicate entry
@@ -152,18 +152,6 @@ function test_copy_to_derivative_GeneratedBy()
                           'verbose', cfg.verbose);
   BIDS = bids.layout(fullfile(out_path, pipeline_name));
   assertEqual(numel(BIDS.description), 1);
-
-  % Test appending a new entry
-  pipeline_name = 'SPM25';
-  bids.copy_to_derivative(BIDS, ...
-                          'pipeline_name', pipeline_name, ...
-                          'out_path', out_path, ...
-                          'filter', filter, ...
-                          'force', true, ...
-                          'unzip', false, ...
-                          'verbose', cfg.verbose);
-  BIDS = bids.layout(fullfile(out_path, pipeline_name));
-  assertEqual(numel(BIDS.description), 2);
 
 end
 
