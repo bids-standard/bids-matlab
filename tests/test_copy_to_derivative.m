@@ -151,8 +151,8 @@ function test_copy_to_derivative_GeneratedBy()
                           'unzip', false, ...
                           'verbose', cfg.verbose);
   BIDS = bids.layout(fullfile(out_path, pipeline_name));
-  assert(length(BIDS.description) == 1);
-
+  assertEqual(numel(BIDS.description), 1)
+  
   % Test appending a new entry
   pipeline_name = 'SPM25';
   bids.copy_to_derivative(BIDS, ...
@@ -163,7 +163,7 @@ function test_copy_to_derivative_GeneratedBy()
                           'unzip', false, ...
                           'verbose', cfg.verbose);
   BIDS = bids.layout(fullfile(out_path, pipeline_name));
-  assert(length(BIDS.description) == 2);
+  assertEqual(numel(BIDS.description), 2)
 
 end
 
