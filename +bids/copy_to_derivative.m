@@ -141,20 +141,16 @@ function copy_to_derivative(varargin)
     bids.util.mkdir(derivatives_folder);
   end
 
-  ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
-
   % In case we are copying again to the output folder, we append that info to the
-  % description otherwise we create a bran new dataset description for
-  % derivatives
+  % description; otherwise, we create a brand new dataset description for derivatives
+  ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
   descr_file = fullfile(derivatives_folder, 'dataset_description.json');
-  if exist(descr_file, 'file')
+  if isfile(descr_file)
     content = bids.util.jsondecode(descr_file);
     ds_desc = ds_desc.set_field(content);
-    ds_desc = ds_desc.append('GeneratedBy', struct('Name', args.Results.pipeline_name));
-
-  else
-    ds_desc = bids.Description(args.Results.pipeline_name, BIDS);
-
+    if ~contains(jsonencode(content.GeneratedBy), sprintf('"Name":"%s"', args.Results.pipeline_name))
+      ds_desc = ds_desc.append('GeneratedBy', struct('Name', args.Results.pipeline_name));
+    end
   end
 
   ds_desc.write(derivatives_folder);
