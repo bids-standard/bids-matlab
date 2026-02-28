@@ -151,7 +151,7 @@ function test_copy_to_derivative_GeneratedBy()
                           'unzip', false, ...
                           'verbose', cfg.verbose);
   BIDS = bids.layout(fullfile(out_path, pipeline_name));
-  assertEqual(numel(BIDS.description), 1);
+  assertEqual(numel(BIDS.description.GeneratedBy), 1);
 
 end
 
