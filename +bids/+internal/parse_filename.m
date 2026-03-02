@@ -90,6 +90,8 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   pos = strfind(filename, 'sub-');
   if ~isempty(pos) && pos(1) > 1
     p.prefix = filename(1:pos(1) - 1);
+    disp(pos);
+    disp(p.prefix);
   else
     pos = 1;
   end
