@@ -480,7 +480,9 @@ function test_reorder_schemaless()
   file = bids.File(filename, 'use_schema', false);
   file = file.reorder_entities();
   assertEqual(file.entity_order, {'sub'
+                                  'tpl'
                                   'ses'
+                                  'cohort'
                                   'sample'
                                   'task'
                                   'tracksys'
@@ -505,7 +507,9 @@ function test_reorder_schemaless()
                                   'split'
                                   'recording'
                                   'chunk'
+                                  'atlas'
                                   'seg'
+                                  'scale'
                                   'res'
                                   'den'
                                   'label'
