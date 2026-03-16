@@ -148,7 +148,8 @@ function copy_to_derivative(varargin)
   if isfile(descr_file)
     content = bids.util.jsondecode(descr_file);
     ds_desc = ds_desc.set_field(content);
-    if ~contains(jsonencode(content.GeneratedBy), sprintf('"Name":"%s"', args.Results.pipeline_name))
+    if ~contains(jsonencode(content.GeneratedBy), ...
+                 sprintf('"Name":"%s"', args.Results.pipeline_name))
       ds_desc = ds_desc.append('GeneratedBy', struct('Name', args.Results.pipeline_name));
     end
   end
