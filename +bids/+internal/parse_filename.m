@@ -90,24 +90,12 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   pos = strfind(filename, 'sub-');
   if ~isempty(pos) && pos(1) > 1
     p.prefix = filename(1:pos(1) - 1);
-    disp(pos);
-    disp(class(pos));
-
   elseif length(pos) > 1
-    disp(pos);
-    disp(class(pos));
-
     pos = pos(1);
   else
     pos = 1;
   end
-  try
-    basename = filename(pos:end);
-  catch ME
-    disp(pos);
-    disp(class(pos));
-    rethrow(ME);
-  end
+  basename = filename(pos:end);
 
   % Identify extension
   [basename, p.ext] = strtok(basename, '.');
