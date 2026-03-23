@@ -59,6 +59,8 @@ function test_copy_to_derivative_unzip_force_false_572
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
 
+  rmdir(out_path, 's');
+
 end
 
 function test_copy_to_derivative_unzip_force_false
@@ -87,6 +89,8 @@ function test_copy_to_derivative_unzip_force_false
 
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
+
+  rmdir(out_path, 's');
 
 end
 
@@ -123,6 +127,8 @@ function test_copy_to_derivative_exclude_with_regex()
                                               '.*_events.json');
   assert(isempty(no_file_expected));
 
+  rmdir(out_path, 's');
+
 end
 
 function test_copy_to_derivative_GeneratedBy()
@@ -152,6 +158,8 @@ function test_copy_to_derivative_GeneratedBy()
                           'verbose', cfg.verbose);
   BIDS = bids.layout(fullfile(out_path, pipeline_name));
   assertEqual(numel(BIDS.description.GeneratedBy), 1);
+
+  rmdir(out_path, 's');
 
 end
 
@@ -188,6 +196,8 @@ function test_copy_to_derivative_basic()
                           'skip_dep', skip_dependencies, ...
                           'verbose', verbose);
 
+  rmdir(out_path, 's');
+
 end
 
 function test_copy_to_derivative_unzip
@@ -216,6 +226,8 @@ function test_copy_to_derivative_unzip
 
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
+
+  rmdir(out_path, 's');
 
 end
 
@@ -247,6 +259,8 @@ function test_copy_to_derivative_dependencies()
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 10);
 
+  rmdir(out_path, 's');
+
   %%
   [BIDS, out_path, filter] = fixture('qmri_mp2rageme');
 
@@ -267,6 +281,8 @@ function test_copy_to_derivative_dependencies()
                             'verbose', verbose);
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 11);
+
+  rmdir(out_path, 's');
 
 end
 
@@ -296,6 +312,8 @@ function test_copy_to_derivative_sessions_scans_tsv
                             'verbose', verbose);
   assert(~isempty(derivatives.subjects(1).scans));
   assertEqual(derivatives.subjects(1).sess, derivatives.subjects(2).sess);
+
+  rmdir(out_path, 's');
 
 end
 
