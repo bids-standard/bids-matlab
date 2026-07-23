@@ -59,6 +59,8 @@ function test_copy_to_derivative_unzip_force_false_572
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
 
+  rmdir(out_path, 's');
+
 end
 
 function test_copy_to_derivative_unzip_force_false
@@ -87,6 +89,8 @@ function test_copy_to_derivative_unzip_force_false
 
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
+
+  rmdir(out_path, 's');
 
 end
 
@@ -123,16 +127,17 @@ function test_copy_to_derivative_exclude_with_regex()
                                               '.*_events.json');
   assert(isempty(no_file_expected));
 
+  rmdir(out_path, 's');
+
 end
 
 function test_copy_to_derivative_GeneratedBy()
 
   [BIDS, out_path, ~, cfg] = fixture('qmri_vfa');
-
   filter =  struct('modality', 'anat');
 
+  % Test writing a new entry
   pipeline_name = 'SPM12';
-
   bids.copy_to_derivative(BIDS, ...
                           'pipeline_name', pipeline_name, ...
                           'out_path', out_path, ...
@@ -140,10 +145,21 @@ function test_copy_to_derivative_GeneratedBy()
                           'force', true, ...
                           'unzip', false, ...
                           'verbose', cfg.verbose);
+  BIDS = bids.layout(fullfile(out_path, pipeline_name));
+  assertEqual(BIDS.description.GeneratedBy.Name, pipeline_name);
 
-  BIDS = bids.layout(fullfile(out_path, 'SPM12'));
+  % Test that we don't write a duplicate entry
+  bids.copy_to_derivative(BIDS, ...
+                          'pipeline_name', pipeline_name, ...
+                          'out_path', out_path, ...
+                          'filter', filter, ...
+                          'force', true, ...
+                          'unzip', false, ...
+                          'verbose', cfg.verbose);
+  BIDS = bids.layout(fullfile(out_path, pipeline_name));
+  assertEqual(numel(BIDS.description.GeneratedBy), 1);
 
-  assertEqual(BIDS.description.GeneratedBy.Name, 'SPM12');
+  rmdir(out_path, 's');
 
 end
 
@@ -180,6 +196,8 @@ function test_copy_to_derivative_basic()
                           'skip_dep', skip_dependencies, ...
                           'verbose', verbose);
 
+  rmdir(out_path, 's');
+
 end
 
 function test_copy_to_derivative_unzip
@@ -208,6 +226,8 @@ function test_copy_to_derivative_unzip
 
   zipped_files = bids.query(derivatives, 'data', 'extension', '.nii.gz');
   assertEqual(numel(zipped_files), 0);
+
+  rmdir(out_path, 's');
 
 end
 
@@ -239,6 +259,8 @@ function test_copy_to_derivative_dependencies()
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 10);
 
+  rmdir(out_path, 's');
+
   %%
   [BIDS, out_path, filter] = fixture('qmri_mp2rageme');
 
@@ -259,6 +281,8 @@ function test_copy_to_derivative_dependencies()
                             'verbose', verbose);
   copied_files = bids.query(derivatives, 'data');
   assertEqual(size(copied_files, 1), 11);
+
+  rmdir(out_path, 's');
 
 end
 
@@ -288,6 +312,8 @@ function test_copy_to_derivative_sessions_scans_tsv
                             'verbose', verbose);
   assert(~isempty(derivatives.subjects(1).scans));
   assertEqual(derivatives.subjects(1).sess, derivatives.subjects(2).sess);
+
+  rmdir(out_path, 's');
 
 end
 
