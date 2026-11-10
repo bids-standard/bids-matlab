@@ -1,7 +1,7 @@
 Using the BIDS schema
 *********************
 
-.. automodule:: +bids
+.. mat:autofolder:: +bids/
 
-.. autoclass:: Schema
+.. autoclass:: +bids/Schema.m
     :members:
