@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* [DOC] migrate the documentation to sphinxcontrib-matlabdomain 1.0 by @jasonnicholson
+* [DOC] migrate the documentation to sphinxcontrib-matlabdomain 1.0 #828 by @jasonnicholson
 
 ### Deprecated
 
@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* [DOC] fix the broken `contributing.md` and `general_information.md` symlinks, add the demos page to the table of contents and fix broken links in the documentation by @jasonnicholson
+* [DOC] fix the broken `contributing.md` and `general_information.md` symlinks, add the demos page to the table of contents and fix broken links in the documentation #828 by @jasonnicholson
 
 ### Security
 
