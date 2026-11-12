@@ -38,7 +38,9 @@ extensions = [
     "sphinx_copybutton",
     "myst_parser",
 ]
-matlab_src_dir = os.path.dirname(os.path.abspath("../../+bids"))
+myst_heading_anchors = 3
+matlab_src_code_project_root = "../.."
+matlab_src_include_patterns = ["+bids/**"]
 primary_domain = "mat"
 
 # Add any paths that contain templates here, relative to this directory.

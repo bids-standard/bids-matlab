@@ -24,6 +24,7 @@ To see how to install BIDS-Matlab, please check
    schema
    performance
    api/index
+   demos
    contributing
    changelog
    developper_doc/index

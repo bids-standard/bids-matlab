@@ -1,5 +1,5 @@
-Sphinx
-sphinxcontrib-matlabdomain
+Sphinx>=8.0
+sphinxcontrib-matlabdomain @ git+https://github.com/sphinx-contrib/matlabdomain.git@0270cc88531f21c38ef741a5408c84ec46870716
 sphinxcontrib-napoleon
 sphinx_rtd_theme
 sphinx-copybutton
