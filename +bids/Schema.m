@@ -429,7 +429,9 @@ classdef Schema
       for i = 1:numel(extra_datatypes)
         groups = fieldnames(raw.(extra_datatypes{i}));
         for j = 1:numel(groups)
-          if ismember(datatype, raw.(extra_datatypes{i}).(groups{j}).datatypes)
+          % datatypes can be empty (decoded as [])
+          datatypes = raw.(extra_datatypes{i}).(groups{j}).datatypes;
+          if iscell(datatypes) && ismember(datatype, datatypes)
             suffix_groups.(groups{j}) = raw.(extra_datatypes{i}).(groups{j});
           end
         end
