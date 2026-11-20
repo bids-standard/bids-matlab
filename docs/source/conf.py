@@ -96,3 +96,7 @@ linkcheck_ignore = [
 linkcheck_exclude_documents = [r".*/sg_execution_times.rst"]
 
 linkcheck_allow_unauthorized = True
+
+# retry links that time out or fail transiently
+linkcheck_retries = 3
+linkcheck_timeout = 60

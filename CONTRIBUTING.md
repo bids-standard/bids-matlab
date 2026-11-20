@@ -32,7 +32,7 @@ an example with visual-studio code
 
 We use the [MISS_HIT linter](https://github.com/florianschanda/miss_hit/) to
 automatically enforce / fix some code style issues and check for
-[code quality](https://the-turing-way.netlify.app/reproducible-research/code-quality.html).
+[code quality](https://book.the-turing-way.org/reproducible-research/code-quality/).
 
 The linter is a Python package that can be installed with:
 
@@ -91,7 +91,7 @@ and should be run with [MOxUnit](https://moxunit.github.io/MOxUnit/).
 
 If you are not sure what unit and integration tests are, check the chapter about
 that in the
-[Turing way](https://the-turing-way.netlify.app/reproducible-research/testing.html).
+[Turing way](https://book.the-turing-way.org/reproducible-research/testing/).
 
 ### Install MOxUnit
 
