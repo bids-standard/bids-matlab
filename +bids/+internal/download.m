@@ -39,10 +39,12 @@ function filename = download(URL, output_dir, verbose)
       if ~verbose
         options = '-q';
       end
+      % save to the expected filename:
+      % by default wget would use the last part of the URL (e.g. 'index.html?zip=')
       status = system(sprintf('wget %s -O "%s" "%s"', options, filename, URL));
       if status ~= 0
-        error('download:failed', ...
-              'Failed to download:\n %s\nwith urlwrite and wget.', URL);
+        msg = sprintf('Failed to download:\n %s', URL);
+        bids.internal.error_handling(mfilename(), 'downloadFailed', msg, false, true);
       end
     end
 

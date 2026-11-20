@@ -88,12 +88,14 @@ function p = parse_filename(filename, fields, tolerant, verbose)
   % only look for comes before the first "sub-"
   p.prefix = '';
   pos = strfind(filename, 'sub-');
-  if ~isempty(pos) && pos(1) > 1
-    p.prefix = filename(1:pos(1) - 1);
-  elseif length(pos) > 1
-    pos = pos(1);
-  else
+  if isempty(pos)
     pos = 1;
+  else
+    % 'sub-' may appear several times (e.g. 'asub-16_wsub-1_bold.nii')
+    pos = pos(1);
+    if pos > 1
+      p.prefix = filename(1:pos - 1);
+    end
   end
   basename = filename(pos:end);
 
