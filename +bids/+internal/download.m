@@ -32,6 +32,9 @@ function filename = download(URL, output_dir, verbose)
     try
       urlwrite(URL, filename); %#ok<*URLWR>
     catch
+      % urlwrite can fail on large files
+      % (e.g. Octave >= 11 times out after a few seconds),
+      % so fall back on wget and make sure it writes to the expected file
       options = '';
       if ~verbose
         options = '-q';
