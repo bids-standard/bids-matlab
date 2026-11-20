@@ -50,6 +50,9 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v8
       with:
+        # use a personal access token instead of the default GITHUB_TOKEN
+        # so that the PR opened by this workflow triggers the test workflows
+        token: ${{ secrets.PR_TOKEN }}
         commit-message: BIDS schema update
         assignees: Remi-Gau
         base: main
