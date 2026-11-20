@@ -357,7 +357,7 @@ function test_query_sessions_tsv()
   assertEqual(numel(sessions_tsv), 3);
 
   data = bids.query(BIDS, 'data', 'sub', '01');
-  assertEqual(numel(data), 23);
+  assertEqual(numel(data), 24);
   assert(ismember('sub-01_sessions.tsv', ...
                   bids.internal.file_utils(data, 'filename')));
 

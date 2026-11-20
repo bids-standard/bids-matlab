@@ -648,7 +648,7 @@ function file_list = return_file_list(modality, subject, schema)
   end
 
   % entities
-  pattern = [pattern '([a-zA-Z0-9]+-[a-zA-Z0-9]+_)*'];
+  pattern = [pattern '([a-zA-Z0-9]+-[a-zA-Z0-9+]+_)*'];
 
   % suffix
   pattern = [pattern '([a-zA-Z0-9]+\.){1}'];

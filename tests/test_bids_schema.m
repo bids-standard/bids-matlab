@@ -279,7 +279,7 @@ function test_return_modality_extensions_regex
 
   suffix_group = schema.content.rules.datatypes.func.func;
   extensions = schema.return_modality_extensions_regex(suffix_group);
-  assertEqual(extensions, '(.nii.gz|.nii){1}');
+  assertEqual(extensions, '(.nii.gz|.nii|.ome.zarr/){1}');
 
 end
 
@@ -294,7 +294,7 @@ function test_return_modality_regex
                          '_(T1w|T2w|PDw|T2starw|FLAIR|inplaneT1|inplaneT2|PDT2|angio|', ...
                          'T2star|FLASH|PD', ... % deprecated suffixes
                          '){1}', ...
-                         '(.nii.gz|.nii){1}$'];
+                         '(.nii.gz|.nii|.ome.zarr/){1}$'];
 
   assertEqual(regular_expression, expected_expression);
 
