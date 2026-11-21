@@ -12,7 +12,7 @@ make update_schema
 ```
 
 A new version of the schema is fetched automatically regularly via continuous integration
-(see the [github action](.github/workflows/update_schema.yml)) when pushing to the repo
+(see the [github action](https://github.com/bids-standard/bids-matlab/blob/main/.github/workflows/update_schema.yml)) when pushing to the repo
 or opening a pull-request.
 
 ## Release protocol

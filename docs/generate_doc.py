@@ -45,9 +45,9 @@ def append_dir_content(path: Path, content: str, parent_folder=None, recursive=F
 
         content += f".. _{file.stem}:\n"
         if parent_folder is None:
-            function_name = f"+bids.{path.name}.{file.stem}"
+            function_name = f"+bids/{path.name}/{file.name}"
         else:
-            function_name = f"src.{parent_folder}.{path.name}.{file.stem}"
+            function_name = f"+bids/{parent_folder}/{path.name}/{file.name}"
         content += f".. autofunction:: {function_name}\n"
 
         print(function_name)

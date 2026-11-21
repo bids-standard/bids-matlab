@@ -2,7 +2,7 @@ Performance
 ***********
 
 bids-matlab's performance may vary
-depending on which options you choose for indexing with :func:`bids.layout`.
+depending on which options you choose for indexing with :func:`bids.layout <+bids/layout.m>`.
 
 Relying on the BIDS schema (``'use_schema', true``) to only include files that comply with it
 may slow down performance a bit.

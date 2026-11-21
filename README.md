@@ -9,7 +9,7 @@
 [![miss hit](https://img.shields.io/badge/code%20style-miss_hit-000000.svg)](https://misshit.org/)
 [![View bids-matlab on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://nl.mathworks.com/matlabcentral/fileexchange/93740-bids-matlab)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5910584.svg)](https://doi.org/10.5281/zenodo.5910584)
-[![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributing)
 
 <!-- markdown-link-check-enable -->
 
@@ -214,7 +214,7 @@ doi = https://doi.org/10.5281/zenodo.5910584
 
 ## Contributing
 
-If you want to contribute make sure to check our [contributing guidelines](CONTRIBUTING.md).
+If you want to contribute make sure to check our [contributing guidelines](https://github.com/bids-standard/bids-matlab/blob/main/CONTRIBUTING.md).
 
 Thanks goes to these wonderful people
 ([emoji key](https://allcontributors.org/docs/en/emoji-key)):

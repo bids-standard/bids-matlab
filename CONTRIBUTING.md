@@ -49,7 +49,7 @@ instruction from the
 </details>
 
 The rules followed by MISS_HIT are in the
-[MISS_HIT configuration file](./miss_hit.cfg).
+[MISS_HIT configuration file](https://github.com/bids-standard/bids-matlab/blob/main/miss_hit.cfg).
 
 To check the code style of the whole repository, you can can simply type:
 
@@ -292,7 +292,7 @@ Change the `3` to crop more characters at the end.
 ## How the decision to merge a pull request is made?
 
 The decision-making rules are outlined in
-[DECISION-MAKING.md](DECISION-MAKING.md).
+[DECISION-MAKING.md](https://github.com/bids-standard/bids-matlab/blob/main/DECISION-MAKING.md).
 
 ## Recognizing contributions
 
@@ -300,9 +300,9 @@ bids-matlab follows the
 [all-contributors](https://github.com/kentcdodds/all-contributors)
 specification, so we welcome and recognize all contributions from documentation
 to testing to code development. You can see a list of current contributors in
-the [README](./README.md).
+the [README](https://github.com/bids-standard/bids-matlab/blob/main/README.md).
 
-Also make sure you add your information to the [CITATION.cff file](./CITATION.cff).
+Also make sure you add your information to the [CITATION.cff file](https://github.com/bids-standard/bids-matlab/blob/main/CITATION.cff).
 
 If you have made any type of contributions to bids-matlab, our team will add you
 as a contributor (or ask to be added if we forgot).
@@ -316,7 +316,7 @@ all-contributors-cli tool with:
 npm install -g all-contributors-cli
 ```
 
-Add yourself to [.all-contributorsrc](./.all-contributorsrc) and then run:
+Add yourself to [.all-contributorsrc](https://github.com/bids-standard/bids-matlab/blob/main/.all-contributorsrc) and then run:
 
 ```bash
 npx all-contributors generate

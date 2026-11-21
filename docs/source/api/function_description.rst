@@ -1,21 +1,21 @@
 Function description
 ********************
 
-.. automodule:: +bids
+.. mat:autofolder:: +bids/
 
-.. autofunction:: derivatives_json
+.. autofunction:: +bids/derivatives_json.m
 
-.. autofunction:: init
+.. autofunction:: +bids/init.m
 
-.. autoclass:: Description
+.. autoclass:: +bids/Description.m
     :members:
 
-.. autofunction:: copy_to_derivative
+.. autofunction:: +bids/copy_to_derivative.m
 
-.. autofunction:: report
-.. autofunction:: validate
+.. autofunction:: +bids/report.m
+.. autofunction:: +bids/validate.m
 
-.. autofunction:: diagnostic
+.. autofunction:: +bids/diagnostic.m
 
 .. _fig_diagnostic:
 .. figure::  ../images/MultisubjectMultimodalFaceProcessing.png

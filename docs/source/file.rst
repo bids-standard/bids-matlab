@@ -1,7 +1,7 @@
 BIDS file handling
 ******************
 
-.. automodule:: +bids
+.. mat:autofolder:: +bids/
 
-.. autoclass:: File
+.. autoclass:: +bids/File.m
     :members:

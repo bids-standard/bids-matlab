@@ -20,11 +20,11 @@ Applying transformations
 An "array" of transformations can be applied one after the other using
 ``bids.transformers()``.
 
-.. automodule:: +bids
+.. mat:autofolder:: +bids/
 
-.. autofunction:: transformers
+.. autofunction:: +bids/transformers.m
 
-.. automodule:: +bids.+transformers_list
+.. mat:autofolder:: +bids/+transformers_list/
 
 Basic operations
 ================
@@ -35,7 +35,7 @@ Basic operations
 - Divide
 - Power
 
-.. autofunction:: Basic
+.. autofunction:: +bids/+transformers_list/Basic.m
 
 Logical operations
 ==================
@@ -44,7 +44,7 @@ Logical operations
 - Or
 - Not
 
-.. autofunction:: Logical
+.. autofunction:: +bids/+transformers_list/Logical.m
 
 
 Munge operations
@@ -56,62 +56,62 @@ other formats or shapes.
 Assign
 ------
 
-.. autofunction:: Assign
+.. autofunction:: +bids/+transformers_list/Assign.m
 
 Concatenate
 -----------
 
-.. autofunction:: Concatenate
+.. autofunction:: +bids/+transformers_list/Concatenate.m
 
 Copy
 ----
 
-.. autofunction:: Copy
+.. autofunction:: +bids/+transformers_list/Copy.m
 
 Delete
 ------
 
-.. autofunction:: Delete
+.. autofunction:: +bids/+transformers_list/Delete.m
 
 DropNA
 ------
 
-.. autofunction:: Drop_na
+.. autofunction:: +bids/+transformers_list/Drop_na.m
 
 Factor
 ------
 
-.. autofunction:: Factor
+.. autofunction:: +bids/+transformers_list/Factor.m
 
 Filter
 -------
 
-.. autofunction:: Filter
+.. autofunction:: +bids/+transformers_list/Filter.m
 
 Label identical rows
 --------------------
 
-.. autofunction:: Label_identical_rows
+.. autofunction:: +bids/+transformers_list/Label_identical_rows.m
 
 Merge identical rows
 --------------------
 
-.. autofunction:: Merge_identical_rows
+.. autofunction:: +bids/+transformers_list/Merge_identical_rows.m
 
 Replace
 -------
 
-.. autofunction:: Replace
+.. autofunction:: +bids/+transformers_list/Replace.m
 
 Select
 ------
 
-.. autofunction:: Select
+.. autofunction:: +bids/+transformers_list/Select.m
 
 Split
 -----
 
-.. autofunction:: Split
+.. autofunction:: +bids/+transformers_list/Split.m
 
 
 Compute operations
@@ -122,34 +122,34 @@ Transformations that primarily involve numerical computation on variables.
 Constant
 --------
 
-.. autofunction:: Constant
+.. autofunction:: +bids/+transformers_list/Constant.m
 
 Mean
 -----
 
-.. autofunction:: Mean
+.. autofunction:: +bids/+transformers_list/Mean.m
 
 Product
 -------
 
-.. autofunction:: Product
+.. autofunction:: +bids/+transformers_list/Product.m
 
 Scale
 -----
 
-.. autofunction:: Scale
+.. autofunction:: +bids/+transformers_list/Scale.m
 
 Std
 ---
 
-.. autofunction:: Std
+.. autofunction:: +bids/+transformers_list/Std.m
 
 Sum
 ---
 
-.. autofunction:: Sum
+.. autofunction:: +bids/+transformers_list/Sum.m
 
 Threshold
 ---------
 
-.. autofunction:: Threshold
+.. autofunction:: +bids/+transformers_list/Threshold.m
